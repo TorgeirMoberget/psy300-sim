@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY300 · Sim 11 — Bias-fabrikken</title>
+<style>
+:root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:20.5px;margin:0;font-weight:700}
+header p{margin:2px 0 0;font-size:15.5px;opacity:.85}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+h2{color:var(--navy);margin:.2em 0 .5em;font-size:19px}
+button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+.btn{background:var(--blue);color:#fff}.btn:hover{background:var(--navy)}
+.btn2{background:#eef1f7;color:var(--navy)}.btn2:hover{background:var(--light)}
+.tab{background:#eef1f7;color:var(--navy)}
+.tab.on{background:var(--navy);color:#fff}
+.muted{color:#62708a;font-size:16px}
+canvas{width:100%;display:block}
+.stat{display:inline-block;background:var(--light);color:var(--navy);border-radius:8px;padding:3px 10px;font-size:15.5px;font-weight:600;margin:3px 4px 3px 0;font-variant-numeric:tabular-nums}
+.stat.red{background:#fbeceb;color:var(--red)}
+.stat.green{background:#eaf6ea;color:var(--green)}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap}
+.sl label{min-width:250px;font-weight:600;font-size:16px;color:var(--navy)}
+.sl input[type=range]{flex:1;min-width:140px}
+.sl output{min-width:44px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--navy);font-size:17px}
+.note{background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px;margin-top:10px}
+.hide{display:none}
+</style></head><body>
+<header><h1>Sim 11 · Bias-fabrikken — tre måter data lyver på uten at noen jukser</h1>
+<p>PSY300 · Forelesning 2 · Seleksjon · frafall · publikasjon: systematiske feil som ingen p-verdi kan redde deg fra</p></header>
+<div class="wrap">
+
+<div class="card">
+<button class="tab on" id="tabS">A · Seleksjonsbias</button>
+<button class="tab" id="tabF">B · Frafall i en RCT</button>
+<button class="tab" id="tabP">C · Publikasjonsbias</button>
+</div>
+
+<div id="modeS">
+<div class="card">
+<h2>Hvem melder seg?</h2>
+<p class="muted">Populasjonen (grå) har sann gjennomsnittlig statistikkangst = <b>50</b>. Men sannsynligheten for å delta i studien din kan avhenge av angstnivået — de mest engstelige unngår kanskje en «statistikkstudie» (eller oppsøker den!).</p>
+<div class="sl"><label>Deltakelse avhenger av angst</label><input type="range" id="sel" min="-100" max="100" value="0"><output id="selOut">0</output></div>
+<p class="muted">← engstelige unngår studien · 0 = tilfeldig utvalg · engstelige oppsøker studien →</p>
+<button class="btn" id="runS">Trekk utvalg (n = 100)</button>
+<canvas id="cvS" height="220"></canvas>
+<div id="outS"></div>
+<div class="note"><b>Poenget:</b> utvalgsgjennomsnittet er en <i>forventningsskjev</i> estimator når deltakelsen henger sammen med det du måler — og mer data hjelper ikke: du estimerer presist feil tall. Tilfeldig utvalg er en <i>design</i>-egenskap, ikke noe statistikken kan reparere i etterkant.</div>
+</div>
+</div>
+
+<div id="modeF" class="hide">
+<div class="card">
+<h2>Frafall som ikke er tilfeldig</h2>
+<p class="muted">En RCT uten reell behandlingseffekt (sann effekt = 0). Men deltakere i <b>tiltaksgruppen</b> som ikke opplever bedring, faller oftere fra — og analysen kjøres bare på dem som fullfører («kompletterer-analyse»).</p>
+<div class="sl"><label>Frafall blant ikke-forbedrede i tiltak</label><input type="range" id="drop" min="0" max="80" value="0"><output id="dropOut">0 %</output></div>
+<button class="btn" id="runF">Kjør 1 000 studier</button>
+<canvas id="cvF" height="200"></canvas>
+<div id="outF"></div>
+<div class="note"><b>Poenget:</b> med differensielt frafall ser kompletterer-analysen en «effekt» som ikke finnes — de som ble igjen i tiltaksgruppen, er de som tilfeldigvis bedret seg. Derfor er intention-to-treat-prinsippet og frafallsrapportering (CONSORT) obligatorisk i ekte RCT-er. <b>I terapistudien vår:</b> 7 av 43 falt fra i ISTDP-gruppen mot 4 av 43 på venteliste (χ² = 0,94, p = ,333), og de som falt fra lignet fullførerne ved baseline — det er dét man må vise, ikke bare anta.</div>
+</div>
+</div>
+
+<div id="modeP" class="hide">
+<div class="card">
+<h2>Bare «signifikante» funn publiseres</h2>
+<p class="muted">100 laboratorier studerer nøyaktig samme effekt (velg sann d under, gjerne 0) med n = 40 per gruppe. Tidsskriftene trykker bare p &lt; ,05.</p>
+<div class="sl"><label>Sann effekt (Cohens d)</label><input type="range" id="trued" min="0" max="0.8" step="0.1" value="0"><output id="dOut">0,0</output></div>
+<button class="btn" id="runP">Kjør 100 studier</button>
+<canvas id="cvP" height="240"></canvas>
+<div id="outP"></div>
+<div class="note"><b>Poenget:</b> gjennomsnittet av <i>publiserte</i> effekter overdriver alltid sannheten — dramatisk når sann d er liten. Litteraturen du leser er et selektert utvalg av alle studier som ble kjørt. (Dette er også hvorfor replikasjoner «skuffer».)</div>
+</div>
+</div>
+
+</div>
+<script>
+const $=id=>document.getElementById(id);
+function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function lgamma(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];let y=x,tmp=x+5.5;tmp-=(x+0.5)*Math.log(tmp);let ser=1.000000000190015;for(let j=0;j<6;j++)ser+=c[j]/++y;return -tmp+Math.log(2.5066282746310005*ser/x);}
+function betacf(a,b,x){const MAXIT=200,EPS=3e-12,FPMIN=1e-30;const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<FPMIN)d=FPMIN;d=1/d;let h=d;for(let m=1;m<=MAXIT;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;h*=d*c;aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<EPS)break;}return h;}
+function ibeta(a,b,x){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+function pT(t,df){return ibeta(df/2,0.5,df/(df+t*t));}
+function fmt(x,d=1){return x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function fit(cv){const r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);c.clearRect(0,0,w,h);return [c,w,h];}
+
+/* ---------- A: seleksjon ---------- */
+let lastS=null;
+function runS(){
+  const s=+$('sel').value/100; // -1..1
+  const samp=[];
+  let guard=0;
+  while(samp.length<100&&guard<100000){
+    guard++;
+    const x=50+10*rnorm();
+    const z=(x-50)/10;
+    const p=1/(1+Math.exp(-2.5*s*z)); // deltakelsessannsynlighet
+    if(Math.random()<p)samp.push(x);
+  }
+  lastS=samp;
+  drawS();
+}
+function drawS(){
+  const [c,w,h]=fit($('cvS'));
+  // populasjonskurve (grå)
+  const xmin=15,xmax=85;
+  const X=v=>30+(v-xmin)/(xmax-xmin)*(w-50);
+  c.strokeStyle='#c3cad9';c.lineWidth=2;c.beginPath();
+  for(let v=xmin;v<=xmax;v+=0.5){
+    const y=Math.exp(-((v-50)**2)/(2*100));
+    const py=h-30-y*(h-70);
+    v===xmin?c.moveTo(X(v),py):c.lineTo(X(v),py);
+  }
+  c.stroke();
+  // sann verdi
+  c.strokeStyle='#62708a';c.setLineDash([5,4]);c.beginPath();c.moveTo(X(50),12);c.lineTo(X(50),h-25);c.stroke();c.setLineDash([]);
+  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';c.fillText('sann μ = 50',X(50),10);
+  c.fillStyle='#8894ad';c.textAlign='left';c.fillText('populasjonen',34,26);
+  if(lastS){
+    // utvalgsprikker
+    lastS.forEach(v=>{
+      c.fillStyle='rgba(46,84,150,.5)';
+      c.beginPath();c.arc(X(v),h-42-Math.random()*24,3.5,0,7);c.fill();
+    });
+    const m=lastS.reduce((a,b)=>a+b,0)/lastS.length;
+    c.strokeStyle='#C0392B';c.lineWidth=2.5;c.beginPath();c.moveTo(X(m),12);c.lineTo(X(m),h-25);c.stroke();
+    c.fillStyle='#C0392B';c.textAlign='center';c.font='bold 16px sans-serif';c.fillText('utvalget: '+fmt(m),X(m),h-12);
+    const bias=m-50;
+    $('outS').innerHTML='<span class="stat">utvalgs-M = '+fmt(m)+'</span>'+
+     '<span class="stat '+(Math.abs(bias)<1?'green':'red')+'">bias = '+fmt(bias)+(Math.abs(bias)<1?' (ok)':' — systematisk feil!')+'</span>';
+  }
+}
+
+/* ---------- B: frafall ---------- */
+let lastF=null;
+function runF(){
+  const pdrop=+$('drop').value/100;
+  const K=1000,n=40;let effs=[],sig=0;
+  for(let k=0;k<K;k++){
+    // endringsskår, sann effekt 0 i begge grupper
+    const ctrl=[];for(let i=0;i<n;i++)ctrl.push(rnorm());
+    const treat=[];
+    for(let i=0;i<n;i++){
+      const ch=rnorm();
+      const improved=ch>0;
+      if(!improved&&Math.random()<pdrop)continue; // faller fra
+      treat.push(ch);
+    }
+    if(treat.length<5)continue;
+    const m1=treat.reduce((a,b)=>a+b,0)/treat.length, m2=ctrl.reduce((a,b)=>a+b,0)/n;
+    const v1=treat.reduce((a,b)=>a+(b-m1)**2,0)/(treat.length-1), v2=ctrl.reduce((a,b)=>a+(b-m2)**2,0)/(n-1);
+    const sp2=((treat.length-1)*v1+(n-1)*v2)/(treat.length+n-2);
+    const d=(m1-m2)/Math.sqrt(sp2);
+    const t=(m1-m2)/Math.sqrt(sp2*(1/treat.length+1/n));
+    effs.push(d);
+    if(pT(t,treat.length+n-2)<0.05&&t>0)sig++;
+  }
+  lastF={effs,sig,K:effs.length};
+  drawF();
+}
+function drawF(){
+  const [c,w,h]=fit($('cvF'));
+  if(!lastF){c.fillStyle='#9aa5bb';c.font='bold 18px sans-serif';c.textAlign='center';c.fillText('(kjør simuleringen)',w/2,h/2);return;}
+  // histogram av observerte d-er
+  const bins=new Array(30).fill(0);
+  lastF.effs.forEach(d=>{const b=Math.floor((d+1)/2*30);if(b>=0&&b<30)bins[b]++;});
+  const mx=Math.max(...bins);
+  const X=i=>30+i/30*(w-50);
+  bins.forEach((b,i)=>{
+    c.fillStyle='#2E5496';
+    const bh=b/mx*(h-60);
+    c.fillRect(X(i),h-30-bh,(w-50)/30-2,bh);
+  });
+  const zero=30+(0+1)/2*(w-50);
+  c.strokeStyle='#62708a';c.setLineDash([5,4]);c.beginPath();c.moveTo(zero,10);c.lineTo(zero,h-25);c.stroke();c.setLineDash([]);
+  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';c.fillText('sann effekt = 0',zero,h-8);
+  const md=lastF.effs.reduce((a,b)=>a+b,0)/lastF.effs.length;
+  const mpx=30+(md+1)/2*(w-50);
+  c.strokeStyle='#C0392B';c.lineWidth=2.5;c.beginPath();c.moveTo(mpx,10);c.lineTo(mpx,h-25);c.stroke();
+  c.fillStyle='#C0392B';c.font='bold 16px sans-serif';c.fillText('observert d = '+fmt(md,2),mpx,8);
+  $('outF').innerHTML='<span class="stat '+(Math.abs(md)<0.05?'green':'red')+'">gj.sn. observert d = '+fmt(md,2)+' (sann: 0)</span>'+
+   '<span class="stat '+(lastF.sig/lastF.K<0.04?'green':'red')+'">«signifikant bedre»: '+fmt(100*lastF.sig/lastF.K)+' % av studiene</span>';
+}
+
+/* ---------- C: publikasjon ---------- */
+let lastP=null;
+function runP(){
+  const d0=+$('trued').value,n=40;
+  const studies=[];
+  for(let k=0;k<100;k++){
+    let s1=0,ss1=0,s2=0,ss2=0;
+    for(let i=0;i<n;i++){const x=rnorm()+d0;s1+=x;ss1+=x*x;}
+    for(let i=0;i<n;i++){const x=rnorm();s2+=x;ss2+=x*x;}
+    const m1=s1/n,m2=s2/n;
+    const v1=(ss1-n*m1*m1)/(n-1),v2=(ss2-n*m2*m2)/(n-1);
+    const sp2=(v1+v2)/2, d=(m1-m2)/Math.sqrt(sp2);
+    const t=(m1-m2)/Math.sqrt(sp2*2/n);
+    const p=pT(t,2*n-2);
+    studies.push({d,pub:p<0.05&&t>0});
+  }
+  lastP={studies,d0};
+  drawP();
+}
+function drawP(){
+  const [c,w,h]=fit($('cvP'));
+  if(!lastP){c.fillStyle='#9aa5bb';c.font='bold 18px sans-serif';c.textAlign='center';c.fillText('(kjør studiene)',w/2,h/2);return;}
+  const X=d=>30+(d+1)/2.4*(w-50);
+  // akse
+  c.strokeStyle='#d9dee8';c.beginPath();c.moveTo(20,h-40);c.lineTo(w-15,h-40);c.stroke();
+  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';
+  [-0.5,0,0.5,1].forEach(v=>{c.fillText(fmt(v,1),X(v),h-26);});
+  c.fillText('observert d per studie',w/2,h-10);
+  // sann d
+  c.strokeStyle='#2E7D32';c.setLineDash([5,4]);c.beginPath();c.moveTo(X(lastP.d0),14);c.lineTo(X(lastP.d0),h-42);c.stroke();c.setLineDash([]);
+  c.fillStyle='#2E7D32';c.fillText('sann d = '+fmt(lastP.d0,1),X(lastP.d0),12);
+  // studier: prikker, publiserte røde, skuffestudier grå
+  let ys={},pubs=[];
+  lastP.studies.forEach(s=>{
+    const bx=Math.round(X(s.d)/9);
+    ys[bx]=(ys[bx]||0)+1;
+    const py=h-48-ys[bx]*7;
+    c.fillStyle=s.pub?'#C0392B':'rgba(150,160,180,.45)';
+    c.beginPath();c.arc(X(s.d),py,3.4,0,7);c.fill();
+    if(s.pub)pubs.push(s.d);
+  });
+  const mAll=lastP.studies.reduce((a,b)=>a+b.d,0)/lastP.studies.length;
+  const mPub=pubs.length?pubs.reduce((a,b)=>a+b,0)/pubs.length:NaN;
+  $('outP').innerHTML='<span class="stat">alle 100 studier: gj.sn. d = '+fmt(mAll,2)+'</span>'+
+   (pubs.length?'<span class="stat red">de '+pubs.length+' publiserte: gj.sn. d = '+fmt(mPub,2)+'</span>':'<span class="stat green">ingenting «publisert» denne gangen</span>')+
+   (pubs.length?'<span class="stat red">litteraturen overdriver med '+fmt(mPub-lastP.d0,2)+'</span>':'');
+}
+
+/* ---------- tabs & wiring ---------- */
+function show(which){
+  ['S','F','P'].forEach(k=>{
+    $('mode'+k).classList.toggle('hide',k!==which);
+    $('tab'+k).classList.toggle('on',k===which);
+  });
+  __fsRedraw();
+}
+$('tabS').onclick=()=>show('S');
+$('tabF').onclick=()=>show('F');
+$('tabP').onclick=()=>show('P');
+$('sel').oninput=()=>$('selOut').textContent=$('sel').value;
+$('drop').oninput=()=>$('dropOut').textContent=$('drop').value+' %';
+$('trued').oninput=()=>$('dOut').textContent=fmt(+$('trued').value,1);
+$('runS').onclick=runS;
+$('runF').onclick=runF;
+$('runP').onclick=runP;
+const __fsRedraw=()=>{
+  if(!$('modeS').classList.contains('hide'))drawS();
+  else if(!$('modeF').classList.contains('hide'))drawF();
+  else drawP();
+};
+(function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
+const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
+window.addEventListener('resize',kick);
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{kick();setTimeout(safe,600);}));
+let __mis=0;
+setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
+ document.querySelectorAll('canvas').forEach(c=>{if(c.clientWidth>0&&c.width>0&&Math.abs(c.width-Math.round(c.clientWidth*r))>2)bad=true;});
+ __mis=bad?__mis+1:0;
+ if(__mis>=2){__mis=0;safe();}},700);})();
+drawS();
+</script>
+</body></html>
