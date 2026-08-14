@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY300 · Sim 11 — Simpsons paradoks</title>
+<style>
+:root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:20.5px;margin:0;font-weight:700}
+header p{margin:2px 0 0;font-size:15.5px;opacity:.85}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+h2{color:var(--navy);margin:.2em 0 .5em;font-size:19px}
+button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+.btn{background:var(--blue);color:#fff}.btn:hover{background:var(--navy)}
+.btn2{background:#eef1f7;color:var(--navy)}.btn2:hover{background:var(--light)}
+.muted{color:#62708a;font-size:16px}
+canvas{width:100%;display:block}
+.stat{display:inline-block;background:var(--light);color:var(--navy);border-radius:8px;padding:3px 10px;font-size:15.5px;font-weight:600;margin:3px 4px 3px 0;font-variant-numeric:tabular-nums}
+.stat.red{background:#fbeceb;color:var(--red)}
+.stat.green{background:#eaf6ea;color:var(--green)}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap}
+.sl label{min-width:250px;font-weight:600;font-size:16px;color:var(--navy)}
+.sl input[type=range]{flex:1;min-width:140px}
+.sl output{min-width:44px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--navy);font-size:17px}
+.note{background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px;margin-top:10px}
+label.chk{font-size:16px;font-weight:600;color:var(--navy);margin-left:8px}
+</style></head><body>
+<header><h1>Sim 11 · Simpsons paradoks — når helheten sier det motsatte av delene</h1>
+<p>PSY300 · Forelesning 4 · Samme data, to sanne svar: sammenhengen i hele utvalget OG i hver gruppe — med motsatt fortegn</p></header>
+<div class="wrap">
+
+<div class="card">
+<h2>Studietimer og prestasjon — i tre fagfelt</h2>
+<p class="muted">Tenkt eksempel: tre fagfelt skiller seg både i hvor mye studentene øver (x) og i karakternivå (y). <b>Innad i hvert fagfelt</b> er sammenhengen mellom øving og prestasjon den du velger under. Spørsmålet er hva som skjer når du ser bort fra gruppene.</p>
+<div class="sl"><label>Sammenheng innad i gruppene</label><input type="range" id="rw" min="-0.8" max="0.8" step="0.1" value="-0.5"><output id="rwOut">−0,50</output></div>
+<div class="sl"><label>Separasjon mellom gruppene</label><input type="range" id="sep" min="0" max="3" step="0.25" value="2"><output id="sepOut">2,0</output></div>
+<button class="btn" id="run">Trekk nye data</button>
+<label class="chk"><input type="checkbox" id="colors" checked> farg gruppene</label>
+<label class="chk"><input type="checkbox" id="lines" checked> vis gruppelinjene</label>
+<canvas id="cv" height="340"></canvas>
+<div id="out"></div>
+<div class="note"><b>Poenget:</b> gruppetilhørighet er en <i>tredjevariabel</i> som skaper den samlede sammenhengen. Begge tallene er «sanne» — men de svarer på ulike spørsmål: «henger x og y sammen på tvers av alle?» vs. «henger de sammen for en gitt student?». I regresjonsspråk: legg gruppen inn i modellen (kontroller for den), så forteller koeffisienten for x den innen-gruppe-historien. Jf. terapidataene: korrelasjonene ved oppfølging drives av gruppetilhørighet (ISTDP vs. venteliste) på akkurat denne måten.</div>
+</div>
+
+</div>
+<script>
+const $=id=>document.getElementById(id);
+function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function fmt(x,d=2){return x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function fit(cv){const r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);c.clearRect(0,0,w,h);return [c,w,h];}
+function pearson(pts){
+  const n=pts.length;
+  const mx=pts.reduce((s,p)=>s+p.x,0)/n,my=pts.reduce((s,p)=>s+p.y,0)/n;
+  let sxx=0,syy=0,sxy=0;
+  pts.forEach(p=>{sxx+=(p.x-mx)**2;syy+=(p.y-my)**2;sxy+=(p.x-mx)*(p.y-my);});
+  return {r:sxy/Math.sqrt(sxx*syy),b:sxy/sxx,a:my-(sxy/sxx)*mx};
+}
+const COLS=['#2E5496','#2E7D32','#C0392B'];
+const NAMES=['Fagfelt A','Fagfelt B','Fagfelt C'];
+let data=null;
+function run(){
+  const rw=+$('rw').value, sep=+$('sep').value;
+  const groups=[];
+  for(let g=0;g<3;g++){
+    const cx=(g-1)*sep, cy=(g-1)*sep;  // gruppesentre langs diagonalen
+    const pts=[];
+    for(let i=0;i<40;i++){
+      const x=rnorm();
+      const y=rw*x+Math.sqrt(1-rw*rw)*rnorm();
+      pts.push({x:cx+x,y:cy+y,g});
+    }
+    groups.push(pts);
+  }
+  data={groups};
+  draw();
+}
+function draw(){
+  if(!data){run();return;}
+  const [c,w,h]=fit($('cv'));
+  const all=data.groups.flat();
+  const lim=Math.max(...all.map(p=>Math.max(Math.abs(p.x),Math.abs(p.y))))+0.5;
+  const X=v=>35+(v+lim)/(2*lim)*(w-55), Y=v=>h-30-(v+lim)/(2*lim)*(h-50);
+  c.strokeStyle='#d9dee8';c.strokeRect(35,12,w-55,h-42);
+  const colored=$('colors').checked;
+  // punkter
+  data.groups.forEach((pts,g)=>{
+    pts.forEach(p=>{
+      c.fillStyle=colored?COLS[g]+'99':'rgba(90,100,125,.5)';
+      c.beginPath();c.arc(X(p.x),Y(p.y),3.4,0,7);c.fill();
+    });
+  });
+  // samlet linje
+  const tot=pearson(all);
+  c.strokeStyle='#1a2233';c.lineWidth=3;
+  c.beginPath();c.moveTo(X(-lim),Y(tot.a+tot.b*(-lim)));c.lineTo(X(lim),Y(tot.a+tot.b*lim));c.stroke();
+  // gruppelinjer
+  let rws=[];
+  if($('lines').checked&&colored){
+    data.groups.forEach((pts,g)=>{
+      const r=pearson(pts);rws.push(r.r);
+      const cx=pts.reduce((s,p)=>s+p.x,0)/pts.length;
+      c.strokeStyle=COLS[g];c.lineWidth=2;c.setLineDash([6,4]);
+      c.beginPath();c.moveTo(X(cx-1.8),Y(r.a+r.b*(cx-1.8)));c.lineTo(X(cx+1.8),Y(r.a+r.b*(cx+1.8)));c.stroke();c.setLineDash([]);
+    });
+  }else{
+    data.groups.forEach(pts=>rws.push(pearson(pts).r));
+  }
+  const paradox=(tot.r>0.1&&rws.every(r=>r<-0.05))||(tot.r<-0.1&&rws.every(r=>r>0.05));
+  $('out').innerHTML='<span class="stat">samlet r = '+fmt(tot.r)+'</span>'+
+   rws.map((r,g)=>'<span class="stat" style="background:'+COLS[g]+'22;color:'+COLS[g]+'">'+NAMES[g]+': r = '+fmt(r)+'</span>').join('')+
+   (paradox?'<span class="stat red">PARADOKS: helheten og delene har motsatt fortegn!</span>':'');
+}
+$('rw').oninput=()=>{$('rwOut').textContent=fmt(+$('rw').value).replace('-','−');run();};
+$('sep').oninput=()=>{$('sepOut').textContent=fmt(+$('sep').value,1);run();};
+$('colors').onchange=draw;
+$('lines').onchange=draw;
+$('run').onclick=run;
+const __fsRedraw=()=>{draw();};
+(function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
+const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
+window.addEventListener('resize',kick);
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{kick();setTimeout(safe,600);}));
+let __mis=0;
+setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
+ document.querySelectorAll('canvas').forEach(c=>{if(c.clientWidth>0&&c.width>0&&Math.abs(c.width-Math.round(c.clientWidth*r))>2)bad=true;});
+ __mis=bad?__mis+1:0;
+ if(__mis>=2){__mis=0;safe();}},700);})();
+run();
+</script>
+</body></html>
