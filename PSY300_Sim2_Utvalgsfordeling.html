@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY300 · Sim 2 — Utvalgsfordelingen og standardfeilen</title>
+<style>
+:root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:20.5px;margin:0;font-weight:700}
+header p{margin:2px 0 0;font-size:15.5px;opacity:.85}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+h2{color:var(--navy);margin:.2em 0 .5em;font-size:19px}
+button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+.btn{background:var(--blue);color:#fff}.btn:hover{background:var(--navy)}
+.btn2{background:#eef1f7;color:var(--navy)}.btn2:hover{background:var(--light)}
+.nbtn{background:#eef1f7;color:var(--navy)}.nbtn.on{background:var(--navy);color:#fff}
+.muted{color:#62708a;font-size:16px}
+canvas{width:100%;display:block}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+.stat{display:inline-block;background:var(--light);color:var(--navy);border-radius:8px;padding:3px 10px;font-size:15.5px;font-weight:600;margin:3px 4px 3px 0;font-variant-numeric:tabular-nums}
+.stat.red{background:#fbeceb;color:var(--red)}
+.stat.green{background:#eaf6ea;color:var(--green)}
+label.ck{font-size:16px;color:var(--navy);font-weight:600;margin-left:8px;cursor:pointer}
+.note{background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px;margin-top:10px}
+.gloss{font-size:15.5px}
+.gloss b{color:var(--navy)}
+</style></head><body>
+<header><h1>Sim 2 · Utvalgsfordelingen og standardfeilen</h1>
+<p>PSY300 · Forelesning 1–2 · Trekk utvalg fra den ekte pasientpopulasjonen (N = 10 000) og se SE = σ/√n bli til</p></header>
+<div class="wrap">
+
+<div class="card">
+<h2>Populasjonen: Depresjon ved baseline (N = 10 000 pasienter)</h2>
+<p class="muted">Dette er «virkeligheten» vi vanligvis aldri ser: alle 10 000 pasienter med behandlingsresistent depresjon. Eksamensdatasettet (N = 75) er ett tilfeldig utvalg herfra. Merk at populasjonen er <b>skjev</b> (takeffekt ved 35) — den er ikke normalfordelt.</p>
+<div style="margin:4px 0 8px"><label style="font-weight:600;color:var(--navy);font-size:16px">Variabel: <select id="vsel2" style="padding:6px 8px;border:1px solid #d9dee8;border-radius:8px;font-size:16px;font-family:inherit"><option value="dep" selected>Depresjon (pre) — Terapi-RCT</option><option value="undf">Undertrykkende forsvar (pre) — Terapi-RCT</option><option value="agg">Aggresjonsundertrykking (pre) — Terapi-RCT</option><option value="selvt">Statistikk-selvtillit (pre) — arbeidskravet</option><option value="selvk">Selvkritisk perfeksjonisme — arbeidskravet</option><option value="angst">Angstsensitivitet — arbeidskravet</option></select></label> <span id="popInfo2" class="muted"></span></div><canvas id="cvPop" height="170"></canvas>
+<span class="stat">μ = 30,04</span><span class="stat">σ = 3,77</span><span class="stat">skjevhet = −0,44</span>
+</div>
+
+<div class="card">
+<h2>Trekk utvalg</h2>
+<div>
+<span class="muted" style="margin-right:6px">Utvalgsstørrelse n:</span>
+<button class="nbtn" data-n="5">n = 5</button>
+<button class="nbtn" data-n="25">n = 25</button>
+<button class="nbtn on" data-n="75">n = 75 (som studien)</button>
+<button class="nbtn" data-n="300">n = 300</button>
+</div>
+<div style="margin-top:6px">
+<button class="btn" id="draw1">Trekk 1 utvalg</button>
+<button class="btn" id="draw100">Trekk 100</button>
+<button class="btn" id="draw5000">Trekk 5 000</button>
+<button class="btn2" id="reset">Nullstill</button>
+<label class="ck"><input type="checkbox" id="normCurve" checked> Vis normalkurve (CLT)</label>
+</div>
+</div>
+
+<div class="grid">
+<div class="card">
+<h2>Siste utvalg</h2>
+<p class="muted">Ett histogram = én studie. Gjennomsnittet (blå strek) blir ett datapunkt i panelet til høyre.</p>
+<canvas id="cvSamp" height="180"></canvas>
+<div id="sampStats" class="muted">Trekk et utvalg for å starte.</div>
+</div>
+<div class="card">
+<h2>Utvalgsfordelingen til gjennomsnittet</h2>
+<p class="muted">Hvert punkt her er gjennomsnittet fra <i>én hel studie</i>. Rød strek = populasjonens μ.</p>
+<div style="margin:4px 0"><button class="btn2" id="freeze">Frys denne fordelingen (behold som bakgrunn)</button> <button class="btn2" id="unfreeze">Fjern frossen</button> <span id="frozenLab" class="muted"></span></div>
+<canvas id="cvMeans" height="180"></canvas>
+<div id="meanStats" class="muted">Ingen utvalg trukket ennå.</div>
+</div>
+</div>
+
+<div class="card note" id="teach">
+<b>Hva skal du se?</b> (1) Gjennomsnittene klumper seg rundt μ — de fleste studier treffer nesten riktig. (2) Spredningen av gjennomsnittene (den <i>observerte</i> SE) matcher formelen σ/√n. (3) Øk n: fordelingen smalner — det er hele poenget med store utvalg. (4) Populasjonen er skjev, men utvalgsfordelingen blir normal — det er <b>sentralgrenseteoremet</b>.
+</div>
+<div class="card" id="ordforklaringer">
+<h2>Ordforklaringer</h2>
+<div class="gloss">
+<p><b>M</b> — gjennomsnittet i et utvalg (skrives også x̄). <b>Median</b> = midtverdien når verdiene sorteres. <b>Modus</b> = den hyppigste verdien.<br>
+<b>SD</b> — standardavvik: typisk avstand fra gjennomsnittet, i variabelens egen enhet. Kvadratet er variansen.<br>
+<b>Skjevhet</b> — asymmetri i fordelingen. <b>Høyreskjev</b> = lang hale mot høye verdier (gjennomsnittet ligger over medianen), <b>venstreskjev</b> = motsatt.<br>
+<b>SE</b> — standardfeil: hvor mye et estimat ville variert mellom gjentatte utvalg. For et gjennomsnitt: SE = σ/√n.<br>
+<b>μ (my)</b> — gjennomsnittet i <i>populasjonen</i>: sannheten vi prøver å treffe, og som forskeren i praksis aldri får se.<br>
+<b>σ (sigma)</b> — standardavviket i <i>populasjonen</i>. σ² er populasjonsvariansen.<br>
+<b>x̄ (x-strek)</b> — gjennomsnittet i utvalget, altså estimatet av μ.<br>
+<b>Sentralgrenseteoremet</b> — utvalgsgjennomsnitt blir tilnærmet normalfordelte når n vokser, selv om populasjonen er skjev.<br>
+<b>Utvalgsfordeling</b> — fordelingen av en statistikk (f.eks. gjennomsnittet) over mange tenkte gjentakelser av studien. Ikke det samme som fordelingen av rådata.<br>
+<b>b</b> — regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren. <b>β</b> er den standardiserte varianten (i standardavvik).<br>
+<b>r</b> — Pearsons korrelasjon: styrken på den <i>lineære</i> sammenhengen mellom to variabler (−1 til +1). <b>Spearmans rho</b> gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.<br>
+<b>RCT</b> — randomisert kontrollert studie. Emnets <b>Terapi-RCT-studie</b> sammenligner <b>ISTDP</b> (intensiv dynamisk korttidsterapi) med venteliste, N = 86.</p>
+</div>
+</div>
+
+</div>
+
+<script>
+"use strict";
+const VARS={"dep":{"lab":"Depresjon (pre)","kilde":"Terapi-RCT-populasjonen, N = 10 000","freq":{"30":910,"34":591,"29":930,"35":1778,"26":617,"28":812,"27":704,"33":736,"32":811,"31":852,"22":151,"25":403,"24":330,"23":206,"21":80,"18":9,"20":49,"19":23,"17":6,"14":1,"15":1},"lo":14,"hi":35,"step":1,"mu":30.05,"sigma":3.79},"undf":{"lab":"Undertrykkende forsvar (pre)","kilde":"Terapi-RCT-populasjonen, N = 10 000","freq":{"90":281,"85":380,"70":204,"66":100,"75":304,"82":411,"89":307,"81":348,"84":379,"72":228,"93":225,"80":384,"77":383,"79":417,"100":69,"65":105,"64":71,"71":212,"86":335,"52":6,"96":145,"97":127,"92":228,"76":339,"83":393,"73":275,"61":43,"101":75,"87":368,"91":282,"60":36,"74":293,"99":105,"94":213,"88":359,"78":337,"67":124,"102":60,"63":79,"69":146,"98":96,"62":56,"95":181,"103":206,"59":28,"68":162,"58":20,"56":13,"49":3,"50":9,"53":8,"55":17,"48":3,"54":7,"57":14,"51":1},"lo":48,"hi":103,"step":1,"mu":81.96,"sigma":9.92},"agg":{"lab":"Aggresjonsundertrykking (pre)","kilde":"Terapi-RCT-populasjonen, N = 10 000","freq":{"25":502,"35":363,"37":152,"26":656,"33":718,"27":803,"31":1012,"29":1106,"28":977,"23":231,"30":1013,"34":521,"32":841,"20":43,"39":47,"36":252,"38":85,"24":382,"22":140,"21":83,"40":16,"19":26,"18":8,"15":1,"41":8,"17":4,"16":3,"42":4,"43":3},"lo":15,"hi":43,"step":1,"mu":29.55,"sigma":3.76},"selvt":{"lab":"Statistikk-selvtillit (pre)","kilde":"Simulert populasjon, N = 10 000 (bygget fra arbeidskravdataene, N = 391)","freq":{"4.4":403,"1.8":279,"3.0":951,"4.0":862,"3.4":825,"3.6":781,"3.8":778,"4.8":99,"2.6":668,"2.8":785,"2.4":646,"2.2":424,"1.6":150,"4.2":625,"3.2":1035,"2.0":341,"1.2":48,"4.6":144,"1.4":91,"1.0":11,"5.0":54},"lo":1.0,"hi":5.0,"step":0.2,"mu":3.2,"sigma":0.78},"selvk":{"lab":"Selvkritisk perfeksjonisme (trekk)","kilde":"Simulert populasjon, N = 10 000 (bygget fra arbeidskravdataene, N = 391)","freq":{"2.0":485,"3.2":867,"3.6":934,"1.8":430,"1.6":238,"3.4":797,"3.8":831,"2.4":577,"2.2":476,"2.8":795,"3.0":858,"4.0":563,"1.0":78,"4.4":268,"1.2":93,"2.6":770,"5.0":47,"4.8":155,"4.2":402,"4.6":214,"1.4":122},"lo":1.0,"hi":5.0,"step":0.2,"mu":3.08,"sigma":0.84},"angst":{"lab":"Angstsensitivitet (trekk)","kilde":"Simulert populasjon, N = 10 000 (bygget fra arbeidskravdataene, N = 391)","freq":{"0.2":294,"0.6":492,"1.0":804,"0.8":627,"1.8":875,"1.2":889,"1.6":884,"2.2":686,"2.4":526,"2.8":451,"3.0":263,"3.2":293,"4.0":16,"0.4":423,"2.6":485,"3.4":233,"1.4":876,"2.0":688,"0.0":71,"3.8":31,"3.6":93},"lo":0.0,"hi":4.0,"step":0.2,"mu":1.68,"sigma":0.85}};
+let FREQ,POP,MU,SIGMA,LO,HI,STEP,BINS;
+function setVar(k){
+  const v=VARS[k];
+  FREQ=v.freq; LO=v.lo; HI=v.hi; STEP=v.step; MU=v.mu; SIGMA=v.sigma;
+  BINS=[]; for(let x=LO;x<=HI+1e-9;x+=STEP)BINS.push(+(x.toFixed(2)));
+  POP=[];
+  for(const key in FREQ){const val=+key;for(let i=0;i<FREQ[key];i++)POP.push(val);}
+  const el=document.getElementById('popInfo2');
+  if(el)el.textContent='('+v.kilde+' · μ = '+MU.toLocaleString('nb-NO')+', σ = '+SIGMA.toLocaleString('nb-NO')+')';
+}
+setVar('dep');
+
+let n = 75;
+let frozen=null; // {n, means} — frossen utvalgsfordeling som bakgrunn
+
+let means = [];   // collected sample means for current n
+let lastSample = null;
+
+const $=id=>document.getElementById(id);
+const fmt=(x,d=2)=>x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+
+function ctx2d(cv){
+  const r=window.devicePixelRatio||1, w=cv.clientWidth, h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r; cv.height=h*r; cv.style.height=h+'px';
+  const c=cv.getContext('2d'); c.setTransform(r,0,0,r,0,0); return [c,w,h];
+}
+
+function drawSampleFromPop(nn){
+  const s=new Array(nn);
+  for(let i=0;i<nn;i++) s[i]=POP[(Math.random()*POP.length)|0];
+  return s;
+}
+function mean(a){let t=0;for(const x of a)t+=x;return t/a.length;}
+function sd(a){const m=mean(a);let t=0;for(const x of a)t+=(x-m)*(x-m);return Math.sqrt(t/(a.length-1));}
+
+// ---------- drawing ----------
+function drawPop(){
+  const [c,w,h]=ctx2d($('cvPop'));
+  c.clearRect(0,0,w,h);
+  const x0=34,y0=h-24,pw=w-x0-10,ph=y0-8;
+  const maxF=Math.max(...BINS.map(b=>FREQ[b]||0));
+  const nb=BINS.length, lblEvery=Math.max(1,Math.round(nb/10));
+  BINS.forEach((v,i)=>{
+    const f=FREQ[v]||0;
+    const bx=x0+i/nb*pw, bw=pw/nb-2;
+    const bh=f/maxF*ph;
+    c.fillStyle='#8fb0dd'; c.fillRect(bx,y0-bh,Math.max(bw,1.5),bh);
+    c.fillStyle='#62708a'; c.font='bold 16px sans-serif'; c.textAlign='center';
+    if(i%lblEvery===0||i===nb-1) c.fillText(STEP<1?v.toLocaleString('nb-NO',{minimumFractionDigits:1}):v,bx+bw/2,y0+13);
+  });
+  const mx=x0+((MU-LO)/( (HI-LO)||1 ))*pw*( (nb-1)/nb )+ (pw/nb)/2;
+  c.strokeStyle='#C0392B'; c.lineWidth=2; c.setLineDash([5,4]);
+  c.beginPath(); c.moveTo(mx,6); c.lineTo(mx,y0); c.stroke(); c.setLineDash([]);
+  c.fillStyle='#C0392B'; c.font='bold 16px sans-serif'; c.textAlign='left';
+  c.fillText('μ',mx+4,16);
+}
+
+function drawSamp(){
+  const [c,w,h]=ctx2d($('cvSamp'));
+  c.clearRect(0,0,w,h);
+  if(!lastSample){c.fillStyle='#9aa5bb';c.font='bold 18px sans-serif';c.textAlign='center';c.fillText('(ingen utvalg ennå)',w/2,h/2);return;}
+  const x0=30,y0=h-24,pw=w-x0-10,ph=y0-8;
+  const counts={}; let maxC=1;
+  for(const v of lastSample){counts[v]=(counts[v]||0)+1; if(counts[v]>maxC)maxC=counts[v];}
+  const nb=BINS.length, lblEvery=Math.max(1,Math.round(nb/10));
+  BINS.forEach((v,i)=>{
+    const f=counts[v]||0;
+    const bx=x0+i/nb*pw, bw=pw/nb-2, bh=f/maxC*ph;
+    c.fillStyle='#b7c9e6'; c.fillRect(bx,y0-bh,bw,bh);
+    c.fillStyle='#62708a'; c.font='bold 16px sans-serif'; c.textAlign='center';
+    if(i%lblEvery===0||i===nb-1) c.fillText(STEP<1?v.toLocaleString('nb-NO',{minimumFractionDigits:1}):v,bx+bw/2,y0+13);
+  });
+  const m=mean(lastSample);
+  const mx=x0+((m-LO)/((HI-LO)||1))*pw*((nb-1)/nb);
+  c.strokeStyle='#2E5496'; c.lineWidth=3;
+  c.beginPath(); c.moveTo(mx,6); c.lineTo(mx,y0); c.stroke();
+  c.fillStyle='#2E5496'; c.font='bold 16px sans-serif'; c.textAlign='left';
+  c.fillText('x̄ = '+fmt(m),mx+5,16);
+}
+
+function meansRange(){ // felles akse: bredeste av gjeldende og frossen n
+  const nEff=frozen?Math.min(n,frozen.n):n;
+  const se=SIGMA/Math.sqrt(nEff);
+  return [MU-4.2*se, MU+4.2*se];
+}
+
+function drawMeans(){
+  const [c,w,h]=ctx2d($('cvMeans'));
+  c.clearRect(0,0,w,h);
+  const x0=10,y0=h-24,pw=w-x0-10,ph=y0-10;
+  const [lo,hi]=meansRange(), nb=44;
+  const bins=new Array(nb).fill(0);
+  for(const m of means){
+    let b=Math.floor((m-lo)/(hi-lo)*nb);
+    if(b<0)b=0; if(b>=nb)b=nb-1; bins[b]++;
+  }
+  const maxB=Math.max(1,...bins);
+  // frossen fordeling som bakgrunn (peak-normalisert, oransje tetthetsomriss)
+  if(frozen&&frozen.means.length){
+    const fb=new Array(nb).fill(0);
+    for(const m of frozen.means){
+      let b=Math.floor((m-lo)/(hi-lo)*nb);
+      if(b<0)b=0; if(b>=nb)b=nb-1; fb[b]++;
+    }
+    const fmax=Math.max(1,...fb);
+    c.beginPath(); c.moveTo(x0,y0);
+    for(let b=0;b<nb;b++){
+      c.lineTo(x0+(b+0.5)/nb*pw, y0-fb[b]/fmax*ph);
+    }
+    c.lineTo(x0+pw,y0); c.closePath();
+    c.fillStyle='rgba(178,106,0,0.18)'; c.fill();
+    c.strokeStyle='rgba(178,106,0,0.85)'; c.lineWidth=2.5; c.stroke();
+    c.fillStyle='#B26A00'; c.font='bold 15px sans-serif'; c.textAlign='left';
+    c.fillText('frosset: n = '+frozen.n+' ('+frozen.means.length.toLocaleString('nb-NO')+' utvalg)',x0+6,16);
+  }
+  for(let b=0;b<nb;b++){
+    const bx=x0+b/nb*pw, bw=pw/nb-1, bh=bins[b]/maxB*ph;
+    c.fillStyle= frozen ? 'rgba(126,163,214,0.75)' : '#7ea3d6'; c.fillRect(bx,y0-bh,bw,bh);
+  }
+  // axis labels
+  c.fillStyle='#62708a'; c.font='bold 16px sans-serif'; c.textAlign='center';
+  for(let i=0;i<=4;i++){const v=lo+(hi-lo)*i/4; c.fillText(fmt(v,1),x0+pw*i/4,y0+13);}
+  // normal curve overlay (CLT)
+  if($('normCurve').checked && means.length>1){
+    const se=SIGMA/Math.sqrt(n);
+    const binW=(hi-lo)/nb;
+    c.strokeStyle='#2E7D32'; c.lineWidth=2; c.beginPath();
+    for(let i=0;i<=200;i++){
+      const x=lo+(hi-lo)*i/200;
+      const dens=Math.exp(-0.5*((x-MU)/se)**2)/(se*Math.sqrt(2*Math.PI));
+      const yv=y0-(dens*binW*means.length)/maxB*ph;
+      if(i===0)c.moveTo(x0+pw*i/200,yv); else c.lineTo(x0+pw*i/200,yv);
+    }
+    c.stroke();
+  }
+  // mu line
+  const mx=x0+(MU-lo)/(hi-lo)*pw;
+  c.strokeStyle='#C0392B'; c.lineWidth=2; c.setLineDash([5,4]);
+  c.beginPath(); c.moveTo(mx,4); c.lineTo(mx,y0); c.stroke(); c.setLineDash([]);
+}
+
+function updateStats(){
+  if(lastSample){
+    const m=mean(lastSample), s=sd(lastSample);
+    $('sampStats').innerHTML =
+      '<span class="stat">n = '+n+'</span><span class="stat">x̄ = '+fmt(m)+'</span>'+
+      '<span class="stat">s = '+fmt(s)+'</span><span class="stat">estimert SE = s/√n = '+fmt(s/Math.sqrt(n),3)+'</span>';
+  }
+  if(means.length){
+    const obsSE=means.length>1?sd(means):0;
+    const theSE=SIGMA/Math.sqrt(n);
+    $('meanStats').innerHTML =
+      '<span class="stat">'+means.length.toLocaleString('nb-NO')+' studier</span>'+
+      '<span class="stat green">observert SD av gjennomsnittene = '+fmt(obsSE,3)+'</span>'+
+      '<span class="stat red">teori: σ/√n = '+fmt(theSE,3)+'</span>';
+  } else {
+    $('meanStats').textContent='Ingen utvalg trukket ennå.';
+  }
+}
+
+function redraw(){drawPop();drawSamp();drawMeans();updateStats();}
+
+// ---------- actions ----------
+function drawOne(animate){
+  lastSample=drawSampleFromPop(n);
+  const m=mean(lastSample);
+  if(!animate){means.push(m);redraw();return;}
+  drawSamp();
+  // brief animation: flash then add
+  setTimeout(()=>{means.push(m);redraw();},220);
+  updateStats();
+}
+function drawMany(k){
+  for(let i=0;i<k;i++){
+    lastSample=drawSampleFromPop(n);
+    means.push(mean(lastSample));
+  }
+  redraw();
+}
+
+document.getElementById('vsel2').onchange=()=>{setVar(document.getElementById('vsel2').value);means=[];lastSample=null;frozen=null;const fl=document.getElementById('frozenLab');if(fl)fl.textContent='';drawPop();drawSamp();drawMeans();};
+$('draw1').onclick=()=>drawOne(true);
+$('draw100').onclick=()=>drawMany(100);
+$('draw5000').onclick=()=>drawMany(5000);
+$('reset').onclick=()=>{means=[];lastSample=null;redraw();};
+$('normCurve').onchange=redraw;
+$('freeze').onclick=()=>{
+  if(!means.length){$('frozenLab').textContent='(trekk noen utvalg først)';return;}
+  frozen={n:n, means:means.slice()};
+  $('frozenLab').textContent='Frossen bakgrunn: n = '+frozen.n+'. Velg en høyere n og trekk nye utvalg — den smalere fordelingen tegnes over.';
+  drawMeans();
+};
+$('unfreeze').onclick=()=>{frozen=null;$('frozenLab').textContent='';drawMeans();};
+document.querySelectorAll('.nbtn').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('.nbtn').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    n=+b.dataset.n; means=[]; lastSample=null; redraw();
+  };
+});
+const __fsRedraw=()=>{redraw();};
+(function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
+const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
+window.addEventListener('resize',kick);
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{kick();setTimeout(safe,600);}));
+let __mis=0;
+setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
+ document.querySelectorAll('canvas').forEach(c=>{if(c.clientWidth>0&&c.width>0&&Math.abs(c.width-Math.round(c.clientWidth*r))>2)bad=true;});
+ __mis=bad?__mis+1:0;
+ if(__mis>=2){__mis=0;safe();}},700);})();
+redraw();
+</script>
+</body></html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY300 · Sim 14 — Residualantakelsene: trakt og tunge haler</title>
+<style>
+:root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:20.5px;margin:0;font-weight:700}
+header p{margin:2px 0 0;font-size:15.5px;opacity:.85}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+h2{color:var(--navy);margin:.2em 0 .5em;font-size:19px}
+button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+.btn{background:var(--blue);color:#fff}.btn:hover{background:var(--navy)}
+.btn2{background:#eef1f7;color:var(--navy)}.btn2:hover{background:var(--light)}
+.muted{color:#62708a;font-size:16px}
+canvas{width:100%;display:block}
+.stat{display:inline-block;background:var(--light);color:var(--navy);border-radius:8px;padding:3px 10px;font-size:15.5px;font-weight:600;margin:3px 4px 3px 0;font-variant-numeric:tabular-nums}
+.stat.red{background:#fbeceb;color:var(--red)}
+.stat.green{background:#eaf6ea;color:var(--green)}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap}
+.sl label{min-width:230px;font-weight:600;font-size:16px;color:var(--navy)}
+.sl input[type=range]{flex:1;min-width:140px}
+.sl output{min-width:44px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--navy);font-size:17px}
+select{padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:17px;font-family:inherit}
+.note{background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px;margin-top:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+.gloss{font-size:15.5px}
+.gloss b{color:var(--navy)}
+</style></head><body>
+<header><h1>Sim 14 · Residualantakelsene — trakten og de tunge halene</h1>
+<p>PSY300 · Forelesning 3–4 · Hva homoskedastisitet og normalfordelte residualer betyr, hvordan brudd SER ut i JASP — og hva bruddene faktisk koster</p></header>
+<div class="wrap">
+
+<div class="card">
+<h2>Bygg din regresjonsverden (sann effekt = 0; H0 er sann)</h2>
+<div class="sl"><label>n</label><input type="range" id="n" min="10" max="200" step="5" value="40"><output id="nOut">40</output></div>
+<div class="sl"><label>Feilleddets fordeling</label>
+<select id="err"><option value="norm" selected>Normal</option><option value="skew">Sterkt skjev</option><option value="heavy">Tunghalede (uteligger-utsatt)</option></select>
+<label style="min-width:auto">x-fordeling:</label>
+<select id="xdist"><option value="unif" selected>Jevn</option><option value="skew">Skjev (få høye verdier)</option></select>
+</div>
+<div class="sl"><label>Heteroskedastisitet (spredning øker med x)</label><input type="range" id="het" min="0" max="3" step="0.5" value="0"><output id="hetOut">0,0</output></div>
+<button class="btn" id="one">Trekk ETT utvalg (diagnostikk)</button>
+<button class="btn" id="many">Kjør 5 000 studier under H0</button>
+<button class="btn2" id="danger">Sett opp den farlige kombinasjonen</button>
+<div id="out" style="margin-top:8px"></div>
+</div>
+
+<div class="grid">
+<div class="card"><h2>Data + regresjonslinje</h2><canvas id="cvS" height="250"></canvas></div>
+<div class="card"><h2>Residualplottet (det JASP viser deg)</h2><canvas id="cvR" height="250"></canvas></div>
+</div>
+<div class="card"><h2>Residualenes fordeling</h2><canvas id="cvH" height="170"></canvas></div>
+
+<div class="card">
+<h2>Konsekvensen: type I-rate for testen av stigningstallet (mål: 5 %)</h2>
+<canvas id="cvRate" height="200"></canvas>
+<div class="note" id="verdict"><b>Prøv i rekkefølge:</b> (1) alt normalt → residualplottet er et jevnt bånd, testen holder 5 %; (2) skru heteroskedastisitet til 3 → <b>trakten</b> vises i residualplottet; med jevn x-fordeling koster det litt (~6–7 %); (3) trykk «den farlige kombinasjonen» (trakt + skjev x: de få høye x-verdiene har både mest innflytelse OG mest støy) → ~20–25 % falske positiver; (4) bytt til skjeve/tunghalede feil uten heteroskedastisitet → histogrammet ser stygt ut, men testen holder likevel ≈ 5 % (sentralgrenseteoremet igjen!). Merk: gjennomsnittlig b̂ er ≈ 0 hele veien — bruddene gir IKKE skjeve estimater; de får standardfeilene, p-verdiene og KI-ene til å lyve. Botemidler i praksis: se residualplottet, vurder transformasjon eller Spearman (korrelasjon), og vær på vakt når trakt møter skjev x. Tunge haler straffer dessuten styrken og enkeltutvalg (jf. Sim 7 om uteliggere).</div>
+</div>
+
+<div class="card" id="ordforklaringer">
+<h2>Ordforklaringer</h2>
+<div class="gloss">
+<p><b>M</b> — gjennomsnittet i et utvalg (skrives også x̄). <b>Median</b> = midtverdien når verdiene sorteres. <b>Modus</b> = den hyppigste verdien.<br>
+<b>SE</b> — standardfeil: hvor mye et estimat ville variert mellom gjentatte utvalg. For et gjennomsnitt: SE = σ/√n.<br>
+<b>Sentralgrenseteoremet</b> — utvalgsgjennomsnitt blir tilnærmet normalfordelte når n vokser, selv om populasjonen er skjev.<br>
+<b>KI</b> — konfidensintervall: estimat ± kritisk verdi · SE. «95 %» beskriver metoden over mange studier, ikke sannsynligheten for det ene intervallet du har.<br>
+<b>H₀</b> — nullhypotesen: «ingen effekt / ingen sammenheng». <b>H₁</b> er alternativhypotesen.<br>
+<b>p-verdi</b> — sannsynligheten for et resultat minst så ekstremt som ditt, <i>gitt at H₀ er sann</i>. Ikke sannsynligheten for at H₀ er sann.<br>
+<b>Type I-feil</b> — å finne en effekt som ikke finnes (falsk positiv). <b>Type II-feil</b> — å overse en effekt som finnes (falsk negativ).<br>
+<b>Statistisk styrke</b> — sannsynligheten for å oppdage en effekt som faktisk finnes (1 − type II-risikoen). Se Sim 17.<br>
+<b>t</b> — testobservator for gjennomsnitt: forskjell delt på standardfeil. <b>t-fordelingen</b> er litt tyngre i halene enn normalfordelingen ved lav df.<br>
+<b>Residual</b> — avviket mellom en observert verdi og modellens predikerte verdi (y − ŷ).<br>
+<b>b</b> — regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren. <b>β</b> er den standardiserte varianten (i standardavvik).<br>
+<b>r</b> — Pearsons korrelasjon: styrken på den <i>lineære</i> sammenhengen mellom to variabler (−1 til +1). <b>Spearmans rho</b> gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.<br>
+<b>Uteligger</b> — en observasjon som ligger langt fra resten. <b>Trimmet gjennomsnitt</b> = regn ut etter å ha kuttet de mest ekstreme prosentene; <b>winsorisering</b> = erstatt dem med grenseverdien i stedet for å kutte.<br>
+<b>Homoskedastisitet</b> — at spredningen i residualene er omtrent like stor over hele x-aksen. Brudd på dette kalles <b>heteroskedastisitet</b> (trakten i residualplottet).<br>
+<b>JASP</b> — statistikkprogrammet vi bruker i emnet (gratis og åpen kildekode).</p>
+</div>
+</div>
+
+</div>
+<script>
+const $=id=>document.getElementById(id);
+function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function lgamma(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];let y=x,tmp=x+5.5;tmp-=(x+0.5)*Math.log(tmp);let ser=1.000000000190015;for(let j=0;j<6;j++)ser+=c[j]/++y;return -tmp+Math.log(2.5066282746310005*ser/x);}
+function betacf(a,b,x){const MAXIT=200,EPS=3e-12,FPMIN=1e-30;const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<FPMIN)d=FPMIN;d=1/d;let h=d;for(let m=1;m<=MAXIT;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;h*=d*c;aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<EPS)break;}return h;}
+function ibeta(a,b,x){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+function pT(t,df){return ibeta(df/2,0.5,df/(df+t*t));}
+function fmt(x,d=1){return x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function fit(cv){const r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);c.clearRect(0,0,w,h);return [c,w,h];}
+function drawErr(t){
+  if(t==='norm')return rnorm();
+  if(t==='skew')return (-Math.log(1-Math.random())-1);
+  const z=rnorm(); const w=(rnorm()**2+rnorm()**2+rnorm()**2)/3; return z/Math.sqrt(w);
+}
+function drawX(t){
+  if(t==='unif')return Math.random()*2;
+  let x=-Math.log(1-Math.random())/2; return Math.min(x,2);
+}
+function makeSample(n,err,xdist,het){
+  const xs=new Array(n),ys=new Array(n);
+  for(let i=0;i<n;i++){
+    const x=drawX(xdist);
+    const sd=0.4*(1+het*x/2*3/2); // skala: het-slider 0-3 -> sd 0.4..(0.4*(1+3x/... )) forenkles under
+    xs[i]=x;
+    ys[i]=drawErr(err)*0.4*(1+het*x);
+  }
+  return [xs,ys];
+}
+function regress(xs,ys){
+  const n=xs.length,mx=xs.reduce((a,b)=>a+b,0)/n,my=ys.reduce((a,b)=>a+b,0)/n;
+  let sxx=0,sxy=0;for(let i=0;i<n;i++){sxx+=(xs[i]-mx)**2;sxy+=(xs[i]-mx)*(ys[i]-my);}
+  const b=sxy/sxx,a=my-b*mx;
+  let sse=0;for(let i=0;i<n;i++)sse+=(ys[i]-a-b*xs[i])**2;
+  const se=Math.sqrt(sse/(n-2)/sxx);
+  return {a,b,p:pT(b/se,n-2)};
+}
+let last=null, hist=[];
+function one(){
+  const n=+$('n').value,err=$('err').value,xdist=$('xdist').value,het=+$('het').value;
+  const [xs,ys]=makeSample(n,err,xdist,het);
+  const R=regress(xs,ys);
+  last={xs,ys,R};
+  drawDiag();
+  $('out').innerHTML='<span class="stat">dette utvalget: b = '+fmt(R.b,2)+', p = '+fmt(R.p,3)+(R.p<0.05?' <span style="color:#C0392B">«signifikant» — falsk positiv!</span>':'')+'</span>';
+}
+function drawDiag(){
+  if(!last){one();return;}
+  const {xs,ys,R}=last;
+  const ylim=Math.max(1.2,...ys.map(v=>Math.abs(v)))*1.1;
+  // scatter
+  let [c,w,h]=fit($('cvS'));
+  const X=v=>35+v/2*(w-55), Y=v=>h/2-(v/ylim)*(h/2-20);
+  c.strokeStyle='#d9dee8';c.strokeRect(35,10,w-55,h-35);
+  for(let i=0;i<xs.length;i++){c.fillStyle='rgba(46,84,150,.5)';c.beginPath();c.arc(X(xs[i]),Y(ys[i]),3.2,0,7);c.fill();}
+  c.strokeStyle='#1a2233';c.lineWidth=2.4;
+  c.beginPath();c.moveTo(X(0),Y(R.a));c.lineTo(X(2),Y(R.a+2*R.b));c.stroke();
+  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';c.fillText('x',w/2,h-6);
+  // residualplott
+  ;[c,w,h]=fit($('cvR'));
+  const res=xs.map((x,i)=>ys[i]-R.a-R.b*x);
+  const rlim=Math.max(1.2,...res.map(v=>Math.abs(v)))*1.1;
+  const Y2=v=>h/2-(v/rlim)*(h/2-20);
+  c.strokeStyle='#d9dee8';c.strokeRect(35,10,w-55,h-35);
+  c.setLineDash([5,4]);c.strokeStyle='#8894ad';c.beginPath();c.moveTo(35,Y2(0));c.lineTo(w-20,Y2(0));c.stroke();c.setLineDash([]);
+  for(let i=0;i<xs.length;i++){c.fillStyle='rgba(192,57,43,.55)';c.beginPath();c.arc(X(xs[i]),Y2(res[i]),3.2,0,7);c.fill();}
+  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';c.fillText('x (residual mot prediktor) — se etter TRAKT',w/2,h-6);
+  // histogram
+  ;[c,w,h]=fit($('cvH'));
+  const bins=new Array(24).fill(0);
+  res.forEach(v=>{const b=Math.floor((v/rlim+1)/2*24);if(b>=0&&b<24)bins[b]++;});
+  const mx=Math.max(...bins,1);
+  bins.forEach((b,i)=>{
+    c.fillStyle='#2E5496';
+    const bh=b/mx*(h-45);
+    c.fillRect(35+i/24*(w-55),h-25-bh,(w-55)/24-2,bh);
+  });
+  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';c.fillText('residualenes fordeling — se etter skjevhet/tunge haler',w/2,h-6);
+}
+function many(){
+  const n=+$('n').value,err=$('err').value,xdist=$('xdist').value,het=+$('het').value;
+  const K=5000;let sig=0,bs=0;
+  for(let k=0;k<K;k++){
+    const [xs,ys]=makeSample(n,err,xdist,het);
+    const R=regress(xs,ys);
+    if(R.p<0.05)sig++;
+    bs+=R.b;
+  }
+  const rate=sig/K;
+  const en={norm:'normal',skew:'skjev',heavy:'tunghalede'}[err];
+  hist.push({label:'feil: '+en+' · het '+fmt(het)+' · x '+(xdist==='unif'?'jevn':'skjev')+' · n '+n,rate});
+  if(hist.length>6)hist.shift();
+  $('out').innerHTML='<span class="stat '+(Math.abs(rate-0.05)<0.013?'green':'red')+'">faktisk type I-rate: '+fmt(100*rate)+' %</span>'+
+   '<span class="stat green">gj.sn. b̂ = '+fmt(bs/K,3)+' (sann b = 0 — estimatet er forventningsriktig)</span>';
+  drawRates();
+  const v=$('verdict');
+  if(rate>0.10)v.innerHTML='<b>Testen lyver grovt</b> ('+fmt(100*rate)+' % falske positiver): de få observasjonene med høye x-verdier har både mest innflytelse på linjen OG mest støy — standardfeilen undervurderes kraftig. Legg merke til at b̂ likevel er forventningsriktig: skaden sitter i p-verdiene og KI-ene, ikke i estimatet. Dette er kombinasjonen residualplottet (trakten!) skal redde deg fra.';
+  else if(rate>0.065)v.innerHTML='<b>Testen er blitt liberal</b> ('+fmt(100*rate)+' %): trakten i residualplottet betyr at én felles standardfeil er feil for alle — moderat kostnad med jevn x-fordeling, men prøv «den farlige kombinasjonen».';
+  else v.innerHTML='<b>Testen holder ≈ 5 %</b> ('+fmt(100*rate)+' %). '+(err!=='norm'?'Merk: residualhistogrammet ser ikke normalt ut, men testen av stigningstallet overlever likevel — sentralgrenseteoremet beskytter b̂ ved rimelige n. Kostnaden ved tunge haler er heller tapt styrke og sårbare enkeltutvalg (jf. Sim 7).':'Et jevnt bånd i residualplottet = antakelsene ser greie ut.');
+}
+function drawRates(){
+  const [c,w,h]=fit($('cvRate'));
+  const x0=Math.min(330,w*0.42),bw=w-x0-70,maxRate=0.30;
+  const gx=x0+bw*(0.05/maxRate);
+  c.strokeStyle='#2E7D32';c.setLineDash([5,4]);c.beginPath();c.moveTo(gx,6);c.lineTo(gx,h-22);c.stroke();c.setLineDash([]);
+  c.fillStyle='#2E7D32';c.font='bold 16px sans-serif';c.textAlign='center';c.fillText('5 %',gx,h-6);
+  if(!hist.length){c.fillStyle='#9aa5bb';c.font='bold 18px sans-serif';c.textAlign='center';c.fillText('(kjør en simulering)',w/2,h/2);return;}
+  const bh=Math.min(26,(h-34)/hist.length-7);
+  hist.forEach((d,i)=>{
+    const y=10+i*(bh+8);
+    c.fillStyle='#eef1f7';c.fillRect(x0,y,bw,bh);
+    c.fillStyle=Math.abs(d.rate-0.05)<0.013?'#2E7D32':'#C0392B';
+    c.fillRect(x0,y,bw*Math.min(d.rate,maxRate)/maxRate,bh);
+    c.fillStyle='#1a2233';c.font='bold 16px sans-serif';c.textAlign='right';c.fillText(d.label,x0-6,y+bh-7);
+    c.textAlign='left';c.font='bold 16px sans-serif';
+    c.fillText(fmt(100*d.rate)+' %',x0+bw*Math.min(d.rate,maxRate)/maxRate+5,y+bh-7);
+  });
+}
+$('n').oninput=()=>$('nOut').textContent=$('n').value;
+$('het').oninput=()=>$('hetOut').textContent=fmt(+$('het').value);
+$('one').onclick=one;
+$('many').onclick=many;
+$('danger').onclick=()=>{$('het').value=3;$('hetOut').textContent='3,0';$('xdist').value='skew';$('err').value='norm';one();};
+const __fsRedraw=()=>{drawDiag();drawRates();};
+(function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
+const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
+window.addEventListener('resize',kick);
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{kick();setTimeout(safe,600);}));
+let __mis=0;
+setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
+ document.querySelectorAll('canvas').forEach(c=>{if(c.clientWidth>0&&c.width>0&&Math.abs(c.width-Math.round(c.clientWidth*r))>2)bad=true;});
+ __mis=bad?__mis+1:0;
+ if(__mis>=2){__mis=0;safe();}},700);})();
+one();
+</script>
+</body></html>

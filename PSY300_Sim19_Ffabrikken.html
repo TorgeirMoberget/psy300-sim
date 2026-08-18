@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY300 · Sim 19 — F-fabrikken</title>
+<style>
+:root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--orange:#B26A00;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:20.5px;margin:0;font-weight:700}
+header p{margin:2px 0 0;font-size:15.5px;opacity:.85}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+h2{color:var(--navy);margin:.2em 0 .5em;font-size:19px}
+button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+.btn{background:var(--blue);color:#fff}.btn:hover{background:var(--navy)}
+.btn2{background:#eef1f7;color:var(--navy)}.btn2:hover{background:var(--light)}
+.muted{color:#62708a;font-size:16px}
+canvas{width:100%;display:block;touch-action:none}
+.stat{display:inline-block;background:var(--light);color:var(--navy);border-radius:8px;padding:3px 10px;font-size:15.5px;font-weight:600;margin:3px 4px 3px 0;font-variant-numeric:tabular-nums}
+.stat.red{background:#fbeceb;color:var(--red)}
+.stat.green{background:#eaf6ea;color:var(--green)}
+.stat.orange{background:#fdf3e6;color:var(--orange)}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap}
+.sl label{min-width:250px;font-weight:600;font-size:16px;color:var(--navy)}
+.sl input[type=range]{flex:1;min-width:140px}
+.sl output{min-width:52px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--navy);font-size:17px}
+.note{background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px;margin-top:10px}
+.gloss{font-size:15.5px}
+.gloss b{color:var(--navy)}
+table.anova{border-collapse:collapse;width:100%;margin-top:10px;font-size:16px;font-variant-numeric:tabular-nums}
+table.anova th{text-align:right;font-weight:600;border-bottom:1px solid #333;padding:6px 8px}
+table.anova th:first-child{text-align:left}
+table.anova td{text-align:right;padding:5px 8px;border:0}
+table.anova td:first-child{text-align:left}
+table.anova tr:last-child td{border-bottom:1px solid #333}
+</style></head><body>
+<header><h1>Sim 19 · F-fabrikken — hva F-verdien faktisk er et forhold mellom</h1>
+<p>PSY300 · Forelesning 5 · Enveis-ANOVA gjort håndfast: dra gruppegjennomsnittene og se kvadratsummene, MS-ene og F bygge seg opp</p></header>
+<div class="wrap">
+
+<div class="card">
+<h2>Dra de tre gruppegjennomsnittene</h2>
+<p class="muted">Tre behandlingsgrupper, samme antall pasienter i hver. <b>Dra de blå strekene</b> opp og ned. Tynne <b>blå</b> linjer viser hver pasients avvik fra <i>sin egen</i> gruppes gjennomsnitt — det er støyen (<b>innen</b> grupper). Tykke <b>oransje</b> piler viser hvor langt hvert gruppegjennomsnitt ligger fra det samlede gjennomsnittet (den stiplede grå streken) — det er signalet (<b>mellom</b> grupper). F er ganske enkelt signal delt på støy, begge målt som gjennomsnittlig kvadrert avvik.</p>
+<canvas id="cvA" height="330"></canvas>
+<div class="sl"><label>n per gruppe</label><input type="range" id="n" min="5" max="60" step="1" value="20"><output id="no">20</output></div>
+<div class="sl"><label>Spredning innen gruppene (SD)</label><input type="range" id="sd" min="1" max="12" step="0.5" value="5"><output id="sdo">5,0</output></div>
+<button class="btn2" id="reset">Nullstill (like gjennomsnitt)</button>
+<button class="btn2" id="spread">Tydelig forskjell</button>
+<button class="btn2" id="newdata">Nye pasienter (samme gjennomsnitt)</button>
+<div id="statsA" style="margin-top:8px"></div>
+</div>
+
+<div class="card">
+<h2>ANOVA-tabellen — den du får i JASP</h2>
+<p class="muted">Nøyaktig de samme tallene som figuren over, satt opp slik programmet gjør det. Legg merke til at MS = SS/df i hver rad, og at F = MS<sub>mellom</sub>/MS<sub>innen</sub>.</p>
+<div id="tbl"></div>
+<div class="note" id="verdictA"></div>
+</div>
+
+<div class="card">
+<h2>Hvorfor «gjennomsnittlig kvadrert avvik» og ikke bare avstand?</h2>
+<canvas id="cvB" height="150"></canvas>
+<div class="note">Søylene viser hvordan den totale variasjonen i datasettet (SS<sub>total</sub>) deles i to deler som alltid summerer til helheten: den delen gruppene forklarer, og den som blir igjen. <b>η² (eta kvadrert) = SS<sub>mellom</sub>/SS<sub>total</sub></b> er nettopp den andelen — ANOVA-ens effektstørrelse, og samme idé som R² i regresjon. Legg merke til at du kan øke F på to helt ulike måter: ved å spre gjennomsnittene (mer signal) eller ved å redusere SD (mindre støy). Det er også derfor et stort N gir høy F selv ved bittesmå forskjeller: MS<sub>mellom</sub> vokser med n.</div>
+</div>
+
+<div class="card">
+<h2>Nullverdenen: hvor store F-verdier gir tilfeldigheter alene?</h2>
+<p class="muted">Her settes alle tre gjennomsnittene like (H₀ er sann) og vi kjører mange studier. Fordelingen du får, er <b>F-fordelingen</b> — og den kritiske verdien er der de øverste 5 % begynner.</p>
+<button class="btn" id="run">Kjør 2 000 studier under H₀</button>
+<canvas id="cvC" height="230"></canvas>
+<div id="statsC"></div>
+<div class="note" id="verdictC"></div>
+</div>
+
+<div class="card">
+<h2>Slik leser du det</h2>
+<div class="note"><b>Prøv dette:</b> (1) Trykk «Nullstill»: de tre gruppene trekkes nå fra populasjoner med <i>samme</i> gjennomsnitt, så gruppegjennomsnittene skiller seg bare ved tilfeldigheter. SS<sub>mellom</sub> blir liten og F havner i nærheten av 1. Det er hele poenget — <b>når H₀ er sann, forventes F ≈ 1</b>, fordi teller og nevner da estimerer den samme variansen. (2) Dra én gruppe forsiktig oppover og se F stige. (3) Sett gjennomsnittene tilbake og dra i stedet SD-en ned: F stiger like mye uten at forskjellene ble større. Signal-til-støy, ikke signal alene. (4) Sett n = 60 med bittesmå forskjeller: F blir signifikant selv om η² er ynkelig — signifikans er ikke det samme som viktighet. (5) Med bare to grupper ville F vært nøyaktig t² fra t-testen; enveis-ANOVA er t-testen utvidet til flere grupper, ikke en ny idé.</div>
+<div class="note"><b>Merk:</b> en signifikant F sier bare at <b>minst én</b> gruppe skiller seg fra en annen — ikke hvilke. Derfor følges en signifikant ANOVA av post hoc-tester, og de må korrigeres for antall sammenligninger (se Sim 18 om familievis feil). Modellen forutsetter dessuten uavhengige observasjoner, tilnærmet normalfordelte residualer og nokså lik varians i gruppene (se Sim 16).</div>
+</div>
+
+<div class="card">
+<h2>Ordforklaringer</h2>
+<div class="gloss">
+<p><b>ANOVA</b> — variansanalyse (analysis of variance): tester om flere gruppegjennomsnitt er like.<br>
+<b>SS</b> — kvadratsum (sum of squares): summen av kvadrerte avvik. <b>SS<sub>mellom</sub></b> måler hvor mye gruppegjennomsnittene spriker fra det samlede gjennomsnittet, <b>SS<sub>innen</sub></b> hvor mye enkeltpersonene spriker fra sin egen gruppe, og <b>SS<sub>total</sub></b> = summen av de to.<br>
+<b>df</b> — frihetsgrader (degrees of freedom): antall verdier som fritt kan variere. Her df<sub>mellom</sub> = k − 1 og df<sub>innen</sub> = N − k, der k er antall grupper.<br>
+<b>MS</b> — gjennomsnittlig kvadratsum (mean square) = SS/df; altså en varians.<br>
+<b>F</b> — testobservatoren: MS<sub>mellom</sub>/MS<sub>innen</sub>. Forventes ≈ 1 når nullhypotesen er sann.<br>
+<b>H₀</b> — nullhypotesen; her at alle gruppegjennomsnittene i populasjonen er like.<br>
+<b>p</b> — sannsynligheten for å få en F minst så stor som din, gitt at H₀ er sann.<br>
+<b>η² (eta kvadrert)</b> — effektstørrelse: andelen av den totale variasjonen som gruppene forklarer.<br>
+<b>SD</b> — standardavvik: typisk avstand fra gjennomsnittet.<br>
+<b>Post hoc</b> — oppfølgingstester etter en signifikant ANOVA, for å finne ut hvilke grupper som skiller seg.<br>
+<b>JASP</b> — statistikkprogrammet vi bruker i emnet.</p>
+</div>
+</div>
+
+</div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const fmt=(x,d=2)=>x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function fit(cv){const r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);c.clearRect(0,0,w,h);return [c,w,h];}
+function lgamma(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
+  let y=x,tmp=x+5.5;tmp-=(x+0.5)*Math.log(tmp);let ser=1.000000000190015;for(let j=0;j<6;j++)ser+=c[j]/++y;return -tmp+Math.log(2.5066282746310005*ser/x);}
+function betacf(a,b,x){const MAXIT=200,EPS=3e-12,FPMIN=1e-30;const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<FPMIN)d=FPMIN;d=1/d;let h=d;
+  for(let m=1;m<=MAXIT;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;h*=d*c;
+  aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<EPS)break;}return h;}
+function ibeta(a,b,x){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));
+  return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+const pF=(F,d1,d2)=>F<=0?1:ibeta(d2/2,d1/2,d2/(d2+d1*F));      // øvre hale
+function fcrit(d1,d2,a){let lo=0,hi=100;for(let i=0;i<90;i++){const m=(lo+hi)/2;if(pF(m,d1,d2)>a)lo=m;else hi=m;}return (lo+hi)/2;}
+
+const K=3, LAB=['ISTDP','Venteliste','Aktiv kontroll'], YLO=0, YHI=40;
+let means=[20,20,20], z=[], N10=20;
+function newResid(){z=[];for(let g=0;g<K;g++){const a=[];for(let i=0;i<60;i++)a.push(rnorm());z.push(a);}}
+newResid();
+const SD=()=>+$('sd').value, N=()=>+$('n').value;
+function data(){const out=[];for(let g=0;g<K;g++){const a=[];
+  for(const v of z[g].slice(0,N()))a.push(Math.max(YLO+0.5,Math.min(YHI-0.5,means[g]+SD()*v)));out.push(a);}return out;}
+function anova(){
+  const D=data(), n=N(), Nt=K*n;
+  const gm=D.flat().reduce((s,v)=>s+v,0)/Nt;
+  const gMeans=D.map(a=>a.reduce((s,v)=>s+v,0)/a.length);
+  let ssB=0, ssW=0;
+  gMeans.forEach(m=>{ssB+=n*(m-gm)*(m-gm);});
+  D.forEach((a,g)=>a.forEach(v=>{ssW+=(v-gMeans[g])*(v-gMeans[g]);}));
+  const d1=K-1, d2=Nt-K, msB=ssB/d1, msW=ssW/d2, F=msW>0?msB/msW:0;
+  return {D,gm,gMeans,ssB,ssW,sst:ssB+ssW,d1,d2,msB,msW,F,p:pF(F,d1,d2),eta:ssB/(ssB+ssW),n,Nt};
+}
+// ---------- figur A ----------
+let A=null;
+function drawA(){
+  const [c,w,h]=fit($('cvA')); const a=anova(); A=a;
+  const x0=44,y0=h-32,pw=w-x0-14,ph=y0-18;
+  const Y=v=>y0-(v-YLO)/(YHI-YLO)*ph;
+  const gw=pw/K;
+  // akse
+  c.strokeStyle='#d9dee8';c.lineWidth=1;c.beginPath();c.moveTo(x0,18);c.lineTo(x0,y0);c.lineTo(x0+pw,y0);c.stroke();
+  c.fillStyle='#62708a';c.font='bold 15px sans-serif';c.textAlign='right';
+  for(let v=YLO;v<=YHI;v+=10)c.fillText(v,x0-6,Y(v)+5);
+  c.save();c.translate(13,18+ph/2);c.rotate(-Math.PI/2);c.textAlign='center';c.fillText('depresjonsskår etter behandling',0,0);c.restore();
+  // samlet gjennomsnitt
+  c.strokeStyle='#8894ad';c.setLineDash([7,5]);c.lineWidth=2;
+  c.beginPath();c.moveTo(x0,Y(a.gm));c.lineTo(x0+pw,Y(a.gm));c.stroke();c.setLineDash([]);
+  c.fillStyle='#62708a';c.font='bold 14px sans-serif';c.textAlign='left';
+  c.fillText('samlet gjennomsnitt = '+fmt(a.gm,1),x0+4,Y(a.gm)-6);
+  for(let g=0;g<K;g++){
+    const cx=x0+gw*(g+0.5), gm=a.gMeans[g];
+    // punkter + innen-avvik
+    const step=Math.min(9,(gw-30)/Math.ceil(a.n/6));
+    a.D[g].forEach((v,i)=>{
+      const px=cx+((i%9)-4)*Math.min(7,(gw-24)/10);
+      c.strokeStyle='rgba(46,84,150,0.30)';c.lineWidth=1;
+      c.beginPath();c.moveTo(px,Y(v));c.lineTo(px,Y(gm));c.stroke();
+      c.fillStyle='rgba(31,56,100,0.55)';c.beginPath();c.arc(px,Y(v),3,0,7);c.fill();
+    });
+    // mellom-avvik
+    c.strokeStyle='#B26A00';c.lineWidth=5;
+    c.beginPath();c.moveTo(cx-gw*0.36,Y(gm));c.lineTo(cx-gw*0.36,Y(a.gm));c.stroke();
+    // gruppegjennomsnitt (håndtak)
+    c.strokeStyle='#2E5496';c.lineWidth=5;
+    c.beginPath();c.moveTo(cx-gw*0.40,Y(gm));c.lineTo(cx+gw*0.40,Y(gm));c.stroke();
+    c.fillStyle='#2E5496';c.beginPath();c.arc(cx+gw*0.40,Y(gm),7,0,7);c.fill();
+    c.fillStyle='#1F3864';c.font='bold 15px sans-serif';c.textAlign='center';
+    c.fillText(LAB[g]+': '+fmt(gm,1),cx,y0+20);
+  }
+  $('statsA').innerHTML=
+    '<span class="stat">F('+a.d1+', '+a.d2+') = '+fmt(a.F)+'</span>'+
+    '<span class="stat'+(a.p<0.05?' green':'')+'">'+(a.p<0.001?'p &lt; ,001':'p = '+fmt(a.p,3).replace('0,',','))+'</span>'+
+    '<span class="stat">η² = '+fmt(a.eta)+'</span>'+
+    '<span class="stat">N = '+a.Nt+'</span>'+
+    '<span class="stat orange">MS mellom = '+fmt(a.msB,1)+'</span>'+
+    '<span class="stat">MS innen = '+fmt(a.msW,1)+'</span>';
+  const fc=fcrit(a.d1,a.d2,0.05);
+  $('tbl').innerHTML='<table class="anova"><tr><th>Kilde</th><th>SS</th><th>df</th><th>MS</th><th>F</th><th>p</th><th>η²</th></tr>'+
+    '<tr><td>Mellom grupper (behandling)</td><td>'+fmt(a.ssB,1)+'</td><td>'+a.d1+'</td><td>'+fmt(a.msB,1)+'</td><td>'+fmt(a.F)+'</td><td>'+(a.p<0.001?'&lt; ,001':fmt(a.p,3).replace('0,',','))+'</td><td>'+fmt(a.eta)+'</td></tr>'+
+    '<tr><td>Innen grupper (residual)</td><td>'+fmt(a.ssW,1)+'</td><td>'+a.d2+'</td><td>'+fmt(a.msW,1)+'</td><td></td><td></td><td></td></tr>'+
+    '<tr><td>Total</td><td>'+fmt(a.sst,1)+'</td><td>'+(a.Nt-1)+'</td><td></td><td></td><td></td><td></td></tr></table>';
+  $('verdictA').innerHTML='Kritisk F ved α = ,05 er '+fmt(fc)+' med disse frihetsgradene. '+
+    (a.p<0.05
+      ? 'Din F på '+fmt(a.F)+' passerer, så minst én gruppe skiller seg fra en annen. η² = '+fmt(a.eta)+' sier at gruppene forklarer '+fmt(100*a.eta,1)+' % av variasjonen — resten er individuelle forskjeller.'
+      : 'Din F på '+fmt(a.F)+' passerer ikke. Legg merke til at F ligger i nærheten av 1: teller og nevner estimerer da omtrent den samme variansen, som er nøyaktig det man forventer når gruppene egentlig er like.');
+  drawB(a);
+}
+// ---------- figur B: SS-oppdeling ----------
+function drawB(a){
+  const [c,w,h]=fit($('cvB'));
+  const x0=14,y0=h-34,pw=w-28,bh=44;
+  const fB=a.ssB/a.sst;
+  c.fillStyle='#B26A00';c.fillRect(x0,30,pw*fB,bh);
+  c.fillStyle='#2E5496';c.fillRect(x0+pw*fB,30,pw*(1-fB),bh);
+  c.fillStyle='#fff';c.font='bold 15px sans-serif';c.textAlign='left';
+  if(fB>0.12)c.fillText('SS mellom = '+fmt(a.ssB,0),x0+8,58);
+  c.fillText('SS innen = '+fmt(a.ssW,0),x0+pw*fB+8,58);
+  c.fillStyle='#1a2233';c.font='bold 16px sans-serif';
+  c.fillText('SS total = '+fmt(a.sst,0)+'   ·   η² = SS mellom / SS total = '+fmt(a.eta),x0,22);
+  c.fillStyle='#62708a';c.font='bold 15px sans-serif';
+  c.fillText('gruppene forklarer '+fmt(100*a.eta,1)+' % av variasjonen',x0,y0+8);
+  if(fB<=0.12){c.fillStyle='#B26A00';c.textAlign='left';c.fillText('SS mellom = '+fmt(a.ssB,0)+' (den smale stripen til venstre)',x0,y0+26);}
+}
+// ---------- dragging ----------
+(function(){
+  const cv=$('cvA'); let drag=-1;
+  const geom=()=>{const w=cv.clientWidth,h=+(cv.dataset.h||330);const x0=44,y0=h-32,pw=w-x0-14,ph=y0-18;return {x0,y0,pw,ph,gw:pw/K};};
+  const pos=e=>{const b=cv.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return [t.clientX-b.left,t.clientY-b.top];};
+  const toVal=py=>{const g=geom();return Math.max(YLO+3,Math.min(YHI-3,YLO+(g.y0-py)/g.ph*(YHI-YLO)));};
+  const near=(px,py)=>{const g=geom();
+    for(let i=0;i<K;i++){const cx=g.x0+g.gw*(i+0.5);
+      const gm=A?A.gMeans[i]:means[i];
+      const y=g.y0-(gm-YLO)/(YHI-YLO)*g.ph;
+      if(Math.abs(px-cx)<g.gw*0.45 && Math.abs(py-y)<26)return i;}
+    return -1;};
+  const setTo=(i,py)=>{const target=toVal(py); const cur=A?A.gMeans[i]:means[i];
+    means[i]=Math.max(YLO+3,Math.min(YHI-3,means[i]+(target-cur)));};
+  const down=e=>{const [px,py]=pos(e);const i=near(px,py);if(i>=0){drag=i;setTo(i,py);drawA();e.preventDefault();}};
+  const move=e=>{if(drag<0)return;const [,py]=pos(e);setTo(drag,py);drawA();e.preventDefault();};
+  const up=()=>{drag=-1;};
+  cv.addEventListener('mousedown',down);window.addEventListener('mousemove',move);window.addEventListener('mouseup',up);
+  cv.addEventListener('touchstart',down);cv.addEventListener('touchmove',move);cv.addEventListener('touchend',up);
+})();
+// ---------- nullverdenen ----------
+let sim=null;
+function runSim(){
+  const n=N(), d1=K-1, d2=K*n-K, out=[];
+  for(let s=0;s<2000;s++){
+    const g=[];let all=[];
+    for(let k=0;k<K;k++){const a=[];for(let i=0;i<n;i++)a.push(rnorm());g.push(a);all=all.concat(a);}
+    const gm=all.reduce((x,y)=>x+y,0)/all.length;
+    const gms=g.map(a=>a.reduce((x,y)=>x+y,0)/a.length);
+    let ssB=0,ssW=0;
+    gms.forEach(m=>ssB+=n*(m-gm)*(m-gm));
+    g.forEach((a,k)=>a.forEach(v=>ssW+=(v-gms[k])*(v-gms[k])));
+    out.push((ssB/d1)/(ssW/d2));
+  }
+  sim={out,d1,d2,n};drawC();
+}
+function drawC(){
+  const [c,w,h]=fit($('cvC'));
+  if(!sim){c.fillStyle='#9aa5bb';c.font='bold 18px sans-serif';c.textAlign='center';c.fillText('Trykk «Kjør 2 000 studier under H₀»',w/2,h/2);$('statsC').innerHTML='';$('verdictC').textContent='';return;}
+  const HI=6,B=48,x0=16,y0=h-40,pw=w-32,ph=y0-18;
+  const bins=new Array(B).fill(0);
+  sim.out.forEach(F=>{const b=Math.min(B-1,Math.floor(F/HI*B));if(F<HI)bins[b]++;else bins[B-1]++;});
+  const mx=Math.max(...bins), X=v=>x0+v/HI*pw, bw=pw/B;
+  const fc=fcrit(sim.d1,sim.d2,0.05);
+  for(let b=0;b<B;b++){
+    const F0=(b+0.5)*HI/B, bh=bins[b]/mx*ph;
+    c.fillStyle=F0>=fc?'rgba(192,57,43,0.75)':'#cbd3e2';
+    c.fillRect(x0+b*bw+0.5,y0-bh,bw-1,bh);
+  }
+  c.strokeStyle='#C0392B';c.lineWidth=2.5;c.setLineDash([6,4]);
+  c.beginPath();c.moveTo(X(fc),14);c.lineTo(X(fc),y0);c.stroke();c.setLineDash([]);
+  c.fillStyle='#C0392B';c.font='bold 15px sans-serif';c.textAlign='center';
+  c.fillText('kritisk F = '+fmt(fc),X(fc),11);
+  if(A){c.strokeStyle='#2E7D32';c.lineWidth=2.5;c.beginPath();c.moveTo(X(Math.min(A.F,HI)),14);c.lineTo(X(Math.min(A.F,HI)),y0);c.stroke();
+    c.fillStyle='#2E7D32';c.fillText('din F = '+fmt(A.F),X(Math.min(A.F,HI)),y0+34);}
+  c.strokeStyle='#b9c3d6';c.lineWidth=1.5;c.beginPath();c.moveTo(x0,y0);c.lineTo(x0+pw,y0);c.stroke();
+  c.fillStyle='#62708a';c.font='bold 15px sans-serif';c.textAlign='center';
+  for(let v=0;v<=HI;v++)c.fillText(v,X(v),y0+18);
+  const over=sim.out.filter(F=>F>=fc).length, mF=sim.out.reduce((a,b)=>a+b,0)/sim.out.length;
+  $('statsC').innerHTML='<span class="stat">gjennomsnittlig F = '+fmt(mF)+' (teori: '+fmt(sim.d2/(sim.d2-2))+')</span>'+
+    '<span class="stat red">over kritisk verdi: '+over+' av 2 000 = '+fmt(100*over/2000,1)+' %</span>'+
+    '<span class="stat">df = '+sim.d1+', '+sim.d2+'</span>';
+  $('verdictC').innerHTML='Uten en eneste sann forskjell havner likevel ca. 5 % av studiene over den kritiske verdien — det er type I-feilraten, og den er noe vi <b>velger</b>, ikke noe som er galt med testen. Merk også at gjennomsnittlig F er nær 1: <b>F ≈ 1 er nullhypotesens signatur</b>.';
+}
+function render(){$('no').textContent=N();$('sdo').textContent=fmt(SD(),1);drawA();drawC();}
+['n','sd'].forEach(id=>$(id).oninput=render);
+$('reset').onclick=()=>{means=[20,20,20];render();};
+$('spread').onclick=()=>{means=[14,20,26];render();};
+$('newdata').onclick=()=>{newResid();render();};
+$('run').onclick=runSim;
+render();
+const __fsRedraw=()=>{render();};
+(function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
+const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
+window.addEventListener('resize',kick);
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{kick();setTimeout(safe,600);}));
+let __mis=0;
+setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
+ document.querySelectorAll('canvas').forEach(c=>{if(c.clientWidth>0&&c.width>0&&Math.abs(c.width-Math.round(c.clientWidth*r))>2)bad=true;});
+ __mis=bad?__mis+1:0;
+ if(__mis>=2){__mis=0;safe();}},700);})();
+</script>
+</body></html>
