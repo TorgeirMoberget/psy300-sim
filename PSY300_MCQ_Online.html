@@ -98,8 +98,10 @@
       <button data-fmt="short" data-i18n-html="fmtShort">Short, all chapters<small>20 questions</small></button>
       <button data-fmt="chapter" data-i18n-html="fmtChapter">Single chapter<small>20 questions</small></button>
       <button data-fmt="mock" data-i18n-html="fmtMock">Mock exam<small>40 questions, timed</small></button>
+      <button data-fmt="output" data-i18n-html="fmtOutput">Output interpretation<small>read a JASP table or plot</small></button>
     </div>
     <div id="chapterWrap" class="hide"><label class="fld" data-i18n="chapLbl">Chapter</label><select id="chapterSel"></select></div>
+    <div id="outputWrap" class="hide"><label class="fld" data-i18n="outLbl">How many output items?</label><select id="outSel"><option value="10">10</option><option value="20" selected>20</option><option value="30">30</option></select><p class="hint" style="text-align:left;margin-top:6px" data-i18n="outHelp"></p></div>
     <div id="mockWrap" class="hide"><label class="fld" data-i18n="mockLbl">Which mock exam?</label><select id="mockSel"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select><p class="hint" style="text-align:left;margin-top:6px" data-i18n="mockHelp"></p></div>
 
     <label class="fld" data-i18n="diffLbl">Difficulty</label>
@@ -185,6 +187,10 @@ const I18N = {
  en:{title:"PSY300 — MCQ Practice (online)",subtitle:"Your answers are submitted anonymously to help improve the questions and track how the class is learning.",
   lang:"Language",codeLbl:"Your private code (anonymous)",codeHelp:"Invent a code only you know and reuse it each time. It is not your name — it just lets you see your own progress. Never use your real name or student number.",
   fmtLbl:"Format",chapLbl:"Chapter",diffLbl:"Difficulty",
+  fmtOutput:'Output interpretation<small>read a JASP table or plot</small>',outLbl:"How many output items?",
+  outHelp:"Every item shows a real JASP table or plot from the course datasets. This is the format the exam uses most.",
+  outLoading:"Loading the output items (about 4 MB) …",
+  outFail:"Could not load the output items. Open the separate app instead: PSY300_Output_Interpretation_App.html",
   fmtFull:"Full mock<small>40 questions</small>",fmtMock:"Mock exam<small>40 questions, timed</small>",mockLbl:"Which mock exam?",mockHelp:"Three fixed sets, same length and format as the real exam. The timer runs for two hours and feedback is held back until the end — as close to the real thing as this app gets. Note that these three sets are deliberately harder than the exam blueprint (about half the items are hard), so expect a lower score here than on the exam itself. Norwegian wording throughout; a few items have no English version.",timeLeft:"Time left",timeUp:"Time is up — your answers so far have been submitted.",fmtShort:"Short, all chapters<small>20 questions</small>",fmtChapter:"Single chapter<small>20 questions</small>",
   diffExam:"Exam-like (20/60/20)",diffEasy:"Easy",diffMod:"Moderate",diffHard:"Hard",
   explToggle:"Show an explanation after each answer",explToggleSub:"You still see correct/incorrect either way.",
@@ -203,6 +209,10 @@ const I18N = {
  no:{title:"PSY300 — Flervalg (online)",subtitle:"Svarene dine sendes anonymt for å forbedre oppgavene og følge hvordan klassen lærer.",
   lang:"Språk",codeLbl:"Din private kode (anonym)",codeHelp:"Finn på en kode bare du kjenner, og bruk den hver gang. Det er ikke navnet ditt — den lar deg bare se din egen fremgang. Bruk aldri ekte navn eller studentnummer.",
   fmtLbl:"Format",chapLbl:"Kapittel",diffLbl:"Vanskelighetsgrad",
+  fmtOutput:'Output-tolkning<small>les en JASP-tabell eller et plott</small>',outLbl:"Hvor mange output-oppgaver?",
+  outHelp:"Hver oppgave viser en ekte JASP-tabell eller et plott fra emnets datasett. Dette er formatet eksamen bruker mest.",
+  outLoading:"Laster output-oppgavene (om lag 4 MB) …",
+  outFail:"Fikk ikke lastet output-oppgavene. Åpne den egne appen i stedet: PSY300_Output_Interpretation_App.html",
   fmtFull:"Full prøve<small>40 spørsmål</small>",fmtMock:"Prøveeksamen<small>40 spørsmål, på tid</small>",mockLbl:"Hvilken prøveeksamen?",mockHelp:"Tre faste sett med samme lengde og format som den ekte eksamenen. Klokka går i to timer, og tilbakemeldingen holdes tilbake til slutten — så nær ekte vare som denne appen kommer. Merk at disse tre settene er bevisst vanskeligere enn eksamensmalen (rundt halvparten er vanskelige oppgaver), så forvent en lavere skår her enn på selve eksamen.",timeLeft:"Tid igjen",timeUp:"Tiden er ute — svarene du rakk, er levert.",fmtShort:"Kort, alle kapitler<small>20 spørsmål</small>",fmtChapter:"Ett kapittel<small>20 spørsmål</small>",
   diffExam:"Eksamenslik (20/60/20)",diffEasy:"Lett",diffMod:"Middels",diffHard:"Vanskelig",
   explToggle:"Vis en forklaring etter hvert svar",explToggleSub:"Du ser uansett riktig/galt.",
@@ -221,7 +231,7 @@ const I18N = {
 };
 
 let lang="no";
-const state={format:"full",chapter:null,difficulty:"exam"};
+const state={format:"full",chapter:null,difficulty:"exam",outN:20};
 let quiz=[],idx=0,answers=[],picked=null,showExpl=true,immediate=true,startTime=0,sessionId="";
 let cohort=null; // summary from backend (item pct correct)
 const opts=["A","B","C","D"];
@@ -237,6 +247,7 @@ $("#fmtSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(
 function visFormatvalg(){
   $("#chapterWrap").classList.toggle("hide",state.format!=="chapter");
   $("#mockWrap").classList.toggle("hide",state.format!=="mock");
+  $("#outputWrap").classList.toggle("hide",state.format!=="output");
   const erProve=state.format==="mock";
   // prøveeksamen: fast sett, ingen vanskelighetsvalg, ingen umiddelbar tilbakemelding
   $("#diffSeg").style.opacity=erProve?.45:1;
@@ -247,17 +258,25 @@ function visFormatvalg(){
 $("#diffSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;state.difficulty=b.dataset.diff;$$("#diffSeg button").forEach(x=>x.classList.toggle("on",x===b));});
 $("#chapterSel").addEventListener("change",e=>{state.chapter=parseInt(e.target.value,10);});
 $("#mockSel").addEventListener("change",e=>{state.mock=e.target.value;});
+$("#outSel").addEventListener("change",e=>{state.outN=parseInt(e.target.value,10);});
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function pickRandom(p,k){return shuffle(p.slice()).slice(0,k);}
 function weightedByChapter(pool,k){const byCh={};pool.forEach(it=>{(byCh[it.ch]=byCh[it.ch]||[]).push(it);});Object.values(byCh).forEach(shuffle);const res=[];while(res.length<k){const av=Object.keys(byCh).filter(c=>byCh[c].length);if(!av.length)break;const w=av.map(c=>BASE_WEIGHTS[c]||1),tot=w.reduce((a,b)=>a+b,0);let r=Math.random()*tot,pk=av[0];for(let i=0;i<av.length;i++){r-=w[i];if(r<=0){pk=av[i];break;}}res.push(byCh[pk].pop());}return res;}
 function diffTargets(N,m){if(m==="exam"){const e=Math.round(N*0.2),h=Math.round(N*0.2);return{Easy:e,Moderate:N-e-h,Hard:h};}const o={};o[m]=N;return o;}
+let OI=null, OIlaster=null;
+function lastOI(){ if(OI) return Promise.resolve(OI); if(OIlaster) return OIlaster;
+  OIlaster=fetch("PSY300_OI_items.json",{cache:"force-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
+    .then(d=>{OI=d;return d;}).catch(e=>{OIlaster=null;throw e;});
+  return OIlaster; }
 function selectQuestions(){
   if(state.format==="mock"){const m=MOCKS[String(state.mock||1)]||[];return m.slice();}
+  if(state.format==="output"){const n=state.outN||20;let p=(OI||[]).slice();
+    if(state.difficulty!=="exam")p=p.filter(it=>it.difficulty===state.difficulty);
+    if(!p.length)p=(OI||[]).slice(); return pickRandom(p,Math.min(n,p.length));}
   const N=state.format==="full"?40:20;let pool=BANK.slice();if(state.format==="chapter")pool=pool.filter(it=>it.ch===state.chapter);const tg=diffTargets(N,state.difficulty);const used=new Set();let chosen=[];for(const d in tg){const sub=pool.filter(it=>it.difficulty===d&&!used.has(it.id));const pk=(state.format==="chapter")?pickRandom(sub,tg[d]):weightedByChapter(sub,tg[d]);pk.forEach(it=>used.add(it.id));chosen=chosen.concat(pk);}if(state.difficulty==="exam"&&chosen.length<N){const rest=pool.filter(it=>!used.has(it.id));chosen=chosen.concat((state.format==="chapter")?pickRandom(rest,N-chosen.length):weightedByChapter(rest,N-chosen.length));}return shuffle(chosen).slice(0,N);}
 
-$("#startBtn").addEventListener("click",()=>{
-  if(backendOn() && !$("#code").value.trim()){ alert(t("needCode")); return; }
+function startQuizNow(){
   showExpl=$("#explChk").checked; immediate=$("#immChk").checked;
   quiz=selectQuestions(); if(!quiz.length){alert(lang==="en"?"No items match that selection.":"Ingen oppgaver passer valget.");return;}
   idx=0; answers=[]; picked=null; startTime=Date.now();
@@ -265,6 +284,16 @@ $("#startBtn").addEventListener("click",()=>{
   sessionId=Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,7);
   if(backendOn()) fetchCohort();
   $("#start").classList.add("hide"); $("#results").classList.add("hide"); $("#quiz").classList.remove("hide"); renderQ();
+}
+$("#startBtn").addEventListener("click",()=>{
+  if(backendOn() && !$("#code").value.trim()){ alert(t("needCode")); return; }
+  if(state.format==="output" && !OI){
+    const b=$("#startBtn"), org=b.textContent; b.disabled=true; b.textContent=t("outLoading");
+    lastOI().then(()=>{b.disabled=false;b.textContent=org;startQuizNow();})
+            .catch(()=>{b.disabled=false;b.textContent=org;alert(t("outFail"));});
+    return;
+  }
+  startQuizNow();
 });
 
 let timerId=null, sluttTid=0;
@@ -306,7 +335,10 @@ function renderQ(){const it=quiz[idx],txt=L(it);picked=null;
   $("#counter").textContent=(idx+1)+" / "+quiz.length; $("#bar").style.width=(idx/quiz.length*100)+"%";
   $("#qchapter").textContent=(lang==="no"&&it.no&&it.no.chapter)?it.no.chapter:it.chapter_en;
   $("#qdiff").textContent=diffLabel(it.difficulty); $("#qid").textContent=it.id; $("#qtext").textContent=txt.q;
-  const tw=$("#qtable"); if(txt.tab){tw.innerHTML=txt.tab;tw.classList.remove("hide");}else{tw.innerHTML="";tw.classList.add("hide");}
+  const tw=$("#qtable");
+  if(it.img){tw.innerHTML='<img src="'+it.img+'" alt="JASP-output" style="max-width:100%;display:block;border:1px solid var(--line);border-radius:8px">';tw.classList.remove("hide");}
+  else if(txt.tab){tw.innerHTML=txt.tab;tw.classList.remove("hide");}
+  else{tw.innerHTML="";tw.classList.add("hide");}
   const box=$("#opts");box.innerHTML="";opts.forEach(LL=>{const b=document.createElement("button");b.className="opt";b.dataset.letter=LL;b.innerHTML='<span class="ltr">'+LL+'</span><span>'+esc(txt[LL])+'</span>';b.addEventListener("click",()=>selectOpt(LL));box.appendChild(b);});
   $("#feedback").innerHTML="";const nb=$("#nextBtn");nb.disabled=true;nb.textContent=(idx===quiz.length-1)?t("finishBtn"):t("nextBtn");}
 function selectOpt(letter){if(answers[idx])return;
@@ -499,7 +531,7 @@ applyLang();
 (function(){
   const p=new URLSearchParams(location.search);
   const g=(...n)=>{for(const k of n){const v=p.get(k);if(v!==null&&v!=="")return v.trim();}return null;};
-  const FMT={full:"full",kort:"short",short:"short",kapittel:"chapter",chapter:"chapter",prove:"mock",proveeksamen:"mock",mock:"mock"};
+  const FMT={full:"full",kort:"short",short:"short",kapittel:"chapter",chapter:"chapter",prove:"mock",proveeksamen:"mock",mock:"mock",output:"output",utdata:"output",jasp:"output"};
   const DIFF={eksamen:"exam",exam:"exam",lett:"Easy",easy:"Easy",middels:"Moderate",moderate:"Moderate",vanskelig:"Hard",hard:"Hard"};
   const sprak=g("sprak","lang");
   if(sprak==="en"||sprak==="no"){lang=sprak;$$("#langSeg button").forEach(x=>x.classList.toggle("on",x.dataset.lang===lang));applyLang();}
