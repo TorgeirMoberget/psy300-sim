@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY300 · Sim 10 — P-hacking-hagen</title>
+<style>
+:root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:20.5px;margin:0;font-weight:700}
+header p{margin:2px 0 0;font-size:15.5px;opacity:.85}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+h2{color:var(--navy);margin:.2em 0 .5em;font-size:19px}
+button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+.btn{background:var(--blue);color:#fff}.btn:hover{background:var(--navy)}
+.btn2{background:#eef1f7;color:var(--navy)}.btn2:hover{background:var(--light)}
+.muted{color:#62708a;font-size:16px}
+.stat{display:inline-block;background:var(--light);color:var(--navy);border-radius:8px;padding:3px 10px;font-size:15.5px;font-weight:600;margin:3px 4px 3px 0;font-variant-numeric:tabular-nums}
+.stat.red{background:#fbeceb;color:var(--red)}
+.stat.green{background:#eaf6ea;color:var(--green)}
+.note{background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px;margin-top:10px}
+.log{font-size:15.5px;max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:9px;padding:8px 12px;background:#fcfdff}
+.log div{padding:2px 0;border-bottom:1px dashed #eef1f7}
+.log .sig{color:var(--red);font-weight:700}
+.big{font-size:26.5px;font-weight:800;color:var(--navy)}
+.pub{background:#fbeceb;border:2px solid var(--red);border-radius:10px;padding:12px;margin-top:10px;font-weight:700;color:var(--red);display:none}
+.gloss{font-size:15.5px}
+.gloss b{color:var(--navy)}
+.keybox{background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:12px 14px;margin:14px 0;font-size:16.5px}
+.keybox .lbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:4px}
+
+/* ===== Presentasjonsmodus (P) — for lerret under forelesning =============== */
+.presbtn{position:fixed;right:12px;bottom:12px;z-index:50;background:#fff;color:var(--navy);
+  border:1px solid var(--line);border-radius:20px;padding:7px 14px;font-size:14px;font-weight:700;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer;opacity:.75}
+.presbtn:hover{opacity:1}
+body.pres header{padding:6px 14px}
+body.pres header h1{font-size:17px}
+body.pres header p{display:none}
+body.pres .wrap{max-width:1240px;padding:6px 14px}
+body.pres .card{padding:10px 12px;margin:8px 0}
+body.pres h2{font-size:16.5px;margin:.1em 0 .3em}
+body.pres .muted:not([id]){display:none}
+body.pres .card.docs{display:none}
+body.pres .stat{font-size:16.5px}
+body.pres .sl{margin:4px 0}
+body.pres .sl label{font-size:15px;min-width:210px}
+body.pres .note{padding:8px 11px;margin-top:7px}
+body.pres .keybox{font-size:18px}
+</style></head><body>
+<header><h1>Sim 10 · P-hacking-hagen — finn en «effekt» i data uten effekter</h1>
+<p>PSY300 · Forelesning 2 og 9 · Alle nullhypoteser er sanne. Klarer du likevel å bli «signifikant»? (Spoiler: ja.)</p></header>
+<div class="wrap">
+
+<div class="card">
+<h2>Din studie (n = 50, to grupper, ingen sanne effekter)</h2>
+<p class="muted">Du har samlet inn data og hovedanalysen ble ikke signifikant. Men du har jo … valgmuligheter. Hvert klikk er en beslutning ekte forskere kan ta: hver av dem er en ny loddtrekning med α = ,05.</p>
+<button class="btn" id="b0">Test hovedutfallet</button>
+<button class="btn2" id="b1">Prøv de 3 andre utfallsmålene</button>
+<button class="btn2" id="b2">Del opp etter kjønn (2 undergrupper)</button>
+<button class="btn2" id="b3">Fjern «utliggere» og test igjen</button>
+<button class="btn2" id="b4">Legg til en kovariat (3 varianter)</button>
+<button class="btn2" id="b5">Samle 10 til og test på nytt</button>
+<button class="btn" id="reset" style="background:#62708a">Ny studie (nullstill)</button>
+<div style="margin-top:10px">
+<span class="stat">analyser prøvd: <span class="big" id="ntest">0</span></span>
+<span class="stat" id="expect">forventede falske positiver så langt: 0,0</span>
+</div>
+<div class="pub" id="pub">🎉 «SIGNIFIKANT»! Skriv artikkelen! … eller? Du fant den i en verden der ingenting er sant. Dette er en falsk positiv du selv har produsert.</div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>Med nok valgfrihet i analysen finner du «signifikante» funn i data der ingenting finnes. Det er derfor det teller hva du bestemte <i>før</i> du så dataene. Forhåndsregistrering er ikke byråkrati, det er den eneste kuren.</b></div></div>
+
+<div class="card">
+<h2>Analyselogg (rødt = p &lt; ,05 = falsk positiv)</h2>
+<div class="log" id="log"><span class="muted">Ingen analyser ennå.</span></div>
+<div class="note"><b>Poenget:</b> α = ,05 gjelder ÉN forhåndsbestemt test. «Forskerens frihetsgrader» (utfall, undergrupper, utliggere, kovariater, valgfri stopping) gjør den reelle feilraten mye høyere, uten at noen bevisst jukser. Etter ~20 forsøk er sjansen for minst én «oppdagelse» ≈ 64 %. Motgift: forhåndsregistrering, skille mellom planlagte og utforskende analyser, og å rapportere ALT man prøvde. (Jf. Sim 19: dette er familievis feil i naturlig habitat.)</div>
+</div>
+
+<div class="card docs" id="ordforklaringer">
+<h2>Ordforklaringer</h2>
+<div class="gloss">
+<p><b>df</b> — frihetsgrader (degrees of freedom): antall verdier som fritt kan variere gitt det du allerede har estimert.<br>
+<b>H₀</b> — nullhypotesen: «ingen effekt / ingen sammenheng». <b>H₁</b> er alternativhypotesen.<br>
+<b>p-verdi</b> — sannsynligheten for et resultat minst så ekstremt som ditt, <i>gitt at H₀ er sann</i>. Ikke sannsynligheten for at H₀ er sann.<br>
+<b>α (alfa)</b> — signifikansnivået du velger på forhånd, altså den aksepterte risikoen for type I-feil (vanligvis ,05).<br>
+<b>Type I-feil</b> — å finne en effekt som ikke finnes (falsk positiv). <b>Type II-feil</b> — å overse en effekt som finnes (falsk negativ).<br>
+<b>Utligger</b> — en observasjon som ligger langt fra resten. <b>Trimmet gjennomsnitt</b> = regn ut etter å ha kuttet de mest ekstreme prosentene; <b>winsorisering</b> = erstatt dem med grenseverdien i stedet for å kutte.<br>
+<b>Familievis feilrate</b> — sjansen for minst én falsk positiv når man kjører flere tester. <b>Bonferroni</b>-korreksjonen deler α på antall tester.</p>
+</div>
+</div>
+
+</div>
+<script>
+const $=id=>document.getElementById(id);
+function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function lgamma(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];let y=x,tmp=x+5.5;tmp-=(x+0.5)*Math.log(tmp);let ser=1.000000000190015;for(let j=0;j<6;j++)ser+=c[j]/++y;return -tmp+Math.log(2.5066282746310005*ser/x);}
+function betacf(a,b,x){const MAXIT=200,EPS=3e-12,FPMIN=1e-30;const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<FPMIN)d=FPMIN;d=1/d;let h=d;for(let m=1;m<=MAXIT;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;h*=d*c;aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<EPS)break;}return h;}
+function ibeta(a,b,x){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+function pT(t,df){return ibeta(df/2,0.5,df/(df+t*t));}
+function fmt(x,d=3){return x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});}
+let nTests=0,found=false;
+function oneNullTest(n){ // uavhengig t på nulldata
+  n=n||25;
+  let s1=0,ss1=0,s2=0,ss2=0;
+  for(let i=0;i<n;i++){const x=rnorm();s1+=x;ss1+=x*x;}
+  for(let i=0;i<n;i++){const x=rnorm();s2+=x;ss2+=x*x;}
+  const m1=s1/n,m2=s2/n;
+  const v1=(ss1-n*m1*m1)/(n-1),v2=(ss2-n*m2*m2)/(n-1);
+  const sp2=(v1+v2)/2;
+  const t=(m1-m2)/Math.sqrt(sp2*2/n);
+  return pT(t,2*n-2);
+}
+function logTests(labels,n){
+  const log=$('log');
+  if(nTests===0)log.innerHTML='';
+  labels.forEach(lab=>{
+    const p=oneNullTest(n);
+    nTests++;
+    const sig=p<0.05;
+    if(sig)found=true;
+    const div=document.createElement('div');
+    div.innerHTML=(sig?'<span class="sig">':'<span>')+String(nTests).padStart(2,'0')+' · '+lab+' — p = '+fmt(p)+(sig?'  ← «FUNN»':'')+'</span>';
+    log.prepend(div);
+  });
+  $('ntest').textContent=nTests;
+  $('expect').innerHTML='forventet antall falske positiver så langt: '+fmt(nTests*0.05,1)+' · P(minst én) = '+fmt(100*(1-Math.pow(0.95,nTests)),0)+' %';
+  $('expect').className='stat '+(nTests>=10?'red':'');
+  $('pub').style.display=found?'block':'none';
+}
+$('b0').onclick=()=>logTests(['Hovedutfall (som planlagt)']);
+$('b1').onclick=()=>logTests(['Utfall 2 (angst)','Utfall 3 (motivasjon)','Utfall 4 (trivsel)']);
+$('b2').onclick=()=>logTests(['Bare kvinner','Bare menn'],13);
+$('b3').onclick=()=>logTests(['Uten «utliggere»']);
+$('b4').onclick=()=>logTests(['+ kovariat: alder','+ kovariat: baseline','+ kovariat: begge']);
+$('b5').onclick=()=>logTests(['Med 10 ekstra deltakere'],30);
+$('reset').onclick=()=>{nTests=0;found=false;$('log').innerHTML='<span class="muted">Ingen analyser ennå.</span>';$('ntest').textContent='0';$('expect').textContent='forventede falske positiver så langt: 0,0';$('expect').className='stat';$('pub').style.display='none';};
+const __fsRedraw=()=>{};
+(function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
+const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
+window.addEventListener('resize',kick);
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{kick();setTimeout(safe,600);}));})();
+
+/* ===== PSY300 anonym bruksstatistikk =====================================
+   Sender to signaler til det samme Apps Script-endepunktet som MCQ-appen:
+   ett når appen åpnes, ett når fanen lukkes (med antall sekunder aktiv og
+   antall interaksjoner). Ingen navn, ingen kode, ingen IP — bare app-id,
+   tidspunkt og varighet. Lim inn /exec-URL-en under; står plassholderen
+   igjen, sendes ingenting og appen fungerer helt som før.                */
+const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA05xK7n1rC0ex_UVpNAjJPYNmRqvGfgUGuXp0EclxmyFUeKeVktMfg5YQ/exec";
+(function(){
+  if(!PSY300_USAGE_URL || PSY300_USAGE_URL.indexOf("PASTE_")>=0) return;
+  var APP="Sim 10", NAVN="P-hacking-hagen";
+  var t0=Date.now(), aktiv=0, sist=Date.now(), interaksjoner=0, sendt=false;
+  var sid=Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8);
+  // tell bare tid der fanen faktisk er synlig
+  function tikk(){ if(!document.hidden){ var na=Date.now(); aktiv+=Math.min(30000,na-sist); sist=na; } else { sist=Date.now(); } }
+  setInterval(tikk, 5000);
+  document.addEventListener("visibilitychange", tikk);
+  ["click","input","change","touchstart"].forEach(function(ev){
+    document.addEventListener(ev, function(){ interaksjoner++; }, {passive:true, capture:true});
+  });
+
+  /* Skiller underviserens egen bruk fra studentenes. Åpne en app én gang med
+     ?rolle=underviser, så huskes det i denne nettleseren til du åpner med
+     ?rolle=student. Ingen innlogging, ingen personopplysninger.            */
+  function PSY300_ROLLE(){
+    try{
+      var q=new URLSearchParams(location.search).get("rolle");
+      if(q==="underviser"||q==="student"){ localStorage.setItem("psy300_rolle",q); }
+      return localStorage.getItem("psy300_rolle")||"student";
+    }catch(e){ return "student"; }
+  }
+  function send(type){
+    if(type==="lukket"){ if(sendt) return; sendt=true; tikk(); }
+    var payload=JSON.stringify({kind:"usage", app:APP, navn:NAVN, event:type,
+      session_id:sid, sekunder:Math.round(aktiv/1000), interaksjoner:interaksjoner,
+      innebygd:(window.top!==window.self)?1:0, rolle:PSY300_ROLLE()});
+    try{
+      if(type==="lukket" && navigator.sendBeacon){
+        navigator.sendBeacon(PSY300_USAGE_URL, new Blob([payload],{type:"text/plain;charset=utf-8"}));
+      } else {
+        fetch(PSY300_USAGE_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:payload, keepalive:true}).catch(function(){});
+      }
+    }catch(e){}
+  }
+  send("apnet");
+  window.addEventListener("pagehide", function(){ send("lukket"); });
+  document.addEventListener("visibilitychange", function(){ if(document.hidden) send("lukket"); });
+})();
+/* ===== slutt bruksstatistikk ============================================ */
+
+/* ===== Presentasjonsmodus: skjuler brødtekst og ordliste, strammer marger === */
+(function(){
+  var b=document.createElement("button");
+  b.className="presbtn"; b.type="button";
+  b.title="Skjuler forklarende tekst og ordlisten, slik at figuren og kontrollene fyller lerretet (snarvei: P)";
+  var av="Presentasjonsmodus", pa="Vis all tekst igjen";
+  b.textContent=av;
+  function veksle(){
+    var på=document.body.classList.toggle("pres");
+    b.textContent=på?pa:av;
+    window.dispatchEvent(new Event("resize"));
+  }
+  b.addEventListener("click",veksle);
+  document.addEventListener("keydown",function(e){
+    if((e.key==="p"||e.key==="P")&&!/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) veksle();
+  });
+  document.body.appendChild(b);
+})();
+</script>
+</body></html>

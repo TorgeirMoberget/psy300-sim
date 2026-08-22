@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY300 · Sim 17 — t mot normalfordelingen — hva de tunge halene koster</title>
+<style>
+
+:root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--orange:#B26A00;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:20.5px;margin:0;font-weight:700}
+header p{margin:2px 0 0;font-size:15.5px;opacity:.85}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+h2{color:var(--navy);margin:.2em 0 .5em;font-size:19px}
+button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+.btn{background:var(--blue);color:#fff}.btn:hover{background:var(--navy)}
+.btn2{background:#eef1f7;color:var(--navy)}.btn2:hover{background:var(--light)}
+.muted{color:#62708a;font-size:16px}
+canvas{width:100%;display:block;touch-action:none}
+.stat{display:inline-block;background:var(--light);color:var(--navy);border-radius:8px;padding:3px 10px;font-size:15.5px;font-weight:600;margin:3px 4px 3px 0;font-variant-numeric:tabular-nums}
+.stat.red{background:#fbeceb;color:var(--red)}
+.stat.green{background:#eaf6ea;color:var(--green)}
+.stat.orange{background:#fdf3e6;color:var(--orange)}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap}
+.sl label{min-width:250px;font-weight:600;font-size:16px;color:var(--navy)}
+.sl input[type=range]{flex:1;min-width:140px}
+.sl output{min-width:52px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--navy);font-size:17px}
+.note{background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px;margin-top:10px}
+.gloss{font-size:15.5px}
+.gloss b{color:var(--navy)}
+.keybox{background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:12px 14px;margin:14px 0;font-size:16.5px}
+.keybox .lbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:4px}
+
+/* ===== Presentasjonsmodus (P) — for lerret under forelesning =============== */
+.presbtn{position:fixed;right:12px;bottom:12px;z-index:50;background:#fff;color:var(--navy);
+  border:1px solid var(--line);border-radius:20px;padding:7px 14px;font-size:14px;font-weight:700;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer;opacity:.75}
+.presbtn:hover{opacity:1}
+body.pres header{padding:6px 14px}
+body.pres header h1{font-size:17px}
+body.pres header p{display:none}
+body.pres .wrap{max-width:1240px;padding:6px 14px}
+body.pres .card{padding:10px 12px;margin:8px 0}
+body.pres h2{font-size:16.5px;margin:.1em 0 .3em}
+body.pres .muted:not([id]){display:none}
+body.pres .card.docs{display:none}
+body.pres .stat{font-size:16.5px}
+body.pres .sl{margin:4px 0}
+body.pres .sl label{font-size:15px;min-width:210px}
+body.pres .note{padding:8px 11px;margin-top:7px}
+body.pres .keybox{font-size:18px}
+table.steg{border-collapse:collapse;width:100%;margin-top:10px;font-size:16px;font-variant-numeric:tabular-nums}
+table.steg th{text-align:right;font-weight:600;border-bottom:1px solid #333;padding:6px 8px}
+table.steg th:first-child{text-align:left}
+table.steg td{text-align:right;padding:5px 8px;border:0}
+table.steg td:first-child{text-align:left}
+table.steg tr:last-child td{border-bottom:1px solid #333}
+.chk{font-size:15.5px;color:var(--navy);font-weight:600}
+</style></head><body>
+<header><h1>Sim 17 · t mot normalfordelingen — hva de tunge halene koster</h1>
+<p>PSY300 · Forelesning 4 (og 2) · Skyv utvalgsstørrelsen fra 2 til 120 og se t-fordelingen krype inn mot normalfordelingen</p></header>
+<div class="wrap">
+
+
+<div class="card">
+<h2>De to kurvene ved siden av hverandre</h2>
+<p class="muted">Den <b>blå</b> kurven er t-fordelingen ved de frihetsgradene du velger. Den <b>grå stiplede</b> er normalfordelingen, som er der t havner når utvalget blir uendelig stort. Skyv nedover mot små utvalg og se hva som skjer i halene.</p>
+<canvas id="cvA" height="290"></canvas>
+<div class="sl"><label>n per gruppe</label><input type="range" id="n" min="2" max="120" step="1" value="10"><output id="no">10</output></div>
+<label class="chk"><input type="checkbox" id="zoom"> Forstørr halene (logaritmisk høyde)</label>
+<div id="statsA" style="margin-top:8px"></div>
+<div class="note" id="verdictA"></div>
+</div>
+
+<div class="card">
+<h2>Hva de tunge halene koster deg</h2>
+<p class="muted">Den kritiske verdien er grensen for hva vi kaller signifikant, og den samme verdien bestemmer hvor bredt konfidensintervallet blir. Kurven viser hvordan den faller mot 1,96 når utvalget vokser. Den røde prikken er deg.</p>
+<canvas id="cvB" height="250"></canvas>
+<div id="statsB"></div>
+</div>
+
+<div class="card">
+<h2>Halene i tall</h2>
+<p class="muted">Tredje kolonne svarer på spørsmålet: hvis du hadde jukset og brukt 1,96 i stedet for riktig t-verdi, hvor ofte ville du feilaktig ropt «signifikant»?</p>
+<div id="tbl"></div>
+</div>
+
+<div class="card docs">
+<h2>Slik leser du det</h2>
+<div class="note"><b>Prøv dette:</b> (1) Sett n = 60 per gruppe: de to kurvene er praktisk talt umulige å skille, og kritisk t er 1,98 mot normalfordelingens 1,96. Ved store utvalg spiller valget ingen rolle. (2) Dra ned til n = 5: kritisk t er nå 2,31, altså et konfidensintervall som er 18 % bredere. (3) Dra helt ned til n = 2, der df = 2: kritisk t er 4,30. Med to personer i hver gruppe må forskjellen være voldsom før du kan si noe som helst. (4) Skru på haleforstørrelsen og se at t-kurven ligger <i>over</i> normalkurven langt ute, samtidig som den ligger <i>under</i> i midten. Det er det samme arealet fordelt annerledes.</div>
+<div class="note"><b>Hvorfor i det hele tatt:</b> når vi ikke kjenner populasjonens standardavvik, må vi estimere det fra det samme lille utvalget. Det estimatet er selv usikkert, og noen ganger er det for lite, noe som gjør t kunstig stor. t-fordelingen er akkurat den fordelingen du får når du tar høyde for den ekstra usikkerheten. Jo færre frihetsgrader, desto mer slingringsmonn må den gi. Se Sim 6 for hvordan dette slår ut i selve konfidensintervallet.</div>
+</div>
+
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>Når vi må estimere spredningen fra det samme lille utvalget, blir estimatet selv usikkert. t-fordelingen betaler for den usikkerheten med tyngre haler, og prisen er en større kritisk verdi og et bredere konfidensintervall. Ved store utvalg er prisen nesten null.</b></div></div>
+
+<div class="card docs">
+<h2>Ordforklaringer</h2>
+<div class="gloss">
+<p><b>t-fordelingen</b> — fordelingen til testobservatoren t når populasjonens standardavvik må estimeres fra utvalget. Symmetrisk om 0, men med tyngre haler enn normalfordelingen.<br>
+<b>Normalfordelingen</b> — den symmetriske klokkeformen som t nærmer seg når utvalget blir stort. Kalles også z-fordelingen når den er standardisert.<br>
+<b>df</b> — frihetsgrader (degrees of freedom): antall verdier som fritt kan variere. For en t-test med to like store grupper er df = 2n − 2.<br>
+<b>Kritisk verdi</b> — grensen der resultatet kalles signifikant. Ved α = ,05 tosidig er den 1,96 i normalfordelingen, men større i t-fordelingen.<br>
+<b>α (alfa)</b> — signifikansnivået du velger, altså den tillatte andelen falske positive. Vanligvis ,05.<br>
+<b>Hale</b> — ytterkanten av fordelingen. «Tunge haler» betyr at ekstreme verdier er mer sannsynlige enn i normalfordelingen.<br>
+<b>KI</b> — konfidensintervall; bredden er estimatet ± kritisk verdi · standardfeil, så en større kritisk verdi gir et bredere intervall.<br>
+<b>SE</b> — standardfeil: usikkerheten i et estimat.<br>
+<b>z</b> — en standardisert verdi lest mot normalfordelingen, brukt når spredningen i populasjonen er kjent.</p>
+</div>
+</div>
+
+</div>
+<script>
+
+"use strict";
+const $=id=>document.getElementById(id);
+const fmt=(x,d=2)=>x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function fit(cv){const r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);c.clearRect(0,0,w,h);return [c,w,h];}
+function lgamma(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
+  let y=x,tmp=x+5.5;tmp-=(x+0.5)*Math.log(tmp);let ser=1.000000000190015;for(let j=0;j<6;j++)ser+=c[j]/++y;return -tmp+Math.log(2.5066282746310005*ser/x);}
+function betacf(a,b,x){const MAXIT=200,EPS=3e-12,FPMIN=1e-30;const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<FPMIN)d=FPMIN;d=1/d;let h=d;
+  for(let m=1;m<=MAXIT;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;h*=d*c;
+  aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<EPS)break;}return h;}
+function ibeta(a,b,x){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));
+  return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+const pF=(F,d1,d2)=>F<=0?1:ibeta(d2/2,d1/2,d2/(d2+d1*F));      // øvre hale
+function fcrit(d1,d2,a){let lo=0,hi=100;for(let i=0;i<90;i++){const m=(lo+hi)/2;if(pF(m,d1,d2)>a)lo=m;else hi=m;}return (lo+hi)/2;}
+
+
+
+const pT=(t,df)=>ibeta(df/2,0.5,df/(df+t*t));
+function tcrit(df,a){let lo=0,hi=200;for(let i=0;i<120;i++){const m=(lo+hi)/2;if(pT(m,df)>a)lo=m;else hi=m;}return (lo+hi)/2;}
+const dT=(t,v)=>Math.exp(lgamma((v+1)/2)-lgamma(v/2))/Math.sqrt(v*Math.PI)*Math.pow(1+t*t/v,-(v+1)/2);
+const dZ=t=>Math.exp(-t*t/2)/Math.sqrt(2*Math.PI);
+const ZC=1.959963985;
+
+const N=()=>+$('n').value, DF=()=>2*N()-2, ZOOM=()=>$('zoom').checked;
+
+function drawA(){
+  const cv=$('cvA'),[c,w,h]=fit(cv);
+  const L=46,R=w-14,T=16,B=h-30, df=DF(), tc=tcrit(df,0.05);
+  const LOx=-5,HIx=5, X=t=>L+(t-LOx)/(HIx-LOx)*(R-L);
+  const lg=ZOOM(), f=y=>lg?Math.log10(y+1e-5)+5:y, top=lg?f(0.42):0.42;
+  const Y=y=>B-Math.max(0,f(y))/top*(B-T);
+  // rutenett
+  c.strokeStyle='#eef1f7';c.lineWidth=1;
+  for(let t=LOx;t<=HIx;t+=1){c.beginPath();c.moveTo(X(t),T);c.lineTo(X(t),B);c.stroke();}
+  // haleområder for t
+  c.fillStyle='rgba(192,57,43,.20)';
+  [[-6,-tc],[tc,6]].forEach(([a,b])=>{
+    c.beginPath();c.moveTo(X(Math.max(LOx,a)),B);
+    for(let t=Math.max(LOx,a);t<=Math.min(HIx,b);t+=0.02)c.lineTo(X(t),Y(dT(t,df)));
+    c.lineTo(X(Math.min(HIx,b)),B);c.closePath();c.fill();});
+  // normalkurve
+  c.strokeStyle='#8a94a6';c.lineWidth=2.4;c.setLineDash([6,5]);c.beginPath();
+  for(let t=LOx;t<=HIx;t+=0.02){const y=Y(dZ(t));t===LOx?c.moveTo(X(t),y):c.lineTo(X(t),y);}
+  c.stroke();c.setLineDash([]);
+  // t-kurve
+  c.strokeStyle='#2E5496';c.lineWidth=3.2;c.beginPath();
+  for(let t=LOx;t<=HIx;t+=0.02){const y=Y(dT(t,df));t===LOx?c.moveTo(X(t),y):c.lineTo(X(t),y);}
+  c.stroke();
+  // akse og kritiske verdier
+  c.strokeStyle='#1F3864';c.lineWidth=1;c.beginPath();c.moveTo(L,B);c.lineTo(R,B);c.stroke();
+  c.font='bold 14px system-ui';c.fillStyle='#8a94a6';c.textAlign='center';
+  for(let t=LOx;t<=HIx;t+=1)c.fillText(String(t),X(t),B+20);
+  [[-ZC,'#8a94a6'],[ZC,'#8a94a6'],[-tc,'#C0392B'],[tc,'#C0392B']].forEach(([v,col])=>{
+    c.strokeStyle=col;c.lineWidth=2;c.setLineDash([4,4]);
+    c.beginPath();c.moveTo(X(v),T);c.lineTo(X(v),B);c.stroke();c.setLineDash([]);});
+  c.font='bold 15px system-ui';
+  c.fillStyle='#C0392B';c.textAlign='left';c.fillText('t = ±'+fmt(tc,2),X(tc)+5,T+15);
+  c.fillStyle='#8a94a6';c.textAlign='right';c.fillText('z = ±1,96',X(-ZC)-5,T+15);
+  c.fillStyle='#2E5496';c.textAlign='left';c.fillText('t-fordelingen, df = '+df,L+8,T+15);
+
+  const feil=100*pT(ZC,df);
+  $('statsA').innerHTML='<span class="stat">n per gruppe: '+N()+'</span>'+
+    '<span class="stat">df = '+df+'</span>'+
+    '<span class="stat red">kritisk t = ±'+fmt(tc,3)+'</span>'+
+    '<span class="stat">bredere KI enn med z: '+fmt(100*(tc/ZC-1),1)+' %</span>';
+  $('verdictA').innerHTML= df>=60
+    ? '<b>Ved så mange frihetsgrader er forskjellen borte i praksis.</b> Kritisk t er '+fmt(tc,3)+' mot normalfordelingens 1,96, og konfidensintervallet blir bare '+fmt(100*(tc/ZC-1),1)+' % bredere. Det er derfor lærebøker sier at t og z «møtes» ved store utvalg.'
+    : '<b>Her betyr valget noe.</b> Kritisk t er '+fmt(tc,3)+', altså '+fmt(100*(tc/ZC-1),1)+' % lenger ut enn 1,96. Brukte du 1,96 likevel, ville '+fmt(feil,1)+' % av studiene blitt kalt signifikante i en verden uten effekter, i stedet for 5 %.';
+}
+
+function drawB(){
+  const cv=$('cvB'),[c,w,h]=fit(cv);
+  const L=52,R=w-14,T=16,B=h-30;
+  const dfMax=238, X=d=>L+(Math.log(d)-Math.log(2))/(Math.log(dfMax)-Math.log(2))*(R-L);
+  const yLo=1.9,yHi=4.4, Y=v=>B-(Math.min(yHi,v)-yLo)/(yHi-yLo)*(B-T);
+  c.strokeStyle='#eef1f7';c.lineWidth=1;c.font='bold 13px system-ui';c.fillStyle='#8a94a6';c.textAlign='right';
+  for(let v=2.0;v<=4.4;v+=0.5){const y=Y(v);c.beginPath();c.moveTo(L,y);c.lineTo(R,y);c.stroke();c.fillText(fmt(v,1),L-8,y+4);}
+  // 1,96-linjen
+  c.strokeStyle='#8a94a6';c.lineWidth=2;c.setLineDash([6,5]);c.beginPath();c.moveTo(L,Y(ZC));c.lineTo(R,Y(ZC));c.stroke();c.setLineDash([]);
+  c.fillStyle='#8a94a6';c.textAlign='left';c.font='bold 14px system-ui';c.fillText('normalfordelingen: 1,96',L+8,Y(ZC)-7);
+  // kurven
+  c.strokeStyle='#2E5496';c.lineWidth=3.2;c.beginPath();
+  let f=true;
+  for(let d=2;d<=dfMax;d*=1.03){const y=Y(tcrit(d,0.05));f?(c.moveTo(X(d),y),f=false):c.lineTo(X(d),y);}
+  c.stroke();
+  c.strokeStyle='#1F3864';c.lineWidth=1;c.beginPath();c.moveTo(L,B);c.lineTo(R,B);c.stroke();
+  c.fillStyle='#8a94a6';c.textAlign='center';c.font='bold 13px system-ui';
+  [2,6,18,38,78,158,238].forEach(d=>c.fillText('df '+d,X(d),B+20));
+  const df=DF(), tc=tcrit(df,0.05);
+  c.fillStyle='#C0392B';c.beginPath();c.arc(X(Math.max(2,df)),Y(tc),6.5,0,7);c.fill();
+  $('statsB').innerHTML='<span class="stat">df = '+df+'</span>'+
+    '<span class="stat red">kritisk t = '+fmt(tc,3)+'</span>'+
+    '<span class="stat">df = 18 gir 2,101 · df = 38 gir 2,024 · df = 158 gir 1,975</span>';
+}
+
+function drawTable(){
+  const rader=[2,4,8,18,38,78,158];
+  const df=DF();
+  let ut='<table class="steg"><thead><tr><th>df</th><th>kritisk t</th><th>hvis du brukte 1,96</th><th>KI-bredde mot z</th></tr></thead><tbody>';
+  rader.forEach(d=>{
+    const tc=tcrit(d,0.05), feil=100*pT(ZC,d), br=100*(tc/ZC-1);
+    const nb=(d===df)?' style="background:#eef3fb"':'';
+    ut+='<tr'+nb+'><td>'+d+(d===df?' <b>(du er her)</b>':'')+'</td><td>'+fmt(tc,3)+'</td><td>'+fmt(feil,1)+' % falske positive</td><td>+'+fmt(br,1)+' %</td></tr>';
+  });
+  ut+='<tr><td>uendelig</td><td>1,960</td><td>5,0 % falske positive</td><td>+0,0 %</td></tr></tbody></table>';
+  $('tbl').innerHTML=ut;
+}
+
+function render(){drawA();drawB();drawTable();}
+$('n').addEventListener('input',()=>{$('no').textContent=N();render();});
+$('zoom').addEventListener('change',drawA);
+window.addEventListener('resize',render);
+$('no').textContent=N();
+render();
+
+/* ===== PSY300 anonym bruksstatistikk =====================================
+   Sender to signaler til det samme Apps Script-endepunktet som MCQ-appen:
+   ett når appen åpnes, ett når fanen lukkes (med antall sekunder aktiv og
+   antall interaksjoner). Ingen navn, ingen kode, ingen IP — bare app-id,
+   tidspunkt og varighet. Lim inn /exec-URL-en under; står plassholderen
+   igjen, sendes ingenting og appen fungerer helt som før.                */
+const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA05xK7n1rC0ex_UVpNAjJPYNmRqvGfgUGuXp0EclxmyFUeKeVktMfg5YQ/exec";
+(function(){
+  if(!PSY300_USAGE_URL || PSY300_USAGE_URL.indexOf("PASTE_")>=0) return;
+  var APP="Sim 17", NAVN="t mot normalfordelingen";
+  var t0=Date.now(), aktiv=0, sist=Date.now(), interaksjoner=0, sendt=false;
+  var sid=Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8);
+  // tell bare tid der fanen faktisk er synlig
+  function tikk(){ if(!document.hidden){ var na=Date.now(); aktiv+=Math.min(30000,na-sist); sist=na; } else { sist=Date.now(); } }
+  setInterval(tikk, 5000);
+  document.addEventListener("visibilitychange", tikk);
+  ["click","input","change","touchstart"].forEach(function(ev){
+    document.addEventListener(ev, function(){ interaksjoner++; }, {passive:true, capture:true});
+  });
+
+  /* Skiller underviserens egen bruk fra studentenes. Åpne en app én gang med
+     ?rolle=underviser, så huskes det i denne nettleseren til du åpner med
+     ?rolle=student. Ingen innlogging, ingen personopplysninger.            */
+  function PSY300_ROLLE(){
+    try{
+      var q=new URLSearchParams(location.search).get("rolle");
+      if(q==="underviser"||q==="student"){ localStorage.setItem("psy300_rolle",q); }
+      return localStorage.getItem("psy300_rolle")||"student";
+    }catch(e){ return "student"; }
+  }
+  function send(type){
+    if(type==="lukket"){ if(sendt) return; sendt=true; tikk(); }
+    var payload=JSON.stringify({kind:"usage", app:APP, navn:NAVN, event:type,
+      session_id:sid, sekunder:Math.round(aktiv/1000), interaksjoner:interaksjoner,
+      innebygd:(window.top!==window.self)?1:0, rolle:PSY300_ROLLE()});
+    try{
+      if(type==="lukket" && navigator.sendBeacon){
+        navigator.sendBeacon(PSY300_USAGE_URL, new Blob([payload],{type:"text/plain;charset=utf-8"}));
+      } else {
+        fetch(PSY300_USAGE_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:payload, keepalive:true}).catch(function(){});
+      }
+    }catch(e){}
+  }
+  send("apnet");
+  window.addEventListener("pagehide", function(){ send("lukket"); });
+  document.addEventListener("visibilitychange", function(){ if(document.hidden) send("lukket"); });
+})();
+/* ===== slutt bruksstatistikk ============================================ */
+
+/* ===== Presentasjonsmodus: skjuler brødtekst og ordliste, strammer marger === */
+(function(){
+  var b=document.createElement("button");
+  b.className="presbtn"; b.type="button";
+  b.title="Skjuler forklarende tekst og ordlisten, slik at figuren og kontrollene fyller lerretet (snarvei: P)";
+  var av="Presentasjonsmodus", pa="Vis all tekst igjen";
+  b.textContent=av;
+  function veksle(){
+    var på=document.body.classList.toggle("pres");
+    b.textContent=på?pa:av;
+    window.dispatchEvent(new Event("resize"));
+  }
+  b.addEventListener("click",veksle);
+  document.addEventListener("keydown",function(e){
+    if((e.key==="p"||e.key==="P")&&!/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) veksle();
+  });
+  document.body.appendChild(b);
+})();
+
+</script>
+</body></html>

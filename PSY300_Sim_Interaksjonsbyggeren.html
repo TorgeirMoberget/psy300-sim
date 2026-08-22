@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY300 · Sim 24 — Interaksjonsbyggeren (2×2)</title>
+<style>
+:root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--orange:#B9770E;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:20.5px;margin:0;font-weight:700}
+header p{margin:2px 0 0;font-size:15.5px;opacity:.85}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+h2{color:var(--navy);margin:.2em 0 .5em;font-size:19px}
+button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+.btn{background:var(--blue);color:#fff}.btn:hover{background:var(--navy)}
+.btn2{background:#eef1f7;color:var(--navy)}.btn2:hover{background:var(--light)}
+.tab{background:#eef1f7;color:var(--navy)}.tab.on{background:var(--navy);color:#fff}
+.muted{color:#62708a;font-size:16px}
+canvas{width:100%;display:block;touch-action:none}
+.grid{display:grid;grid-template-columns:3fr 2fr;gap:14px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+.stat{display:inline-block;background:var(--light);color:var(--navy);border-radius:8px;padding:3px 10px;font-size:15.5px;font-weight:600;margin:3px 4px 3px 0;font-variant-numeric:tabular-nums}
+.stat.red{background:#fbeceb;color:var(--red)}
+.stat.green{background:#eaf6ea;color:var(--green)}
+table{border-collapse:collapse;width:100%;font-size:17px;font-variant-numeric:tabular-nums}
+td,th{border:1px solid var(--line);padding:6px 8px;text-align:center}
+th{background:var(--light);color:var(--navy)}
+td small{color:#62708a}
+.verdict{border-radius:9px;padding:10px 12px;font-size:17px;margin-top:10px;font-weight:600}
+.v-none{background:#eaf6ea;border:1px solid #bfe0bf;color:var(--green)}
+.v-int{background:#fbeceb;border:1px solid #f0c5c1;color:var(--red)}
+.note{background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px;margin-top:10px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}
+.sl label{min-width:250px;font-weight:600;font-size:16px;color:var(--navy)}
+.sl input[type=range]{flex:1}
+.sl output{min-width:55px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--navy);font-size:17px}
+.hide{display:none}
+.gloss{font-size:15.5px}
+.gloss b{color:var(--navy)}
+.keybox{background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:12px 14px;margin:14px 0;font-size:16.5px}
+.keybox .lbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:4px}
+
+/* ===== Presentasjonsmodus (P) — for lerret under forelesning =============== */
+.presbtn{position:fixed;right:12px;bottom:12px;z-index:50;background:#fff;color:var(--navy);
+  border:1px solid var(--line);border-radius:20px;padding:7px 14px;font-size:14px;font-weight:700;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer;opacity:.75}
+.presbtn:hover{opacity:1}
+body.pres header{padding:6px 14px}
+body.pres header h1{font-size:17px}
+body.pres header p{display:none}
+body.pres .wrap{max-width:1240px;padding:6px 14px}
+body.pres .card{padding:10px 12px;margin:8px 0}
+body.pres h2{font-size:16.5px;margin:.1em 0 .3em}
+body.pres .muted:not([id]){display:none}
+body.pres .card.docs{display:none}
+body.pres .stat{font-size:16.5px}
+body.pres .sl{margin:4px 0}
+body.pres .sl label{font-size:15px;min-width:210px}
+body.pres .note{padding:8px 11px;margin-top:7px}
+body.pres .keybox{font-size:18px}
+</style></head><body>
+<header><h1>Sim 24 · Interaksjonsbyggeren (2×2)</h1>
+<p>PSY300 · Forelesning 6 (med tilbakeblikk til forelesning 2) · Interaksjoner i gjennomsnitt — og i frekvensdata</p></header>
+<div class="wrap">
+
+<div class="card">
+<button class="tab on" id="tabA">Del A: Interaksjon i gjennomsnitt (faktoriell ANOVA)</button>
+<button class="tab" id="tabB">Del B: Kjikvadrat som «interaksjon» i frekvensdata</button>
+</div>
+
+<!-- ================= DEL A ================= -->
+<div id="modeA">
+<div class="card">
+<h2>Gruppe × Kjønn på emosjonsundertrykking ved oppfølging</h2>
+<p class="muted"><b>Dra de fire punktene</b> opp og ned (populasjonsgjennomsnitt, ingen støy, så du ser strukturen rent). Blå linje = kvinner, oransje = menn.</p>
+<div class="grid">
+<div><canvas id="cv" height="340"></canvas></div>
+<div>
+<table id="tbl"></table>
+<div id="effects" style="margin-top:10px"></div>
+<div id="verdict" class="verdict v-none"></div>
+</div>
+</div>
+<div style="margin-top:8px">
+<span class="muted">Forhåndsinnstillinger: </span>
+<button class="btn2" data-p="add">Additivt (parallelle linjer)</button>
+<button class="btn2" data-p="cross">Kryssende interaksjon</button>
+<button class="btn2" data-p="ord">Ordinal interaksjon</button>
+<button class="btn2" data-p="main">Kun hovedeffekt av gruppe</button>
+<button class="btn2" data-p="none">Ingen effekter</button>
+</div>
+</div>
+<div class="card note"><b>Lesetips:</b> Hovedeffekten av gruppe er avstanden mellom <i>marginalgjennomsnittene</i> (gjennomsnittet av begge kjønn). Interaksjonen er at terapieffekten er <i>forskjellig</i> for kvinner og menn, de enkle effektene spriker, og linjene blir u-parallelle. Lag en kryssende interaksjon der begge hovedeffektene er ≈ 0: «ingen hovedeffekter» betyr da ikke «ingenting skjer». Det er nettopp da hovedeffekter villeder.</div>
+</div>
+
+<!-- ================= DEL B ================= -->
+<div id="modeB" class="hide">
+<div class="card">
+<h2>Samme spørsmål med telledata: er fordelingen av én variabel den samme på alle nivåer av den andre?</h2>
+<p class="muted">Kjikvadrattesten for <b>uavhengighet</b> (fra forelesning 2) er frekvensdataenes interaksjonstest: <b>uavhengighet = «parallelle proporsjoner»</b> (andelen med medisinbruk er lik i begge grupper), og avvik fra uavhengighet = fordelingen avhenger av gruppen, en interaksjon. Hovedeffektene? Det er bare marginalene (rad- og kolonnesummene); kjikvadrat spør om du trenger <i>mer enn marginalene</i> for å forklare cellene, akkurat som ANOVA spør om du trenger mer enn hovedeffektene.</p>
+<div class="sl"><label>Sann andel medisinbruk i terapigruppen</label><input type="range" id="p1" min="0.05" max="0.95" step="0.01" value="0.72"><output id="p1Out">72 %</output></div>
+<div class="sl"><label>Sann andel medisinbruk i ventelistegruppen</label><input type="range" id="p2" min="0.05" max="0.95" step="0.01" value="0.82"><output id="p2Out">82 %</output></div>
+<div class="sl"><label>n per gruppe</label><input type="range" id="nB" min="20" max="500" step="5" value="38"><output id="nBOut">38</output></div>
+<button class="btn" id="drawB1">Trekk ett utvalg</button>
+<button class="btn" id="drawB1000">Kjør 1 000 studier</button>
+<button class="btn2" id="realB">Ekte data: Medisinbruk × Gruppe (N = 75)</button>
+</div>
+
+<div class="grid">
+<div class="card">
+<h2>«Interaksjonsplottet» for proporsjoner</h2>
+<p class="muted">Sanne andeler (stiplet) og siste utvalg (heltrukket). Flat linje = uavhengighet.</p>
+<canvas id="cvB" height="280"></canvas>
+</div>
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>En interaksjon betyr at effekten av den ene faktoren <i>avhenger av</i> nivået på den andre. Er samspillet sterkt, blir hovedeffektene misvisende alene. Da må funnet beskrives betinget.</b></div></div>
+
+<div class="card">
+<h2>Krysstabellen og testen</h2>
+<table id="tblB"></table>
+<div id="chiOut" style="margin-top:10px" class="muted">Trekk et utvalg.</div>
+<div id="verdictB" class="verdict v-none hide"></div>
+<div id="simB" class="muted" style="margin-top:6px"></div>
+</div>
+</div>
+
+<div class="card note"><b>Koblingen til forelesning 2 og 6:</b> I forelesning 2 brukte vi denne testen som randomiseringssjekk: Medisinbruk × Gruppe ga χ²(1) = 1,032, p = ,310. Medisinbruk er (statistisk sett) likt fordelt i begge grupper, dvs. <i>ingen interaksjon</i> mellom medisinbruk og gruppetilhørighet. Trykk «Ekte data» og se nøyaktig de tallene. Formelt: i en log-lineær modell av tabellen er kjikvadrattesten testen av <b>interaksjonsleddet</b>. Hovedeffektene (marginalene) er allerede bakt inn i de forventede frekvensene. Sett så begge sanne andeler like og kjør 1 000 studier: ≈ 5 % blir «signifikante». Kjikvadrat har samme type I-logikk som alle NHST-tester.</div>
+</div>
+
+<div class="card docs" id="ordforklaringer">
+<h2>Ordforklaringer</h2>
+<div class="gloss">
+<p><b>M</b> — gjennomsnittet i et utvalg (skrives også x̄). <b>Median</b> = midtverdien når verdiene sorteres. <b>Modus</b> = den hyppigste verdien.<br>
+<b>p-verdi</b> — sannsynligheten for et resultat minst så ekstremt som ditt, <i>gitt at H₀ er sann</i>. Ikke sannsynligheten for at H₀ er sann.<br>
+<b>Type I-feil</b> — å finne en effekt som ikke finnes (falsk positiv). <b>Type II-feil</b> — å overse en effekt som finnes (falsk negativ).<br>
+<b>NHST</b> — nullhypotesetesting (null hypothesis significance testing): rammeverket med H₀, p-verdier og signifikansgrenser.<br>
+<b>ANOVA</b> — variansanalyse (analysis of variance): tester om flere gruppegjennomsnitt er like.<br>
+<b>χ² (kjikvadrat)</b> — test for frekvensdata: sammenligner observerte og forventede antall i en krysstabell.<br>
+<b>Interaksjon</b> — at effekten av én faktor avhenger av nivået på en annen. I figuren: ikke-parallelle linjer.</p>
+</div>
+</div>
+
+</div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const fmt=(x,d=1)=>x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+function ctx2d(cv){const r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);return [c,w,h];}
+
+// ================= DEL A =================
+let cells={KT:18,KV:28,MT:22,MV:28};
+const Y_LO=10,Y_HI=36;
+let dragKey=null;
+function geom(){
+  const cv=$('cv'),w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  const x1=w*0.28,x2=w*0.78;
+  const Y=v=>h-40-(v-Y_LO)/(Y_HI-Y_LO)*(h-60);
+  return {w,h,x1,x2,Y};
+}
+function draw(){
+  const cv=$('cv'),[c,w,h]=ctx2d(cv);
+  c.clearRect(0,0,w,h);
+  const {x1,x2,Y}=geom();
+  c.strokeStyle='#e3e8f0';c.strokeRect(w*0.14,10,w*0.8,h-50);
+  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';
+  c.fillText('Terapi',x1,h-22);c.fillText('Venteliste',x2,h-22);
+  c.textAlign='right';c.font='bold 16px sans-serif';
+  for(let v=Y_LO;v<=Y_HI;v+=5)c.fillText(v,w*0.14-5,Y(v)+3);
+  c.save();c.translate(12,h/2);c.rotate(-Math.PI/2);c.textAlign='center';c.font='bold 16px sans-serif';
+  c.fillText('Emosjonsundertrykking (oppfølging)',0,0);c.restore();
+  const series=[['KT','KV','#2E5496','Kvinner'],['MT','MV','#B9770E','Menn']];
+  for(const [k1,k2,col,lab] of series){
+    c.strokeStyle=col;c.lineWidth=3;
+    c.beginPath();c.moveTo(x1,Y(cells[k1]));c.lineTo(x2,Y(cells[k2]));c.stroke();
+    for(const [k,x] of [[k1,x1],[k2,x2]]){
+      c.fillStyle='#fff';c.strokeStyle=col;c.lineWidth=3;
+      c.beginPath();c.arc(x,Y(cells[k]),9,0,7);c.fill();c.stroke();
+    }
+    c.fillStyle=col;c.font='bold 17px sans-serif';c.textAlign='left';
+    c.fillText(lab,x2+14,Y(cells[k2])+4);
+  }
+  updatePanel();
+}
+function updatePanel(){
+  const {KT,KV,MT,MV}=cells;
+  const margT=(KT+MT)/2,margV=(KV+MV)/2;
+  const margK=(KT+KV)/2,margM=(MT+MV)/2;
+  const meGruppe=margT-margV,meKjonn=margK-margM;
+  const effK=KT-KV,effM=MT-MV,inter=effK-effM;
+  $('tbl').innerHTML='<tr><th></th><th>Terapi</th><th>Venteliste</th><th>Marginal</th></tr>'+
+    '<tr><th>Kvinner</th><td>'+fmt(KT)+'</td><td>'+fmt(KV)+'</td><td><b>'+fmt(margK)+'</b></td></tr>'+
+    '<tr><th>Menn</th><td>'+fmt(MT)+'</td><td>'+fmt(MV)+'</td><td><b>'+fmt(margM)+'</b></td></tr>'+
+    '<tr><th>Marginal</th><td><b>'+fmt(margT)+'</b></td><td><b>'+fmt(margV)+'</b></td><td></td></tr>';
+  $('effects').innerHTML=
+    '<span class="stat">Hovedeffekt gruppe: '+fmt(meGruppe)+'</span>'+
+    '<span class="stat">Hovedeffekt kjønn: '+fmt(meKjonn)+'</span><br>'+
+    '<span class="stat">Terapieffekt hos kvinner: '+fmt(effK)+'</span>'+
+    '<span class="stat">hos menn: '+fmt(effM)+'</span><br>'+
+    '<span class="stat '+(Math.abs(inter)>1?'red':'green')+'">Interaksjon (forskjellen): '+fmt(inter)+'</span>';
+  const v=$('verdict');
+  if(Math.abs(inter)<=1){
+    v.className='verdict v-none';
+    v.textContent='Linjene er (omtrent) parallelle → ingen interaksjon. Hovedeffektene kan tolkes direkte.';
+  } else if((effK<0)!==(effM<0) && Math.abs(effK)>1 && Math.abs(effM)>1){
+    v.className='verdict v-int';
+    v.textContent='Kryssende interaksjon: terapien virker i motsatt retning for kvinner og menn. Hovedeffekten av gruppe ('+fmt(meGruppe)+') skjuler dette fullstendig!';
+  } else {
+    v.className='verdict v-int';
+    v.textContent='Interaksjon: terapieffekten avhenger av kjønn. Tolk de enkle effektene, ikke bare hovedeffekten.';
+  }
+}
+(function(){
+  const cv=$('cv');
+  const keyAt=(px,py)=>{
+    const {x1,x2,Y}=geom();
+    const pts=[['KT',x1,cells.KT],['KV',x2,cells.KV],['MT',x1,cells.MT],['MV',x2,cells.MV]];
+    let best=null,bd=1e9;
+    for(const [k,x,v] of pts){const d=(px-x)**2+(py-Y(v))**2;if(d<bd){bd=d;best=k;}}
+    return bd<900?best:null;
+  };
+  const pos=e=>{const r=cv.getBoundingClientRect();return [
+    (e.touches?e.touches[0].clientX:e.clientX)-r.left,
+    (e.touches?e.touches[0].clientY:e.clientY)-r.top];};
+  const move=e=>{
+    if(!dragKey)return;
+    const [,py]=pos(e);
+    const h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+    let v=Y_LO+(h-40-py)/(h-60)*(Y_HI-Y_LO);
+    cells[dragKey]=Math.max(Y_LO,Math.min(Y_HI,Math.round(v*2)/2));
+    draw();
+  };
+  cv.addEventListener('mousedown',e=>{const [px,py]=pos(e);dragKey=keyAt(px,py);});
+  window.addEventListener('mousemove',e=>{if(dragKey)move(e);});
+  window.addEventListener('mouseup',()=>dragKey=null);
+  cv.addEventListener('touchstart',e=>{const [px,py]=pos(e);dragKey=keyAt(px,py);e.preventDefault();});
+  cv.addEventListener('touchmove',e=>{move(e);e.preventDefault();});
+  cv.addEventListener('touchend',()=>dragKey=null);
+})();
+const PRESETS={
+  add:{KT:18,KV:28,MT:22,MV:32},
+  cross:{KT:16,KV:30,MT:30,MV:16},
+  ord:{KT:16,KV:30,MT:26,MV:30},
+  main:{KT:18,KV:28,MT:18,MV:28},
+  none:{KT:24,KV:24,MT:24,MV:24}
+};
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{cells={...PRESETS[b.dataset.p]};draw();});
+
+// ================= DEL B =================
+// chi-square (1 df): p = 2*(1-Phi(sqrt(x)))  — normal CDF via erf (A&S 7.1.26)
+function erf(x){const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);
+  const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);
+  return s*y;}
+const Phi=z=>0.5*(1+erf(z/Math.SQRT2));
+const chi1p=x=>2*(1-Phi(Math.sqrt(Math.max(x,0))));
+function chi2x2(a,b,c,d){ // a=T-Ja, b=T-Nei, c=V-Ja, d=V-Nei
+  const N=a+b+c+d;
+  const num=N*Math.pow(a*d-b*c,2);
+  const den=(a+b)*(c+d)*(a+c)*(b+d);
+  return den>0?num/den:0;
+}
+let obsB=null; // {a,b,c,d,label}
+function sampleB(){
+  const p1=+$('p1').value,p2=+$('p2').value,n=+$('nB').value;
+  let a=0,c=0;
+  for(let i=0;i<n;i++){if(Math.random()<p1)a++;if(Math.random()<p2)c++;}
+  obsB={a,b:n-a,c,d:n-c,label:'simulert utvalg'};
+  renderB();
+}
+function realDataB(){
+  // Ekte krysstabell fra Psykoterapi_RCT_data (N=75): ISTDP 26 Ja/10 Nei; Venteliste 32 Ja/7 Nei
+  obsB={a:26,b:10,c:32,d:7,label:'ekte data (N = 75)'};
+  $('p1').value=26/36;$('p2').value=32/39;$('nB').value=38;
+  syncB();renderB();
+}
+function runManyB(){
+  const p1=+$('p1').value,p2=+$('p2').value,n=+$('nB').value;
+  let sig=0;const K=1000;
+  for(let s=0;s<K;s++){
+    let a=0,c=0;
+    for(let i=0;i<n;i++){if(Math.random()<p1)a++;if(Math.random()<p2)c++;}
+    if(chi1p(chi2x2(a,n-a,c,n-c))<0.05)sig++;
+  }
+  const same=Math.abs(p1-p2)<0.001;
+  $('simB').innerHTML='<span class="stat '+(same?'red':'green')+'">'+fmt(100*sig/K,1)+' % av 1 000 studier signifikante</span>'+
+    (same?'<span class="stat">like sanne andeler → dette er type I-feilraten (≈ 5 %)</span>'
+         :'<span class="stat">= styrken til å oppdage «interaksjonen» ved denne n</span>');
+}
+function renderB(){
+  drawBplot();
+  if(!obsB){$('tblB').innerHTML='';return;}
+  const {a,b,c,d,label}=obsB;
+  const N=a+b+c+d;
+  // expected counts under independence (main effects / margins only)
+  const eA=(a+b)*(a+c)/N,eB=(a+b)*(b+d)/N,eC=(c+d)*(a+c)/N,eD=(c+d)*(b+d)/N;
+  const chi=chi2x2(a,b,c,d),p=chi1p(chi);
+  $('tblB').innerHTML='<tr><th>'+label+'</th><th>Medisin: Ja</th><th>Medisin: Nei</th><th>Sum</th></tr>'+
+    '<tr><th>Terapi</th><td>'+a+'<br><small>forv. '+fmt(eA)+'</small></td><td>'+b+'<br><small>forv. '+fmt(eB)+'</small></td><td><b>'+(a+b)+'</b></td></tr>'+
+    '<tr><th>Venteliste</th><td>'+c+'<br><small>forv. '+fmt(eC)+'</small></td><td>'+d+'<br><small>forv. '+fmt(eD)+'</small></td><td><b>'+(c+d)+'</b></td></tr>'+
+    '<tr><th>Sum</th><td><b>'+(a+c)+'</b></td><td><b>'+(b+d)+'</b></td><td><b>'+N+'</b></td></tr>';
+  $('chiOut').innerHTML='<span class="stat">χ²(1) = '+fmt(chi,3)+'</span>'+
+    '<span class="stat '+(p<0.05?'red':'green')+'">p = '+(p<0.001?'&lt; 0,001':fmt(p,3))+'</span>'+
+    '<span class="stat">andel Ja: terapi '+fmt(100*a/(a+b),0)+' % vs. venteliste '+fmt(100*c/(c+d),0)+' %</span>';
+  const v=$('verdictB');v.classList.remove('hide');
+  if(p<0.05){
+    v.className='verdict v-int';
+    v.textContent='Avvik fra uavhengighet: fordelingen av medisinbruk avhenger av gruppe — frekvensdataenes «interaksjon». De forventede frekvensene (marginalene alene) er ikke nok til å forklare cellene.';
+  } else {
+    v.className='verdict v-none';
+    v.textContent='Uavhengighet kan ikke forkastes: andelene er «parallelle» — marginalene (hovedeffektene) forklarer cellene godt nok. Ingen interaksjon.';
+  }
+}
+function drawBplot(){
+  const cv=$('cvB'),[c,w,h]=ctx2d(cv);
+  c.clearRect(0,0,w,h);
+  const x1=w*0.28,x2=w*0.78;
+  const Y=p=>h-40-p*(h-60);
+  c.strokeStyle='#e3e8f0';c.strokeRect(w*0.14,10,w*0.8,h-50);
+  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';
+  c.fillText('Terapi',x1,h-22);c.fillText('Venteliste',x2,h-22);
+  c.textAlign='right';c.font='bold 16px sans-serif';
+  for(let p=0;p<=1;p+=0.25)c.fillText(fmt(100*p,0)+'%',w*0.14-5,Y(p)+3);
+  c.save();c.translate(12,h/2);c.rotate(-Math.PI/2);c.textAlign='center';c.font='bold 16px sans-serif';
+  c.fillText('Andel med medisinbruk',0,0);c.restore();
+  // true proportions (dashed)
+  const p1=+$('p1').value,p2=+$('p2').value;
+  c.strokeStyle='#9aa5bb';c.lineWidth=2;c.setLineDash([6,5]);
+  c.beginPath();c.moveTo(x1,Y(p1));c.lineTo(x2,Y(p2));c.stroke();c.setLineDash([]);
+  for(const [x,p] of [[x1,p1],[x2,p2]]){
+    c.fillStyle='#9aa5bb';c.beginPath();c.arc(x,Y(p),5,0,7);c.fill();
+  }
+  // observed (solid)
+  if(obsB){
+    const o1=obsB.a/(obsB.a+obsB.b),o2=obsB.c/(obsB.c+obsB.d);
+    c.strokeStyle='#2E5496';c.lineWidth=3;
+    c.beginPath();c.moveTo(x1,Y(o1));c.lineTo(x2,Y(o2));c.stroke();
+    for(const [x,p] of [[x1,o1],[x2,o2]]){
+      c.fillStyle='#fff';c.strokeStyle='#2E5496';c.lineWidth=3;
+      c.beginPath();c.arc(x,Y(p),8,0,7);c.fill();c.stroke();
+    }
+    c.fillStyle='#2E5496';c.font='bold 16px sans-serif';c.textAlign='left';
+    c.fillText('observert',x2+12,Y(o2)+4);
+  }
+  c.fillStyle='#9aa5bb';c.font='bold 16px sans-serif';c.textAlign='left';
+  c.fillText('sannhet',x2+12,Y(p2)-12);
+}
+function syncB(){
+  $('p1Out').textContent=fmt(100*+$('p1').value,0)+' %';
+  $('p2Out').textContent=fmt(100*+$('p2').value,0)+' %';
+  $('nBOut').textContent=$('nB').value;
+}
+$('p1').oninput=()=>{syncB();drawBplot();};
+$('p2').oninput=()=>{syncB();drawBplot();};
+$('nB').oninput=syncB;
+$('drawB1').onclick=sampleB;
+$('drawB1000').onclick=runManyB;
+$('realB').onclick=realDataB;
+
+// tabs
+$('tabA').onclick=()=>{$('tabA').classList.add('on');$('tabB').classList.remove('on');$('modeA').classList.remove('hide');$('modeB').classList.add('hide');draw();};
+$('tabB').onclick=()=>{$('tabB').classList.add('on');$('tabA').classList.remove('on');$('modeB').classList.remove('hide');$('modeA').classList.add('hide');syncB();renderB();};
+const __fsRedraw=()=>{if($('modeA').classList.contains('hide')){renderB();}else{draw();}};
+(function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
+const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
+window.addEventListener('resize',kick);
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{kick();setTimeout(safe,600);}));
+let __mis=0;
+setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
+ document.querySelectorAll('canvas').forEach(c=>{if(c.clientWidth>0&&c.width>0&&Math.abs(c.width-Math.round(c.clientWidth*r))>2)bad=true;});
+ __mis=bad?__mis+1:0;
+ if(__mis>=2){__mis=0;safe();}},700);})();
+draw();syncB();
+
+/* ===== PSY300 anonym bruksstatistikk =====================================
+   Sender to signaler til det samme Apps Script-endepunktet som MCQ-appen:
+   ett når appen åpnes, ett når fanen lukkes (med antall sekunder aktiv og
+   antall interaksjoner). Ingen navn, ingen kode, ingen IP — bare app-id,
+   tidspunkt og varighet. Lim inn /exec-URL-en under; står plassholderen
+   igjen, sendes ingenting og appen fungerer helt som før.                */
+const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA05xK7n1rC0ex_UVpNAjJPYNmRqvGfgUGuXp0EclxmyFUeKeVktMfg5YQ/exec";
+(function(){
+  if(!PSY300_USAGE_URL || PSY300_USAGE_URL.indexOf("PASTE_")>=0) return;
+  var APP="Sim 24", NAVN="Interaksjonsbyggeren";
+  var t0=Date.now(), aktiv=0, sist=Date.now(), interaksjoner=0, sendt=false;
+  var sid=Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8);
+  // tell bare tid der fanen faktisk er synlig
+  function tikk(){ if(!document.hidden){ var na=Date.now(); aktiv+=Math.min(30000,na-sist); sist=na; } else { sist=Date.now(); } }
+  setInterval(tikk, 5000);
+  document.addEventListener("visibilitychange", tikk);
+  ["click","input","change","touchstart"].forEach(function(ev){
+    document.addEventListener(ev, function(){ interaksjoner++; }, {passive:true, capture:true});
+  });
+
+  /* Skiller underviserens egen bruk fra studentenes. Åpne en app én gang med
+     ?rolle=underviser, så huskes det i denne nettleseren til du åpner med
+     ?rolle=student. Ingen innlogging, ingen personopplysninger.            */
+  function PSY300_ROLLE(){
+    try{
+      var q=new URLSearchParams(location.search).get("rolle");
+      if(q==="underviser"||q==="student"){ localStorage.setItem("psy300_rolle",q); }
+      return localStorage.getItem("psy300_rolle")||"student";
+    }catch(e){ return "student"; }
+  }
+  function send(type){
+    if(type==="lukket"){ if(sendt) return; sendt=true; tikk(); }
+    var payload=JSON.stringify({kind:"usage", app:APP, navn:NAVN, event:type,
+      session_id:sid, sekunder:Math.round(aktiv/1000), interaksjoner:interaksjoner,
+      innebygd:(window.top!==window.self)?1:0, rolle:PSY300_ROLLE()});
+    try{
+      if(type==="lukket" && navigator.sendBeacon){
+        navigator.sendBeacon(PSY300_USAGE_URL, new Blob([payload],{type:"text/plain;charset=utf-8"}));
+      } else {
+        fetch(PSY300_USAGE_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:payload, keepalive:true}).catch(function(){});
+      }
+    }catch(e){}
+  }
+  send("apnet");
+  window.addEventListener("pagehide", function(){ send("lukket"); });
+  document.addEventListener("visibilitychange", function(){ if(document.hidden) send("lukket"); });
+})();
+/* ===== slutt bruksstatistikk ============================================ */
+
+/* ===== Presentasjonsmodus: skjuler brødtekst og ordliste, strammer marger === */
+(function(){
+  var b=document.createElement("button");
+  b.className="presbtn"; b.type="button";
+  b.title="Skjuler forklarende tekst og ordlisten, slik at figuren og kontrollene fyller lerretet (snarvei: P)";
+  var av="Presentasjonsmodus", pa="Vis all tekst igjen";
+  b.textContent=av;
+  function veksle(){
+    var på=document.body.classList.toggle("pres");
+    b.textContent=på?pa:av;
+    window.dispatchEvent(new Event("resize"));
+  }
+  b.addEventListener("click",veksle);
+  document.addEventListener("keydown",function(e){
+    if((e.key==="p"||e.key==="P")&&!/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) veksle();
+  });
+  document.body.appendChild(b);
+})();
+</script>
+</body></html>
