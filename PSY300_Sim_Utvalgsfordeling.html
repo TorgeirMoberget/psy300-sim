@@ -53,14 +53,8 @@ body.pres .keybox{font-size:18px}
 <div class="wrap">
 
 <div class="card">
-<h2>Populasjonen: Depresjon ved baseline (N = 10 000 pasienter)</h2>
-<p class="muted">Dette er «virkeligheten» vi vanligvis aldri ser: alle 10 000 pasienter med behandlingsresistent depresjon. Eksamensdatasettet (N = 75) er ett tilfeldig utvalg herfra. Merk at populasjonen er <b>skjev</b> (takeffekt ved 35), den er ikke normalfordelt.</p>
-<div style="margin:4px 0 8px"><label style="font-weight:600;color:var(--navy);font-size:16px">Variabel: <select id="vsel2" style="padding:6px 8px;border:1px solid #d9dee8;border-radius:8px;font-size:16px;font-family:inherit"><option value="dep" selected>Depresjon (pre) · Terapi-RCT</option><option value="undf">Undertrykkende forsvar (pre) · Terapi-RCT</option><option value="agg">Aggresjonsundertrykking (pre) · Terapi-RCT</option><option value="selvt">Statistikk-selvtillit (pre) · arbeidskravet</option><option value="selvk">Selvkritisk perfeksjonisme · arbeidskravet</option><option value="angst">Angstsensitivitet · arbeidskravet</option></select></label> <span id="popInfo2" class="muted"></span></div><canvas id="cvPop" height="170"></canvas>
-<span class="stat">μ = 30,04</span><span class="stat">σ = 3,77</span><span class="stat">skjevhet = −0,44</span>
-</div>
-
-<div class="card">
 <h2>Trekk utvalg</h2>
+<div style="margin:2px 0 10px"><label style="font-weight:600;color:var(--navy);font-size:16px">Variabel (gjelder både populasjon og utvalg): <select id="vsel2" style="padding:6px 8px;border:1px solid #d9dee8;border-radius:8px;font-size:16px;font-family:inherit"><option value="dep" selected>Depresjon (pre) · Terapi-RCT</option><option value="undf">Undertrykkende forsvar (pre) · Terapi-RCT</option><option value="agg">Aggresjonsundertrykking (pre) · Terapi-RCT</option><option value="selvt">Statistikk-selvtillit (pre) · arbeidskravet</option><option value="selvk">Selvkritisk perfeksjonisme · arbeidskravet</option><option value="angst">Angstsensitivitet · arbeidskravet</option></select></label> <span id="popInfo2" class="muted"></span></div>
 <div>
 <span class="muted" style="margin-right:6px">Utvalgsstørrelse n:</span>
 <button class="nbtn" data-n="5">n = 5</button>
@@ -79,22 +73,29 @@ body.pres .keybox{font-size:18px}
 
 <div class="grid">
 <div class="card">
+<h2>Populasjonen (N = 10 000)</h2>
+<p class="muted">«Virkeligheten» vi ellers aldri ser. Merk at den er <b>skjev</b>, ikke normalfordelt.</p>
+<canvas id="cvPop" height="165"></canvas>
+<div id="popStats"></div>
+</div>
+<div class="card">
 <h2>Siste utvalg</h2>
-<p class="muted">Ett histogram = én studie. Gjennomsnittet (blå strek) blir ett datapunkt i panelet til høyre.</p>
-<canvas id="cvSamp" height="180"></canvas>
+<p class="muted">Ett histogram = én studie. Gjennomsnittet (blå strek) blir ett datapunkt i panelet under.</p>
+<canvas id="cvSamp" height="165"></canvas>
 <div id="sampStats" class="muted">Trekk et utvalg for å starte.</div>
 </div>
-<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>Standardfeilen er ikke spredningen i dataene, men spredningen i <i>gjennomsnittet ditt</i> fra utvalg til utvalg: SE = σ/√n. Firedoble n, og du halverer usikkerheten. Presisjon kjøpes med kvadratroten av deltakere.</b></div></div>
+</div>
 
 <div class="card">
 <h2>Utvalgsfordelingen til gjennomsnittet</h2>
 <p class="muted">Hvert punkt her er gjennomsnittet fra <i>én hel studie</i>. Rød strek = populasjonens μ.</p>
 <div style="margin:4px 0"><button class="btn2" id="freeze">Frys denne fordelingen (behold som bakgrunn)</button> <button class="btn2" id="unfreeze">Fjern frossen</button> <span id="frozenLab" class="muted"></span></div>
-<canvas id="cvMeans" height="210"></canvas>
+<canvas id="cvMeans" height="400"></canvas>
 <div class="muted" style="font-size:15px;margin-top:2px"><b style="color:#4a7fc1">Blå søyler</b> = fordelingen du bygger nå · <b style="color:#B26A00">oransje omriss</b> = den frosne til sammenligning · <b style="color:#C0392B">rød stiplet</b> = populasjonens sanne gjennomsnitt μ</div>
 <div id="meanStats" class="muted">Ingen utvalg trukket ennå.</div>
 </div>
-</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>Standardfeilen er ikke spredningen i dataene, men spredningen i <i>gjennomsnittet ditt</i> fra utvalg til utvalg: SE = σ/√n. Firedoble n, og du halverer usikkerheten. Presisjon kjøpes med kvadratroten av deltakere.</b></div></div>
 
 <div class="card note" id="teach">
 <b>Hva skal du se?</b> (1) Gjennomsnittene klumper seg rundt μ, de fleste studier treffer nesten riktig. (2) Spredningen av gjennomsnittene (den <i>observerte</i> SE) matcher formelen σ/√n. (3) Øk n: fordelingen smalner. Det er hele poenget med store utvalg. (4) Populasjonen er skjev, men utvalgsfordelingen blir normal. Det er <b>sentralgrenseteoremet</b>.
@@ -130,7 +131,14 @@ function setVar(k){
   POP=[];
   for(const key in FREQ){const val=+key;for(let i=0;i<FREQ[key];i++)POP.push(val);}
   const el=document.getElementById('popInfo2');
-  if(el)el.textContent='('+v.kilde+' · μ = '+MU.toLocaleString('nb-NO')+', σ = '+SIGMA.toLocaleString('nb-NO')+')';
+  if(el)el.textContent='('+v.kilde+')';
+  /* populasjonstallene må følge valgt variabel, ikke stå hardkodet i HTML-en */
+  let sum3=0; for(const x of POP) sum3+=Math.pow((x-MU)/SIGMA,3);
+  const skjev=sum3/POP.length;
+  const ps=document.getElementById('popStats');
+  if(ps) ps.innerHTML='<span class="stat">μ = '+MU.toLocaleString('nb-NO',{minimumFractionDigits:2,maximumFractionDigits:2})+
+    '</span><span class="stat">σ = '+SIGMA.toLocaleString('nb-NO',{minimumFractionDigits:2,maximumFractionDigits:2})+
+    '</span><span class="stat">skjevhet = '+skjev.toLocaleString('nb-NO',{minimumFractionDigits:2,maximumFractionDigits:2})+'</span>';
 }
 setVar('dep');
 
