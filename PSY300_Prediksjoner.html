@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY300 · Prediksjoner — stem før demoen</title>
+<style>
+:root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--orange:#B26A00;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
+.wrap{max-width:820px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:20.5px;margin:0;font-weight:700}
+header p{margin:2px 0 0;font-size:15.5px;opacity:.85}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+h2{color:var(--navy);margin:.1em 0 .5em;font-size:21px;line-height:1.35}
+.kick{font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--blue);font-weight:700}
+.muted{color:#62708a;font-size:16px}
+.opt{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:11px;
+     padding:14px 16px;margin:9px 0;font-size:18px;font-family:inherit;cursor:pointer;line-height:1.4}
+.opt:hover:not(:disabled){border-color:var(--blue);background:#f7f9ff}
+.opt:disabled{cursor:default}
+.opt .ltr{display:inline-block;width:30px;height:30px;line-height:30px;text-align:center;border-radius:50%;
+     background:var(--light);color:var(--navy);font-weight:700;margin-right:12px;flex:none}
+.opt.valgt{border-color:var(--blue);background:#eef3fb}
+.opt.valgt .ltr{background:var(--blue);color:#fff}
+.opt.riktig{border-color:var(--green);background:#eaf6ea}
+.opt.riktig .ltr{background:var(--green);color:#fff}
+.opt.galt{border-color:var(--red);background:#fbeceb}
+.kvittering{background:#eaf6ea;border:1px solid #bcdcbc;border-left:5px solid var(--green);border-radius:10px;
+     padding:13px 15px;margin:14px 0;font-size:17px;color:#1d4620}
+.btn{background:var(--blue);color:#fff;border:0;border-radius:9px;padding:10px 18px;font-size:17px;font-weight:600;font-family:inherit;cursor:pointer;margin:3px}
+.btn:hover{background:var(--navy)}
+.btn2{background:#eef1f7;color:var(--navy);border:0;border-radius:9px;padding:10px 18px;font-size:17px;font-weight:600;font-family:inherit;cursor:pointer;margin:3px}
+.laererpanel{background:#fff8ec;border:1px solid #f0dcb8;border-left:5px solid var(--orange);border-radius:10px;padding:14px 16px;margin:14px 0}
+.laererpanel .lbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:6px}
+canvas{width:100%;display:block;margin:8px 0}
+.expl{background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:13px 15px;margin:12px 0;font-size:17px}
+.liste a{display:block;padding:11px 14px;border:1px solid var(--line);border-radius:10px;margin:7px 0;
+     text-decoration:none;color:#1a2233;background:#fff;font-size:16.5px}
+.liste a:hover{border-color:var(--blue);background:#f7f9ff}
+.liste b{color:var(--navy)}
+.flab{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);font-weight:700;margin:18px 0 4px}
+.hide{display:none !important}
+.simlenke{font-size:15.5px;color:var(--blue)}
+body.pres .wrap{max-width:1100px}
+body.pres h2{font-size:27px}
+body.pres .opt{font-size:22px;padding:17px 19px}
+body.pres .kvittering,body.pres .expl{font-size:20px}
+</style></head><body>
+
+<header>
+<h1>PSY300 · Prediksjoner</h1>
+<p>Stem før demoen. Fasit kommer fra simuleringen, ikke fra meg.</p>
+</header>
+
+<div class="wrap">
+
+<!-- ===== ett spørsmål ===== -->
+<div id="enkelt" class="hide">
+  <div class="card">
+    <div class="kick" id="kick"></div>
+    <h2 id="sporsmal"></h2>
+    <div id="valg"></div>
+    <div id="kvittering" class="kvittering hide"></div>
+    <p class="muted" id="simlenke"></p>
+  </div>
+
+  <div id="laerer" class="laererpanel hide">
+    <span class="lbl">Kun for underviser</span>
+    <button class="btn" id="visResultat">Vis klassens svar</button>
+    <button class="btn2" id="visFasit">Vis fasit</button>
+    <button class="btn2" id="oppdater">Hent på nytt</button>
+    <span class="muted" id="antall"></span>
+    <canvas id="graf" height="230" class="hide"></canvas>
+    <div id="fasitboks" class="hide"></div>
+  </div>
+</div>
+
+<!-- ===== oversikt ===== -->
+<div id="oversikt" class="hide">
+  <div class="card">
+    <h2>Alle prediksjonene</h2>
+    <p class="muted">Hver prediksjon har sin egen QR-kode på sliden i forelesningen. Denne siden er
+    oversikten, mest til bruk for underviser og for den som vil se gjennom i etterkant.</p>
+    <div class="liste" id="liste"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+"use strict";
+const BACKEND = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA05xK7n1rC0ex_UVpNAjJPYNmRqvGfgUGuXp0EclxmyFUeKeVktMfg5YQ/exec";
+const BASE_SIM = "https://torgeirmoberget.github.io/psy300-sim/";
+const ITEMS = [{"id": "PRED-F1-01","f": 1,"sim": 5,"app": "PSY300_Sim_MinsteKvadrater.html","q": "Vi prøver ulike kandidatverdier som «modell» for et datasett og summerer de kvadrerte avvikene. Hvor bunner feilkurven?","A": "Ved medianen","B": "Ved gjennomsnittet","C": "Midt mellom minste og største verdi","D": "Vet ikke","fasit": "B","expl": "Total kvadrert feil bunner nøyaktig ved gjennomsnittet — gjennomsnittet er minste-kvadraters-modellen."},{"id": "PRED-F1-02","f": 1,"sim": 4,"app": "PSY300_Sim_HvorforNminus1.html","q": "Vi beregner variansen i mange utvalg ved å dele kvadratsummen rundt utvalgets EGET gjennomsnitt på n. I snitt vil estimatet …","A": "Treffe sann σ² — det er jo bare et gjennomsnitt","B": "Være systematisk for LITE (med faktoren (n − 1)/n)","C": "Være systematisk for stort","D": "Bomme tilfeldig, uten systematikk","fasit": "B","expl": "x̄ legger seg per definisjon midt i akkurat ditt utvalg, så avvikene rundt x̄ er mindre enn avvikene rundt sann μ — i snitt nøyaktig faktoren (n − 1)/n. Derfor deler vi på n − 1."},{"id": "PRED-F1-03","f": 1,"sim": 1,"app": "PSY300_Sim_Datatypelaben.html","q": "Prøveskårene 0–5 fra lett OG vanskelig betingelse samlet danner en topuklet (bimodal) fordeling. Hvilket sentralmål beskriver en typisk student best?","A": "Gjennomsnittet","B": "Medianen","C": "Modus","D": "Ingen av dem — gruppene bør beskrives hver for seg","fasit": "D","expl": "Ved en bimodal fordeling beskriver ikke noe enkelt sentralmål en typisk person: gjennomsnittet (2,5) lander i dalen mellom toppene og beskriver nesten ingen. Løsningen er ikke et bedre oppsummeringstall, men å splitte på gruppe. SE alltid fordelingen før du oppsummerer den (PSY300_Sim_Datatypelaben.html)."},{"id": "PRED-F1-04","f": 1,"sim": 2,"app": "PSY300_Sim_Robusthetslaben.html","q": "Et utvalg på 21 depresjonsskårer har gjennomsnitt ≈ 30. Én verdi feiltastes til 80. Hvilket sentralmål flytter seg MEST?","A": "Gjennomsnittet","B": "Medianen","C": "Modus","D": "Alle flytter seg like mye","fasit": "A","expl": "Gjennomsnittet bruker VERDIEN til hver observasjon, så én ekstremverdi drar det kraftig. Medianen bruker bare rangordningen (den rikker seg knapt), og modus bare hyppighet (den står stille). Motgiftene i demoen: trimmet og winsorisert gjennomsnitt, og transformasjon av skjeve data (PSY300_Sim_Robusthetslaben.html)."},{"id": "PRED-F1-05","f": 1,"sim": 3,"app": "PSY300_Sim_Utvalgsfordeling.html","q": "Vi trekker mange utvalg på n = 25 fra den samme populasjonen og regner ut gjennomsnittet i hvert. Så firedobler vi utvalgsstørrelsen til n = 100. Hva skjer med spredningen i disse gjennomsnittene?","A": "Den halveres ikke, men blir en firedel, siden n ble firedoblet","B": "Den er uendret, fordi populasjonen er den samme","C": "Den halveres, fordi standardfeilen går som σ/√n","D": "Den øker, fordi større utvalg fanger flere ekstreme verdier","fasit": "C","expl": "SE = σ/√n. Firedobler du n, ganges √n med 2, så standardfeilen halveres. Presisjon kjøpes med kvadratroten av deltakere, ikke med n selv. Spredningen i populasjonen endrer seg ikke, det er spredningen i gjennomsnittene som krymper."},{"id": "PRED-F1-06","f": 1,"sim": 6,"app": "PSY300_Sim_Konfidensintervaller.html","q": "Vi lager 100 konfidensintervaller på 95 %, ett fra hvert av 100 utvalg fra den samme populasjonen. Omtrent hvor mange av dem inneholder populasjonsgjennomsnittet μ?","A": "Alle 100, det er derfor de kalles konfidensintervaller","B": "Omtrent 95, og hvilke som bommer, vet vi aldri i praksis","C": "Omtrent 95, og de som bommer, kan kjennes igjen på at de er brede","D": "Det avhenger av utvalgsstørrelsen: med stor n treffer alle","fasit": "B","expl": "95 % er en egenskap ved prosedyren over gjentatte utvalg, ikke ved det ene intervallet du har. Omtrent 5 av 100 bommer, og bredden røper ikke hvilke: et smalt intervall kan bomme, og et bredt kan treffe."},{"id": "PRED-F2-01","f": 2,"sim": 3,"app": "PSY300_Sim_Utvalgsfordeling.html","q": "Populasjonen av depresjonsskårer er tydelig skjev. Vi trekker 1 000 utvalg (n = 75) og tegner fordelingen av gjennomsnittene. Hvordan ser den ut?","A": "Like skjev som populasjonen","B": "Tilnærmet normalfordelt","C": "Uniform (flat)","D": "Vet ikke","fasit": "B","expl": "Sentralgrenseteoremet: utvalgsfordelingen til gjennomsnittet nærmer seg normalfordeling uansett populasjonens form."},{"id": "PRED-F2-02","f": 2,"sim": 6,"app": "PSY300_Sim_Konfidensintervaller.html","q": "Vi trekker 100 studier og tegner 95 %-konfidensintervallene. Omtrent hvor mange bommer på populasjonsgjennomsnittet μ?","A": "0","B": "Ca. 5","C": "Ca. 50","D": "Vet ikke","fasit": "B","expl": "«95 %» beskriver metoden over mange studier: omtrent 5 av 100 intervaller bommer på den sanne verdien."},{"id": "PRED-F2-03","f": 2,"sim": 9,"app": "PSY300_Sim_Biasfabrikken.html","q": "100 laboratorier studerer en effekt som i sannhet er NULL (n = 40 per gruppe). Bare studier med p < ,05 publiseres. Hva er gjennomsnittlig effektstørrelse i de publiserte studiene?","A": "Omtrent 0 — effekten er jo null","B": "Klart større enn 0 (typisk d ≈ 0,5)","C": "Umulig å si noe om","D": "Negativ, siden de fleste studier feiler","fasit": "B","expl": "Bare de tilfeldig største utslagene passerer p < ,05-filteret — de publiserte studiene er en selektert hale. Med d = 0 og n = 40 ligger publiserte effekter typisk rundt |d| ≈ 0,5."},{"id": "PRED-F2-04","f": 2,"sim": 10,"app": "PSY300_Sim_Phackinghagen.html","q": "I data der ALLE nullhypoteser er sanne prøver du 20 ulike analyser (andre utfall, undergrupper, kovariater …). Sjansen for minst ett «signifikant» funn er omtrent:","A": "5 %","B": "20 %","C": "64 %","D": "95 %","fasit": "C","expl": "1 − 0,95²⁰ ≈ 64 %. Forskerens frihetsgrader er familievis feil i naturlig habitat — derfor skilles planlagte og utforskende analyser."},{"id": "PRED-F3-01","f": 3,"sim": 11,"app": "PSY300_Sim_Korrelasjonsdansen.html","q": "Den sanne korrelasjonen er ρ = 0,4, og vi trekker et utvalg på n = 75. Hvor havner utvalgets r?","A": "Mellom 0,38 og 0,42","B": "Hvor som helst mellom ca. 0,2 og 0,6","C": "Alltid over 0,4","D": "Vet ikke","fasit": "B","expl": "r «danser» fra utvalg til utvalg; ved n = 75 er spredningen stor — nettopp derfor trenger én enkelt r et konfidensintervall."},{"id": "PRED-F3-02","f": 3,"sim": 8,"app": "PSY300_Sim_Utliggerlaben.html","q": "Ett enkelt datapunkt flyttes til en ekstrem posisjon YTTERST i x-området, langt fra linjen. Hva skjer med regresjonslinjen?","A": "Nesten ingenting — det er jo bare ett punkt av 31","B": "Linjen flytter seg litt parallelt","C": "Linjen kan dras kraftig — punktet kan til og med snu retningen","D": "Bare r påvirkes, ikke linjen","fasit": "C","expl": "Minste kvadraters metode kvadrerer avvikene, og punkter ytterst i x-området har høy leverage — ett punkt kan snu hele linjen. Se alltid spredningsplottet."},{"id": "PRED-F3-03","f": 3,"sim": 12,"app": "PSY300_Sim_Attenuering.html","q": "Den sanne korrelasjonen mellom to konstrukter er ρ = ,60. Begge målene har reliabilitet ,70. Hva venter du å observere?","A": "r ≈ ,60 — reliabilitet påvirker ikke korrelasjoner","B": "r ≈ ,42","C": "r ≈ ,30","D": "r ≈ ,70","fasit": "B","expl": "Observert r = ρ·√(rel·rel) = ,60 × ,70 = ,42. Målefeil attenuerer (svekker) alle sammenhenger — og interaksjonsledd rammes hardest."},{"id": "PRED-F4-01","f": 4,"sim": 7,"app": "PSY300_Sim_Pverdimaskinen.html","q": "Gjennomsnittsforskjellen mellom to grupper holdes fast, men innengruppe-SD dobles. Hva skjer med p-verdien?","A": "Uendret — forskjellen er jo den samme","B": "Den blir større (mindre signifikant)","C": "Den blir mindre","D": "Vet ikke","fasit": "B","expl": "Både p og d måles i enheter av innengruppestøy: dobles SD, halveres d og t krymper — p stiger."},{"id": "PRED-F4-02","f": 4,"sim": 13,"app": "PSY300_Sim_SimpsonsParadoks.html","q": "Innad i HVERT av tre fagfelt er sammenhengen mellom studietimer og karakter negativ. Kan den samlede sammenhengen (alle studenter under ett) være positiv?","A": "Nei — helheten må gå samme vei som delene","B": "Ja — hvis gruppene skiller seg systematisk i både x og y","C": "Bare hvis utvalget er lite","D": "Bare ved målefeil","fasit": "B","expl": "Simpsons paradoks: gruppetilhørighet (en tredjevariabel) kan snu fortegnet. Kontrollér for gruppe i regresjonen, så gjenstår innen-gruppe-historien."},{"id": "PRED-F4-03","f": 4,"sim": 14,"app": "PSY300_Sim_Residualantakelser.html","q": "Residualplottet viser en tydelig trakt (spredningen øker med x), og få deltakere har høye x-verdier. Under H0 vil testen av stigningstallet …","A": "Gi et skjevt estimat av b","B": "Beholde b forventningsriktig, men gjøre SE-ene, p-verdiene og KI-ene upålitelige (mange falske positiver)","C": "Være upåvirket — regresjon er robust","D": "Snu fortegnet på r","fasit": "B","expl": "Heteroskedastisitet gjør ikke b skjevt, men én felles standardfeil er feil for alle — og når punktene med mest innflytelse også har mest støy, kan testen gi ~20–25 % falske positiver. Sjekk residualplottet!"},{"id": "PRED-F5-01","f": 5,"sim": 21,"app": "PSY300_Sim_FamilievisFeil.html","q": "Vi kjører 10 uavhengige tester i en verden uten sanne effekter (α = ,05). Hva er sjansen for minst én falsk positiv?","A": "5 %","B": "Ca. 40 %","C": "0,5 %","D": "Vet ikke","fasit": "B","expl": "1 − 0,95^10 ≈ 40 %. Denne familievise inflasjonen er grunnen til at én ANOVA slår mange t-tester."},{"id": "PRED-F5-02","f": 5,"sim": 19,"app": "PSY300_Sim_Antakelsesbryteren.html","q": "To grupper, ingen sann effekt. Den MINSTE gruppen (n = 15) har størst spredning (SD-forhold 3:1 mot n = 60). Student-t med α = ,05: den faktiske type I-raten blir …","A": "Klart over 5 % (liberal test)","B": "Omtrent 5 % — testen er robust","C": "Klart under 5 % (konservativ test)","D": "Nøyaktig 5 % per definisjon","fasit": "A","expl": "Student-t bruker samlet varians, som undervurderer støyen når den lille gruppen er den mest variable → for mange falske positiver. Welch-t reparerer det. Bytt om n-ene, og testen blir konservativ i stedet."},{"id": "PRED-F6-01","f": 6,"sim": 24,"app": "PSY300_Sim_Interaksjonsbyggeren.html","q": "Vi setter medisinandelene identiske i begge grupper og kjører uavhengighetstesten i 1 000 studier. p-verdiene blir…","A": "Alle over ,05","B": "Uniforme — ca. 5 % under ,05","C": "Alle omtrent 1","D": "Vet ikke","fasit": "B","expl": "Når uavhengighet er eksakt sann, er p-verdiene uniforme: ca. 5 % havner under ,05 — kjikvadrat følger samme NHST-logikk som alle andre tester."},{"id": "PRED-F7-01","f": 7,"sim": 25,"app": "PSY300_Sim_InnenPerson.html","q": "Innen-person-korrelasjonen r(pre, post) økes fra 0 til 0,9, alt annet likt. Hva skjer med den parede t-verdien?","A": "Den øker kraftig","B": "Den synker","C": "Den er uendret","D": "Vet ikke","fasit": "A","expl": "Standardfeilen for differansen krymper med 2·r·s₁·s₂, så samme gjennomsnittsendring gir mye større t — kraften i innen-person-design."},{"id": "PRED-F8-01","f": 8,"sim": 26,"app": "PSY300_Sim_RegresjonMotGjennomsnittet.html","q": "Vi velger de 25 % som skårer dårligst ved pre, og måler dem igjen senere — UTEN noe tiltak. Gjennomsnittet deres ved post vil …","A": "Være omtrent det samme — ingenting har jo skjedd","B": "Bli bedre — de flytter seg mot gjennomsnittet","C": "Bli verre — problemene forsterker seg","D": "Umulig å si uten flere opplysninger","fasit": "B","expl": "Regresjon mot gjennomsnittet: en ekstrem skår er dels sant nivå, dels uflaks i målingen — og uflaksen gjentar seg ikke. Derfor bedres også ventelistegrupper, og derfor trengs kontrollgruppen."},{"id": "PRED-F8-02","f": 8,"sim": 27,"app": "PSY300_Sim_Sfaerisitet.html","q": "I pre/post/oppfølgingsdata korrelerer nabomålingene sterkere enn endepunktene (sfærisitet brutt, ε < 1). ANOVA for gjentatte målinger UTEN korreksjon, under H0: type I-raten blir …","A": "Over 5 % (liberal test)","B": "Nøyaktig 5 % — F-testen er robust","C": "Under 5 % (konservativ test)","D": "Null — ingen effekter finnes jo","fasit": "A","expl": "Ulik varians i differanseskårene gjør at den ukorrigerte testen later som den har flere frihetsgrader enn dataene gir → for mange falske positiver. Greenhouse–Geisser krymper df med ε og gjenoppretter ≈ 5 %."}];
+
+/* Rollen huskes i denne nettleseren. Åpne én PSY300-app med ?rolle=underviser
+   én gang, så gjelder det alle appene på samme adresse til du åpner med
+   ?rolle=student. Ingen innlogging, ingen personopplysninger. */
+function PSY300_ROLLE(){
+  try{
+    const q=new URLSearchParams(location.search).get("rolle");
+    if(q==="underviser"||q==="student"){ localStorage.setItem("psy300_rolle",q); }
+    return localStorage.getItem("psy300_rolle")||"student";
+  }catch(e){ return "student"; }
+}
+const ROLLE = PSY300_ROLLE();
+
+const $=id=>document.getElementById(id);
+const P=new URLSearchParams(location.search);
+const BOKSTAVER=["A","B","C","D"];
+let AKTIV=null, VALGT=null;
+
+/* ---------- økt-id, så samme student ikke telles to ganger ---------- */
+function sesjon(){
+  try{
+    let s=localStorage.getItem("psy300_pred_sid");
+    if(!s){ s=Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8);
+            localStorage.setItem("psy300_pred_sid",s); }
+    return s;
+  }catch(e){ return "anon-"+Math.random().toString(36).slice(2,8); }
+}
+const SID=sesjon();
+const alleredeSvart=id=>{ try{ return localStorage.getItem("psy300_pred_"+id); }catch(e){ return null; } };
+const lagreSvar=(id,b)=>{ try{ localStorage.setItem("psy300_pred_"+id,b); }catch(e){} };
+
+/* ---------- send stemmen ---------- */
+function stem(id,bokstav){
+  const payload=JSON.stringify({kind:"pred", item_id:id, chosen:bokstav,
+                                session_id:SID, rolle:ROLLE});
+  fetch(BACKEND,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+                 body:payload, keepalive:true}).catch(function(){});
+}
+
+/* ---------- visning: ett spørsmål ---------- */
+function visSporsmal(it){
+  AKTIV=it;
+  $("enkelt").classList.remove("hide");
+  $("kick").textContent="Forelesning "+it.f+" · Sim "+it.sim+" · "+it.id;
+  $("sporsmal").textContent=it.q;
+  const boks=$("valg"); boks.innerHTML="";
+  BOKSTAVER.forEach(function(b){
+    const knapp=document.createElement("button");
+    knapp.className="opt"; knapp.dataset.b=b;
+    knapp.innerHTML='<span class="ltr">'+b+'</span><span>'+it[b]+'</span>';
+    knapp.addEventListener("click",function(){ velg(b); });
+    boks.appendChild(knapp);
+  });
+  if(it.app){
+    $("simlenke").innerHTML='Simuleringen som gir svaret: <a class="simlenke" href="'+BASE_SIM+it.app+'" target="_blank" rel="noopener">Sim '+it.sim+'</a>';
+  }
+  const gammelt=alleredeSvart(it.id);
+  if(gammelt) lasFast(gammelt,true);
+  if(ROLLE==="underviser") $("laerer").classList.remove("hide");
+}
+
+function velg(b){
+  if(VALGT) return;
+  lagreSvar(AKTIV.id,b);
+  stem(AKTIV.id,b);
+  lasFast(b,false);
+}
+
+function lasFast(b,gjenopptatt){
+  VALGT=b;
+  document.querySelectorAll(".opt").forEach(function(o){
+    o.disabled=true;
+    if(o.dataset.b===b) o.classList.add("valgt");
+  });
+  const k=$("kvittering"); k.classList.remove("hide");
+  k.innerHTML= gjenopptatt
+    ? "<b>Du har allerede svart "+b+" på denne.</b> Fasit avsløres av simuleringen."
+    : "<b>Svaret ditt er registrert.</b> Fasit avsløres av simuleringen, ikke her.";
+}
+
+/* ---------- underviser: hent og tegn klassens svar ---------- */
+function hentResultat(){
+  $("antall").textContent=" henter …";
+  fetch(BACKEND+"?action=pred&id="+encodeURIComponent(AKTIV.id))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(!d || !d.ok){ $("antall").textContent=" fant ingen svar ennå"; return; }
+      tegn(d.fordeling||{A:0,B:0,C:0,D:0}, d.n||0);
+      $("antall").textContent=" "+(d.n||0)+" svar";
+    })
+    .catch(function(){ $("antall").textContent=" kunne ikke hente (sjekk nett)"; });
+}
+
+function tegn(f,n){
+  const cv=$("graf"); cv.classList.remove("hide");
+  const r=window.devicePixelRatio||1, w=cv.clientWidth, h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute("height")));
+  cv.width=w*r; cv.height=h*r; cv.style.height=h+"px";
+  const c=cv.getContext("2d"); c.setTransform(r,0,0,r,0,0);
+  c.clearRect(0,0,w,h);
+  const x0=40,y0=h-34,pw=w-x0-14,ph=y0-24;
+  const maks=Math.max(1,f.A,f.B,f.C,f.D);
+  const bw=pw/4*0.62, gap=pw/4;
+  c.font="bold 16px sans-serif";
+  BOKSTAVER.forEach(function(b,i){
+    const v=f[b]||0, bh=v/maks*ph;
+    const bx=x0+gap*i+(gap-bw)/2;
+    c.fillStyle = (FASIT_VIST && b===AKTIV.fasit) ? "#2E7D32" : "#7ea3d6";
+    c.fillRect(bx,y0-bh,bw,bh);
+    c.fillStyle="#1a2233"; c.textAlign="center";
+    c.fillText(b,bx+bw/2,y0+20);
+    const pst = n ? Math.round(v/n*100) : 0;
+    c.fillText(v+" ("+pst+" %)", bx+bw/2, y0-bh-7);
+  });
+  c.strokeStyle="#b9c3d6"; c.lineWidth=1.5;
+  c.beginPath(); c.moveTo(x0-6,y0); c.lineTo(x0+pw,y0); c.stroke();
+}
+
+let FASIT_VIST=false;
+function visFasit(){
+  FASIT_VIST=true;
+  document.querySelectorAll(".opt").forEach(function(o){
+    if(o.dataset.b===AKTIV.fasit) o.classList.add("riktig");
+    else if(o.dataset.b===VALGT) o.classList.add("galt");
+  });
+  const fb=$("fasitboks"); fb.classList.remove("hide");
+  fb.innerHTML='<div class="expl"><b>Fasit '+AKTIV.fasit+':</b> '+AKTIV.expl+'</div>';
+  if(!$("graf").classList.contains("hide")) hentResultat();
+}
+
+/* ---------- visning: oversikt ---------- */
+function visOversikt(){
+  $("oversikt").classList.remove("hide");
+  const l=$("liste"); let forrige=null;
+  ITEMS.forEach(function(it){
+    if(it.f!==forrige){
+      const h=document.createElement("div"); h.className="flab";
+      h.textContent="Forelesning "+it.f; l.appendChild(h); forrige=it.f;
+    }
+    const a=document.createElement("a");
+    a.href="?q="+it.id;
+    a.innerHTML="<b>"+it.id+"</b> · Sim "+it.sim+" — "+it.q;
+    l.appendChild(a);
+  });
+}
+
+/* ---------- oppstart ---------- */
+(function(){
+  const id=(P.get("q")||"").toUpperCase().trim();
+  const it=ITEMS.filter(function(x){ return x.id===id; })[0];
+  if(it) visSporsmal(it); else visOversikt();
+  const kn=$("visResultat"); if(kn) kn.addEventListener("click",hentResultat);
+  const kf=$("visFasit");    if(kf) kf.addEventListener("click",visFasit);
+  const ko=$("oppdater");    if(ko) ko.addEventListener("click",hentResultat);
+  if(P.get("pres")==="1") document.body.classList.add("pres");
+  window.addEventListener("resize",function(){
+    if(AKTIV && !$("graf").classList.contains("hide")) hentResultat();
+  });
+})();
+
+/* ---------- bruksstatistikk (anonymt, samme mønster som simuleringsappene) ---------- */
+(function(){
+  var APP="Prediksjoner", NAVN="Prediksjoner";
+  var PSY300_USAGE_URL = BACKEND;
+  var sid=Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8);
+  var aktiv=0, sist=Date.now(), interaksjoner=0, sendt=false;
+  function tikk(){ if(!document.hidden){ var na=Date.now();
+    aktiv+=Math.min(30000, na-sist); } sist=Date.now(); }
+  document.addEventListener("click",function(){ interaksjoner++; });
+  setInterval(tikk, 15000);
+  function send(type){
+    if(type==="lukket"){ if(sendt) return; sendt=true; tikk(); }
+    var payload=JSON.stringify({kind:"usage", app:APP, navn:NAVN, event:type,
+      session_id:sid, sekunder:Math.round(aktiv/1000), interaksjoner:interaksjoner,
+      innebygd:(window.top!==window.self)?1:0, rolle:PSY300_ROLLE()});
+    try{
+      if(type==="lukket" && navigator.sendBeacon){
+        navigator.sendBeacon(PSY300_USAGE_URL, new Blob([payload],{type:"text/plain;charset=utf-8"}));
+      } else {
+        fetch(PSY300_USAGE_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:payload, keepalive:true}).catch(function(){});
+      }
+    }catch(e){}
+  }
+  send("apnet");
+  window.addEventListener("pagehide", function(){ send("lukket"); });
+  document.addEventListener("visibilitychange", function(){ if(document.hidden) send("lukket"); });
+})();
+</script>
+</body></html>
