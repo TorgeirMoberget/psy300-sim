@@ -356,8 +356,25 @@ function startTimer(sekunder){
   tikk(); timerId=setInterval(tikk,1000);
 }
 function stoppTimer(){if(timerId){clearInterval(timerId);timerId=null;}$("#timer").classList.add("hide");}
+/* Arket lagrer kapitlet slik det var da svaret ble gitt. Flyttes en oppgave
+   senere, blir den verdien foreldet. Banken er fasit, så vi slår opp på ID. */
+const KAP_NAA=(()=>{const m={};BANK.forEach(it=>{m[it.id]=it.ch;});return m;})();
+function kapFor(id, fallback){
+  if(KAP_NAA[id]!==undefined) return KAP_NAA[id];
+  if(OI){ const t=OI.find(x=>x.id===id); if(t) return t.ch; }
+  return fallback;
+}
+function kapFraOppgaver(items){
+  const per={};
+  Object.keys(items||{}).forEach(id=>{
+    const k=kapFor(id,null); if(k===null) return;          // oppgaver som er tatt ut
+    const o=per[k]||(per[k]={ch:k,n:0,correct:0});
+    o.n+=items[id].n||0; o.correct+=items[id].correct||0;
+  });
+  return Object.values(per).map(o=>({...o, pct:o.n?o.correct/o.n:0}));
+}
 function fetchCohort(){ // grab item difficulty so we can compare student to class
-  fetch(BACKEND_URL+"?action=summary").then(r=>r.json()).then(d=>{cohort={};(d.items||[]).forEach(it=>{cohort[it.id]={pct:it.pct,n:it.n};});cohort.__chapters={};(d.chapters||[]).forEach(c=>{cohort.__chapters[c.ch]=c.pct;});}).catch(()=>{cohort=null;});
+  fetch(BACKEND_URL+"?action=summary").then(r=>r.json()).then(d=>{cohort={};(d.items||[]).forEach(it=>{cohort[it.id]={pct:it.pct,n:it.n};});cohort.__chapters={};kapFraOppgaver(Object.fromEntries((d.items||[]).map(it=>[it.id,{n:it.n,correct:it.correct}]))).forEach(c=>{cohort.__chapters[c.ch]=c.pct;});}).catch(()=>{cohort=null;});
 }
 
 const L=it=>(lang==="no"&&it.no)?it.no:it.en;
@@ -509,7 +526,8 @@ function tegnHistorikk(){
   // kapittelmestring, svakeste først.
   // Bruk backendens sammendrag hvis det finnes; ellers regn det ut fra forsøkene
   // (gjør panelet uavhengig av om Apps Script er oppdatert til nyeste versjon).
-  let kilde=(d.chapters||[]).slice();
+  // nyere backend sender per oppgave; da regner vi kapitlene ut fra dagens bank
+  let kilde = d.items ? kapFraOppgaver(d.items) : (d.chapters||[]).slice();
   if(!kilde.length){
     const akk={};
     a.forEach(x=>{const c=x.ch||{};
