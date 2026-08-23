@@ -114,6 +114,8 @@
 
     <label class="check" for="explChk"><input type="checkbox" id="explChk" checked>
       <span class="t" data-i18n="explToggle">Show an explanation after each answer<small data-i18n="explToggleSub">You still see correct/incorrect either way.</small></span></label>
+    <label class="check" for="oiChk"><input type="checkbox" id="oiChk" checked>
+      <span class="t" data-i18n="oiToggle">Include output-interpretation items<small data-i18n="oiToggleSub">JASP tables and plots, mixed into the chapters. Loads once, about 1.3 MB. Items like these appear on the exam.</small></span></label>
     <label class="check" for="immChk"><input type="checkbox" id="immChk" checked>
       <span class="t" data-i18n="immToggle">Immediate feedback after each question<small data-i18n="immToggleSub">Turn off for a timed mock; feedback comes at the end.</small></span></label>
 
@@ -189,7 +191,9 @@ const I18N = {
   fmtLbl:"Format",chapLbl:"Chapter",diffLbl:"Difficulty",
   fmtOutput:'Output interpretation<small>read a JASP table or plot</small>',outLbl:"How many output items?",
   outHelp:"Every item shows a real JASP table or plot from the course datasets. This is the format the exam uses most.",
-  outLoading:"Loading the output items (about 4 MB) …",
+  oiToggle:"Include output-interpretation items",
+  oiToggleSub:"JASP tables and plots, mixed into the chapters. Loads once, about 1.3 MB. Items like these appear on the exam.",
+  outLoading:"Loading the output items (about 1.3 MB) …",
   outFail:"Could not load the output items. Open the separate app instead: PSY300_Output_Interpretation_App.html",
   fmtFull:"Full mock<small>40 questions</small>",fmtMock:"Mock exam<small>40 questions, timed</small>",mockLbl:"Which mock exam?",mockHelp:"Three fixed sets, same length and format as the real exam. The timer runs for two hours and feedback is held back until the end — as close to the real thing as this app gets. Note that these three sets are deliberately harder than the exam blueprint (about half the items are hard), so expect a lower score here than on the exam itself. Norwegian wording throughout; a few items have no English version.",timeLeft:"Time left",timeUp:"Time is up — your answers so far have been submitted.",fmtShort:"Short, all chapters<small>20 questions</small>",fmtChapter:"Single chapter<small>20 questions</small>",
   diffExam:"Exam-like (20/60/20)",diffEasy:"Easy",diffMod:"Moderate",diffHard:"Hard",
@@ -211,7 +215,9 @@ const I18N = {
   fmtLbl:"Format",chapLbl:"Kapittel",diffLbl:"Vanskelighetsgrad",
   fmtOutput:'Output-tolkning<small>les en JASP-tabell eller et plott</small>',outLbl:"Hvor mange output-oppgaver?",
   outHelp:"Hver oppgave viser en ekte JASP-tabell eller et plott fra emnets datasett. Dette er formatet eksamen bruker mest.",
-  outLoading:"Laster output-oppgavene (om lag 4 MB) …",
+  oiToggle:"Ta med output-tolkningsoppgaver",
+  oiToggleSub:"JASP-tabeller og figurer, blandet inn i kapitlene. Lastes én gang, om lag 1,3 MB. Slike oppgaver kommer også på eksamen.",
+  outLoading:"Laster output-oppgavene (om lag 1,3 MB) …",
   outFail:"Fikk ikke lastet output-oppgavene. Åpne den egne appen i stedet: PSY300_Output_Interpretation_App.html",
   fmtFull:"Full prøve<small>40 spørsmål</small>",fmtMock:"Prøveeksamen<small>40 spørsmål, på tid</small>",mockLbl:"Hvilken prøveeksamen?",mockHelp:"Tre faste sett med samme lengde og format som den ekte eksamenen. Klokka går i to timer, og tilbakemeldingen holdes tilbake til slutten — så nær ekte vare som denne appen kommer. Merk at disse tre settene er bevisst vanskeligere enn eksamensmalen (rundt halvparten er vanskelige oppgaver), så forvent en lavere skår her enn på selve eksamen.",timeLeft:"Tid igjen",timeUp:"Tiden er ute — svarene du rakk, er levert.",fmtShort:"Kort, alle kapitler<small>20 spørsmål</small>",fmtChapter:"Ett kapittel<small>20 spørsmål</small>",
   diffExam:"Eksamenslik (20/60/20)",diffEasy:"Lett",diffMod:"Middels",diffHard:"Vanskelig",
@@ -300,7 +306,11 @@ function selectQuestions(){
   if(state.format==="output"){const n=state.outN||20;let p=(OI||[]).slice();
     if(state.difficulty!=="exam")p=p.filter(it=>it.difficulty===state.difficulty);
     if(!p.length)p=(OI||[]).slice(); return pickRandom(p,Math.min(n,p.length));}
-  const N=state.format==="full"?40:20;let pool=BANK.slice();if(state.format==="chapter")pool=pool.filter(it=>it.ch===state.chapter);const tg=diffTargets(N,state.difficulty);const used=new Set();let chosen=[];for(const d in tg){const sub=pool.filter(it=>it.difficulty===d&&!used.has(it.id));const pk=(state.format==="chapter")?pickRandom(sub,tg[d]):weightedByChapter(sub,tg[d]);pk.forEach(it=>used.add(it.id));chosen=chosen.concat(pk);}if(state.difficulty==="exam"&&chosen.length<N){const rest=pool.filter(it=>!used.has(it.id));chosen=chosen.concat((state.format==="chapter")?pickRandom(rest,N-chosen.length):weightedByChapter(rest,N-chosen.length));}return shuffle(chosen).slice(0,N);}
+  const N=state.format==="full"?40:20;
+  /* output-tolkningene er egne oppgaver med samme skjema som resten, bare med
+     et bilde i tillegg; de blandes inn i kapitlene når valget står på */
+  let pool = (medOI() && OI) ? BANK.concat(OI) : BANK.slice();
+  if(state.format==="chapter")pool=pool.filter(it=>it.ch===state.chapter);const tg=diffTargets(N,state.difficulty);const used=new Set();let chosen=[];for(const d in tg){const sub=pool.filter(it=>it.difficulty===d&&!used.has(it.id));const pk=(state.format==="chapter")?pickRandom(sub,tg[d]):weightedByChapter(sub,tg[d]);pk.forEach(it=>used.add(it.id));chosen=chosen.concat(pk);}if(state.difficulty==="exam"&&chosen.length<N){const rest=pool.filter(it=>!used.has(it.id));chosen=chosen.concat((state.format==="chapter")?pickRandom(rest,N-chosen.length):weightedByChapter(rest,N-chosen.length));}return shuffle(chosen).slice(0,N);}
 
 function startQuizNow(){
   showExpl=$("#explChk").checked; immediate=$("#immChk").checked;
@@ -311,9 +321,14 @@ function startQuizNow(){
   if(backendOn()) fetchCohort();
   $("#start").classList.add("hide"); $("#results").classList.add("hide"); $("#quiz").classList.remove("hide"); renderQ();
 }
+function medOI(){ const c=$("#oiChk"); return c ? c.checked : false; }
+/* forhåndslast i bakgrunnen, så ventingen sjelden merkes */
+setTimeout(()=>{ if(medOI() && !OI) lastOI().catch(()=>{}); }, 400);
+
 $("#startBtn").addEventListener("click",()=>{
   if(backendOn() && !$("#code").value.trim()){ alert(t("needCode")); return; }
-  if(state.format==="output" && !OI){
+  const trengerOI = (state.format==="output") || (medOI() && state.format!=="mock");
+  if(trengerOI && !OI){
     const b=$("#startBtn"), org=b.textContent; b.disabled=true; b.textContent=t("outLoading");
     lastOI().then(()=>{b.disabled=false;b.textContent=org;startQuizNow();})
             .catch(()=>{b.disabled=false;b.textContent=org;alert(t("outFail")+(OIfeil?"\n\n("+OIfeil+")":""));});
@@ -582,6 +597,9 @@ applyLang();
     const pa=["1","pa","paa","på","straks","umiddelbar","on","ja","yes","now"].indexOf(fa)>=0;
     if(av||pa){ $("#immChk").checked=pa; $("#explChk").checked=pa; }
   }
+  const oi=(g("oi","output_med")||"").toLowerCase();
+  if(oi){ const av=["0","av","off","nei","no"].indexOf(oi)>=0;
+          if(av||["1","pa","på","on","ja","yes"].indexOf(oi)>=0) $("#oiChk").checked=!av; }
   const kode=g("kode","code");
   if(kode)$("#code").value=kode;
   if(g("start")==="1"&&(!backendOn()||$("#code").value.trim()))$("#startBtn").click();
