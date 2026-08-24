@@ -126,8 +126,15 @@
       <div class="histcards" id="histCards"></div>
       <div id="histChartWrap" class="hide">
         <div class="sub" data-i18n="histChartLbl">Score per attempt (oldest to newest)</div>
+        <div class="sub" style="margin:2px 0 6px">
+          <label><span data-i18n="histKapLbl">Show</span>
+            <select id="histKap" style="padding:4px 6px;border:1px solid var(--line);border-radius:7px;font-family:inherit">
+              <option value="alle" selected>—</option>
+            </select></label>
+        </div>
         <div class="histbars" id="histBars"></div>
         <div class="sub" id="histTrend"></div>
+        <div class="sub" id="histChapNote2" style="font-size:.85em"></div>
       </div>
       <div id="histChapWrap" class="hide">
         <div class="sub" style="margin-top:14px" data-i18n="histChapLbl">Your mastery by chapter — weakest first</div>
@@ -199,7 +206,7 @@ const I18N = {
   diffExam:"Exam-like (20/60/20)",diffEasy:"Easy",diffMod:"Moderate",diffHard:"Hard",
   explToggle:"Show an explanation after each answer",explToggleSub:"You still see correct/incorrect either way.",
   immToggle:"Immediate feedback after each question",immToggleSub:"Turn off for a timed mock; feedback comes at the end.",
-  histBtn:"See my earlier results",histHide:"Hide earlier results",histChartLbl:"Score per attempt (oldest to newest)",histChapLbl:"Your mastery by chapter — weakest first",thAnswered:"Answered",histNone:"No attempts found for that code yet. Complete a quiz and it will appear here.",histTomtArk:"No results have been recorded yet at all — not for you or anyone else. If you have completed a quiz, the connection to the results sheet is probably not working; tell the course teacher.",histFeilKode:"Nothing found for that exact code. {n} other codes have results, so the connection works — check for a typo, and remember the code must be written the same way every time (upper and lower case do not matter).",histNoCode:"Enter your private code above first — that is what links your attempts together.",histOff:"Progress tracking is off in this copy of the app (no backend URL is set).",histLoading:"Loading…",histErr:"Could not load your results. Check your internet connection.",histAttempts:"attempts",histQuestions:"questions answered",histMean:"mean score",histBest:"best",histLast:"last practised",histTrendUp:"Your last three attempts average {a} % against {b} % for your first three — you are moving in the right direction.",histTrendFlat:"Your last three attempts average {a} % against {b} % for your first three — fairly stable so far.",histTrendDown:"Your last three attempts average {a} % against {b} % for your first three. A dip is normal if you have moved on to harder chapters.",histPractise:"practise",histTeknisk:"Technical details (for the course teacher)",histSvarFeil:"The server replied, but not with results. This usually means the web app URL points to a login page or an old deployment.",histFaaSvar:"{n} of these chapters rest on fewer than five answers, so treat those percentages as a rough hint rather than a verdict.",startBtn:"Start",quitBtn:"Quit",nextBtn:"Next",finishBtn:"Finish & see results",
+  histBtn:"See my earlier results",histHide:"Hide earlier results",histKapLbl:"Show",histKapAlle:"All chapters",histKapNote:"Only this chapter\u2019s questions are counted. Attempts with fewer than three such questions are left out.",histChartLbl:"Score per attempt (oldest to newest)",histChapLbl:"Your mastery by chapter — weakest first",thAnswered:"Answered",histNone:"No attempts found for that code yet. Complete a quiz and it will appear here.",histTomtArk:"No results have been recorded yet at all — not for you or anyone else. If you have completed a quiz, the connection to the results sheet is probably not working; tell the course teacher.",histFeilKode:"Nothing found for that exact code. {n} other codes have results, so the connection works — check for a typo, and remember the code must be written the same way every time (upper and lower case do not matter).",histNoCode:"Enter your private code above first — that is what links your attempts together.",histOff:"Progress tracking is off in this copy of the app (no backend URL is set).",histLoading:"Loading…",histErr:"Could not load your results. Check your internet connection.",histAttempts:"attempts",histQuestions:"questions answered",histMean:"mean score",histBest:"best",histLast:"last practised",histTrendUp:"Your last three attempts average {a} % against {b} % for your first three — you are moving in the right direction.",histTrendFlat:"Your last three attempts average {a} % against {b} % for your first three — fairly stable so far.",histTrendDown:"Your last three attempts average {a} % against {b} % for your first three. A dip is normal if you have moved on to harder chapters.",histPractise:"practise",histTeknisk:"Technical details (for the course teacher)",histSvarFeil:"The server replied, but not with results. This usually means the web app URL points to a login page or an old deployment.",histFaaSvar:"{n} of these chapters rest on fewer than five answers, so treat those percentages as a rough hint rather than a verdict.",startBtn:"Start",quitBtn:"Quit",nextBtn:"Next",finishBtn:"Finish & see results",
   resultTitle:"Your results",byChapter:"Your breakdown by chapter",thChapter:"Chapter",thYou:"You",thClass:"Class",
   yourProgress:"Your progress over time",missed:"Questions to review",csvBtn:"Download my results (CSV)",againBtn:"New attempt",
   correct:"Correct",incorrect:"Incorrect",your:"Your answer",answer:"Correct answer",explLabel:"Why",
@@ -223,7 +230,7 @@ const I18N = {
   diffExam:"Eksamenslik (20/60/20)",diffEasy:"Lett",diffMod:"Middels",diffHard:"Vanskelig",
   explToggle:"Vis en forklaring etter hvert svar",explToggleSub:"Du ser uansett riktig/galt.",
   immToggle:"Umiddelbar tilbakemelding etter hvert spørsmål",immToggleSub:"Slå av for prøve på tid; tilbakemelding kommer til slutt.",
-  histBtn:"Se mine tidligere resultater",histHide:"Skjul tidligere resultater",histChartLbl:"Skår per forsøk (eldste til nyeste)",histChapLbl:"Din mestring per kapittel — svakeste først",thAnswered:"Besvart",histNone:"Fant ingen forsøk på den koden ennå. Fullfør en runde, så dukker den opp her.",histTomtArk:"Det er ikke registrert noen resultater ennå — verken dine eller andres. Har du fullført en runde, virker sannsynligvis ikke forbindelsen til resultatarket; si fra til emneansvarlig.",histFeilKode:"Fant ingenting på akkurat den koden. {n} andre koder har resultater, så forbindelsen virker — se etter en skrivefeil, og husk at koden må skrives likt hver gang (store og små bokstaver spiller ingen rolle).",histNoCode:"Skriv inn den private koden din øverst først — det er den som knytter forsøkene dine sammen.",histOff:"Framgangsvisning er slått av i denne kopien av appen (ingen backend-URL er satt).",histLoading:"Henter…",histErr:"Fikk ikke hentet resultatene dine. Sjekk nettforbindelsen.",histAttempts:"forsøk",histQuestions:"spørsmål besvart",histMean:"snittskår",histBest:"beste",histLast:"sist øvd",histTrendUp:"De tre siste forsøkene dine ligger på {a} % mot {b} % for de tre første — det går rett vei.",histTrendFlat:"De tre siste forsøkene dine ligger på {a} % mot {b} % for de tre første — nokså stabilt så langt.",histTrendDown:"De tre siste forsøkene dine ligger på {a} % mot {b} % for de tre første. En nedgang er normal hvis du har gått løs på vanskeligere kapitler.",histPractise:"øv",histTeknisk:"Tekniske detaljer (til emneansvarlig)",histSvarFeil:"Serveren svarte, men ikke med resultater. Det betyr som regel at nettapp-URL-en peker på en innloggingsside eller en gammel distribusjon.",histFaaSvar:"{n} av disse kapitlene hviler på færre enn fem svar, så les de prosentene som et hint og ikke som en dom.",startBtn:"Start",quitBtn:"Avslutt",nextBtn:"Neste",finishBtn:"Fullfør og se resultat",
+  histBtn:"Se mine tidligere resultater",histHide:"Skjul tidligere resultater",histKapLbl:"Vis",histKapAlle:"Alle kapitler",histKapNote:"Bare oppgavene fra dette kapitlet telles. Forsøk med færre enn tre slike oppgaver er utelatt.",histChartLbl:"Skår per forsøk (eldste til nyeste)",histChapLbl:"Din mestring per kapittel — svakeste først",thAnswered:"Besvart",histNone:"Fant ingen forsøk på den koden ennå. Fullfør en runde, så dukker den opp her.",histTomtArk:"Det er ikke registrert noen resultater ennå — verken dine eller andres. Har du fullført en runde, virker sannsynligvis ikke forbindelsen til resultatarket; si fra til emneansvarlig.",histFeilKode:"Fant ingenting på akkurat den koden. {n} andre koder har resultater, så forbindelsen virker — se etter en skrivefeil, og husk at koden må skrives likt hver gang (store og små bokstaver spiller ingen rolle).",histNoCode:"Skriv inn den private koden din øverst først — det er den som knytter forsøkene dine sammen.",histOff:"Framgangsvisning er slått av i denne kopien av appen (ingen backend-URL er satt).",histLoading:"Henter…",histErr:"Fikk ikke hentet resultatene dine. Sjekk nettforbindelsen.",histAttempts:"forsøk",histQuestions:"spørsmål besvart",histMean:"snittskår",histBest:"beste",histLast:"sist øvd",histTrendUp:"De tre siste forsøkene dine ligger på {a} % mot {b} % for de tre første — det går rett vei.",histTrendFlat:"De tre siste forsøkene dine ligger på {a} % mot {b} % for de tre første — nokså stabilt så langt.",histTrendDown:"De tre siste forsøkene dine ligger på {a} % mot {b} % for de tre første. En nedgang er normal hvis du har gått løs på vanskeligere kapitler.",histPractise:"øv",histTeknisk:"Tekniske detaljer (til emneansvarlig)",histSvarFeil:"Serveren svarte, men ikke med resultater. Det betyr som regel at nettapp-URL-en peker på en innloggingsside eller en gammel distribusjon.",histFaaSvar:"{n} av disse kapitlene hviler på færre enn fem svar, så les de prosentene som et hint og ikke som en dom.",startBtn:"Start",quitBtn:"Avslutt",nextBtn:"Neste",finishBtn:"Fullfør og se resultat",
   resultTitle:"Resultatet ditt",byChapter:"Din oversikt per kapittel",thChapter:"Kapittel",thYou:"Deg",thClass:"Klassen",
   yourProgress:"Din fremgang over tid",missed:"Spørsmål til repetisjon",csvBtn:"Last ned mitt resultat (CSV)",againBtn:"Nytt forsøk",
   correct:"Riktig",incorrect:"Feil",your:"Ditt svar",answer:"Riktig svar",explLabel:"Hvorfor",
@@ -505,10 +512,34 @@ function tegnHistorikk(){
     kort(a.length,t_("histAttempts"))+kort(nSp,t_("histQuestions"))+
     kort(Math.round(snitt*100)+" %",t_("histMean"))+kort(Math.round(beste*100)+" %",t_("histBest"))+
     kort(dato,t_("histLast"));
+  // kapittelvelger for søylediagrammet
+  const kv=$("#histKap");
+  if(kv && kv.options.length<=1){
+    const kap=[...new Set(BANK.map(x=>x.ch))].sort((x,y)=>x-y);
+    kv.innerHTML='<option value="alle" selected>'+t("histKapAlle")+"</option>"+
+      kap.map(c=>{const n=CHAPTERS.find(z=>z.ch===c);
+        return '<option value="'+c+'">'+esc(n?n[lang==="no"?"no":"en"]:("Kap. "+c))+"</option>";}).join("");
+  }
+  const kapValg = kv ? kv.value : "alle";
+  // hvert forsøk kommer med «id:1,id:0,…»; kapitlet slås opp i banken
+  const perKap = x => {
+    if(kapValg==="alle" || !x.svar) return x;
+    let n=0, rett=0;
+    x.svar.split(",").forEach(bit=>{
+      const i=bit.lastIndexOf(":"); if(i<0) return;
+      const id=bit.slice(0,i);
+      if(String(kapFor(id,null))!==String(kapValg)) return;
+      n++; if(bit.slice(i+1)==="1") rett++;
+    });
+    return {...x, n:n, correct:rett, pct: n? rett/n : 0};
+  };
+  const vist = (kapValg==="alle" ? a : a.map(perKap).filter(x=>x.n>=3));
+  $("#histChapNote2") && ($("#histChapNote2").textContent = kapValg==="alle" ? "" : t("histKapNote"));
+  const beste2 = vist.length ? Math.max(...vist.map(x=>x.pct)) : 0;
   // søylediagram over forsøk
   const bars=$("#histBars");bars.innerHTML="";
-  a.slice(-30).forEach(x=>{
-    const b=document.createElement("div");b.className="b"+(x.pct>=beste-0.0001?" best":"");
+  vist.slice(-30).forEach(x=>{
+    const b=document.createElement("div");b.className="b"+(x.pct>=beste2-0.0001?" best":"");
     b.style.height=Math.max(3,Math.round(x.pct*76))+"px";
     const nav=[x.format?fmtNavn(x.format):"",x.difficulty?diffNavn(x.difficulty):""].filter(Boolean).join(" · ");
     b.title=Math.round(x.pct*100)+"% ("+x.correct+"/"+x.n+")"+(nav?" — "+nav:"");
@@ -583,6 +614,8 @@ function diffNavn(d){const m={exam:{no:"eksamenslik",en:"exam-like"},Easy:{no:"l
   Moderate:{no:"middels",en:"moderate"},Hard:{no:"vanskelig",en:"hard"}};
   return (m[d]||{})[lang]||d;}
 $("#histBtn").addEventListener("click",()=>{ if(histÅpen) histSkjul(); else hentHistorikk(); });
+const hk=$("#histKap");
+if(hk) hk.addEventListener("change",()=>{ if(histData) tegnHistorikk(); });
 
 applyLang();
 
