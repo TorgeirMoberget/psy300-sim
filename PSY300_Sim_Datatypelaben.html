@@ -81,13 +81,13 @@ body.pres .keybox{font-size:18px}
 <span id="dispCat" style="display:none"><label class="leg"><input type="radio" name="dispc" value="bar" checked> Stolpediagram</label> <label class="leg" style="margin-left:12px"><input type="radio" name="dispc" value="pie"> Pai-diagram</label> <label class="leg" style="margin-left:12px"><input type="radio" name="dispc" value="prop"> Andelsstolpe (100 %)</label></span>
 </div>
 <div id="statTogg" style="margin:8px 0 4px">
-<button class="togg on" data-v="M">Gjennomsnitt</button><button class="togg on" data-v="med">Median</button><button class="togg on" data-v="modus">Modus</button><button class="togg" data-v="q">Boks (kvartiler)</button><button class="togg on" data-v="hale">Værhår</button><button class="togg" data-v="sd">Standardavvik</button><button class="togg" data-v="rng">Spennvidde</button>
+<button class="togg on" data-v="M">Gjennomsnitt</button><button class="togg on" data-v="med">Median</button><button class="togg on" data-v="modus">Modus</button><button class="togg on" data-v="q">Boks (kvartiler)</button><button class="togg on" data-v="hale">Værhår</button><button class="togg" data-v="sd">Standardavvik</button><button class="togg" data-v="rng">Spennvidde</button>
 </div>
 <canvas id="cv" height="320"></canvas>
 <div id="statLine" style="margin-top:6px"></div>
-<div class="leg">Markører der de gir mening: <b style="color:#B26A00">oransje søyle = modus</b> · <b style="color:#2E7D32">grønn stiplet = median</b> · <b style="color:#C0392B">rød = gjennomsnitt</b></div>
+<div class="leg">Markører der de gir mening: <b style="color:#B26A00">oransje søyle = modus</b> · <b style="color:#2E7D32">grønn heltrukket = median</b> · <b style="color:#1F3864">blå stiplet = Q1 og Q3</b> · <b style="color:#C0392B">rød = gjennomsnitt</b><br>Kvartilstrekene står på nøyaktig samme sted i histogrammet og i raincloud-plottet: bytt mellom visningene og se at de to stiplede strekene ikke flytter seg, men legger seg rett oppå kantene av boksen. <b>Boksen er kvartilene</b> — den er ikke noe boksplottet finner på i tillegg til rådataene.</div>
 <div class="note" id="zExpl" style="display:none"><b>Hva z-skårer gjør</b>: hver verdi er byttet ut med <b>z = (x − M)/SD</b>: «hvor mange standardavvik fra gjennomsnittet ligger denne personen?» Etter standardisering har fordelingen alltid M = 0 og SD = 1, uansett hvilken variabel eller måleenhet du startet med. Legg merke til to ting: <b>formen endrer seg ikke</b>, en skjev fordeling forblir like skjev, standardisering er bare en ny linjal, ikke en normalisering, og <b>tallene blir sammenlignbare</b> på tvers av variabler: z = 1,5 betyr det samme enten det gjelder depresjonsskår eller reaksjonstid. Tommelfingerregel for tilnærmet normalfordelte data: ca. 68 % av verdiene ligger mellom z = ±1 og ca. 95 % mellom z = ±2, så en z over 3 er sjelden nok til å være verdt et blikk (se Sim 8 og Sim 2 om utliggere).</div>
-<div class="note" id="rainExpl" style="display:none"><b>Slik leser du raincloud-plottet</b>: tre lag av de samme dataene: <b>Skyen</b> (øverst) er en tetthetskurve, en glattet versjon av histogrammet som viser hvor verdiene tetner seg. <b>Boksen</b> (midten) er et boksplott: den grønne streken er medianen, boksen dekker de midterste 50 % av observasjonene (IQR), og strekene ut til sidene er <b>værhårene</b>. De rekker til den ytterste observasjonen som fortsatt ligger innenfor <b>1,5 × IQR</b> fra boksen, altså halvannen boksbredde ut på hver side. Alt som ligger lenger ute, tegnes som <b style="color:#B26A00">oransje punkter</b> og regnes som mulige uteliggere. Værhårene er altså ikke minimum og maksimum: de viser hvor langt dataene rekker <i>før</i> de begynner å bli mistenkelige. Vil du se hele spennet, slår du på «Spennvidde». Knappene over figuren lar deg fjerne boksen, værhårene og medianen hver for seg, så du kan bygge boksplottet opp bit for bit. <b>Regnet</b> (nederst) er rådataene: hver dråpe er én person. Den røde linjen er gjennomsnittet: sammenlign den med medianen for å se skjevheten. JASP lager samme plott under Descriptives → Basic plots → Raincloud.</div>
+<div class="note" id="rainExpl" style="display:none"><b>Slik leser du raincloud-plottet</b>: tre lag av de samme dataene: <b>Skyen</b> (øverst) er en tetthetskurve, en glattet versjon av histogrammet som viser hvor verdiene tetner seg. <b>Boksen</b> (midten) er et boksplott: den grønne streken er medianen, boksen dekker de midterste 50 % av observasjonene (IQR), og strekene ut til sidene er <b>værhårene</b>. De rekker til den ytterste observasjonen som fortsatt ligger innenfor <b>1,5 × IQR</b> fra boksen, altså halvannen boksbredde ut på hver side. Alt som ligger lenger ute, tegnes som <b style="color:#B26A00">oransje punkter</b> og regnes som mulige uteliggere. Værhårene er altså ikke minimum og maksimum: de viser hvor langt dataene rekker <i>før</i> de begynner å bli mistenkelige. Vil du se hele spennet, slår du på «Spennvidde». Knappene over figuren lar deg fjerne boksen, værhårene og medianen hver for seg, så du kan bygge boksplottet opp bit for bit. De <b style="color:#1F3864">blå stiplede strekene</b> er Q1 og Q3 regnet direkte ut av rådataene, og de er tegnet på samme måte i histogrammet: veksler du mellom «Histogram/søyler» og «Raincloud», står de på nøyaktig samme sted på x-aksen — og i raincloud-plottet lander de rett på kantene av boksen. Det er hele poenget: boksen <i>er</i> de to kvartilene. <b>Regnet</b> (nederst) er rådataene: hver dråpe er én person. Den røde linjen er gjennomsnittet: sammenlign den med medianen for å se skjevheten. JASP lager samme plott under Descriptives → Basic plots → Raincloud.</div>
 </div>
 
 <div class="card" id="vurderingKort" style="display:none">
@@ -205,9 +205,7 @@ function drawRaincloud(cv,data){
     c.fillStyle='#C0392B';c.font='bold 14px sans-serif';c.textAlign='center';
     c.fillText('M ± 1 SD',X(M),topY+13);
   }
-  if(VIS.q&&q3>q1){
-    c.fillStyle='rgba(46,125,50,.13)';c.fillRect(X(q1),topY,X(q3)-X(q1),botY-topY);
-  }
+  if(VIS.q&&q3>q1) kvartilBand(c,X,q1,q3,topY,botY,.10);
 
   // ---- sky (tetthet) ----
   c.beginPath(); c.moveTo(X(dens[0][0]),cy-boxH/2-4);
@@ -253,9 +251,12 @@ function drawRaincloud(cv,data){
     c.strokeStyle='#1F3864'; c.lineWidth=2;
     c.fillStyle='#DCE6F1'; c.fillRect(X(q1),cy-boxH/2,X(q3)-X(q1),boxH);
     c.strokeRect(X(q1),cy-boxH/2,X(q3)-X(q1),boxH);
-    c.fillStyle='#2E7D32';c.font='bold 14px sans-serif';
-    c.textAlign='right';c.fillText('Q1',X(q1)-5,cy+boxH/2+15);
-    c.textAlign='left';c.fillText('Q3',X(q3)+5,cy+boxH/2+15);
+    // samme stiplede strek som i histogrammet, tegnet oppå boksen: kanten og
+    // streken skal falle sammen på pikselen
+    kvartilStrek(c,X,q1,q3,topY,botY,false);
+    c.fillStyle=QFARGE;c.font='bold 14px sans-serif';
+    c.textAlign='right';c.fillText('Q1 = '+fmt(q1),X(q1)-6,cy+boxH/2+16);
+    c.textAlign='left';c.fillText('Q3 = '+fmt(q3),X(q3)+6,cy+boxH/2+16);
   }
 
   // ---- regn (rådata) ----
@@ -352,7 +353,27 @@ function numAxis(c,w,h,L,H,y0){
   for(let i=0;i<=4;i++){const v=L+(H-L)*i/4;c.fillText(fmt(v,(H-L)>20?0:1),x0+pw*i/4,y0+22);}
   return v=>x0+(v-L)/(H-L)*pw;
 }
-const VIS={M:true,med:true,modus:true,q:false,hale:true,sd:false,rng:false};
+/* Kvartilstrekene tegnes i identisk format i begge plottene, slik at studenten
+   kan se at Q1 og Q3 regnet ut av rådataene lander nøyaktig på kantene av boksen
+   i raincloud-plottet: boksen ER de to kvartilene, ikke en egen konstruksjon.
+   Begge plottene bruker samme kvantildefinisjon (iqr()), ellers ville de bomme
+   med en observasjon og hele poenget falle. */
+const QFARGE='#1F3864';   // samme blå som boksens kant, så streken og kanten hører sammen
+function kvartilBand(c,X,q1,q3,yTop,y0,alpha){
+  c.fillStyle='rgba(31,56,100,'+(alpha==null?0.10:alpha)+')';
+  c.fillRect(X(q1),yTop,X(q3)-X(q1),y0-yTop);
+}
+function kvartilStrek(c,X,q1,q3,yTop,y0,etikett){
+  c.strokeStyle=QFARGE; c.lineWidth=2.5; c.setLineDash([6,5]);
+  [q1,q3].forEach(function(v){c.beginPath();c.moveTo(X(v),yTop);c.lineTo(X(v),y0);c.stroke();});
+  c.setLineDash([]);
+  if(etikett!==false){
+    c.fillStyle=QFARGE; c.font='bold 14px sans-serif';
+    c.textAlign='right'; c.fillText('Q1 = '+fmt(q1), X(q1)-6, y0-8);
+    c.textAlign='left';  c.fillText('Q3 = '+fmt(q3), X(q3)+6, y0-8);
+  }
+}
+const VIS={M:true,med:true,modus:true,q:true,hale:true,sd:false,rng:false};
 function mmMarkers(c,X,data,yTop,y0){
   const M=mean(data),md=median(data),S=sd(data),QQ=iqr(data),q1=QQ[0],q3=QQ[1];
   const mn=Math.min.apply(null,data),mx=Math.max.apply(null,data);
@@ -367,13 +388,10 @@ function mmMarkers(c,X,data,yTop,y0){
     c.fillText('±2 SD',X(M+2*S),yTop+15);
   }
   if(VIS.q&&q3>q1){
-    c.fillStyle='rgba(46,125,50,.15)';c.fillRect(X(q1),yTop,X(q3)-X(q1),y0-yTop);
-    c.strokeStyle='#2E7D32';c.lineWidth=2;
-    [q1,q3].forEach(function(v){c.beginPath();c.moveTo(X(v),yTop);c.lineTo(X(v),y0);c.stroke();});
-    c.fillStyle='#2E7D32';c.font='bold 14px sans-serif';
-    c.textAlign='right';c.fillText('Q1',X(q1)-5,y0-8);
-    c.textAlign='left';c.fillText('Q3',X(q3)+5,y0-8);
-    c.textAlign='center';c.fillText('midterste 50 %',(X(q1)+X(q3))/2,y0-8);
+    kvartilBand(c,X,q1,q3,yTop,y0,.10);
+    kvartilStrek(c,X,q1,q3,yTop,y0);
+    c.fillStyle=QFARGE;c.font='bold 14px sans-serif';
+    c.textAlign='center';c.fillText('midterste 50 %',(X(q1)+X(q3))/2,y0-26);
   }
   if(VIS.rng&&mx>mn){
     const yr=y0-2;
@@ -384,8 +402,8 @@ function mmMarkers(c,X,data,yTop,y0){
     c.fillText('spennvidde = '+fmt(mx-mn),(X(mn)+X(mx))/2,yr-13);
   }
   if(VIS.med){
-    c.strokeStyle='#2E7D32';c.setLineDash([6,5]);c.lineWidth=3;
-    c.beginPath();c.moveTo(X(md),yTop);c.lineTo(X(md),y0);c.stroke();c.setLineDash([]);
+    c.strokeStyle='#2E7D32';c.lineWidth=3.5;
+    c.beginPath();c.moveTo(X(md),yTop);c.lineTo(X(md),y0);c.stroke();
     c.fillStyle='#2E7D32';c.font='bold 15px sans-serif';c.textAlign='center';
     c.fillText('median = '+fmt(md),X(md),34);
   }
