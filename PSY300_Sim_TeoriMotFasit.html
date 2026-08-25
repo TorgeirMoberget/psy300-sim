@@ -1,0 +1,1971 @@
+<!DOCTYPE html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY300 · Sim 28 — Teori mot fasit</title>
+<style>
+:root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--orange:#B26A00;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:20.5px;margin:0;font-weight:700}
+header p{margin:2px 0 0;font-size:15.5px;opacity:.85}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+h2{color:var(--navy);margin:.2em 0 .5em;font-size:19px}
+button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+.btn{background:var(--blue);color:#fff}.btn:hover{background:var(--navy)}
+.btn:disabled{background:#9fb0cd;cursor:progress}
+.btn2{background:#eef1f7;color:var(--navy)}.btn2:hover{background:var(--light)}
+.muted{color:#62708a;font-size:16px}
+canvas{width:100%;display:block}
+select,input[type=number]{padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:16px;font-family:inherit;background:#fff;color:#1a2233}
+input[type=number]{width:88px}
+.rad{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:6px 0}
+.rad label{font-size:16px;color:var(--navy);font-weight:600}
+.stat{display:inline-block;background:var(--light);color:var(--navy);border-radius:8px;padding:3px 10px;font-size:15.5px;font-weight:600;margin:3px 4px 3px 0;font-variant-numeric:tabular-nums}
+.stat.red{background:#fbeceb;color:var(--red)}
+.stat.green{background:#eaf6ea;color:var(--green)}
+.stat.orange{background:#fdf2e2;color:var(--orange)}
+.note{background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px;margin-top:10px}
+.gloss{font-size:15.5px}
+.gloss b{color:var(--navy)}
+.keybox{background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:12px 14px;margin:14px 0;font-size:16.5px}
+.keybox .lbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:15.5px;font-variant-numeric:tabular-nums;margin-top:8px}
+th,td{border-bottom:1px solid var(--line);padding:5px 7px;text-align:right}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--navy);font-size:14.5px;text-transform:uppercase;letter-spacing:.03em}
+tr.valgt td{background:#fff6e8}
+.legend{font-size:15px;margin-top:4px}
+.nullboks{background:#eef6f0;border:1px solid #bfd9c8;border-left:5px solid var(--green);
+  border-radius:10px;padding:11px 14px;margin:10px 0;font-size:16px}
+.nullboks .lbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--green);font-weight:700;margin-bottom:4px}
+.nullboks b{color:var(--navy)}
+.nullboks .par{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;margin-top:6px;font-size:15.5px}
+.nullboks .mrk{font-weight:700;color:var(--green);white-space:nowrap}
+@media(max-width:620px){.nullboks .par{grid-template-columns:1fr}}
+.teori{background:#fffaf0;border:1px solid #e7d7b8;border-left:5px solid var(--orange);
+  border-radius:10px;padding:11px 14px;margin:0 0 10px;font-size:16px}
+.teori .lbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--orange);font-weight:700;margin-bottom:3px}
+.teori .pastand{font-size:17px;color:#1a2233;margin:2px 0 8px}
+.teori .form{font-size:19px;font-weight:600;color:var(--navy);margin:6px 0 2px;font-variant-numeric:tabular-nums}
+.teori .les{display:block;font-size:14.5px;font-weight:400;color:#6b5426;margin:1px 0 8px}
+.teori ul{margin:6px 0 8px;padding-left:20px;font-size:15.5px}
+.teori li{margin:2px 0}
+.teori .tall{background:#fff;border:1px solid #e7d7b8;border-radius:8px;padding:8px 11px;margin-top:8px;font-size:15.5px}
+.teori .styrt{font-size:15px;color:#6b5426}
+.teori b{color:var(--navy)}
+.fane{background:#eef1f7;color:var(--navy);font-size:16.5px}
+.fane.on{background:var(--navy);color:#fff}
+.hide{display:none}
+.legend b{font-variant-numeric:tabular-nums}
+.presbtn{position:fixed;right:12px;bottom:12px;z-index:50;background:#fff;color:var(--navy);
+  border:1px solid var(--line);border-radius:20px;padding:7px 14px;font-size:14px;font-weight:700;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer;opacity:.75}
+.presbtn:hover{opacity:1}
+body.pres header{padding:6px 14px}
+body.pres header h1{font-size:17px}
+body.pres header p{display:none}
+body.pres .wrap{max-width:1240px;padding:6px 14px}
+body.pres .card{padding:10px 12px;margin:8px 0}
+body.pres h2{font-size:16.5px;margin:.1em 0 .3em}
+body.pres .muted:not([id]){display:none}
+body.pres .card.docs{display:none}
+body.pres .stat{font-size:16.5px}
+body.pres .note{padding:8px 11px;margin-top:7px}
+body.pres .keybox{font-size:18px}
+</style></head><body>
+<header><h1>Sim 28 · Teori mot fasit</h1>
+<p>PSY300 · Vi trekker tusen studier fra en populasjon der vi <b>vet</b> at effekten er null — men der alt annet varierer akkurat som i de ekte dataene. Så sjekker vi om teorien traff</p></header>
+<div class="wrap">
+
+<div class="card" style="padding:10px 12px">
+<button class="fane on" data-fane="se">Standardfeilen</button>
+<button class="fane" data-fane="p">p-verdien</button>
+<button class="fane" data-fane="t">t-verdier</button>
+<button class="fane" data-fane="r">r-verdier</button>
+<button class="fane" data-fane="f">F-verdier</button>
+<button class="fane" data-fane="kji">Kji-kvadrat</button>
+<span class="muted" style="margin-left:10px;font-size:15px">Alle tre stiller samme spørsmål: stemmer formelen med det som faktisk skjer?</span>
+</div>
+
+<div id="fane-se">
+
+<div class="card">
+<h2>Oppsettet</h2>
+<p class="muted" id="forklaring">Forskeren har <i>ett</i> utvalg og regner ut standardfeilen med formelen <b>SE = s/√n</b>. Her har vi hele populasjonen på 10 000, så vi kan gjøre det forskeren aldri kan: trekke studien om igjen tusen ganger og <i>måle</i> hvor mye gjennomsnittet faktisk spriker. Så sammenligner vi de to.</p>
+
+<div class="nullboks"><span class="lbl">Hva vi tester, og hvorfor det er en rettferdig test</span>Simuleringen trekker fra en <b>populasjon på 10 000</b>, bygget fra det ekte datasettet. At vi har hele populasjonen er det som gjør testen mulig: da kjenner vi <b>fasiten</b> — den sanne standardfeilen — og kan sjekke om formelen treffer den.<div class="par"><span class="mrk">Fasiten:</span><span>σ er kjent, så den sanne standardfeilen kan regnes ut eksakt. En ekte forsker har bare ett utvalg og må gjette.</span><span class="mrk">Beholdt:</span><span>Hele fordelingen til variabelen slik den er i datasettet: spredning, skjevhet, skala og gulv- og takeffekter. Populasjonen er simulert fra de ekte dataene, ikke fra en pen normalfordeling.</span></div>Fordelen ved å ha alle 10 000: vi kjenner σ nøyaktig, og kan derfor regne ut den <i>sanne</i> standardfeilen. Det får ingen ekte forsker gjort.</div>
+<div class="rad">
+  <label>Variabel <select id="vsel"></select></label>
+  <span class="muted" id="popInfo"></span>
+</div>
+<div id="popStats" style="margin:2px 0 8px"></div>
+
+<div class="rad">
+  <label>n fra <input type="number" id="nMin" value="5" min="2" max="2000" step="1"></label>
+  <label>til <input type="number" id="nMaks" value="200" min="2" max="2000" step="1"></label>
+  <label>i steg på <input type="number" id="nSteg" value="15" min="1" max="500" step="1"></label>
+  <label><input type="checkbox" id="logSteg"> doble i stedet (5, 10, 20, 40 …)</label>
+</div>
+<div class="rad">
+  <label>Antall gjentakelser per n
+    <select id="rep">
+      <option value="200">200</option>
+      <option value="1000" selected>1 000</option>
+      <option value="5000">5 000</option>
+    </select></label>
+  <button class="btn" id="kjor">Kjør simuleringen</button>
+  <button class="btn2" id="tom">Nullstill</button>
+  <span class="muted" id="status"></span>
+</div>
+<div class="muted" id="nListe" style="font-size:15px"></div>
+</div>
+
+<div class="card">
+<h2>Formelen mot fasiten</h2>
+<div class="teori" id="seTeori"></div>
+<canvas id="cvMain" height="380"></canvas>
+<div class="legend">
+  <b style="color:#1F3864">▬ σ/√n</b> = den sanne standardfeilen, som bare vi kan regne ut &nbsp;·&nbsp;
+  <b style="color:#B26A00">● målt</b> = standardavviket til de <span id="repEtikett">1 000</span> gjennomsnittene &nbsp;·&nbsp;
+  <b style="color:#2E5496">● s/√n</b> = snittet av formelen fra hvert enkelt utvalg, med streken som viser hvor de midterste 95 % av enkeltestimatene ligger
+</div>
+<div class="note" id="hovedpoeng" style="display:none"></div>
+</div>
+
+<div class="card">
+<h2>Ett n om gangen: hvor mye spriker selve estimatet?</h2>
+<div class="rad">
+  <label>Vis fordelingen av s/√n for n = <select id="nVelg"></select></label>
+  <button class="btn2" id="seFrys" style="font-size:15px;padding:6px 12px">Frys denne fordelingen</button><button class="btn2" id="seUfrys" style="font-size:15px;padding:6px 12px">Fjern frossen</button><span class="muted" id="seFrosset" style="font-size:14.5px"></span>
+  <span class="muted" style="width:100%;font-size:14.5px">Klikk gjerne en rad i tabellen under i stedet. Fryser du en fordeling og velger en annen n, tegnes den gamle som oransje omriss bak den nye.</span>
+</div>
+<canvas id="cvEn" height="260"></canvas>
+<div id="enStats" class="muted">Kjør simuleringen først.</div>
+</div>
+
+<div class="card">
+<h2>Tallene</h2>
+<table id="tab"><thead><tr>
+  <th>n</th><th>σ/√n (sant)</th><th>Målt SD(x̄)</th><th>Snitt s/√n</th>
+  <th>Avvik i snitt</th><th>95 % av enkeltestimatene</th><th>Relativ spredning</th>
+</tr></thead><tbody></tbody></table>
+<p class="muted" style="margin-top:8px">«Avvik i snitt» er hvor mye formelen bommer <i>i gjennomsnitt</i> over alle gjentakelsene, målt mot σ/√n. «Relativ spredning» er standardavviket til enkeltestimatene delt på σ/√n: hvor mye ett enkelt SE-estimat kan sprike fra det neste.</p>
+</div>
+
+<div class="keybox" id="keybox">
+<span class="lbl">Hovedpoenget</span>
+<b>Formelen har rett i det lange løp, men ett enkelt estimat er ikke til å stole på ved liten n.</b> Vi kan si det med sikkerhet fordi vi kjenner σ i populasjonen og dermed har fasiten.
+Snittet av s/√n over tusen studier lander nesten oppå σ/√n — formelen er altså ikke feil. Men den forskeren som har <i>én</i> studie med n = 5, har et SE-estimat som fint kan være halvparten eller halvannen gang det riktige. Legg dessuten merke til at snittet ligger litt <i>under</i> sannheten ved små n: s undervurderer σ systematisk, og det er nettopp derfor t-fordelingen har tyngre haler enn normalfordelingen. Dra n opp, og begge problemene forsvinner: kurvene faller sammen, og strekene krymper.
+</div>
+
+</div><!-- /fane-se -->
+
+<!-- ==================== p-VERDIEN ==================== -->
+<div id="fane-p" class="hide">
+<div class="card">
+<h2>Oppsettet</h2>
+<p class="muted">Vi trekker <b>to grupper fra samme populasjon</b>. Da er nullhypotesen sann per konstruksjon: det <i>finnes</i> ingen forskjell. Hver gjentakelse er en komplett studie som regner ut en t-test og får en p-verdi fra formelen. Etterpå kan vi måle hva p-verdien burde vært: andelen av alle nullstudiene som ga en minst like ekstrem t. Stemmer de to, ligger punktene på diagonalen.</p>
+<div class="nullboks"><span class="lbl">Hva vi tester, og hvorfor det er en rettferdig test</span>Simuleringen trekker fra en <b>nullpopulasjon på 10 000</b>. Den er bygget fra det ekte datasettet, men med den systematiske effekten fjernet — så vi vet fasiten på forhånd.<div class="par"><span class="mrk">Fjernet:</span><span><b>Forskjellen mellom gruppene.</b> Begge gruppene trekkes fra nøyaktig samme populasjon, så det finnes ingen behandlingseffekt, ingen gruppeforskjell, ingenting å finne. Hvert eneste «funn» du ser er falskt.</span><span class="mrk">Beholdt:</span><span>All annen variasjon: personene er like ulike hverandre som i de ekte dataene, med samme spredning og samme skjevhet. Det er bare den systematiske forskjellen som er tatt bort.</span></div>Derfor er dette en rettferdig test: hvis testen likevel roper «signifikant» i mer enn <b>α</b> av tilfellene, er det testen som svikter — ikke dataene som er rare.</div>
+<div class="rad">
+  <label>Variabel <select id="pVsel"></select></label>
+  <span class="muted" id="pPopInfo"></span>
+</div>
+<div class="rad">
+  <label>n per gruppe fra <input type="number" id="pMin" value="5" min="2" max="1000"></label>
+  <label>til <input type="number" id="pMaks" value="100" min="2" max="1000"></label>
+  <label>i steg på <input type="number" id="pSteg" value="19" min="1" max="500"></label>
+  <label><input type="checkbox" id="pLog"> doble i stedet</label>
+</div>
+<div class="rad">
+  <label>Gjentakelser per n <select id="pRep">
+    <option value="1000" selected>1 000</option><option value="5000">5 000</option><option value="10000">10 000</option></select></label>
+  <label>Signifikansnivå α <select id="pAlfa">
+    <option value="0.01">0,01</option><option value="0.05" selected>0,05</option><option value="0.1">0,10</option></select></label>
+  <button class="btn" id="pKjor">Kjør simuleringen</button>
+  <button class="btn2" id="pTom">Nullstill</button>
+  <span class="muted" id="pStatus"></span>
+</div>
+<div class="muted" id="pNliste" style="font-size:15px"></div>
+</div>
+
+<div class="card">
+<h2>Formelens p mot den målte p-verdien</h2>
+<div class="rad">
+  <label>n per gruppe = <select id="pNvelg"></select></label>
+  <label><input type="checkbox" id="pZoom" checked> zoom inn på p &lt; 0,10 (der avgjørelsene tas)</label>
+</div>
+<div class="teori" id="pTeori"></div>
+<canvas id="pCvQQ" height="340"></canvas>
+<div class="legend"><b style="color:#2E5496">● hver prikk</b> er én av nullstudiene: formelens p vannrett, den målte p loddrett. <b style="color:#1F3864">▬ diagonalen</b> er full enighet.</div>
+<div class="note" id="pNote" style="display:none"></div>
+</div>
+
+<div class="card">
+<h2>Holder 5 %-løftet ved hver n?</h2>
+<canvas id="pCvRate" height="300"></canvas>
+<div class="legend"><b style="color:#B26A00">● målt andel</b> nullstudier som ble «signifikante» &nbsp;·&nbsp; <b style="color:#1F3864">▬ α</b> = det formelen lover &nbsp;·&nbsp; det grå feltet er hvor mye ren tilfeldighet kan flytte den målte andelen (±2 standardfeil).</div>
+</div>
+
+<div class="card">
+<h2>Tallene</h2>
+<table id="pTab"><thead><tr>
+  <th>n per gruppe</th><th>df</th><th>Målt p &lt; 0,01</th><th>Målt p &lt; 0,05</th><th>Målt p &lt; 0,10</th>
+  <th>Største avvik fra formelen</th><th>Snitt p</th></tr></thead><tbody></tbody></table>
+<p class="muted" style="margin-top:8px">Under en sann nullhypotese skal p-verdier være <b>jevnt fordelt</b> mellom 0 og 1. Da blir andelen under 0,05 nøyaktig 5 %, og snittet 0,50. «Største avvik» er den største forskjellen mellom formelens p og den målte p over alle gjentakelsene — altså hvor langt fra diagonalen punktene kommer.</p>
+</div>
+
+<div class="keybox">
+<span class="lbl">Hovedpoenget</span>
+<b>Poenget er ikke at 5 % er «riktig», men at vi kan etterprøve det.</b> Fordi vi fjernet effekten selv, vet vi at hvert eneste signifikante funn her er falskt — og da kan vi telle dem. <b>t-testens p-verdi holder det den lover, også når populasjonen er skjev.</b>
+Punktene legger seg på diagonalen, og andelen falske funn lander på α — ikke fordi dataene er normalfordelte, men fordi <i>gjennomsnittene</i> blir det (sentralgrenseteoremet). Prøv likevel n = 5 med den skjeveste variabelen: da begynner det å skrante i den ytterste halen, og det er nettopp der p = 0,01 og p = 0,001 bor. Det er også verdt å merke seg hva bildet <i>ikke</i> sier: hver eneste av disse tusen studiene er et rent nullfunn, og likevel er 5 % av dem «signifikante». Det er ikke en feil ved testen. Det er prisen.
+</div>
+</div><!-- /fane-p -->
+
+<div id="fane-t" class="hide">
+<div class="card">
+<h2>Oppsettet</h2>
+<p class="muted">To grupper trekkes fra <b>samme</b> populasjon, så det finnes ingen forskjell å finne — vi har fjernet den. Hver gjentakelse gir likevel én t-verdi, og den er ren tilfeldighet. Teorien sier at disse skal følge en t-fordeling med 2n − 2 frihetsgrader — den fordelingen JASP slår opp i for å gjøre din t om til en p-verdi. Holder påstanden også når rådataene er skjeve, slik de er i det ekte datasettet?</p>
+<div class="nullboks"><span class="lbl">Hva vi tester, og hvorfor det er en rettferdig test</span>Simuleringen trekker fra en <b>nullpopulasjon på 10 000</b>. Den er bygget fra det ekte datasettet, men med den systematiske effekten fjernet — så vi vet fasiten på forhånd.<div class="par"><span class="mrk">Fjernet:</span><span><b>Forskjellen mellom gruppene.</b> Begge gruppene trekkes fra samme populasjon, så den sanne forskjellen mellom dem er null. Alle t-verdiene du ser under, kommer fra ren tilfeldighet.</span><span class="mrk">Beholdt:</span><span>Variasjonen mellom personer, akkurat som i datasettet — inkludert at fordelingen kan være skjev.</span></div>Poenget: kurven teorien lover skal beskrive nettopp denne tilfeldige variasjonen. Gjør den det, kan vi stole på den når vi seinere møter en forskjell som kanskje <i>er</i> ekte.</div>
+<div class="rad">
+  <label>Variabel <select id="tVsel"></select></label>
+  <span class="muted" id="tPopInfo"></span>
+</div>
+<div class="rad">
+  <label><input type="checkbox" id="tNormal"> vis også normalfordelingen (den t-en nærmer seg)</label>
+</div>
+<div class="rad">
+  <label>n per gruppe fra <input type="number" id="tMin" value="4" min="3" max="1000"></label>
+  <label>til <input type="number" id="tMaks" value="40" min="3" max="1000"></label>
+  <label>i steg på <input type="number" id="tSteg" value="6" min="1" max="500"></label>
+  <label><input type="checkbox" id="tLog"> doble i stedet</label>
+</div>
+<div class="rad">
+  <label>Gjentakelser per n <select id="tRep">
+    <option value="1000" selected>1 000</option><option value="5000">5 000</option><option value="10000">10 000</option></select></label>
+  <label>α <select id="tAlfa"><option value="0.01">0,01</option><option value="0.05" selected>0,05</option><option value="0.1">0,10</option></select></label>
+  <button class="btn" id="tKjor">Kjør simuleringen</button>
+  <button class="btn2" id="tTom">Nullstill</button>
+  <span class="muted" id="tStatus"></span>
+</div>
+<div class="muted" id="tNliste" style="font-size:15px"></div>
+</div>
+
+<div class="card">
+<h2>Den teoretiske t-fordelingen mot den målte</h2>
+<div class="rad"><label>n per gruppe = <select id="tNvelg"></select></label>
+  <button class="btn2" id="tFrys" style="font-size:15px;padding:6px 12px">Frys denne fordelingen</button><button class="btn2" id="tUfrys" style="font-size:15px;padding:6px 12px">Fjern frossen</button><span class="muted" id="tFrosset" style="font-size:14.5px"></span></div>
+<div class="teori" id="tTeori"></div>
+<canvas id="tCvFord" height="330"></canvas>
+<div class="legend"><b style="color:#8fb0dd">■ søyler</b> = de simulerte verdiene fra nullhypotesen &nbsp;·&nbsp; <b style="color:#C0392B">▬ kurve</b> = fordelingen teorien lover &nbsp;·&nbsp; <b style="color:#1F3864">┆ strek</b> = den kritiske verdien &nbsp;·&nbsp; <b style="color:#B26A00">▭ omriss</b> = den frosne fordelingen fra en annen n, med sin egen teorikurve stiplet</div>
+<div id="tStats" class="muted" style="margin-top:6px">Kjør simuleringen først.</div>
+<div class="note" id="tNote" style="display:none"></div>
+</div>
+
+<div class="card">
+<h2>Holder feilraten ved hver n?</h2>
+<canvas id="tCvRate" height="290"></canvas>
+<div class="legend"><b style="color:#B26A00">● målt andel</b> nullstudier som ble forkastet &nbsp;·&nbsp; <b style="color:#1F3864">▬ α</b> = det testen lover &nbsp;·&nbsp; det grå feltet er ±2 standardfeil rundt α.</div>
+</div>
+
+<div class="card">
+<h2>Tallene</h2>
+<table id="tTabell"><thead><tr><th>n</th><th>df</th><th>Kritisk verdi (teori)</th><th>Målt kritisk verdi</th><th>Målt forkastningsrate</th><th>Snitt</th><th>SD</th></tr></thead><tbody></tbody></table>
+<p class="muted" style="margin-top:8px">Den kritiske verdien er den t-en som skjærer av α i de to halene til sammen. «Målt kritisk verdi» er persentilen simuleringen faktisk gir. Faller de sammen, er oppslagstabellen riktig for denne n-en.</p>
+</div>
+
+<div class="keybox"><span class="lbl">Hovedpoenget</span><b>t-fordelingen er ikke normalfordelingen, og forskjellen bor i halene.</b> Slå på normalkurven ved n = 4 per gruppe: midtpartiet er nesten identisk, men t-fordelingen har tydelig tyngre haler — og det er halene p-verdier lever i. Derfor er den kritiske t-en 2,45 og ikke 1,96. Dra n oppover, og de to kurvene smelter sammen. Legg også merke til at den simulerte fordelingen følger t-kurven selv når populasjonen er skjev: det er sentralgrenseteoremet som redder testen, ikke en antakelse om at rådataene er pene.</div>
+</div><!-- /fane-t -->
+
+<div id="fane-r" class="hide">
+<div class="card">
+<h2>Oppsettet</h2>
+<p class="muted">To variabler trekkes <b>uavhengig av hverandre</b>: verdien på x sier ingenting om y, så den sanne korrelasjonen er ρ = 0 — vi har koblet dem fra hverandre med vilje. Hver variabel beholder sin egen fordeling fra datasettet. Likevel blir r nesten aldri nøyaktig null, og fordelingen av disse tilfeldige r-ene er nettopp det en signifikanstest for korrelasjon måler mot.</p>
+<div class="nullboks"><span class="lbl">Hva vi tester, og hvorfor det er en rettferdig test</span>Simuleringen trekker fra en <b>nullpopulasjon på 10 000</b>. Den er bygget fra det ekte datasettet, men med den systematiske effekten fjernet — så vi vet fasiten på forhånd.<div class="par"><span class="mrk">Fjernet:</span><span><b>Sammenhengen mellom variablene.</b> x og y trekkes uavhengig av hverandre, altså blir person nr. 1 sin x-verdi og y-verdi hentet fra hver sin kant. Den sanne korrelasjonen er nøyaktig ρ = 0.</span><span class="mrk">Beholdt:</span><span>Hver variabel beholder sin egen fordeling fra datasettet: samme spredning, samme skjevhet, samme skala.</span></div>Alt du ser av skrå linjer i dataene er dermed ren støy — og fordelingen av den støyen er nøyaktig det en signifikanstest måler mot.</div>
+<div class="rad">
+  <label>Variabel <select id="rVsel"></select></label>
+  <span class="muted" id="rPopInfo"></span>
+</div>
+<div class="rad">
+  <label>y-variabel <select id="rVsel2"></select></label>
+  <span class="muted">x og y trekkes hver for seg, så sammenhengen er null uansett hvilke to du velger.</span>
+</div>
+<div class="rad">
+  <label>n (antall par) fra <input type="number" id="rMin" value="5" min="3" max="1000"></label>
+  <label>til <input type="number" id="rMaks" value="100" min="3" max="1000"></label>
+  <label>i steg på <input type="number" id="rSteg" value="15" min="1" max="500"></label>
+  <label><input type="checkbox" id="rLog"> doble i stedet</label>
+</div>
+<div class="rad">
+  <label>Gjentakelser per n <select id="rRep">
+    <option value="1000" selected>1 000</option><option value="5000">5 000</option><option value="10000">10 000</option></select></label>
+  <label>α <select id="rAlfa"><option value="0.01">0,01</option><option value="0.05" selected>0,05</option><option value="0.1">0,10</option></select></label>
+  <button class="btn" id="rKjor">Kjør simuleringen</button>
+  <button class="btn2" id="rTom">Nullstill</button>
+  <span class="muted" id="rStatus"></span>
+</div>
+<div class="muted" id="rNliste" style="font-size:15px"></div>
+</div>
+
+<div class="card">
+<h2>Nullfordelingen til r: teori mot simulering</h2>
+<div class="rad"><label>n (antall par) = <select id="rNvelg"></select></label>
+  <button class="btn2" id="rFrys" style="font-size:15px;padding:6px 12px">Frys denne fordelingen</button><button class="btn2" id="rUfrys" style="font-size:15px;padding:6px 12px">Fjern frossen</button><span class="muted" id="rFrosset" style="font-size:14.5px"></span></div>
+<div class="teori" id="rTeori"></div>
+<canvas id="rCvFord" height="330"></canvas>
+<div class="legend"><b style="color:#8fb0dd">■ søyler</b> = de simulerte verdiene fra nullhypotesen &nbsp;·&nbsp; <b style="color:#C0392B">▬ kurve</b> = fordelingen teorien lover &nbsp;·&nbsp; <b style="color:#1F3864">┆ strek</b> = den kritiske verdien &nbsp;·&nbsp; <b style="color:#B26A00">▭ omriss</b> = den frosne fordelingen fra en annen n, med sin egen teorikurve stiplet</div>
+<div id="rStats" class="muted" style="margin-top:6px">Kjør simuleringen først.</div>
+<div class="note" id="rNote" style="display:none"></div>
+</div>
+
+<div class="card">
+<h2>Holder feilraten ved hver n?</h2>
+<canvas id="rCvRate" height="290"></canvas>
+<div class="legend"><b style="color:#B26A00">● målt andel</b> nullstudier som ble forkastet &nbsp;·&nbsp; <b style="color:#1F3864">▬ α</b> = det testen lover &nbsp;·&nbsp; det grå feltet er ±2 standardfeil rundt α.</div>
+</div>
+
+<div class="card">
+<h2>Tallene</h2>
+<table id="rTabell"><thead><tr><th>n</th><th>df</th><th>Kritisk verdi (teori)</th><th>Målt kritisk verdi</th><th>Målt forkastningsrate</th><th>Snitt</th><th>SD</th></tr></thead><tbody></tbody></table>
+<p class="muted" style="margin-top:8px">Den kritiske verdien er den r-en som må til for å bli signifikant ved denne n-en. Se hvor stor den er ved n = 5: en korrelasjon på 0,8 betyr ingenting når du bare har fem par.</p>
+</div>
+
+<div class="keybox"><span class="lbl">Hovedpoenget</span><b>«Ingen sammenheng» betyr ikke r = 0.</b> Vi <i>vet</i> at det ikke finnes noen sammenheng her, for vi trakk x og y hver for seg. Med n = 10 gir rene tilfeldigheter r-er på ±0,63 i fem prosent av tilfellene, og det er derfor den kritiske verdien er så høy ved liten n. Kurven viser også hvorfor r er en dårlig størrelse å sammenligne på tvers av studier med ulik n: den samme r-en betyr helt ulike ting ved n = 10 og n = 1 000. Det er den samme lærdommen som i Sim 11, men her ser du fordelingen testen faktisk måler mot.</div>
+</div><!-- /fane-r -->
+
+<div id="fane-f" class="hide">
+<div class="card">
+<h2>Oppsettet</h2>
+<p class="muted">Flere grupper trekkes fra <b>samme</b> populasjon: alle gruppegjennomsnittene har samme forventning, fordi det ikke finnes noen gruppeeffekt å ha. Likevel spriker de, og F måler hvor mye de spriker i forhold til spredningen inne i gruppene — en spredning hentet fra de ekte dataene. Teorien sier at F da følger en F-fordeling med k − 1 og k(n − 1) frihetsgrader.</p>
+<div class="nullboks"><span class="lbl">Hva vi tester, og hvorfor det er en rettferdig test</span>Simuleringen trekker fra en <b>nullpopulasjon på 10 000</b>. Den er bygget fra det ekte datasettet, men med den systematiske effekten fjernet — så vi vet fasiten på forhånd.<div class="par"><span class="mrk">Fjernet:</span><span><b>Forskjellene mellom gruppene.</b> Alle gruppene trekkes fra samme populasjon, så gruppegjennomsnittene har samme forventning. Det finnes ingen effekt av «behandling».</span><span class="mrk">Beholdt:</span><span>Variasjonen mellom personer innen hver gruppe, som i det ekte datasettet.</span></div>Krysser du av for ulik spredning, bryter du én av forutsetningene <i>med vilje</i> — mens nullhypotesen fortsatt er sann. Da ser du hva et brudd på antakelsen koster i falske funn, uten at noe annet er endret.</div>
+<div class="rad">
+  <label>Variabel <select id="fVsel"></select></label>
+  <span class="muted" id="fPopInfo"></span>
+</div>
+<div class="rad">
+  <label>Antall grupper k <select id="fK">
+    <option value="2">2</option><option value="3" selected>3</option>
+    <option value="4">4</option><option value="5">5</option><option value="6">6</option></select></label>
+  <label><input type="checkbox" id="fUlik"> gi én gruppe dobbelt så stor spredning (bryt antakelsen)</label>
+</div>
+<div class="rad">
+  <label>n per gruppe fra <input type="number" id="fMin" value="4" min="3" max="1000"></label>
+  <label>til <input type="number" id="fMaks" value="40" min="3" max="1000"></label>
+  <label>i steg på <input type="number" id="fSteg" value="6" min="1" max="500"></label>
+  <label><input type="checkbox" id="fLog"> doble i stedet</label>
+</div>
+<div class="rad">
+  <label>Gjentakelser per n <select id="fRep">
+    <option value="1000" selected>1 000</option><option value="5000">5 000</option><option value="10000">10 000</option></select></label>
+  <label>α <select id="fAlfa"><option value="0.01">0,01</option><option value="0.05" selected>0,05</option><option value="0.1">0,10</option></select></label>
+  <button class="btn" id="fKjor">Kjør simuleringen</button>
+  <button class="btn2" id="fTom">Nullstill</button>
+  <span class="muted" id="fStatus"></span>
+</div>
+<div class="muted" id="fNliste" style="font-size:15px"></div>
+</div>
+
+<div class="card">
+<h2>Den teoretiske F-fordelingen mot den målte</h2>
+<div class="rad"><label>n per gruppe = <select id="fNvelg"></select></label>
+  <button class="btn2" id="fFrys" style="font-size:15px;padding:6px 12px">Frys denne fordelingen</button><button class="btn2" id="fUfrys" style="font-size:15px;padding:6px 12px">Fjern frossen</button><span class="muted" id="fFrosset" style="font-size:14.5px"></span></div>
+<div class="teori" id="fTeori"></div>
+<canvas id="fCvFord" height="330"></canvas>
+<div class="legend"><b style="color:#8fb0dd">■ søyler</b> = de simulerte verdiene fra nullhypotesen &nbsp;·&nbsp; <b style="color:#C0392B">▬ kurve</b> = fordelingen teorien lover &nbsp;·&nbsp; <b style="color:#1F3864">┆ strek</b> = den kritiske verdien &nbsp;·&nbsp; <b style="color:#B26A00">▭ omriss</b> = den frosne fordelingen fra en annen n, med sin egen teorikurve stiplet</div>
+<div id="fStats" class="muted" style="margin-top:6px">Kjør simuleringen først.</div>
+<div class="note" id="fNote" style="display:none"></div>
+</div>
+
+<div class="card">
+<h2>Holder feilraten ved hver n?</h2>
+<canvas id="fCvRate" height="290"></canvas>
+<div class="legend"><b style="color:#B26A00">● målt andel</b> nullstudier som ble forkastet &nbsp;·&nbsp; <b style="color:#1F3864">▬ α</b> = det testen lover &nbsp;·&nbsp; det grå feltet er ±2 standardfeil rundt α.</div>
+</div>
+
+<div class="card">
+<h2>Tallene</h2>
+<table id="fTabell"><thead><tr><th>n</th><th>df</th><th>Kritisk verdi (teori)</th><th>Målt kritisk verdi</th><th>Målt forkastningsrate</th><th>Snitt</th><th>SD</th></tr></thead><tbody></tbody></table>
+<p class="muted" style="margin-top:8px">Snittet av F skal være omtrent df₂/(df₂ − 2), altså litt over 1 — ikke 1, som mange tror. Kryss av for ulik spredning og se hva som skjer med forkastningsraten: det er varianshomogenitet i praksis, ikke som regel i en lærebok.</p>
+</div>
+
+<div class="keybox"><span class="lbl">Hovedpoenget</span><b>F samler all forskjell mellom gruppene i ett tall, og nullfordelingen forteller hvor stort det tallet kan bli av ren tilfeldighet.</b> Her er «ren tilfeldighet» ikke en antakelse, men noe vi har bygget inn: alle gruppene kommer fra samme populasjon. Med tre grupper og n = 4 skal det en F på over 4 til før noe er signifikant. Kryss så av for ulik spredning: fordelingen forskyves, og testen forkaster oftere enn de lovede 5 % — den finner «forskjeller» som ikke finnes. Det er derfor Levenes test står i JASP-outputen, og hvorfor Welch-varianten finnes.</div>
+</div><!-- /fane-f -->
+
+<!-- ==================== KJI-KVADRAT ==================== -->
+<div id="fane-kji" class="hide">
+<div class="card">
+<h2>Oppsettet</h2>
+<p class="muted" id="kForklaring">Vi lager krysstabeller der rad og kolonne er <b>uavhengige av hverandre</b> — nullhypotesen er sann. For hver tabell regner vi ut Pearsons X². Teorien sier at disse verdiene skal følge en χ²-fordeling med (r − 1)(k − 1) frihetsgrader. Om det stemmer, avhenger av hvor mange observasjoner som havner i hver celle, og det er hele poenget med regelen om forventede frekvenser.</p>
+<div class="note" id="kModusNote" style="margin-bottom:8px">De to testene bruker samme formel, <b>X² = Σ (O − E)² / E</b>, men henter E fra to ulike steder, og det er derfor de har ulike frihetsgrader. <b>Uavhengighetstesten</b> regner E ut fra tabellens egne rad- og kolonnesummer, som koster (r − 1) + (k − 1) frihetsgrader, så det står igjen (r − 1)(k − 1). <b>Tilpasningstesten</b> får E fra en fordeling du oppgir på forhånd, og bruker bare totalen fra dataene: da står det igjen c − 1.</div>
+<div class="nullboks"><span class="lbl">Hva vi tester, og hvorfor det er en rettferdig test</span>Simuleringen trekker fra en <b>nullpopulasjon på 10 000</b>. Den er bygget fra det ekte datasettet, men med den systematiske effekten fjernet — så vi vet fasiten på forhånd.<div class="par"><span class="mrk">Fjernet:</span><span><b>Sammenhengen mellom rad og kolonne.</b> Hver person plasseres i rad og kolonne uavhengig av hverandre, så de to kjennetegnene har ingenting med hverandre å gjøre.</span><span class="mrk">Beholdt:</span><span>Marginalfordelingene — altså hvor vanlige de ulike kategoriene er. Du velger selv om de skal være jevne eller skjeve, og det er nettopp skjevheten som avgjør om cellene blir store nok.</span></div>Slik kan vi skille to ting fra hverandre: om testen er riktig i prinsippet, og om tilnærmingen holder ved akkurat denne tabellstørrelsen og dette antallet personer.</div>
+<div class="rad">
+  <label>Test <select id="kModus">
+    <option value="uavh" selected>Uavhengighet (krysstabell)</option>
+    <option value="gof">Tilpasning (goodness of fit)</option></select></label>
+  <label id="kRadWrap"><span id="kRadLabel">Rader</span> <select id="kRader">
+    <option value="2" selected>2</option><option value="3">3</option>
+    <option value="4">4</option><option value="5">5</option></select></label>
+  <label id="kKolWrap">Kolonner <select id="kKol">
+    <option value="2" selected>2</option><option value="3">3</option>
+    <option value="4">4</option><option value="5">5</option></select></label>
+  <span class="stat" id="kDf">df = 1</span>
+  <label>Fordeling <select id="kMarg">
+    <option value="jevn" selected>jevne (like sannsynlige kategorier)</option>
+    <option value="skjev">skjeve (en kategori dominerer)</option>
+    <option value="svart">svært skjeve (sjeldne celler)</option></select></label>
+</div>
+<div class="rad">
+  <label>Total n fra <input type="number" id="kMin" value="20" min="5" max="5000"></label>
+  <label>til <input type="number" id="kMaks" value="320" min="5" max="5000"></label>
+  <label><input type="checkbox" id="kLog" checked> doble (20, 40, 80 …)</label>
+  <label>i steg på <input type="number" id="kSteg" value="50" min="1" max="1000"></label>
+</div>
+<div class="rad">
+  <label>Gjentakelser per n <select id="kRep">
+    <option value="1000" selected>1 000</option><option value="5000">5 000</option><option value="10000">10 000</option></select></label>
+  <label>α <select id="kAlfa"><option value="0.01">0,01</option><option value="0.05" selected>0,05</option><option value="0.1">0,10</option></select></label>
+  <button class="btn" id="kKjor">Kjør simuleringen</button>
+  <button class="btn2" id="kTom2">Nullstill</button>
+  <span class="muted" id="kStatus"></span>
+</div>
+<div class="muted" id="kNliste" style="font-size:15px"></div>
+</div>
+
+<div class="card">
+<h2>Den teoretiske χ²-fordelingen mot den målte</h2>
+<div class="rad"><label>Total n = <select id="kNvelg"></select></label><button class="btn2" id="kFrys" style="font-size:15px;padding:6px 12px">Frys denne fordelingen</button><button class="btn2" id="kUfrys" style="font-size:15px;padding:6px 12px">Fjern frossen</button><span class="muted" id="kFrosset" style="font-size:14.5px"></span></div>
+<div class="teori" id="kTeori"></div>
+<canvas id="kCvFord" height="330"></canvas>
+<div class="legend"><b style="color:#8fb0dd">■ søyler</b> = de simulerte X²-verdiene &nbsp;·&nbsp; <b style="color:#C0392B">▬ kurve</b> = χ²-fordelingen teorien lover &nbsp;·&nbsp; <b style="color:#1F3864">┆ strek</b> = den kritiske verdien &nbsp;·&nbsp; <b style="color:#B26A00">▭ omriss</b> = den frosne fordelingen</div>
+<div id="kStats" class="muted" style="margin-top:6px">Kjør simuleringen først.</div>
+<div class="note" id="kNote" style="display:none"></div>
+</div>
+
+<div class="card">
+<h2>Forkastningsraten mot forventede frekvenser</h2>
+<canvas id="kCvRate" height="300"></canvas>
+<div class="legend"><b style="color:#B26A00">● målt andel</b> forkastede nulltabeller &nbsp;·&nbsp; <b style="color:#1F3864">▬ α</b> &nbsp;·&nbsp; punkter der den minste forventede frekvensen er under 5, er <b style="color:#C0392B">ringet i rødt</b>.</div>
+</div>
+
+<div class="card">
+<h2>Tallene</h2>
+<table id="kTabell"><thead><tr>
+  <th>Total n</th><th>df</th><th>Minste forventede celle</th><th>Kritisk verdi (teori)</th>
+  <th>Målt 95-persentil</th><th>Målt forkastningsrate</th><th>Snitt X² (teori = df)</th></tr></thead><tbody></tbody></table>
+<p class="muted" style="margin-top:8px">χ²-fordelingen er en <b>tilnærming</b>: X² er bygget av celletellinger, som er diskrete, og tilnærmingen blir god først når hver celle har nok forventede observasjoner. Tommelfingerregelen er at alle forventede frekvenser bør være minst 5. Kolonnen lengst til venstre lar deg se når regelen begynner å bite.</p>
+</div>
+
+<div class="keybox">
+<span class="lbl">Hovedpoenget</span>
+<b>χ²-fordelingen er en tilnærming, ikke en beskrivelse.</b> Alle tabellene her er laget uten noen sammenheng mellom rad og kolonne, så enhver forkastning er en feil vi kan telle.
+Med romslige celler legger søylene seg pent under kurven, og forkastningsraten treffer α. Velg «svært skjeve» marginaler og lav n, og se hva som skjer: de forventede frekvensene faller under 5, den målte fordelingen blir hakkete og forskjøvet, og testen forkaster oftere eller sjeldnere enn den lover. Det er ikke en dårlig test — det er en test brukt utenfor sitt gyldighetsområde. Da er Fishers eksakte test svaret, ikke et større χ².
+</div>
+</div><!-- /fane-kji -->
+
+<div class="card docs" id="ordforklaringer">
+<h2>Ordforklaringer</h2>
+<p class="gloss">
+<b>Populasjon</b> — alle vi kunne målt. Her en simulert pasientpopulasjon på N = 10 000, bygget fra Terapi-RCT- og arbeidskravdataene.<br>
+<b>μ (my)</b> — gjennomsnittet i populasjonen: sannheten, som forskeren aldri får se.<br>
+<b>σ (sigma)</b> — standardavviket i populasjonen. Også dette er ukjent i virkelige studier.<br>
+<b>x̄ (x-strek)</b> — gjennomsnittet i ett utvalg, altså estimatet av μ.<br>
+<b>s</b> — standardavviket i utvalget, regnet med n − 1 i nevneren. Estimatet av σ.<br>
+<b>SE (standardfeil)</b> — hvor mye x̄ spriker fra utvalg til utvalg. Ikke det samme som s: s beskriver spredningen mellom <i>personer</i>, SE spredningen mellom <i>studier</i>.<br>
+<b>σ/√n</b> — den sanne standardfeilen. Krever at du kjenner σ, altså hele populasjonen.<br>
+<b>s/√n</b> — den estimerte standardfeilen. Dette er den forskeren faktisk regner ut, og den JASP viser.<br>
+<b>Utvalgsfordeling</b> — fordelingen av en statistikk over mange tenkte gjentakelser av studien. Standardfeilen <i>er</i> standardavviket til denne fordelingen.<br>
+<b>Gjentakelse</b> — ett komplett tenkt studieforsøk: trekk n personer, regn ut x̄ og s. Her gjentar vi 1 000 ganger per n.<br>
+<b>Trekking med tilbakelegging</b> — hver person kan trekkes flere ganger, slik at populasjonen aldri tømmes. Da gjelder σ/√n eksakt, uten korreksjon for endelig populasjon.<br>
+<b>Relativ spredning</b> — SD til estimatene delt på det de forsøker å treffe. 0,35 betyr at et typisk enkeltestimat bommer med rundt 35 %.
+</p>
+</div>
+
+</div>
+
+<script>
+"use strict";
+const VARS={"dep": {"lab": "Depresjon (pre)", "kilde": "Terapi-RCT-populasjonen, N = 10 000", "freq": {"30": 910, "34": 591, "29": 930, "35": 1778, "26": 617, "28": 812, "27": 704, "33": 736, "32": 811, "31": 852, "22": 151, "25": 403, "24": 330, "23": 206, "21": 80, "18": 9, "20": 49, "19": 23, "17": 6, "14": 1, "15": 1}, "lo": 14, "hi": 35, "step": 1, "mu": 30.05, "sigma": 3.79}, "undf": {"lab": "Undertrykkende forsvar (pre)", "kilde": "Terapi-RCT-populasjonen, N = 10 000", "freq": {"90": 281, "85": 380, "70": 204, "66": 100, "75": 304, "82": 411, "89": 307, "81": 348, "84": 379, "72": 228, "93": 225, "80": 384, "77": 383, "79": 417, "100": 69, "65": 105, "64": 71, "71": 212, "86": 335, "52": 6, "96": 145, "97": 127, "92": 228, "76": 339, "83": 393, "73": 275, "61": 43, "101": 75, "87": 368, "91": 282, "60": 36, "74": 293, "99": 105, "94": 213, "88": 359, "78": 337, "67": 124, "102": 60, "63": 79, "69": 146, "98": 96, "62": 56, "95": 181, "103": 206, "59": 28, "68": 162, "58": 20, "56": 13, "49": 3, "50": 9, "53": 8, "55": 17, "48": 3, "54": 7, "57": 14, "51": 1}, "lo": 48, "hi": 103, "step": 1, "mu": 81.96, "sigma": 9.92}, "agg": {"lab": "Aggresjonsundertrykking (pre)", "kilde": "Terapi-RCT-populasjonen, N = 10 000", "freq": {"25": 502, "35": 363, "37": 152, "26": 656, "33": 718, "27": 803, "31": 1012, "29": 1106, "28": 977, "23": 231, "30": 1013, "34": 521, "32": 841, "20": 43, "39": 47, "36": 252, "38": 85, "24": 382, "22": 140, "21": 83, "40": 16, "19": 26, "18": 8, "15": 1, "41": 8, "17": 4, "16": 3, "42": 4, "43": 3}, "lo": 15, "hi": 43, "step": 1, "mu": 29.55, "sigma": 3.76}, "selvt": {"lab": "Statistikk-selvtillit (pre)", "kilde": "Simulert populasjon, N = 10 000 (bygget fra arbeidskravdataene, N = 391)", "freq": {"4.4": 403, "1.8": 279, "3.0": 951, "4.0": 862, "3.4": 825, "3.6": 781, "3.8": 778, "4.8": 99, "2.6": 668, "2.8": 785, "2.4": 646, "2.2": 424, "1.6": 150, "4.2": 625, "3.2": 1035, "2.0": 341, "1.2": 48, "4.6": 144, "1.4": 91, "1.0": 11, "5.0": 54}, "lo": 1.0, "hi": 5.0, "step": 0.2, "mu": 3.2, "sigma": 0.78}, "selvk": {"lab": "Selvkritisk perfeksjonisme (trekk)", "kilde": "Simulert populasjon, N = 10 000 (bygget fra arbeidskravdataene, N = 391)", "freq": {"2.0": 485, "3.2": 867, "3.6": 934, "1.8": 430, "1.6": 238, "3.4": 797, "3.8": 831, "2.4": 577, "2.2": 476, "2.8": 795, "3.0": 858, "4.0": 563, "1.0": 78, "4.4": 268, "1.2": 93, "2.6": 770, "5.0": 47, "4.8": 155, "4.2": 402, "4.6": 214, "1.4": 122}, "lo": 1.0, "hi": 5.0, "step": 0.2, "mu": 3.08, "sigma": 0.84}, "angst": {"lab": "Angstsensitivitet (trekk)", "kilde": "Simulert populasjon, N = 10 000 (bygget fra arbeidskravdataene, N = 391)", "freq": {"0.2": 294, "0.6": 492, "1.0": 804, "0.8": 627, "1.8": 875, "1.2": 889, "1.6": 884, "2.2": 686, "2.4": 526, "2.8": 451, "3.0": 263, "3.2": 293, "4.0": 16, "0.4": 423, "2.6": 485, "3.4": 233, "1.4": 876, "2.0": 688, "0.0": 71, "3.8": 31, "3.6": 93}, "lo": 0.0, "hi": 4.0, "step": 0.2, "mu": 1.68, "sigma": 0.85}};
+const $=id=>document.getElementById(id);
+const nb=(x,d)=>Number(x).toLocaleString('nb-NO',{minimumFractionDigits:d==null?2:d,maximumFractionDigits:d==null?2:d});
+
+/* ---------- populasjoner ---------------------------------------------------
+   VARS lagrer populasjonen som en frekvenstabell (verdi -> antall) for å holde
+   fila liten. Vi pakker den ut til en Float64Array én gang per variabel, siden
+   simuleringen trekker millioner av ganger og da teller hvert oppslag.        */
+let POP=null, MU=0, SIGMA=0, VNAVN='';
+function settVar(k){
+  const v=VARS[k];
+  const ut=[];
+  for(const nokkel in v.freq){ const val=+nokkel; for(let i=0;i<v.freq[nokkel];i++) ut.push(val); }
+  POP=Float64Array.from(ut);
+  /* μ og σ regnes ut på nytt fra den utpakkede populasjonen i stedet for å
+     stole på de lagrede tallene: da kan ikke figuren og fasiten komme i utakt. */
+  let s1=0; for(let i=0;i<POP.length;i++) s1+=POP[i];
+  MU=s1/POP.length;
+  let s2=0; for(let i=0;i<POP.length;i++){ const d=POP[i]-MU; s2+=d*d; }
+  SIGMA=Math.sqrt(s2/POP.length);           // populasjons-σ: del på N, ikke N−1
+  VNAVN=v.lab;
+  let s3=0; for(let i=0;i<POP.length;i++) s3+=Math.pow((POP[i]-MU)/SIGMA,3);
+  const skjev=s3/POP.length;
+  $('popInfo').textContent='('+v.kilde+')';
+  $('popStats').innerHTML='<span class="stat">N = '+POP.length.toLocaleString('nb-NO')+'</span>'+
+    '<span class="stat">μ = '+nb(MU)+'</span>'+
+    '<span class="stat">σ = '+nb(SIGMA)+'</span>'+
+    '<span class="stat'+(Math.abs(skjev)>0.8?' orange':'')+'">skjevhet = '+nb(skjev)+'</span>';
+}
+
+/* ---------- n-listen -------------------------------------------------------
+   Enten min–maks i faste steg, eller dobling, som gir jevne avstander når man
+   vil dekke n = 5 til n = 500 uten å regne på tjue mellomliggende verdier.    */
+function nListe(){
+  const a=Math.max(2,Math.round(+$('nMin').value||2)),
+        b=Math.max(a,Math.round(+$('nMaks').value||a)),
+        s=Math.max(1,Math.round(+$('nSteg').value||1));
+  const ut=[];
+  if($('logSteg').checked){ for(let n=a;n<=b;n*=2) ut.push(Math.round(n)); if(ut[ut.length-1]!==b) ut.push(b); }
+  else { for(let n=a;n<=b;n+=s) ut.push(n); if(ut[ut.length-1]!==b) ut.push(b); }
+  return ut.filter((v,i,arr)=>arr.indexOf(v)===i).slice(0,40);   // 40 punkter er rikelig, og holder kjøretiden nede
+}
+function visNListe(){
+  const L=nListe(), R=+$('rep').value;
+  const trekk=L.reduce((a,n)=>a+n*R,0);
+  $('nListe').textContent='Tester '+L.length+' verdier: '+L.join(', ')+
+    '  ·  til sammen '+trekk.toLocaleString('nb-NO')+' trekninger';
+}
+
+/* ---------- simuleringen ---------------------------------------------------
+   For hver n: R gjentakelser. Hver gjentakelse gir x̄ og s, altså ett estimat
+   s/√n. Til slutt sammenlignes SD-en til de R gjennomsnittene (fasiten) med
+   estimatene (det forskeren har).                                            */
+let RES=[];         // [{n, sant, malt, snittEst, medianEst, lo, hi, sdEst, est:Float64Array}]
+let seFrossen=null; // fordelingen av s/√n ved en annen n, til sammenligning
+let kjorer=false;
+
+function enN(n, R){
+  const est=new Float64Array(R), snitt=new Float64Array(R);
+  const N=POP.length;
+  for(let r=0;r<R;r++){
+    let sum=0, sum2=0;
+    for(let i=0;i<n;i++){
+      const x=POP[(Math.random()*N)|0];     // med tilbakelegging: σ/√n gjelder eksakt
+      sum+=x; sum2+=x*x;
+    }
+    const m=sum/n;
+    /* s² med n − 1. Sum av kvadrater regnes om fra råsummene; klamres til 0
+       fordi flyttallsavrunding kan gi en mikroskopisk negativ verdi når alle
+       verdiene i utvalget er like (skjer ved n = 2–3 på grove skalaer). */
+    const ss=Math.max(0, sum2 - sum*sum/n);
+    snitt[r]=m;
+    est[r]=Math.sqrt(ss/(n-1))/Math.sqrt(n);
+  }
+  // fasiten: standardavviket til de R gjennomsnittene, med R − 1
+  let ms=0; for(let r=0;r<R;r++) ms+=snitt[r];
+  ms/=R;
+  let mv=0; for(let r=0;r<R;r++){ const d=snitt[r]-ms; mv+=d*d; }
+  const malt=Math.sqrt(mv/(R-1));
+
+  const sortert=Float64Array.from(est).sort();
+  const kv=p=>sortert[Math.min(R-1,Math.floor(p*(R-1)))];
+  let es=0; for(let r=0;r<R;r++) es+=est[r];
+  const snittEst=es/R;
+  let ev=0; for(let r=0;r<R;r++){ const d=est[r]-snittEst; ev+=d*d; }
+
+  return {n:n, sant:SIGMA/Math.sqrt(n), malt:malt, snittEst:snittEst,
+          medianEst:kv(0.5), lo:kv(0.025), hi:kv(0.975), sdEst:Math.sqrt(ev/(R-1)), est:est};
+}
+
+function kjor(){
+  if(kjorer) return;
+  const L=nListe(), R=+$('rep').value;
+  RES=[]; kjorer=true;
+  $('kjor').disabled=true; $('repEtikett').textContent=R.toLocaleString('nb-NO');
+  let i=0;
+  /* Én n per animasjonsramme: nettleseren får puste, og punktene lander ett
+     etter ett — som i seg selv er en fin ting å se på lerretet. */
+  const steg=()=>{
+    if(i>=L.length){
+      kjorer=false; $('kjor').disabled=false; $('status').textContent='';
+      fyllNVelg(); tegnEn(); oppsummer();
+      return;
+    }
+    $('status').textContent='Kjører n = '+L[i]+' … ('+(i+1)+' av '+L.length+')';
+    RES.push(enN(L[i], R));
+    i++;
+    tegnHoved(); fyllTabell();
+    requestAnimationFrame(steg);
+  };
+  requestAnimationFrame(steg);
+}
+
+/* ---------- hovedfiguren --------------------------------------------------- */
+function lerret(cv){
+  const r=window.devicePixelRatio||1, w=cv.clientWidth||900,
+        h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r; cv.height=h*r; cv.style.height=h+'px';
+  const c=cv.getContext('2d'); c.setTransform(r,0,0,r,0,0); c.clearRect(0,0,w,h);
+  return [c,w,h];
+}
+function seTeori(){
+  const boks=$('seTeori'); if(!boks) return;
+  const L=nListe(), a=L[0], b=L[L.length-1];
+  boks.innerHTML='<span class="lbl">Teorien sier</span>'+
+    '<div class="pastand">Gjør du studien om igjen med nye deltakere, får du et litt annet gjennomsnitt. '+
+    'Og igjen, og igjen. <b>Standardfeilen</b> er ett tall for hvor mye disse gjennomsnittene spriker — '+
+    'altså hvor mye ditt ene gjennomsnitt kan bomme på sannheten.</div>'+
+    '<div class="form">Standardfeilen = standardavviket i populasjonen ÷ kvadratroten av antall deltakere'+
+    '<span class="les">Skrives SE = σ/√n. Her: '+nb(SIGMA,2)+' delt på kvadratroten av n.</span></div>'+
+    '<ul>'+
+    '<li><b>standardavviket i populasjonen</b> (skrives σ, «sigma») — hvor ulike menneskene er fra hverandre. '+
+    'Her <b>'+nb(SIGMA,2)+'</b> for '+VNAVN+'.</li>'+
+    '<li><b>antall deltakere</b> (n) — hvor mange du måler i hver studie.</li>'+
+    '</ul>'+
+    '<div class="styrt"><b>Og ikke noe annet.</b> Standardfeilen bryr seg ikke om hvor høyt gjennomsnittet '+
+    'ligger, hvilken måleenhet du bruker, eller om fordelingen er skjev. Bare hvor spredte folk er, '+
+    'og hvor mange du målte.</div>'+
+    '<div class="tall"><b>Her og nå:</b> med '+a+' deltakere blir standardfeilen <b>'+nb(SIGMA/Math.sqrt(a),2)+
+    '</b>, med '+b+' deltakere <b>'+nb(SIGMA/Math.sqrt(b),2)+'</b>. Kvadratroten er den harde nyheten: '+
+    'du må <b>firedoble</b> antall deltakere for å halvere standardfeilen. '+
+    '<b>Haken:</b> en ekte forsker kjenner ikke σ og må bruke <b>standardavviket i sitt eget utvalg</b> '+
+    '(skrives s) i stedet. Det er nettopp den erstatningen simuleringen setter på prøve.</div>';
+}
+function tegnHoved(){
+  const [c,w,h]=lerret($('cvMain'));
+  const L=nListe();
+  seTeori();
+  const x0=64, y0=h-46, pw=w-x0-18, ph=y0-24;
+  const nMin=RES.length?RES[0].n:L[0], nMaks=RES.length?Math.max(...RES.map(d=>d.n)):L[L.length-1];
+  const yMaks=(RES.length ? Math.max(...RES.map(d=>Math.max(d.sant,d.malt,d.hi)))
+                          : SIGMA/Math.sqrt(nMin)*1.35)*1.06;
+  const X=n=>x0+(nMaks===nMin?0.5:(n-nMin)/(nMaks-nMin))*pw;
+  const Y=v=>y0-(v/yMaks)*ph;
+
+  // akser
+  c.strokeStyle='#e5e9f0'; c.lineWidth=1; c.fillStyle='#6b7785'; c.font='13px sans-serif'; c.textAlign='right';
+  for(let k=0;k<=5;k++){ const v=yMaks*k/5, y=Y(v);
+    c.beginPath(); c.moveTo(x0,y); c.lineTo(x0+pw,y); c.stroke();
+    c.fillText(nb(v, yMaks<1?3:2), x0-8, y+4); }
+  c.textAlign='center';
+  (RES.length?RES.map(d=>d.n):L).forEach((n,i,arr)=>{ if(arr.length<=12||i%Math.ceil(arr.length/12)===0)
+    c.fillText(n, X(n), y0+18); });
+  c.font='bold 13px sans-serif';
+  c.fillText('utvalgsstørrelse n', x0+pw/2, y0+38);
+  c.save(); c.translate(16,y0-ph/2); c.rotate(-Math.PI/2); c.textAlign='center';
+  c.fillText('standardfeil', 0, 0); c.restore();
+
+  // σ/√n: den sanne kurven, tegnet tett så den blir en glatt kurve og ikke en polygon
+  c.strokeStyle='#1F3864'; c.lineWidth=3; c.beginPath();
+  for(let p=0;p<=200;p++){ const n=nMin+(nMaks-nMin)*p/200, y=Y(SIGMA/Math.sqrt(n));
+    p===0?c.moveTo(X(n),y):c.lineTo(X(n),y); }
+  c.stroke();
+  if(!RES.length){
+    c.fillStyle='#6b7785'; c.font='bold 15px sans-serif'; c.textAlign='center';
+    c.fillText('Teoriens kurve. Trykk «Kjør simuleringen» for å teste den.', x0+pw/2, 24);
+    return;
+  }
+
+  // 95 %-spennet til enkeltestimatene
+  c.strokeStyle='rgba(46,84,150,.55)'; c.lineWidth=6; c.lineCap='round';
+  RES.forEach(d=>{ c.beginPath(); c.moveTo(X(d.n),Y(d.lo)); c.lineTo(X(d.n),Y(d.hi)); c.stroke(); });
+  c.lineCap='butt';
+
+  // målt SD(x̄) — fasiten
+  RES.forEach(d=>{ c.beginPath(); c.arc(X(d.n),Y(d.malt),6.5,0,6.284);
+    c.fillStyle='#B26A00'; c.fill(); c.strokeStyle='#fff'; c.lineWidth=2; c.stroke(); });
+  // snitt av s/√n
+  RES.forEach(d=>{ c.beginPath(); c.arc(X(d.n),Y(d.snittEst),4.5,0,6.284);
+    c.fillStyle='#2E5496'; c.fill(); c.strokeStyle='#fff'; c.lineWidth=1.5; c.stroke(); });
+
+  c.font='bold 14px sans-serif'; c.textAlign='left'; c.fillStyle='#1F3864';
+  c.fillText('σ/√n', X(nMaks)-46, Y(SIGMA/Math.sqrt(nMaks))-12);
+}
+
+/* ---------- fordelingen for én n ------------------------------------------- */
+function fyllNVelg(){
+  const sel=$('nVelg'), forrige=sel.value;
+  sel.innerHTML='';
+  RES.forEach(d=>{ const o=document.createElement('option'); o.value=d.n; o.textContent=d.n; sel.appendChild(o); });
+  sel.value = RES.some(d=>String(d.n)===forrige) ? forrige : RES[0].n;
+}
+function tegnEn(){
+  const [c,w,h]=lerret($('cvEn'));
+  const d=RES.find(x=>String(x.n)===String($('nVelg').value));
+  if(!d){ c.fillStyle='#9aa5bb'; c.font='bold 18px sans-serif'; c.textAlign='center';
+    c.fillText('(ingen data ennå)', w/2, h/2); $('enStats').textContent='Kjør simuleringen først.'; return; }
+
+  const x0=16, y0=h-38, pw=w-32, ph=y0-16;
+  /* Felles akse med den frosne, ellers ligger de to på hver sin skala og
+     poenget — at estimatet strammer seg inn når n vokser — forsvinner. */
+  let hi=Math.max(d.hi*1.15, d.sant*1.6); const lo=0;
+  if(seFrossen) hi=Math.max(hi, seFrossen.hi*1.15, seFrossen.sant*1.6);
+  const NB=44, bins=new Array(NB).fill(0);
+  for(let i=0;i<d.est.length;i++){
+    let b=Math.floor((d.est[i]-lo)/(hi-lo)*NB); if(b>=0&&b<NB) bins[b]++;
+  }
+  let froBins=null;
+  if(seFrossen){
+    froBins=new Array(NB).fill(0);
+    for(let i=0;i<seFrossen.est.length;i++){
+      let b=Math.floor((seFrossen.est[i]-lo)/(hi-lo)*NB); if(b>=0&&b<NB) froBins[b]++;
+    }
+  }
+  const maks=Math.max(Math.max(...bins), froBins?Math.max(...froBins):0);
+  const X=v=>x0+(v-lo)/(hi-lo)*pw;
+  if(froBins){   // frossen som trappeomriss bak
+    c.beginPath(); c.moveTo(X(lo),y0);
+    for(let b=0;b<NB;b++){ const by=y0-froBins[b]/maks*ph;
+      c.lineTo(x0+b/NB*pw,by); c.lineTo(x0+(b+1)/NB*pw,by); }
+    c.lineTo(X(hi),y0); c.closePath();
+    c.fillStyle='rgba(178,106,0,.13)'; c.fill();
+    c.strokeStyle='#B26A00'; c.lineWidth=2.5; c.stroke();
+  }
+  for(let b=0;b<NB;b++){
+    const bx=x0+b/NB*pw, bw=pw/NB-1, bh=bins[b]/maks*ph;
+    c.fillStyle='#8fb0dd'; c.fillRect(bx,y0-bh,bw,bh);
+  }
+  // sannheten og fasiten oppå
+  const strek=(v,farge,tekst,dy)=>{
+    if(v<lo||v>hi) return;
+    c.strokeStyle=farge; c.lineWidth=3; c.beginPath(); c.moveTo(X(v),10); c.lineTo(X(v),y0); c.stroke();
+    c.fillStyle=farge; c.font='bold 14px sans-serif'; c.textAlign='left';
+    c.fillText(tekst, X(v)+5, dy);
+  };
+  strek(d.sant,'#1F3864','σ/√n = '+nb(d.sant,3),20);
+  strek(d.malt,'#B26A00','målt = '+nb(d.malt,3),38);
+  if(seFrossen) strek(seFrossen.sant,'rgba(178,106,0,.85)','n = '+seFrossen.n+': σ/√n = '+nb(seFrossen.sant,3),56);
+  c.fillStyle='#6b7785'; c.font='13px sans-serif'; c.textAlign='center';
+  for(let k=0;k<=4;k++){ const v=lo+(hi-lo)*k/4; c.fillText(nb(v,3), X(v), y0+18); }
+  c.font='bold 13px sans-serif';
+  c.fillText('estimert standardfeil s/√n i hver enkelt studie', x0+pw/2, y0+34);
+
+  const rel=d.sdEst/d.sant, bom=(d.snittEst-d.sant)/d.sant*100;
+  $('enStats').innerHTML='<span class="stat">n = '+d.n+'</span>'+
+    '<span class="stat">σ/√n = '+nb(d.sant,3)+'</span>'+
+    '<span class="stat orange">målt SD(x̄) = '+nb(d.malt,3)+'</span>'+
+    '<span class="stat">snitt s/√n = '+nb(d.snittEst,3)+'</span>'+
+    '<span class="stat'+(Math.abs(bom)>2?' red':' green')+'">snittet bommer '+(bom>=0?'+':'')+nb(bom,1)+' %</span>'+
+    '<span class="stat'+(rel>0.2?' red':' green')+'">et enkeltestimat spriker typisk ±'+nb(rel*100,0)+' %</span>'+
+    '<span class="stat">95 % av estimatene: '+nb(d.lo,3)+'–'+nb(d.hi,3)+'</span>'+
+    (seFrossen ? '<span class="stat orange">frossen: n = '+seFrossen.n+
+      ' · σ/√n = '+nb(seFrossen.sant,3)+' · spriker ±'+nb(seFrossen.sdEst/seFrossen.sant*100,0)+' %</span>' : '');
+  Array.from(document.querySelectorAll('#tab tbody tr')).forEach(tr=>
+    tr.classList.toggle('valgt', tr.dataset.n===String(d.n)));
+}
+
+/* ---------- tabell og oppsummering ----------------------------------------- */
+function fyllTabell(){
+  const tb=document.querySelector('#tab tbody'); tb.innerHTML='';
+  RES.forEach(d=>{
+    const bom=(d.snittEst-d.sant)/d.sant*100, rel=d.sdEst/d.sant;
+    const tr=document.createElement('tr');
+    tr.dataset.n=String(d.n); tr.style.cursor='pointer';
+    tr.innerHTML='<td><b>'+d.n+'</b></td><td>'+nb(d.sant,3)+'</td><td>'+nb(d.malt,3)+'</td>'+
+      '<td>'+nb(d.snittEst,3)+'</td>'+
+      '<td style="color:'+(Math.abs(bom)>2?'#C0392B':'#2E7D32')+'">'+(bom>=0?'+':'')+nb(bom,1)+' %</td>'+
+      '<td>'+nb(d.lo,3)+' – '+nb(d.hi,3)+'</td>'+
+      '<td style="color:'+(rel>0.2?'#C0392B':'#2E7D32')+'">'+nb(rel*100,0)+' %</td>';
+    tr.addEventListener('click',()=>{ $('nVelg').value=String(d.n); tegnEn(); });
+    tb.appendChild(tr);
+  });
+}
+function oppsummer(){
+  if(RES.length<2) return;
+  const f=RES[0], s=RES[RES.length-1];
+  const relF=f.sdEst/f.sant, relS=s.sdEst/s.sant;
+  const bomF=(f.snittEst-f.sant)/f.sant*100;
+  $('hovedpoeng').style.display='';
+  $('hovedpoeng').innerHTML=
+    '<b>Fasiten og formelen er enige om nivået.</b> Over alle n-ene ligger den målte SD-en til gjennomsnittene '+
+    'i snitt '+nb(Math.abs(RES.reduce((a,d)=>a+(d.malt-d.sant)/d.sant,0)/RES.length*100),1)+
+    ' % fra σ/√n — det er ren simuleringsstøy, og den krymper hvis du øker antall gjentakelser. '+
+    '<b>Men enkeltestimatet er en annen sak.</b> Ved n = '+f.n+' spriker s/√n typisk ±'+nb(relF*100,0)+
+    ' % rundt sannheten, og de midterste 95 % strekker seg fra '+nb(f.lo,3)+' til '+nb(f.hi,3)+
+    ' — mot en sannhet på '+nb(f.sant,3)+'. Ved n = '+s.n+' er spriket nede i ±'+nb(relS*100,0)+' %. '+
+    (bomF<-1.5 ? 'Legg også merke til at snittet av s/√n ligger '+nb(Math.abs(bomF),1)+
+      ' % <i>under</i> sannheten ved n = '+f.n+': s undervurderer σ systematisk når n er liten, '+
+      'og det er en av grunnene til at vi bruker t-fordelingen og ikke normalfordelingen.' : '');
+}
+
+/* ---------- oppstart -------------------------------------------------------- */
+(function(){
+  const sel=$('vsel');
+  for(const k in VARS){ const o=document.createElement('option'); o.value=k; o.textContent=VARS[k].lab; sel.appendChild(o); }
+  sel.value=Object.keys(VARS)[0];
+  settVar(sel.value);
+  sel.onchange=()=>{ settVar(sel.value); RES=[]; seFrossen=null; $('seFrosset').textContent='';
+                     tegnHoved(); tegnEn(); fyllTabell();
+                     $('hovedpoeng').style.display='none'; visNListe(); };
+  ['nMin','nMaks','nSteg','rep'].forEach(id=>$(id).oninput=()=>{ visNListe(); if(!RES.length) tegnHoved(); });
+  $('logSteg').onchange=()=>{ visNListe(); if(!RES.length) tegnHoved(); };
+  $('kjor').onclick=kjor;
+  $('tom').onclick=()=>{ RES=[]; seFrossen=null; $('seFrosset').textContent='';
+                         tegnHoved(); tegnEn(); fyllTabell(); $('hovedpoeng').style.display='none'; };
+  $('nVelg').onchange=tegnEn;
+  $('seFrys').onclick=()=>{
+    const d=RES.find(x=>String(x.n)===String($('nVelg').value));
+    if(!d){ $('seFrosset').textContent='(kjør simuleringen først)'; return; }
+    seFrossen=d;
+    $('seFrosset').innerHTML='Frossen: <b>n = '+d.n+'</b>. Velg en annen n over.';
+    tegnEn();
+  };
+  $('seUfrys').onclick=()=>{ seFrossen=null; $('seFrosset').textContent=''; tegnEn(); };
+  window.addEventListener('resize',()=>{ tegnHoved(); tegnEn(); });
+  visNListe(); tegnHoved(); tegnEn();
+})();
+
+/* Fordelingsfunksjoner. Skrevet ut for hånd fordi appene ikke har noe bibliotek,
+   og fordi p-verdier som er litt gale er verre enn ingen p-verdier. */
+function lgamma(x){
+  const g=[676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,
+           12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(x<0.5) return Math.log(Math.PI/Math.sin(Math.PI*x))-lgamma(1-x);
+  x-=1; let a=0.99999999999980993; const t=x+7.5;
+  for(let i=0;i<8;i++) a+=g[i]/(x+i+1);
+  return 0.5*Math.log(2*Math.PI)+(x+0.5)*Math.log(t)-t+Math.log(a);
+}
+/* Regularisert ufullstendig betafunksjon, kjedebrøk (Lentz). */
+function betacf(a,b,x){
+  const FPMIN=1e-300, EPS=3e-14;
+  let qab=a+b, qap=a+1, qam=a-1, c=1, d=1-qab*x/qap;
+  if(Math.abs(d)<FPMIN) d=FPMIN;
+  d=1/d; let h=d;
+  for(let m=1;m<=300;m++){
+    const m2=2*m;
+    let aa=m*(b-m)*x/((qam+m2)*(a+m2));
+    d=1+aa*d; if(Math.abs(d)<FPMIN) d=FPMIN;
+    c=1+aa/c; if(Math.abs(c)<FPMIN) c=FPMIN;
+    d=1/d; h*=d*c;
+    aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
+    d=1+aa*d; if(Math.abs(d)<FPMIN) d=FPMIN;
+    c=1+aa/c; if(Math.abs(c)<FPMIN) c=FPMIN;
+    d=1/d; const del=d*c; h*=del;
+    if(Math.abs(del-1)<EPS) break;
+  }
+  return h;
+}
+function ibeta(a,b,x){
+  if(x<=0) return 0; if(x>=1) return 1;
+  const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));
+  return x < (a+1)/(a+b+2) ? bt*betacf(a,b,x)/a : 1-bt*betacf(b,a,1-x)/b;
+}
+/* Tosidig p for Students t. */
+function tP(t,df){
+  if(!isFinite(t)) return 0;
+  return ibeta(df/2, 0.5, df/(df+t*t));
+}
+/* Regularisert ufullstendig gammafunksjon, nedre (P) og øvre (Q). */
+function gammaP(s,x){
+  if(x<0||s<=0) return NaN;
+  if(x===0) return 0;
+  if(x < s+1){                     // rekkeutvikling
+    let ap=s, sum=1/s, del=sum;
+    for(let i=0;i<500;i++){ ap++; del*=x/ap; sum+=del; if(Math.abs(del)<Math.abs(sum)*1e-15) break; }
+    return sum*Math.exp(-x+s*Math.log(x)-lgamma(s));
+  }
+  return 1-gammaQ(s,x);
+}
+function gammaQ(s,x){
+  if(x < s+1) return 1-gammaP(s,x);
+  const FPMIN=1e-300;
+  let b=x+1-s, c=1/FPMIN, d=1/b, h=d;
+  for(let i=1;i<=500;i++){
+    const an=-i*(i-s);
+    b+=2; d=an*d+b; if(Math.abs(d)<FPMIN) d=FPMIN;
+    c=b+an/c;       if(Math.abs(c)<FPMIN) c=FPMIN;
+    d=1/d; const del=d*c; h*=del;
+    if(Math.abs(del-1)<1e-15) break;
+  }
+  return Math.exp(-x+s*Math.log(x)-lgamma(s))*h;
+}
+const kjiP = (x,df)=> gammaQ(df/2, x/2);          // øvre hale: P(χ² ≥ x)
+const kjiTetthet=(x,df)=> x<=0?0:
+  Math.exp((df/2-1)*Math.log(x) - x/2 - lgamma(df/2) - (df/2)*Math.LN2);
+/* Kritisk verdi ved halvering — trygt nok, og kjøres bare noen få ganger. */
+function kjiKritisk(alfa,df){
+  let lo=0, hi=Math.max(20, df*6);
+  while(kjiP(hi,df)>alfa) hi*=2;
+  for(let i=0;i<200;i++){ const m=(lo+hi)/2; if(kjiP(m,df)>alfa) lo=m; else hi=m; }
+  return (lo+hi)/2;
+}
+
+
+/* ======================= FANE 2: p-VERDIEN ================================
+   To grupper trekkes fra samme populasjon, så nullhypotesen er sann per
+   konstruksjon. Formelens p kommer fra t-fordelingen; den «målte» p-verdien er
+   andelen av alle nullstudiene med minst like ekstrem |t|. Er teorien riktig,
+   er de to det samme tallet, og punktene ligger på diagonalen.              */
+let pPOP=null, pRES=[], pKjorer=false;
+function pSettVar(k){
+  const v=VARS[k], ut=[];
+  for(const nk in v.freq){ const val=+nk; for(let i=0;i<v.freq[nk];i++) ut.push(val); }
+  pPOP=Float64Array.from(ut);
+  $('pPopInfo').textContent='(begge grupper trekkes fra '+v.kilde+' — altså ingen sann forskjell)';
+}
+function pNliste(){
+  const a=Math.max(2,Math.round(+$('pMin').value||2)), b=Math.max(a,Math.round(+$('pMaks').value||a)),
+        st=Math.max(1,Math.round(+$('pSteg').value||1)), ut=[];
+  if($('pLog').checked){ for(let n=a;n<=b;n*=2) ut.push(Math.round(n)); }
+  else { for(let n=a;n<=b;n+=st) ut.push(n); }
+  if(ut[ut.length-1]!==b) ut.push(b);
+  return ut.filter((v,i,arr)=>arr.indexOf(v)===i).slice(0,12);
+}
+function pVisListe(){
+  const L=pNliste(), R=+$('pRep').value;
+  $('pNliste').textContent='Tester '+L.length+' verdier: '+L.join(', ')+
+    '  ·  '+(L.length*R).toLocaleString('nb-NO')+' komplette nullstudier';
+}
+function pEnN(n,R){
+  const N=pPOP.length, tt=new Float64Array(R), pp=new Float64Array(R), df=2*n-2;
+  for(let r=0;r<R;r++){
+    let s1=0,q1=0,s2=0,q2=0;
+    for(let i=0;i<n;i++){ const x=pPOP[(Math.random()*N)|0]; s1+=x; q1+=x*x; }
+    for(let i=0;i<n;i++){ const x=pPOP[(Math.random()*N)|0]; s2+=x; q2+=x*x; }
+    const m1=s1/n, m2=s2/n;
+    const ss1=Math.max(0,q1-s1*s1/n), ss2=Math.max(0,q2-s2*s2/n);
+    const sp2=(ss1+ss2)/df;                    // samlet varians, som i en vanlig t-test
+    const se=Math.sqrt(sp2*(2/n));
+    const t = se>0 ? (m1-m2)/se : 0;
+    tt[r]=Math.abs(t); pp[r]=tP(Math.abs(t),df);
+  }
+  /* Målt p for hver studie: andelen av de andre nullstudiene med minst like
+     ekstrem |t|. Med sortert |t| er det bare en posisjon, så dette koster
+     O(R log R) i stedet for O(R²).                                          */
+  const sortT=Float64Array.from(tt).sort();
+  const maltP=new Float64Array(R);
+  for(let r=0;r<R;r++){
+    // antall sortT >= tt[r]  →  binærsøk etter første indeks med sortT[i] >= tt[r]
+    let lo=0, hi=R;
+    while(lo<hi){ const m=(lo+hi)>>1; if(sortT[m]<tt[r]) lo=m+1; else hi=m; }
+    maltP[r]=(R-lo)/R;
+  }
+  const andel=a=>{ let c=0; for(let r=0;r<R;r++) if(pp[r]<a) c++; return c/R; };
+  let sum=0, maksAvvik=0;
+  for(let r=0;r<R;r++){ sum+=pp[r]; maksAvvik=Math.max(maksAvvik,Math.abs(pp[r]-maltP[r])); }
+  return {n:n, df:df, R:R, p:pp, maltP:maltP, a01:andel(0.01), a05:andel(0.05), a10:andel(0.10),
+          snitt:sum/R, maksAvvik:maksAvvik};
+}
+function pKjor(){
+  if(pKjorer) return;
+  const L=pNliste(), R=+$('pRep').value;
+  pRES=[]; pKjorer=true; $('pKjor').disabled=true;
+  let i=0;
+  const steg=()=>{
+    if(i>=L.length){ pKjorer=false; $('pKjor').disabled=false; $('pStatus').textContent='';
+      pFyllVelg(); pTegnQQ(); pTegnRate(); pFyllTab(); pOppsummer(); return; }
+    $('pStatus').textContent='Kjører n = '+L[i]+' … ('+(i+1)+' av '+L.length+')';
+    pRES.push(pEnN(L[i],R)); i++;
+    pTegnRate(); pFyllTab();
+    requestAnimationFrame(steg);
+  };
+  requestAnimationFrame(steg);
+}
+function pFyllVelg(){
+  const sel=$('pNvelg'), f=sel.value; sel.innerHTML='';
+  pRES.forEach(d=>{ const o=document.createElement('option'); o.value=d.n; o.textContent=d.n; sel.appendChild(o); });
+  sel.value = pRES.some(d=>String(d.n)===f) ? f : pRES[0].n;
+}
+function pTeori(){
+  const boks=$('pTeori'); if(!boks) return;
+  const L=pNliste(), n=L[0], df=2*n-2, alfa=+$('pAlfa').value;
+  boks.innerHTML='<span class="lbl">Teorien sier</span>'+
+    '<div class="pastand">Dette er den skarpeste påstanden i hele appen. Når det <b>ikke finnes noen '+
+    'forskjell</b>, skal p-verdien være et helt tilfeldig tall mellom 0 og 1 — 0,03 like sannsynlig som '+
+    '0,58 som 0,91. Ikke «som regel høy». Fullstendig tilfeldig.</div>'+
+    '<div class="form">p-verdiene fordeler seg jevnt mellom 0 og 1'+
+    '<span class="les">Skrives p ~ Uniform(0, 1). «Jevnt» betyr at like brede intervaller er like sannsynlige: '+
+    'like mange p-er havner mellom 0,00 og 0,05 som mellom 0,90 og 0,95.</span></div>'+
+    '<ul>'+
+    '<li><b>p-verdien</b> — sannsynligheten for å få en forskjell minst så stor som din, <i>hvis</i> det '+
+    'ikke finnes noen forskjell i virkeligheten.</li>'+
+    '<li><b>hva påstanden hviler på</b> — at t-verdien følger t-fordelingen med <b>'+df+'</b> frihetsgrader '+
+    'når du har '+n+' personer i hver gruppe.</li>'+
+    '</ul>'+
+    '<div class="styrt">Legg merke til hva som <b>ikke</b> kreves: rådataene trenger ikke være '+
+    'normalfordelte. Det holder at gjennomsnittene blir det, og det ordner sentralgrenseteoremet.</div>'+
+    '<div class="tall"><b>Tre ting følger direkte av påstanden,</b> og alle tre kan måles: '+
+    'andelen p-verdier under '+nb(alfa,2)+' skal bli nøyaktig <b>'+nb(alfa*100,0)+' %</b>; '+
+    'gjennomsnittet av alle p-verdiene skal bli <b>0,50</b>; og p-en formelen gir skal være den samme '+
+    'som den vi måler ved å telle opp nullstudiene — altså skal alle punktene falle på diagonalen. '+
+    'Bommer teorien, bommer den her.</div>';
+}
+function pTegnQQ(){
+  const [c,w,h]=lerret($('pCvQQ'));
+  pTeori();
+  const d=pRES.find(x=>String(x.n)===String($('pNvelg').value));
+  const maks=$('pZoom').checked?0.10:1;
+  if(!d){
+    const x0=58, y0=h-42, pw=w-x0-16, ph=y0-16;
+    const X=v=>x0+Math.min(1,v/maks)*pw, Y=v=>y0-Math.min(1,v/maks)*ph;
+    c.strokeStyle='#e5e9f0'; c.lineWidth=1; c.fillStyle='#6b7785'; c.font='13px sans-serif';
+    for(let k=0;k<=5;k++){ const v=maks*k/5;
+      c.beginPath(); c.moveTo(x0,Y(v)); c.lineTo(x0+pw,Y(v)); c.stroke();
+      c.textAlign='right'; c.fillText(nb(v,maks<0.5?3:2), x0-7, Y(v)+4);
+      c.textAlign='center'; c.fillText(nb(v,maks<0.5?3:2), X(v), y0+17); }
+    c.strokeStyle='#1F3864'; c.lineWidth=2.5; c.setLineDash([7,5]);
+    c.beginPath(); c.moveTo(X(0),Y(0)); c.lineTo(X(maks),Y(maks)); c.stroke(); c.setLineDash([]);
+    c.fillStyle='#6b7785'; c.font='bold 15px sans-serif'; c.textAlign='center';
+    c.fillText('Teoriens påstand: alle punkter skal falle på denne linja.', x0+pw/2, 22);
+    c.font='bold 13px sans-serif';
+    c.fillText('p fra formelen (t-fordelingen)', x0+pw/2, y0+36);
+    return;
+  }
+  const x0=58, y0=h-42, pw=w-x0-16, ph=y0-16;
+  const X=v=>x0+Math.min(1,v/maks)*pw, Y=v=>y0-Math.min(1,v/maks)*ph;
+  c.strokeStyle='#e5e9f0'; c.lineWidth=1; c.fillStyle='#6b7785'; c.font='13px sans-serif';
+  for(let k=0;k<=5;k++){ const v=maks*k/5;
+    c.beginPath(); c.moveTo(x0,Y(v)); c.lineTo(x0+pw,Y(v)); c.stroke();
+    c.textAlign='right'; c.fillText(nb(v,maks<0.5?3:2), x0-7, Y(v)+4);
+    c.textAlign='center'; c.fillText(nb(v,maks<0.5?3:2), X(v), y0+17); }
+  c.font='bold 13px sans-serif';
+  c.fillText('p fra formelen (t-fordelingen)', x0+pw/2, y0+36);
+  c.save(); c.translate(15,y0-ph/2); c.rotate(-Math.PI/2); c.textAlign='center';
+  c.fillText('p målt i nullfordelingen', 0, 0); c.restore();
+  // punktene
+  c.fillStyle='rgba(46,84,150,.5)';
+  for(let r=0;r<d.p.length;r++){
+    if(d.p[r]>maks) continue;
+    c.beginPath(); c.arc(X(d.p[r]),Y(d.maltP[r]),2.2,0,6.284); c.fill();
+  }
+  // diagonalen sist, så den ikke drukner
+  c.strokeStyle='#1F3864'; c.lineWidth=2.5; c.setLineDash([7,5]);
+  c.beginPath(); c.moveTo(X(0),Y(0)); c.lineTo(X(maks),Y(maks)); c.stroke(); c.setLineDash([]);
+}
+function pTegnRate(){
+  const [c,w,h]=lerret($('pCvRate'));
+  if(!pRES.length){ c.fillStyle='#9aa5bb'; c.font='bold 18px sans-serif'; c.textAlign='center';
+    c.fillText('(ingen data ennå)', w/2, h/2); return; }
+  const alfa=+$('pAlfa').value;
+  const felt = alfa===0.01?'a01' : alfa===0.05?'a05':'a10';
+  const x0=58, y0=h-44, pw=w-x0-16, ph=y0-16;
+  const yMaks=Math.max(alfa*2.2, ...pRES.map(d=>d[felt]*1.25));
+  const X=i=>x0+(pRES.length===1?0.5:i/(pRES.length-1))*pw, Y=v=>y0-v/yMaks*ph;
+  c.strokeStyle='#e5e9f0'; c.fillStyle='#6b7785'; c.font='13px sans-serif'; c.lineWidth=1;
+  for(let k=0;k<=5;k++){ const v=yMaks*k/5;
+    c.beginPath(); c.moveTo(x0,Y(v)); c.lineTo(x0+pw,Y(v)); c.stroke();
+    c.textAlign='right'; c.fillText(nb(v*100,1)+' %', x0-7, Y(v)+4); }
+  // usikkerhetsbånd rundt α: ±2 binomiske standardfeil
+  const R=pRES[0].R, seB=Math.sqrt(alfa*(1-alfa)/R);
+  c.fillStyle='rgba(107,119,133,.14)';
+  c.fillRect(x0, Y(alfa+2*seB), pw, Math.max(2,Y(alfa-2*seB)-Y(alfa+2*seB)));
+  c.strokeStyle='#1F3864'; c.lineWidth=2.5; c.setLineDash([7,5]);
+  c.beginPath(); c.moveTo(x0,Y(alfa)); c.lineTo(x0+pw,Y(alfa)); c.stroke(); c.setLineDash([]);
+  c.fillStyle='#1F3864'; c.font='bold 13px sans-serif'; c.textAlign='left';
+  c.fillText('α = '+nb(alfa*100,0)+' %', x0+4, Y(alfa)-6);
+  pRES.forEach((d,i)=>{
+    c.beginPath(); c.arc(X(i),Y(d[felt]),6,0,6.284);
+    c.fillStyle='#B26A00'; c.fill(); c.strokeStyle='#fff'; c.lineWidth=2; c.stroke();
+    c.fillStyle='#6b7785'; c.font='13px sans-serif'; c.textAlign='center';
+    c.fillText('n='+d.n, X(i), y0+17);
+  });
+  c.font='bold 13px sans-serif'; c.fillStyle='#6b7785';
+  c.fillText('utvalgsstørrelse per gruppe', x0+pw/2, y0+36);
+}
+function pFyllTab(){
+  const tb=document.querySelector('#pTab tbody'); tb.innerHTML='';
+  pRES.forEach(d=>{
+    const cell=(v,mal)=>{ const av=Math.abs(v-mal)/Math.sqrt(mal*(1-mal)/d.R);
+      return '<td style="color:'+(av>3?'#C0392B':'#1a2233')+'">'+nb(v*100,1)+' %</td>'; };
+    tb.innerHTML+='<tr><td><b>'+d.n+'</b></td><td>'+d.df+'</td>'+
+      cell(d.a01,0.01)+cell(d.a05,0.05)+cell(d.a10,0.10)+
+      '<td>'+nb(d.maksAvvik,4)+'</td><td>'+nb(d.snitt,3)+'</td></tr>';
+  });
+}
+function pOppsummer(){
+  if(!pRES.length) return;
+  const f=pRES[0], R=f.R, se=Math.sqrt(0.05*0.95/R);
+  const avvik=(f.a05-0.05)/se;
+  $('pNote').style.display='';
+  $('pNote').innerHTML='Ved n = '+f.n+' per gruppe ble <b>'+nb(f.a05*100,1)+' %</b> av de '+
+    R.toLocaleString('nb-NO')+' nullstudiene signifikante på 5 %-nivået. '+
+    (Math.abs(avvik)<2
+      ? 'Det er innenfor det ren tilfeldighet kan forklare — formelen holder det den lover.'
+      : 'Det er '+nb(Math.abs(avvik),1)+' standardfeil fra 5 %, altså mer enn tilfeldighet forklarer: her sliter tilnærmingen.')+
+    ' Snittet av p-verdiene er '+nb(f.snitt,3)+' (skal være 0,50 når nullhypotesen er sann), og '+
+    'den største avstanden fra diagonalen er '+nb(f.maksAvvik,4)+'.';
+}
+
+/* t-tetthet */
+const tTetthet=(x,df)=> Math.exp(lgamma((df+1)/2)-lgamma(df/2)-0.5*Math.log(df*Math.PI)
+                                -((df+1)/2)*Math.log(1+x*x/df));
+/* normaltetthet, til sammenligning i t-fanen */
+const nTetthet=x=> Math.exp(-x*x/2)/Math.sqrt(2*Math.PI);
+/* tosidig kritisk t ved halvering på tP */
+function tKritisk(alfa,df){
+  let lo=0, hi=10;
+  while(tP(hi,df)>alfa) hi*=2;
+  for(let i=0;i<200;i++){ const m=(lo+hi)/2; if(tP(m,df)>alfa) lo=m; else hi=m; }
+  return (lo+hi)/2;
+}
+/* F: øvre hale og tetthet */
+function fP(x,d1,d2){
+  if(x<=0) return 1;
+  return ibeta(d2/2, d1/2, d2/(d2+d1*x));
+}
+function fTetthet(x,d1,d2){
+  if(x<=0) return 0;
+  const lb=lgamma(d1/2)+lgamma(d2/2)-lgamma((d1+d2)/2);
+  return Math.exp((d1/2)*Math.log(d1/d2)+(d1/2-1)*Math.log(x)
+                  -((d1+d2)/2)*Math.log(1+d1*x/d2)-lb);
+}
+function fKritisk(alfa,d1,d2){
+  let lo=0, hi=10;
+  while(fP(hi,d1,d2)>alfa) hi*=2;
+  for(let i=0;i<200;i++){ const m=(lo+hi)/2; if(fP(m,d1,d2)>alfa) lo=m; else hi=m; }
+  return (lo+hi)/2;
+}
+/* r under H0 (ρ = 0): t = r√(n−2)/√(1−r²) følger t(n−2) */
+const rTilT=(r,n)=> r*Math.sqrt((n-2)/Math.max(1e-12,1-r*r));
+const rP=(r,n)=> tP(Math.abs(rTilT(r,n)), n-2);
+function rTetthet(r,n){
+  if(r<=-1||r>=1) return 0;
+  const B=Math.exp(lgamma(0.5)+lgamma((n-2)/2)-lgamma((n-1)/2));
+  return Math.pow(1-r*r,(n-4)/2)/B;
+}
+function rKritisk(alfa,n){
+  const t=tKritisk(alfa,n-2);
+  return t/Math.sqrt(n-2+t*t);
+}
+
+
+/* ================== GENERISK NULLFORDELINGSFANE ===========================
+   t, r og F stiller nøyaktig samme spørsmål: følger testobservatoren den
+   fordelingen teorien lover, når nullhypotesen er sann? Panelene er derfor
+   bygget én gang og får simuleringen inn som en funksjon. Det holder de tre
+   fanene i takt, og en rettelse ett sted gjelder alle.                      */
+function lagNullFane(pre, spec){
+  let POPX=null, POPY=null, RES=[], kjorer=false;
+  /* Frossen fordeling: samme grep som i Utvalgsfordeling og Korrelasjonsdansen.
+     Poenget er å se to n-er i samme ramme — både søylene og de to teoretiske
+     kurvene, siden det er frihetsgradene som endrer seg. */
+  let frossen=null;
+  const $$=id=>$(pre+id);
+
+  function settVar(){
+    const v=VARS[$$('Vsel').value]; POPX=pakkUt(v);
+    const el=$(pre+'Vsel2');
+    POPY = el ? pakkUt(VARS[el.value]) : POPX;
+    $$('PopInfo').textContent='('+v.kilde+')';
+  }
+  function liste(){
+    const a=Math.max(spec.nMin||3,Math.round(+$$('Min').value||5)),
+          b=Math.max(a,Math.round(+$$('Maks').value||a)),
+          st=Math.max(1,Math.round(+$$('Steg').value||1)), ut=[];
+    if($$('Log').checked){ for(let n=a;n<=b;n*=2) ut.push(Math.round(n)); }
+    else { for(let n=a;n<=b;n+=st) ut.push(n); }
+    if(ut[ut.length-1]!==b) ut.push(b);
+    return ut.filter((v,i,arr)=>arr.indexOf(v)===i).slice(0,10);
+  }
+  function visListe(){
+    const L=liste(), R=+$$('Rep').value;
+    $$('Nliste').textContent='Tester '+L.length+' verdier: '+L.join(', ')+
+      '  ·  '+(L.length*R).toLocaleString('nb-NO')+' nullstudier';
+  }
+  function enN(n,R){
+    const alfa=+$$('Alfa').value;
+    const {verdier, df, df2} = spec.simuler(n,R,POPX,POPY);
+    const sortert=Float64Array.from(verdier).sort();
+    const kv=q=>sortert[Math.min(R-1,Math.floor(q*(R-1)))];
+    let sum=0; for(let i=0;i<R;i++) sum+=verdier[i];
+    const snitt=sum/R;
+    let v2=0; for(let i=0;i<R;i++){ const d=verdier[i]-snitt; v2+=d*d; }
+    const krit=spec.kritisk(alfa,df,df2);
+    let over=0;
+    for(let i=0;i<R;i++) if(spec.tosidig ? Math.abs(verdier[i])>krit : verdier[i]>krit) over++;
+    const maltKrit = spec.tosidig ? (kv(1-alfa/2)-kv(alfa/2))/2 : kv(1-alfa);
+    return {n:n, df:df, df2:df2, R:R, alfa:alfa, verdier:verdier, sortert:sortert,
+            krit:krit, maltKrit:maltKrit, rate:over/R, snitt:snitt, sd:Math.sqrt(v2/(R-1))};
+  }
+  function kjor(){
+    if(kjorer) return;
+    const L=liste(), R=+$$('Rep').value;
+    RES=[]; kjorer=true; $$('Kjor').disabled=true;
+    let i=0;
+    const steg=()=>{
+      if(i>=L.length){ kjorer=false; $$('Kjor').disabled=false; $$('Status').textContent='';
+        fyllVelg(); tegnFord(); tegnRate(); fyllTab(); return; }
+      $$('Status').textContent='Kjører n = '+L[i]+' … ('+(i+1)+' av '+L.length+')';
+      RES.push(enN(L[i],R)); i++;
+      tegnRate(); fyllTab();
+      requestAnimationFrame(steg);
+    };
+    requestAnimationFrame(steg);
+  }
+  function fyllVelg(){
+    const sel=$$('Nvelg'), f=sel.value; sel.innerHTML='';
+    const kilde = RES.length ? RES.map(d=>d.n) : liste();
+    kilde.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; sel.appendChild(o); });
+    sel.value = kilde.indexOf(Number(f))>=0 ? f : kilde[0];
+  }
+  /* Teorien først. Kurven er kjent før vi har trukket et eneste utvalg — den
+     følger av frihetsgradene alene — så den tegnes med én gang og oppdateres
+     hver gang en kontroll endres. Simuleringen legges oppå etterpå, som en
+     test av påstanden, ikke som kilden til den. */
+  function forhandsvis(){
+    const n = Number($$('Nvelg').value) || (liste()[0]);
+    const alfa = +$$('Alfa').value;
+    const {df, df2} = spec.dfAv(n);
+    const krit = spec.kritisk(alfa, df, df2);
+    return {n:n, df:df, df2:df2, R:0, alfa:alfa, krit:krit, verdier:null,
+            sortert:null, snitt:null, sd:null, maltKrit:null, rate:null};
+  }
+  function visTeori(d){
+    const boks=$$('Teori'); if(!boks) return;
+    boks.innerHTML='<span class="lbl">Teorien sier</span>'+spec.teori(d);
+  }
+  function tegnFord(){
+    const [c,w,h]=lerret($$('CvFord'));
+    const valgt=RES.find(x=>String(x.n)===String($$('Nvelg').value));
+    const d = valgt || forhandsvis();
+    visTeori(d);
+    if(!valgt) $$('Stats').innerHTML='<span class="stat">Kurven over er teoriens påstand. '+
+      'Trykk «Kjør simuleringen» for å teste den.</span>';
+    /* Felles akse for begge fordelingene, ellers ligger de to bildene på hver
+       sin skala og sammenligningen blir meningsløs. */
+    let [lo,hi]=spec.omrade(d);
+    if(frossen){ const [flo,fhi]=spec.omrade(frossen); lo=Math.min(lo,flo); hi=Math.max(hi,fhi); }
+    const x0=48, y0=h-40, pw=w-x0-14, ph=y0-16, NB=52, bins=new Array(NB).fill(0);
+    if(d.R) for(let i=0;i<d.R;i++){
+      let b=Math.floor((d.verdier[i]-lo)/(hi-lo)*NB);
+      if(b>=0 && b<NB) bins[b]++;       // verdier utenfor rammen tegnes ikke, men telles i statistikken
+    }
+    const bredde=(hi-lo)/NB;
+    const tetthet=d.R ? bins.map(v=>v/d.R/bredde) : bins.map(()=>0);
+    let froTetthet=null;
+    if(frossen && frossen.R){
+      const fb=new Array(NB).fill(0);
+      for(let i=0;i<frossen.R;i++){
+        let b=Math.floor((frossen.verdier[i]-lo)/(hi-lo)*NB);
+        if(b>=0 && b<NB) fb[b]++;
+      }
+      froTetthet=fb.map(v=>v/frossen.R/bredde);
+    }
+    let kurveMaks=0;
+    for(let px=0;px<=300;px++){ const x=lo+(hi-lo)*px/300;
+      kurveMaks=Math.max(kurveMaks, spec.tetthet(x,d.df,d.df2));
+      if(frossen) kurveMaks=Math.max(kurveMaks, spec.tetthet(x,frossen.df,frossen.df2));
+    }
+    const yMaks=Math.max(Math.max(...tetthet), froTetthet?Math.max(...froTetthet):0, kurveMaks)*1.08;
+    const X=v=>x0+(v-lo)/(hi-lo)*pw, Y=v=>y0-Math.min(1,v/yMaks)*ph;
+    if(d.R) for(let b=0;b<NB;b++){
+      c.fillStyle='#8fb0dd';
+      c.fillRect(X(lo+b*bredde), Y(tetthet[b]), pw/NB-1, y0-Y(tetthet[b]));
+    }
+    else {   // areal under kurven, så den ikke ser tom ut før simuleringen
+      c.beginPath(); c.moveTo(X(lo),y0);
+      for(let px=0;px<=300;px++){ const x=lo+(hi-lo)*px/300; c.lineTo(X(x),Y(spec.tetthet(x,d.df,d.df2))); }
+      c.lineTo(X(hi),y0); c.closePath();
+      c.fillStyle='rgba(192,57,43,.10)'; c.fill();
+    }
+    const kurve=(fn,farge,dash)=>{
+      c.strokeStyle=farge; c.lineWidth=3; c.setLineDash(dash||[]);
+      c.beginPath();
+      for(let px=0;px<=300;px++){ const x=lo+(hi-lo)*px/300, y=Y(fn(x));
+        px===0?c.moveTo(X(x),y):c.lineTo(X(x),y); }
+      c.stroke(); c.setLineDash([]);
+    };
+    if(froTetthet){   // frossen fordeling som trappeomriss bak de nye søylene
+      c.beginPath(); c.moveTo(X(lo),y0);
+      for(let b=0;b<NB;b++){ const bx=X(lo+b*bredde), by=Y(froTetthet[b]);
+        c.lineTo(bx,by); c.lineTo(X(lo+(b+1)*bredde),by); }
+      c.lineTo(X(hi),y0); c.closePath();
+      c.fillStyle='rgba(178,106,0,.13)'; c.fill();
+      c.strokeStyle='#B26A00'; c.lineWidth=2.5; c.stroke();
+      kurve(x=>spec.tetthet(x,frossen.df,frossen.df2), 'rgba(178,106,0,.85)', [7,5]);
+    }
+    if(spec.ekstraKurve) spec.ekstraKurve(d, kurve);
+    kurve(x=>spec.tetthet(x,d.df,d.df2), '#C0392B');
+    const streker = spec.tosidig ? [-d.krit, d.krit] : [d.krit];
+    c.strokeStyle='#1F3864'; c.lineWidth=2.5; c.setLineDash([6,5]);
+    streker.forEach(v=>{ if(v>=lo&&v<=hi){ c.beginPath(); c.moveTo(X(v),12); c.lineTo(X(v),y0); c.stroke(); } });
+    c.setLineDash([]);
+    c.fillStyle='#1F3864'; c.font='bold 13px sans-serif'; c.textAlign='left';
+    c.fillText(spec.kritNavn+' = '+(spec.tosidig?'±':'')+nb(d.krit,spec.des||2), X(streker[streker.length-1])+5, 22);
+    c.fillStyle='#6b7785'; c.font='13px sans-serif'; c.textAlign='center';
+    for(let k=0;k<=5;k++){ const v=lo+(hi-lo)*k/5; c.fillText(nb(v,spec.des||2), X(v), y0+16); }
+    c.font='bold 13px sans-serif'; c.fillText(spec.akse, x0+pw/2, y0+33);
+
+    if(!d.R) return;
+    const avvik=(d.rate-d.alfa)/Math.sqrt(d.alfa*(1-d.alfa)/d.R);
+    $$('Stats').innerHTML='<span class="stat">n = '+d.n+'</span>'+
+      '<span class="stat">df = '+(d.df2!=null? d.df+', '+d.df2 : d.df)+'</span>'+
+      '<span class="stat">snitt = '+nb(d.snitt,3)+'</span><span class="stat">SD = '+nb(d.sd,3)+'</span>'+
+      '<span class="stat">målt kritisk verdi = '+nb(d.maltKrit,3)+' (teori: '+nb(d.krit,3)+')</span>'+
+      '<span class="stat'+(Math.abs(avvik)>3?' red':' green')+'">forkaster '+nb(d.rate*100,1)+' % (lovet '+nb(d.alfa*100,0)+' %)</span>';
+    if(frossen && frossen.R) $$('Stats').innerHTML +=
+      '<span class="stat orange">frossen: n = '+frossen.n+
+      ' · df = '+(frossen.df2!=null? frossen.df+', '+frossen.df2 : frossen.df)+
+      ' · SD = '+nb(frossen.sd,3)+'</span>';
+    if(spec.note){ $$('Note').style.display=''; $$('Note').innerHTML=spec.note(d); }
+  }
+  function tegnRate(){
+    const [c,w,h]=lerret($$('CvRate'));
+    if(!RES.length){ c.fillStyle='#9aa5bb'; c.font='bold 18px sans-serif'; c.textAlign='center';
+      c.fillText('(ingen data ennå)', w/2, h/2); return; }
+    const alfa=RES[0].alfa, R=RES[0].R;
+    const x0=58, y0=h-44, pw=w-x0-16, ph=y0-16;
+    const yMaks=Math.max(alfa*2.4, ...RES.map(d=>d.rate*1.25));
+    const X=i=>x0+(RES.length===1?0.5:i/(RES.length-1))*pw, Y=v=>y0-v/yMaks*ph;
+    c.strokeStyle='#e5e9f0'; c.lineWidth=1; c.fillStyle='#6b7785'; c.font='13px sans-serif';
+    for(let k=0;k<=5;k++){ const v=yMaks*k/5;
+      c.beginPath(); c.moveTo(x0,Y(v)); c.lineTo(x0+pw,Y(v)); c.stroke();
+      c.textAlign='right'; c.fillText(nb(v*100,1)+' %', x0-7, Y(v)+4); }
+    const seB=Math.sqrt(alfa*(1-alfa)/R);
+    c.fillStyle='rgba(107,119,133,.14)';
+    c.fillRect(x0, Y(alfa+2*seB), pw, Math.max(2,Y(alfa-2*seB)-Y(alfa+2*seB)));
+    c.strokeStyle='#1F3864'; c.lineWidth=2.5; c.setLineDash([7,5]);
+    c.beginPath(); c.moveTo(x0,Y(alfa)); c.lineTo(x0+pw,Y(alfa)); c.stroke(); c.setLineDash([]);
+    c.fillStyle='#1F3864'; c.font='bold 13px sans-serif'; c.textAlign='left';
+    c.fillText('α = '+nb(alfa*100,0)+' %', x0+4, Y(alfa)-6);
+    RES.forEach((d,i)=>{
+      c.beginPath(); c.arc(X(i),Y(d.rate),6,0,6.284);
+      c.fillStyle='#B26A00'; c.fill(); c.strokeStyle='#fff'; c.lineWidth=2; c.stroke();
+      c.fillStyle='#6b7785'; c.font='13px sans-serif'; c.textAlign='center';
+      c.fillText('n='+d.n, X(i), y0+17);
+    });
+    c.font='bold 13px sans-serif'; c.fillStyle='#6b7785';
+    c.fillText(spec.nAkse, x0+pw/2, y0+36);
+  }
+  function fyllTab(){
+    const tb=document.querySelector('#'+pre+'Tabell tbody'); tb.innerHTML='';
+    RES.forEach(d=>{
+      const av=(d.rate-d.alfa)/Math.sqrt(d.alfa*(1-d.alfa)/d.R);
+      const tr=document.createElement('tr');
+      tr.style.cursor='pointer';
+      tr.innerHTML='<td><b>'+d.n+'</b></td><td>'+(d.df2!=null? d.df+', '+d.df2 : d.df)+'</td>'+
+        '<td>'+(spec.tosidig?'±':'')+nb(d.krit,3)+'</td><td>'+(spec.tosidig?'±':'')+nb(d.maltKrit,3)+'</td>'+
+        '<td style="color:'+(Math.abs(av)>3?'#C0392B':'#2E7D32')+'">'+nb(d.rate*100,1)+' %</td>'+
+        '<td>'+nb(d.snitt,3)+'</td><td>'+nb(d.sd,3)+'</td>';
+      tr.addEventListener('click',()=>{ $$('Nvelg').value=String(d.n); tegnFord(); });
+      tb.appendChild(tr);
+    });
+  }
+  // kontroller
+  const sel=$$('Vsel');
+  for(const k in VARS){ const o=document.createElement('option'); o.value=k; o.textContent=VARS[k].lab; sel.appendChild(o); }
+  sel.value=Object.keys(VARS)[0];
+  const sel2=$(pre+'Vsel2');
+  if(sel2){ for(const k in VARS){ const o=document.createElement('option'); o.value=k; o.textContent=VARS[k].lab; sel2.appendChild(o); }
+            sel2.value=Object.keys(VARS)[1]; }
+  settVar();
+  const nullstill=()=>{ RES=[]; frossen=null; $$('Frosset').textContent='';
+                        fyllVelg(); tegnFord(); tegnRate(); fyllTab(); $$('Note').style.display='none'; };
+  sel.onchange=()=>{ settVar(); nullstill(); };
+  if(sel2) sel2.onchange=()=>{ settVar(); nullstill(); };
+  const etterKontroll=()=>{ visListe(); if(!RES.length){ fyllVelg(); tegnFord(); } };
+  ['Min','Maks','Steg','Rep'].forEach(id=>{ $$(id).oninput=etterKontroll; $$(id).onchange=etterKontroll; });
+  $$('Log').onchange=etterKontroll;
+  $$('Kjor').onclick=kjor;
+  $$('Tom').onclick=nullstill;
+  $$('Nvelg').onchange=tegnFord;
+  $$('Frys').onclick=()=>{
+    const d=RES.find(x=>String(x.n)===String($$('Nvelg').value));
+    if(!d){ $$('Frosset').textContent='(kjør simuleringen først)'; return; }
+    frossen=d;
+    $$('Frosset').innerHTML='Frossen: <b>n = '+d.n+'</b>. Velg en annen n — den gamle blir stående som omriss.';
+    tegnFord();
+  };
+  $$('Ufrys').onclick=()=>{ frossen=null; $$('Frosset').textContent=''; tegnFord(); };
+  $$('Alfa').onchange=()=>{
+    /* Nytt α endrer både den kritiske verdien i teoriboksen og forkastnings-
+       raten i tallene, så alt regnes om — også når ingenting er simulert. */
+    if(RES.length){ RES=RES.map(d=>enN(d.n,d.R)); tegnRate(); fyllTab(); }
+    tegnFord();
+  };
+  (spec.ekstraKontroller||[]).forEach(id=>{ const e=$(id); if(e) e.onchange=()=>{ nullstill(); }; });
+  visListe(); fyllVelg(); tegnFord(); tegnRate();
+  return {tegn:()=>{ tegnFord(); tegnRate(); }};
+}
+function pakkUt(v){
+  const ut=[]; for(const nk in v.freq){ const val=+nk; for(let i=0;i<v.freq[nk];i++) ut.push(val); }
+  return Float64Array.from(ut);
+}
+
+/* ---- t: to grupper fra samme populasjon --------------------------------- */
+const FANE_T = lagNullFane('t', {
+  tosidig:true, kritNavn:'kritisk t', akse:'t', nAkse:'n per gruppe', des:1, nMin:3,
+  simuler:(n,R,POP)=>{
+    const N=POP.length, df=2*n-2, ut=new Float64Array(R);
+    for(let r=0;r<R;r++){
+      let s1=0,q1=0,s2=0,q2=0;
+      for(let i=0;i<n;i++){ const x=POP[(Math.random()*N)|0]; s1+=x; q1+=x*x; }
+      for(let i=0;i<n;i++){ const x=POP[(Math.random()*N)|0]; s2+=x; q2+=x*x; }
+      const ss1=Math.max(0,q1-s1*s1/n), ss2=Math.max(0,q2-s2*s2/n);
+      const se=Math.sqrt(((ss1+ss2)/df)*(2/n));
+      ut[r] = se>0 ? (s1/n-s2/n)/se : 0;
+    }
+    return {verdier:ut, df:df};
+  },
+  dfAv:n=>({df:2*n-2}),
+  teori:d=>'<div class="pastand">Når to grupper egentlig er like, blir forskjellen mellom dem sjelden '+
+    'nøyaktig null. <b>t</b> er et mål på hvor stor den tilfeldige forskjellen ble, målt i antall '+
+    'standardfeil. Teorien påstår at slike t-verdier følger en helt bestemt klokkeformet kurve.</div>'+
+    '<div class="form">t = (gjennomsnitt i gruppe 1 − gjennomsnitt i gruppe 2) ÷ standardfeilen til forskjellen'+
+    '<span class="les">Altså: hvor stor forskjellen er, delt på hvor stor en tilfeldig forskjell pleier å være.</span></div>'+
+    '<ul>'+
+    '<li><b>gjennomsnittet i en gruppe</b> (skrives x̄, «x-strek») — snittet av de '+d.n+' personene i gruppen.</li>'+
+    '<li><b>standardfeilen til forskjellen</b> — regnes ut fra <b>standardavviket i utvalgene</b> (skrives s), '+
+    'altså hvor ulike personene i gruppene er.</li>'+
+    '<li><b>frihetsgrader</b> (skrives df) — her <b>'+d.df+'</b>, som kommer av 2n − 2 = 2 · '+d.n+' − 2. '+
+    'Det er antall observasjoner minus de to gjennomsnittene vi allerede har brukt dataene til å regne ut.</li>'+
+    '</ul>'+
+    '<div class="styrt"><b>Kurvens form avhenger bare av frihetsgradene.</b> Ikke av hvor høye skårene er, '+
+    'ikke av hvor mye personene varierer, ikke av om du måler i poeng eller sekunder. Har to studier samme df, '+
+    'har de samme kurve.</div>'+
+    '<div class="tall"><b>Her og nå, med '+d.n+' personer per gruppe:</b> t-verdiene skal ha et gjennomsnitt på '+
+    '<b>0</b> og en spredning på <b>'+(d.df>2?nb(Math.sqrt(d.df/(d.df-2)),2):'udefinert')+'</b> — litt mer enn '+
+    'de 1,00 en normalfordeling ville hatt. En t må være større enn <b>±'+nb(d.krit,2)+'</b> for å bli '+
+    'kalt signifikant på '+nb(d.alfa*100,0)+ ' %-nivået. Det er påstanden. Kjør simuleringen og se om '+
+    'tusen ekte nullstudier er enige.</div>',
+  kritisk:(a,df)=>tKritisk(a,df),
+  tetthet:(x,df)=>tTetthet(x,df),
+  omrade:d=>{ const g=Math.max(4, d.krit*1.7); return [-g,g]; },
+  ekstraKurve:(d,kurve)=>{ if($('tNormal').checked) kurve(nTetthet,'#2E7D32',[7,5]); },
+  ekstraKontroller:['tNormal'],
+  note:d=>'Med '+d.n+' per gruppe er df = '+d.df+', og den kritiske t-en er ±'+nb(d.krit,2)+
+    ' — ikke ±1,96. Standardavviket til de simulerte t-ene er '+nb(d.sd,2)+
+    (d.df>2 ? ' (teorien sier √(df/(df−2)) = '+nb(Math.sqrt(d.df/(d.df-2)),2)+')' : '')+
+    '. Det er dette overskuddet av spredning som er t-fordelingens tunge haler.'
+});
+
+/* ---- r: to uavhengige variabler ----------------------------------------- */
+const FANE_R = lagNullFane('r', {
+  tosidig:true, kritNavn:'kritisk r', akse:'r', nAkse:'antall par n', des:2, nMin:5,
+  simuler:(n,R,POPX,POPY)=>{
+    const Nx=POPX.length, Ny=POPY.length, ut=new Float64Array(R);
+    for(let r=0;r<R;r++){
+      let sx=0,sy=0,sxx=0,syy=0,sxy=0;
+      for(let i=0;i<n;i++){
+        const x=POPX[(Math.random()*Nx)|0], y=POPY[(Math.random()*Ny)|0];
+        sx+=x; sy+=y; sxx+=x*x; syy+=y*y; sxy+=x*y;
+      }
+      const tx=sxx-sx*sx/n, ty=syy-sy*sy/n, txy=sxy-sx*sy/n;
+      ut[r] = (tx>0&&ty>0) ? txy/Math.sqrt(tx*ty) : 0;
+    }
+    return {verdier:ut, df:n-2};
+  },
+  dfAv:n=>({df:n-2}),
+  teori:d=>'<div class="pastand">To variabler som ikke har noe med hverandre å gjøre, får nesten aldri '+
+    'en korrelasjon på nøyaktig null. Tegner du '+d.n+' tilfeldige punkter, kommer det alltid ut <i>en eller '+
+    'annen</i> skrå linje. Teorien påstår at slike tilfeldige korrelasjoner har en bestemt fordeling — og det '+
+    'er den enhver signifikanstest for korrelasjon måler mot.</div>'+
+    '<div class="form">Sannsynligheten for en gitt r &nbsp;∝&nbsp; (1 − r²)<sup>(n − 4)/2</sup>'+
+    '<span class="les">Formelen sier bare dette: jo nærmere r kommer −1 eller +1, jo mer usannsynlig blir den — '+
+    'og hvor fort den blir usannsynlig, styres av hvor mange par du har.</span></div>'+
+    '<ul>'+
+    '<li><b>korrelasjonen</b> (skrives r) — et tall mellom −1 og +1 for hvor godt punktene følger en rett linje. '+
+    '0 betyr ingen lineær sammenheng.</li>'+
+    '<li><b>antall par</b> (n) — her <b>'+d.n+'</b> personer som er målt på begge variablene.</li>'+
+    '<li><b>frihetsgrader</b> (df) — her <b>'+d.df+'</b>, altså n − 2: to går med til å plassere linjen '+
+    '(stigningstall og konstantledd).</li>'+
+    '</ul>'+
+    '<div class="styrt"><b>Fordelingen avhenger bare av antall par.</b> Ikke av hva du måler, ikke av '+
+    'måleenheten, ikke av hvor mye variablene varierer — alt dette er allerede skalert bort når r regnes ut. '+
+    'Derfor kan én og samme tabell brukes for alle korrelasjonstester.</div>'+
+    '<div class="tall"><b>Her og nå, med '+d.n+' par:</b> de tilfeldige r-ene vil ha et gjennomsnitt på <b>0</b> '+
+    'og sprike med omtrent <b>±'+nb(1/Math.sqrt(Math.max(2,d.n)-1),2)+'</b>. For å bli kalt signifikant på '+
+    nb(d.alfa*100,0)+' %-nivået må korrelasjonen være minst <b>±'+nb(d.krit,2)+'</b>. '+
+    'Legg merke til hvor høy den grensen er — og at den gjelder helt uten at noe som helst henger sammen.</div>',
+  kritisk:(a,df)=>rKritisk(a,df+2),
+  tetthet:(x,df)=>rTetthet(x,df+2),
+  omrade:()=>[-1,1],
+  note:d=>'Med n = '+d.n+' par må r være minst ±'+nb(d.krit,3)+' for å bli signifikant på '+
+    nb(d.alfa*100,0)+' %-nivået. De simulerte r-ene har SD = '+nb(d.sd,3)+
+    ' (teorien sier 1/√(n−1) = '+nb(1/Math.sqrt(d.n-1),3)+'), og alle sammen kommer fra to variabler '+
+    'som ikke har noe med hverandre å gjøre.'
+});
+
+/* ---- F: k grupper fra samme populasjon ---------------------------------- */
+const FANE_F = lagNullFane('f', {
+  tosidig:false, kritNavn:'kritisk F', akse:'F', nAkse:'n per gruppe', des:2, nMin:3,
+  simuler:(n,R,POP)=>{
+    const N=POP.length, k=+$('fK').value||3, ulik=$('fUlik').checked;
+    const df1=k-1, df2=k*(n-1), ut=new Float64Array(R);
+    const snitt=new Float64Array(k);
+    // populasjonens μ trengs bare hvis vi skal blåse opp spredningen i én gruppe
+    let mu=0; for(let i=0;i<N;i++) mu+=POP[i]; mu/=N;
+    for(let r=0;r<R;r++){
+      let total=0, innen=0;
+      for(let g=0;g<k;g++){
+        let sum=0, sum2=0;
+        for(let i=0;i<n;i++){
+          let x=POP[(Math.random()*N)|0];
+          if(ulik && g===0) x = mu + (x-mu)*2;   // samme forventning, dobbelt SD
+          sum+=x; sum2+=x*x;
+        }
+        snitt[g]=sum/n; total+=sum;
+        innen += Math.max(0, sum2-sum*sum/n);
+      }
+      const stor=total/(k*n);
+      let mellom=0; for(let g=0;g<k;g++){ const d=snitt[g]-stor; mellom+=n*d*d; }
+      const msi=innen/df2;
+      ut[r] = msi>0 ? (mellom/df1)/msi : 0;
+    }
+    return {verdier:ut, df:df1, df2:df2};
+  },
+  dfAv:n=>{ const k=+$('fK').value||3; return {df:k-1, df2:k*(n-1)}; },
+  teori:d=>{ const k=+$('fK').value||3;
+    return '<div class="pastand">Har du '+k+' grupper som egentlig er like, vil gruppegjennomsnittene '+
+    'likevel ligge litt fra hverandre. Spørsmålet er: <i>er de lenger fra hverandre enn personene inne i '+
+    'gruppene allerede er?</i> Det er nøyaktig det <b>F</b> måler, ved å sammenligne to slags spredning.</div>'+
+    '<div class="form">F = spredning MELLOM gruppegjennomsnittene ÷ spredning INNE I gruppene'+
+    '<span class="les">Er gruppene like, måler teller og nevner det samme, og brøken lander rundt 1. '+
+    'Er de ulike, vokser telleren, og F blir stor.</span></div>'+
+    '<ul>'+
+    '<li><b>spredning mellom gruppene</b> — hvor langt de '+k+' gruppegjennomsnittene ligger fra det '+
+    'samlede gjennomsnittet.</li>'+
+    '<li><b>spredning inne i gruppene</b> — hvor ulike personene er innenfor hver enkelt gruppe. '+
+    'Dette er «støyen» forskjellene må måles mot.</li>'+
+    '<li><b>frihetsgrader</b> — <i>to</i> denne gangen: <b>'+d.df+'</b> for telleren (antall grupper minus 1) '+
+    'og <b>'+d.df2+'</b> for nevneren ('+k+' grupper à '+d.n+' personer, minus ett gjennomsnitt per gruppe).</li>'+
+    '</ul>'+
+    '<div class="styrt"><b>Kurvens form avhenger bare av de to frihetsgradene</b> — altså av hvor mange '+
+    'grupper og hvor mange personer, ikke av hva du måler.</div>'+
+    '<div class="tall"><b>Her og nå, med '+k+' grupper à '+d.n+' personer:</b> F-verdiene vil i snitt bli '+
+    '<b>'+(d.df2>2?nb(d.df2/(d.df2-2),2):'—')+'</b> — litt over 1, ikke nøyaktig 1, og det overrasker de fleste. '+
+    'F må over <b>'+nb(d.krit,2)+'</b> for å bli kalt signifikant på '+nb(d.alfa*100,0)+' %-nivået.'+
+    ($('fUlik').checked ? ' <b>Men merk:</b> du har gitt én gruppe dobbelt så stor spredning som de andre. '+
+      'Da måler ikke lenger nevneren «den felles støyen», og kurven under beskriver en verden som ikke '+
+      'gjelder her. Kjør simuleringen og se hvor galt det går.' : '')+'</div>'; },
+  kritisk:(a,d1,d2)=>fKritisk(a,d1,d2),
+  tetthet:(x,d1,d2)=>fTetthet(x,d1,d2),
+  // uten simulering finnes ingen persentiler; da holder den kritiske verdien
+  omrade:d=>[0, d.R ? Math.max(d.krit*1.9, d.sortert[Math.floor(0.995*(d.R-1))]) : d.krit*1.9],
+  ekstraKontroller:['fK','fUlik'],
+  note:d=>{
+    const teoriSnitt = d.df2>2 ? d.df2/(d.df2-2) : null;
+    const avvik=(d.rate-d.alfa)/Math.sqrt(d.alfa*(1-d.alfa)/d.R);
+    return 'Med '+(+$('fK').value)+' grupper à '+d.n+' er df = '+d.df+', '+d.df2+
+      ', og F må over '+nb(d.krit,2)+' for å bli signifikant. Snittet av de simulerte F-ene er '+
+      nb(d.snitt,3)+(teoriSnitt?' (teorien sier df₂/(df₂ − 2) = '+nb(teoriSnitt,3)+')':'')+'. '+
+      ($('fUlik').checked
+        ? (Math.abs(avvik)>3
+            ? '<b>Med ulik spredning forkaster testen '+nb(d.rate*100,1)+' % av gangene, ikke '+nb(d.alfa*100,0)+' %.</b> Antakelsen om varianshomogenitet er ikke pynt.'
+            : 'Her tåler F-testen den ulike spredningen: med like store grupper er den ganske robust. Prøv færre observasjoner, eller flere grupper.')
+        : 'Alle gruppene har samme spredning, og fordelingen følger kurven.');
+  }
+});
+
+/* ======================= FANE 3: KJI-KVADRAT ==============================
+   Krysstabeller der rad og kolonne er uavhengige. Celletellingene trekkes
+   multinomisk fra produktet av marginalene, X² regnes på vanlig vis, og den
+   simulerte fordelingen legges oppå χ²-tettheten teorien lover.            */
+let kRES=[], kKjorer=false, kFrossen=null;
+/* Marginalfordelinger for 2–5 kategorier. Alle rader må summere til 1, og alle
+   antall som nedtrekkene tilbyr må finnes her: mangler en nøkkel, faller
+   kOppsett stille tilbake til to kategorier og df blir feil uten at noe klager. */
+const K_MARG={
+  jevn:  {2:[.5,.5],   3:[1/3,1/3,1/3], 4:[.25,.25,.25,.25], 5:[.2,.2,.2,.2,.2]},
+  skjev: {2:[.75,.25], 3:[.6,.3,.1],    4:[.5,.25,.15,.10],  5:[.40,.25,.18,.12,.05]},
+  svart: {2:[.92,.08], 3:[.85,.10,.05], 4:[.80,.10,.06,.04], 5:[.76,.10,.07,.04,.03]}
+};
+(function sjekkMarginaler(){
+  for(const navn in K_MARG) for(const c in K_MARG[navn]){
+    const sum=K_MARG[navn][c].reduce((a,b)=>a+b,0);
+    if(Math.abs(sum-1)>1e-9) console.error('K_MARG.'+navn+'['+c+'] summerer til '+sum+', ikke 1');
+    if(K_MARG[navn][c].length!==+c) console.error('K_MARG.'+navn+'['+c+'] har feil antall kategorier');
+  }
+})();
+function kOppsett(){
+  const m=K_MARG[$('kMarg').value] || K_MARG.jevn;
+  const gof = $('kModus').value==='gof';
+  const r=Math.min(5,Math.max(2,+$('kRader').value||2));
+  const k=Math.min(5,Math.max(2,+$('kKol').value||2));
+  const rr=m[r]?r:2, kk=m[k]?k:2;
+  /* To ulike tester, to ulike frihetsgrader. Tilpasningstesten har c − 1 fordi
+     de forventede frekvensene kommer utenfra og bare totalen hentes fra data;
+     uavhengighetstesten har (r − 1)(k − 1) fordi begge marginalfordelingene
+     estimeres fra tabellen selv. */
+  return gof
+    ? {gof:true, r:rr, k:1, pr:m[rr], pk:[1], df:rr-1}
+    : {gof:false, r:rr, k:kk, pr:m[rr], pk:m[kk], df:(rr-1)*(kk-1)};
+}
+function kOppdaterModus(){
+  const o=kOppsett();
+  $('kKolWrap').style.display = o.gof ? 'none' : '';
+  const lab=$('kRadLabel'); if(lab) lab.textContent = o.gof ? 'Kategorier' : 'Rader';
+  $('kDf').textContent = 'df = '+o.df;
+  $('kForklaring').innerHTML = o.gof
+    ? 'Vi trekker <b>n observasjoner fra en fordeling vi selv har bestemt</b>, og tester dem mot nøyaktig den samme fordelingen. Nullhypotesen er altså sann: dataene <i>kommer</i> fra den forventede fordelingen. For hver gjentakelse regner vi ut Pearsons X² = Σ (O − E)² / E, der E kommer fra de oppgitte andelene. Teorien sier at disse verdiene skal følge en χ²-fordeling med c − 1 frihetsgrader.'
+    : 'Vi lager krysstabeller der rad og kolonne er <b>uavhengige av hverandre</b> — nullhypotesen er sann. For hver tabell regner vi ut Pearsons X². Teorien sier at disse verdiene skal følge en χ²-fordeling med (r − 1)(k − 1) frihetsgrader. Om det stemmer, avhenger av hvor mange observasjoner som havner i hver celle, og det er hele poenget med regelen om forventede frekvenser.';
+}
+function kNliste(){
+  const a=Math.max(5,Math.round(+$('kMin').value||20)), b=Math.max(a,Math.round(+$('kMaks').value||a)),
+        st=Math.max(1,Math.round(+$('kSteg').value||1)), ut=[];
+  if($('kLog').checked){ for(let n=a;n<=b;n*=2) ut.push(Math.round(n)); }
+  else { for(let n=a;n<=b;n+=st) ut.push(n); }
+  if(ut[ut.length-1]!==b) ut.push(b);
+  return ut.filter((v,i,arr)=>arr.indexOf(v)===i).slice(0,10);
+}
+function kVisListe(){
+  const L=kNliste(), R=+$('kRep').value, o=kOppsett();
+  $('kNliste').textContent='Tester '+L.length+' verdier: '+L.join(', ')+
+    '  ·  '+(o.gof ? o.r+' kategorier' : o.r+' × '+o.k)+', df = '+o.df+
+    '  ·  '+(L.length*R).toLocaleString('nb-NO')+(o.gof?' fordelinger':' tabeller');
+}
+function kEnN(n,R,o){
+  // celle-sannsynlighet: p(i,j) = pr(i)·pk(j) ved uavhengighet, p(i) ved tilpasning
+  const celler=o.r*o.k, kum=new Float64Array(celler), forv=new Float64Array(celler);
+  let akk=0;
+  for(let i=0;i<o.r;i++) for(let j=0;j<o.k;j++){
+    const idx=i*o.k+j, pij=o.pr[i]*o.pk[j];
+    akk+=pij; kum[idx]=akk; forv[idx]=n*pij;
+  }
+  const X2=new Float64Array(R), tell=new Float64Array(celler);
+  const rad=new Float64Array(o.r), kol=new Float64Array(o.k);
+  for(let rr=0;rr<R;rr++){
+    tell.fill(0); rad.fill(0); kol.fill(0);
+    for(let t=0;t<n;t++){
+      const u=Math.random();
+      let c=0; while(c<celler-1 && u>kum[c]) c++;
+      tell[c]++;
+    }
+    let x2=0;
+    if(o.gof){
+      /* Tilpasning: E er gitt utenfra (n · den oppgitte andelen). Ingen
+         marginaler estimeres, og df blir c − 1. */
+      for(let i=0;i<celler;i++){ const e=forv[i]; if(e>0){ const d=tell[i]-e; x2+=d*d/e; } }
+    } else {
+      /* Uavhengighet: E regnes fra de OBSERVERTE marginalene, slik enhver
+         programpakke gjør det — ikke fra de sanne sannsynlighetene. Det er den
+         varianten som har (r−1)(k−1) frihetsgrader. */
+      for(let i=0;i<o.r;i++) for(let j=0;j<o.k;j++){ const v=tell[i*o.k+j]; rad[i]+=v; kol[j]+=v; }
+      for(let i=0;i<o.r;i++) for(let j=0;j<o.k;j++){
+        const e=rad[i]*kol[j]/n;
+        if(e>0){ const d=tell[i*o.k+j]-e; x2+=d*d/e; }
+      }
+    }
+    X2[rr]=x2;
+  }
+  const sortert=Float64Array.from(X2).sort();
+  const kv=p=>sortert[Math.min(R-1,Math.floor(p*(R-1)))];
+  const alfa=+$('kAlfa').value, krit=kjiKritisk(alfa,o.df);
+  let over=0, sum=0;
+  for(let r2=0;r2<R;r2++){ if(X2[r2]>krit) over++; sum+=X2[r2]; }
+  let minForv=Infinity; for(let i=0;i<celler;i++) minForv=Math.min(minForv,forv[i]);
+  return {n:n, df:o.df, R:R, X2:X2, sortert:sortert, krit:krit, alfa:alfa,
+          rate:over/R, snitt:sum/R, p95:kv(0.95), minForv:minForv,
+          andelSmaa: Array.from(forv).filter(e=>e<5).length/celler};
+}
+function kKjor(){
+  if(kKjorer) return;
+  const L=kNliste(), R=+$('kRep').value, o=kOppsett();
+  kRES=[]; kKjorer=true; $('kKjor').disabled=true;
+  let i=0;
+  const steg=()=>{
+    if(i>=L.length){ kKjorer=false; $('kKjor').disabled=false; $('kStatus').textContent='';
+      kFyllVelg(); kTegnFord(); kTegnRate(); kFyllTab(); return; }
+    $('kStatus').textContent='Kjører n = '+L[i]+' … ('+(i+1)+' av '+L.length+')';
+    kRES.push(kEnN(L[i],R,o)); i++;
+    kTegnRate(); kFyllTab();
+    requestAnimationFrame(steg);
+  };
+  requestAnimationFrame(steg);
+}
+function kFyllVelg(){
+  const sel=$('kNvelg'), f=sel.value; sel.innerHTML='';
+  kRES.forEach(d=>{ const o=document.createElement('option'); o.value=d.n; o.textContent=d.n; sel.appendChild(o); });
+  sel.value = kRES.some(d=>String(d.n)===f) ? f : kRES[0].n;
+}
+function kTeori(){
+  const boks=$('kTeori'); if(!boks) return;
+  const o=kOppsett(), alfa=+$('kAlfa').value, krit=kjiKritisk(alfa,o.df);
+  const L=kNliste(), n=L[0];
+  let minForv=Infinity;
+  for(let i=0;i<o.r;i++) for(let j=0;j<o.k;j++) minForv=Math.min(minForv, n*o.pr[i]*o.pk[j]);
+  boks.innerHTML='<span class="lbl">Teorien sier</span>'+
+    '<div class="pastand">'+(o.gof
+      ? 'Du har en forventning om hvordan '+n+' personer skal fordele seg på '+o.r+' kategorier. '+
+        'Selv om forventningen stemmer helt, vil den observerte fordelingen aldri treffe eksakt. '+
+        '<b>X²</b> er ett tall for hvor langt unna den havnet.'
+      : 'To kjennetegn som ikke har noe med hverandre å gjøre, gir likevel aldri en helt «flat» krysstabell. '+
+        '<b>X²</b> er ett tall for hvor langt de observerte tallene i cellene ligger fra det du ville '+
+        'ventet hvis de var helt uavhengige.')+'</div>'+
+    '<div class="form">X² = summen av (observert − forventet)² ÷ forventet, over alle celler'+
+    '<span class="les">Hvert avvik kvadreres (så fortegn ikke teller) og deles på det forventede antallet '+
+    '(så et avvik på 5 teller mer i en liten celle enn i en stor).</span></div>'+
+    '<ul>'+
+    '<li><b>observert</b> (O) — hvor mange personer som faktisk havnet i cellen.</li>'+
+    '<li><b>forventet</b> (E) — hvor mange som skulle havnet der hvis nullhypotesen var sann. '+
+      (o.gof ? 'Her kommer E fra <b>fordelingen du oppgir</b>: kun totalen hentes fra dataene.'
+             : 'Her regnes E ut fra <b>tabellens egne rad- og kolonnesummer</b>.')+'</li>'+
+    '<li><b>frihetsgrader</b> (df) — her <b>'+o.df+'</b>. '+
+      (o.gof ? o.r+' kategorier minus 1, fordi totalen er låst.'
+             : '('+o.r+' − 1) × ('+o.k+' − 1): begge marginalfordelingene er hentet fra dataene selv, og det koster.')+
+      '</li>'+
+    '</ul>'+
+    '<div class="styrt"><b>Kurvens form avhenger bare av frihetsgradene</b> — ikke av hvor mange personer '+
+    'du har, ikke av hva kategoriene heter.</div>'+
+    '<div class="tall"><b>Her og nå:</b> X²-verdiene skal i snitt bli <b>'+o.df+'</b> (nettopp df), sprike med '+
+    'omtrent <b>'+nb(Math.sqrt(2*o.df),1)+'</b>, og en X² over <b>'+nb(krit,2)+'</b> skal kalles signifikant '+
+    'på '+nb(alfa*100,0)+' %-nivået.<br><b>Men her er en hake de andre fanene ikke har:</b> χ²-kurven er '+
+    'en <b>tilnærming</b>. X² er bygget av hele personer som telles opp, mens kurven er glatt og kontinuerlig. '+
+    'Tilnærmingen holder bare når hver celle venter seg nok folk. Med '+n+' personer blir den minste '+
+    'forventede cellen <b>'+nb(minForv,1)+'</b>'+
+    (minForv<5 ? ' — under tommelfingerregelen på 5. Vi har altså grunn til å tvile på kurven allerede før vi simulerer, og det er verdt å se hva som skjer.'
+               : ', altså over tommelfingerregelen på 5. Da skal det gå bra.')+'</div>';
+}
+function kTegnFord(){
+  const [c,w,h]=lerret($('kCvFord'));
+  kTeori();
+  const d=kRES.find(x=>String(x.n)===String($('kNvelg').value));
+  if(!d){
+    const o=kOppsett(), alfa=+$('kAlfa').value, krit=kjiKritisk(alfa,o.df);
+    const hi0=Math.max(krit*1.9, o.df+4*Math.sqrt(2*o.df));
+    const x0=48, y0=h-40, pw=w-x0-14, ph=y0-14;
+    let kmax=0; for(let px=1;px<=300;px++) kmax=Math.max(kmax, kjiTetthet(hi0*px/300, o.df));
+    const X=v=>x0+v/hi0*pw, Y=v=>y0-Math.min(1,v/(kmax*1.08))*ph;
+    c.beginPath(); c.moveTo(X(0),y0);
+    for(let px=1;px<=300;px++){ const x=hi0*px/300; c.lineTo(X(x),Y(kjiTetthet(x,o.df))); }
+    c.lineTo(X(hi0),y0); c.closePath(); c.fillStyle='rgba(192,57,43,.10)'; c.fill();
+    c.strokeStyle='#C0392B'; c.lineWidth=3; c.beginPath();
+    for(let px=1;px<=300;px++){ const x=hi0*px/300, y=Y(kjiTetthet(x,o.df));
+      px===1?c.moveTo(X(x),y):c.lineTo(X(x),y); }
+    c.stroke();
+    c.strokeStyle='#1F3864'; c.lineWidth=2.5; c.setLineDash([6,5]);
+    c.beginPath(); c.moveTo(X(krit),12); c.lineTo(X(krit),y0); c.stroke(); c.setLineDash([]);
+    c.fillStyle='#1F3864'; c.font='bold 13px sans-serif'; c.textAlign='left';
+    c.fillText('kritisk verdi '+nb(krit,2), X(krit)+5, 22);
+    c.fillStyle='#6b7785'; c.font='13px sans-serif'; c.textAlign='center';
+    for(let k=0;k<=5;k++){ const v=hi0*k/5; c.fillText(nb(v,1), X(v), y0+16); }
+    c.font='bold 13px sans-serif'; c.fillText('X²', x0+pw/2, y0+33);
+    if(kFrossen){   // frossen fordeling skal ikke forsvinne bare fordi den nye er tom
+      const NB=46, bredde=hi0/NB, fb=new Array(NB).fill(0);
+      for(let i=0;i<kFrossen.R;i++){ let b=Math.floor(kFrossen.X2[i]/hi0*NB); if(b>=0&&b<NB) fb[b]++; }
+      const ft=fb.map(v=>v/kFrossen.R/bredde), fy=v=>y0-Math.min(1,v/(kmax*1.08))*ph;
+      c.beginPath(); c.moveTo(X(0),y0);
+      for(let b=0;b<NB;b++){ const by=fy(ft[b]); c.lineTo(X(b*bredde),by); c.lineTo(X((b+1)*bredde),by); }
+      c.lineTo(X(hi0),y0); c.closePath();
+      c.fillStyle='rgba(178,106,0,.13)'; c.fill();
+      c.strokeStyle='#B26A00'; c.lineWidth=2.5; c.stroke();
+    }
+    $('kStats').innerHTML='<span class="stat">Kurven over er teoriens påstand for df = '+o.df+
+      '. Trykk «Kjør simuleringen» for å teste den.</span>'+
+      (kFrossen ? '<span class="stat orange">frossen: n = '+kFrossen.n+' · df = '+kFrossen.df+'</span>' : '');
+    return;
+  }
+  let hi=Math.max(d.krit*1.9, d.sortert[Math.floor(0.995*(d.R-1))]);
+  if(kFrossen) hi=Math.max(hi, kFrossen.krit*1.9, kFrossen.sortert[Math.floor(0.995*(kFrossen.R-1))]);
+  const x0=48, y0=h-40, pw=w-x0-14, ph=y0-14, NB=46, bins=new Array(NB).fill(0);
+  for(let i=0;i<d.R;i++){ let b=Math.floor(d.X2[i]/hi*NB); if(b>=0&&b<NB) bins[b]++; }
+  const bredde=hi/NB;
+  // søylene gjøres om til tetthet, ellers kan de ikke sammenlignes med kurven
+  const tetthet=bins.map(v=>v/d.R/bredde);
+  let froTetthet=null;
+  if(kFrossen){
+    const fb=new Array(NB).fill(0);
+    for(let i=0;i<kFrossen.R;i++){ let b=Math.floor(kFrossen.X2[i]/hi*NB); if(b>=0&&b<NB) fb[b]++; }
+    froTetthet=fb.map(v=>v/kFrossen.R/bredde);
+  }
+  const yMaks=Math.max(Math.max(...tetthet), froTetthet?Math.max(...froTetthet):0,
+                       kjiTetthet(Math.max(bredde,d.df-2||bredde),d.df))*1.1;
+  const X=v=>x0+v/hi*pw, Y=v=>y0-Math.min(1,v/yMaks)*ph;
+  for(let b=0;b<NB;b++){
+    const bx=X(b*bredde), bw=pw/NB-1;
+    c.fillStyle='#8fb0dd'; c.fillRect(bx, Y(tetthet[b]), bw, y0-Y(tetthet[b]));
+  }
+  if(froTetthet){
+    c.beginPath(); c.moveTo(X(0),y0);
+    for(let b=0;b<NB;b++){ const by=Y(froTetthet[b]);
+      c.lineTo(X(b*bredde),by); c.lineTo(X((b+1)*bredde),by); }
+    c.lineTo(X(hi),y0); c.closePath();
+    c.fillStyle='rgba(178,106,0,.13)'; c.fill();
+    c.strokeStyle='#B26A00'; c.lineWidth=2.5; c.stroke();
+    if(kFrossen.df!==d.df){   // ny df betyr ny teorikurve, og den hører med
+      c.strokeStyle='rgba(178,106,0,.85)'; c.lineWidth=2.5; c.setLineDash([7,5]); c.beginPath();
+      for(let px=0;px<=300;px++){ const x=hi*px/300, y=Y(kjiTetthet(Math.max(x,1e-6),kFrossen.df));
+        px===0?c.moveTo(X(x),y):c.lineTo(X(x),y); }
+      c.stroke(); c.setLineDash([]);
+    }
+  }
+  c.strokeStyle='#C0392B'; c.lineWidth=3; c.beginPath();
+  for(let px=0;px<=300;px++){
+    const x=hi*px/300, y=Y(kjiTetthet(Math.max(x,1e-6),d.df));
+    px===0?c.moveTo(X(x),y):c.lineTo(X(x),y);
+  }
+  c.stroke();
+  c.strokeStyle='#1F3864'; c.lineWidth=2.5; c.setLineDash([6,5]);
+  c.beginPath(); c.moveTo(X(d.krit),12); c.lineTo(X(d.krit),y0); c.stroke(); c.setLineDash([]);
+  c.fillStyle='#1F3864'; c.font='bold 13px sans-serif'; c.textAlign='left';
+  c.fillText('kritisk verdi '+nb(d.krit,2), X(d.krit)+5, 22);
+  c.fillStyle='#6b7785'; c.font='13px sans-serif'; c.textAlign='center';
+  for(let k=0;k<=5;k++){ const v=hi*k/5; c.fillText(nb(v,1), X(v), y0+16); }
+  c.font='bold 13px sans-serif'; c.fillText('X²', x0+pw/2, y0+33);
+
+  const avvik=(d.rate-d.alfa)/Math.sqrt(d.alfa*(1-d.alfa)/d.R);
+  $('kStats').innerHTML='<span class="stat">n = '+d.n+'</span><span class="stat">df = '+d.df+'</span>'+
+    '<span class="stat'+(d.minForv<5?' red':' green')+'">minste forventede celle = '+nb(d.minForv,1)+'</span>'+
+    '<span class="stat">snitt X² = '+nb(d.snitt,2)+' (teori: '+d.df+')</span>'+
+    '<span class="stat">målt 95-persentil = '+nb(d.p95,2)+' (teori: '+nb(d.krit,2)+')</span>'+
+    '<span class="stat'+(Math.abs(avvik)>3?' red':' green')+'">forkaster '+nb(d.rate*100,1)+' % (lovet '+nb(d.alfa*100,0)+' %)</span>'+
+    (kFrossen ? '<span class="stat orange">frossen: n = '+kFrossen.n+' · df = '+kFrossen.df+
+                ' · minste forventede celle '+nb(kFrossen.minForv,1)+
+                ' · forkaster '+nb(kFrossen.rate*100,1)+' %</span>' : '');
+  $('kNote').style.display='';
+  $('kNote').innerHTML = d.minForv<5
+    ? 'Den minste forventede cellen er <b>'+nb(d.minForv,1)+'</b>, altså under tommelfingerregelen på 5. Se på søylene: de er hakkete, fordi X² bare kan få et fåtall verdier når cellene er nesten tomme. En glatt kurve kan ikke beskrive en klumpete fordeling, og den lovede feilraten holder ikke.'
+    : 'Alle forventede celler er over 5, og den simulerte fordelingen følger kurven. Her er tilnærmingen god, og p-verdien fra χ²-tabellen er til å stole på.';
+}
+function kTegnRate(){
+  const [c,w,h]=lerret($('kCvRate'));
+  if(!kRES.length){ c.fillStyle='#9aa5bb'; c.font='bold 18px sans-serif'; c.textAlign='center';
+    c.fillText('(ingen data ennå)', w/2, h/2); return; }
+  const alfa=kRES[0].alfa, R=kRES[0].R;
+  const x0=58, y0=h-44, pw=w-x0-16, ph=y0-16;
+  const yMaks=Math.max(alfa*2.4, ...kRES.map(d=>d.rate*1.25));
+  const X=i=>x0+(kRES.length===1?0.5:i/(kRES.length-1))*pw, Y=v=>y0-v/yMaks*ph;
+  c.strokeStyle='#e5e9f0'; c.lineWidth=1; c.fillStyle='#6b7785'; c.font='13px sans-serif';
+  for(let k=0;k<=5;k++){ const v=yMaks*k/5;
+    c.beginPath(); c.moveTo(x0,Y(v)); c.lineTo(x0+pw,Y(v)); c.stroke();
+    c.textAlign='right'; c.fillText(nb(v*100,1)+' %', x0-7, Y(v)+4); }
+  const seB=Math.sqrt(alfa*(1-alfa)/R);
+  c.fillStyle='rgba(107,119,133,.14)';
+  c.fillRect(x0, Y(alfa+2*seB), pw, Math.max(2,Y(alfa-2*seB)-Y(alfa+2*seB)));
+  c.strokeStyle='#1F3864'; c.lineWidth=2.5; c.setLineDash([7,5]);
+  c.beginPath(); c.moveTo(x0,Y(alfa)); c.lineTo(x0+pw,Y(alfa)); c.stroke(); c.setLineDash([]);
+  c.fillStyle='#1F3864'; c.font='bold 13px sans-serif'; c.textAlign='left';
+  c.fillText('α = '+nb(alfa*100,0)+' %', x0+4, Y(alfa)-6);
+  kRES.forEach((d,i)=>{
+    c.beginPath(); c.arc(X(i),Y(d.rate),6,0,6.284);
+    c.fillStyle='#B26A00'; c.fill(); c.strokeStyle='#fff'; c.lineWidth=2; c.stroke();
+    if(d.minForv<5){ c.beginPath(); c.arc(X(i),Y(d.rate),10,0,6.284);
+      c.strokeStyle='#C0392B'; c.lineWidth=2.5; c.stroke(); }
+    c.fillStyle='#6b7785'; c.font='13px sans-serif'; c.textAlign='center';
+    c.fillText('n='+d.n, X(i), y0+17);
+  });
+  c.font='bold 13px sans-serif'; c.fillStyle='#6b7785';
+  c.fillText('total n i tabellen', x0+pw/2, y0+36);
+}
+function kFyllTab(){
+  const tb=document.querySelector('#kTabell tbody'); tb.innerHTML='';
+  kRES.forEach(d=>{
+    const av=(d.rate-d.alfa)/Math.sqrt(d.alfa*(1-d.alfa)/d.R);
+    const tr=document.createElement('tr');
+    tr.dataset.n=String(d.n); tr.style.cursor='pointer';
+    tr.innerHTML='<td><b>'+d.n+'</b></td><td>'+d.df+'</td>'+
+      '<td style="color:'+(d.minForv<5?'#C0392B':'#2E7D32')+'">'+nb(d.minForv,1)+'</td>'+
+      '<td>'+nb(d.krit,2)+'</td><td>'+nb(d.p95,2)+'</td>'+
+      '<td style="color:'+(Math.abs(av)>3?'#C0392B':'#2E7D32')+'">'+nb(d.rate*100,1)+' %</td>'+
+      '<td>'+nb(d.snitt,2)+'</td>';
+    tr.addEventListener('click',()=>{ $('kNvelg').value=String(d.n); kTegnFord(); });
+    tb.appendChild(tr);
+  });
+}
+
+/* ---------- faner og oppstart for de to nye ------------------------------- */
+(function(){
+  const sel=$('pVsel');
+  for(const k in VARS){ const o=document.createElement('option'); o.value=k; o.textContent=VARS[k].lab; sel.appendChild(o); }
+  sel.value=Object.keys(VARS)[0]; pSettVar(sel.value);
+  sel.onchange=()=>{ pSettVar(sel.value); pRES=[]; pTegnQQ(); pTegnRate(); pFyllTab();
+                     $('pNote').style.display='none'; };
+  ['pMin','pMaks','pSteg','pRep'].forEach(id=>$(id).oninput=()=>{ pVisListe(); if(!pRES.length) pTegnQQ(); });
+  $('pLog').onchange=()=>{ pVisListe(); if(!pRES.length) pTegnQQ(); };
+  $('pAlfa').addEventListener('change',()=>{ if(!pRES.length) pTegnQQ(); });
+  $('pKjor').onclick=pKjor;
+  $('pTom').onclick=()=>{ pRES=[]; pTegnQQ(); pTegnRate(); pFyllTab(); $('pNote').style.display='none'; };
+  $('pNvelg').onchange=pTegnQQ;
+  $('pZoom').onchange=pTegnQQ;
+  $('pAlfa').onchange=()=>{ pTegnRate(); };
+  pVisListe(); pTegnQQ(); pTegnRate();
+
+  ['kMin','kMaks','kSteg','kRep','kRader','kKol','kMarg','kModus'].forEach(id=>{
+    const e=$(id); if(!e) return;
+    e.oninput=kVisListe;
+    e.oninput=()=>{ kVisListe(); if(!kRES.length) kTegnFord(); };
+    e.onchange=()=>{ kOppdaterModus(); kVisListe(); kRES=[]; kTegnFord(); kTegnRate(); kFyllTab();
+                     $('kNote').style.display='none'; };   // den frosne beholdes med vilje: den er sammenligningsgrunnlaget
+  });
+  kOppdaterModus();
+  $('kLog').onchange=kVisListe;
+  $('kKjor').onclick=kKjor;
+  $('kTom2').onclick=()=>{ kRES=[]; kFrossen=null; $('kFrosset').textContent='';
+                           kTegnFord(); kTegnRate(); kFyllTab(); $('kNote').style.display='none'; };
+  $('kNvelg').onchange=kTegnFord;
+  $('kFrys').onclick=()=>{
+    const d=kRES.find(x=>String(x.n)===String($('kNvelg').value));
+    if(!d){ $('kFrosset').textContent='(kjør simuleringen først)'; return; }
+    kFrossen=d;
+    $('kFrosset').innerHTML='Frossen: <b>n = '+d.n+'</b>, df = '+d.df+'. Endre tabell eller n og kjør igjen.';
+    kTegnFord();
+  };
+  $('kUfrys').onclick=()=>{ kFrossen=null; $('kFrosset').textContent=''; kTegnFord(); };
+  $('kAlfa').onchange=()=>{ kTegnRate(); kTegnFord(); };
+  kVisListe(); kTegnFord(); kTegnRate();
+
+  const faner=['se','p','t','r','f','kji'];
+  function vis(f){
+    faner.forEach(x=>{ $('fane-'+x).classList.toggle('hide', x!==f); });
+    Array.from(document.querySelectorAll('.fane')).forEach(b=>b.classList.toggle('on', b.dataset.fane===f));
+    window.dispatchEvent(new Event('resize'));
+  }
+  Array.from(document.querySelectorAll('.fane')).forEach(b=>b.onclick=()=>vis(b.dataset.fane));
+  // dyplenke: ?fane=p gir egen QR-kode per tema
+  const q=new URLSearchParams(location.search).get('fane');
+  if(faner.indexOf(q)>=0) vis(q);
+  window.addEventListener('resize',()=>{ pTegnQQ(); pTegnRate(); kTegnFord(); kTegnRate(); });
+})();
+
+/* ===== PSY300 anonym bruksstatistikk =====================================
+   Ingen navn, ingen koder, ingen IP-adresser: bare hvor lenge appen var åpen
+   og hvor mange ganger noe ble klikket, slik at det går an å se hvilke
+   simuleringer som faktisk brukes.                                          */
+const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA05xK7n1rC0ex_UVpNAjJPYNmRqvGfgUGuXp0EclxmyFUeKeVktMfg5YQ/exec";
+(function(){
+  if(!PSY300_USAGE_URL || PSY300_USAGE_URL.indexOf("PASTE_")>=0) return;
+  var APP="Sim 28", NAVN="Teori mot fasit";
+  var sid = Math.random().toString(36).slice(2)+Date.now().toString(36);
+  var start=Date.now(), aktiv=0, sist=Date.now(), interaksjoner=0, sendt=false;
+  function tikk(){ if(!document.hidden){ var na=Date.now(); aktiv+=Math.min(30000,na-sist); sist=na; } else { sist=Date.now(); } }
+  setInterval(tikk, 5000);
+  document.addEventListener("visibilitychange", function(){ tikk(); sist=Date.now(); });
+  ["click","change","input"].forEach(function(t){
+    document.addEventListener(t, function(){ interaksjoner++; }, true);
+  });
+  function PSY300_ROLLE(){
+    try{
+      var q=new URLSearchParams(location.search).get("rolle");
+      if(q==="underviser"||q==="student"){ localStorage.setItem("psy300_rolle",q); }
+      return localStorage.getItem("psy300_rolle")||"student";
+    }catch(e){ return "student"; }
+  }
+  function send(type){
+    if(type==="lukket"){ if(sendt) return; sendt=true; tikk(); }
+    var payload=JSON.stringify({kind:"usage", app:APP, navn:NAVN, event:type,
+      session_id:sid, sekunder:Math.round(aktiv/1000), interaksjoner:interaksjoner,
+      innebygd:(window.top!==window.self)?1:0, rolle:PSY300_ROLLE()});
+    try{
+      if(type==="lukket" && navigator.sendBeacon){
+        navigator.sendBeacon(PSY300_USAGE_URL, new Blob([payload],{type:"text/plain;charset=utf-8"}));
+      } else {
+        fetch(PSY300_USAGE_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:payload, keepalive:true}).catch(function(){});
+      }
+    }catch(e){}
+  }
+  send("apnet");
+  window.addEventListener("pagehide", function(){ send("lukket"); });
+  document.addEventListener("visibilitychange", function(){ if(document.hidden) send("lukket"); });
+})();
+/* ===== slutt bruksstatistikk ============================================ */
+
+/* ===== Presentasjonsmodus: skjuler brødtekst og ordliste, strammer marger === */
+(function(){
+  var b=document.createElement("button");
+  b.className="presbtn"; b.type="button";
+  b.title="Skjuler forklarende tekst og ordlisten, slik at figuren og kontrollene fyller lerretet (snarvei: P)";
+  var av="Presentasjonsmodus", pa="Vis all tekst igjen";
+  b.textContent=av;
+  function veksle(){
+    var på=document.body.classList.toggle("pres");
+    b.textContent=på?pa:av;
+    window.dispatchEvent(new Event("resize"));
+  }
+  b.addEventListener("click",veksle);
+  document.addEventListener("keydown",function(e){
+    if((e.key==="p"||e.key==="P")&&!/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) veksle();
+  });
+  document.body.appendChild(b);
+})();
+</script>
+</body></html>
