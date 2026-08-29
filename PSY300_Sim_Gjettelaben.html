@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY300 &middot; Sim 30 &mdash; Gjettelaben</title>
+<style>
+
+:root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--orange:#B26A00;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:20.5px;margin:0;font-weight:700}
+header p{margin:2px 0 0;font-size:15.5px;opacity:.85}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+h2{color:var(--navy);margin:.2em 0 .5em;font-size:19px}
+button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+.btn{background:var(--blue);color:#fff}.btn:hover{background:var(--navy)}
+.btn:disabled{background:#9fb0cd;cursor:progress}
+.btn2{background:#eef1f7;color:var(--navy)}.btn2:hover{background:var(--light)}
+.muted{color:#62708a;font-size:16px}
+canvas{width:100%;display:block}
+select,input[type=number]{padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:16px;font-family:inherit;background:#fff;color:#1a2233}
+input[type=number]{width:88px}
+.rad{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:6px 0}
+.rad label{font-size:16px;color:var(--navy);font-weight:600}
+.stat{display:inline-block;background:var(--light);color:var(--navy);border-radius:8px;padding:3px 10px;font-size:15.5px;font-weight:600;margin:3px 4px 3px 0;font-variant-numeric:tabular-nums}
+.stat.red{background:#fbeceb;color:var(--red)}
+.stat.green{background:#eaf6ea;color:var(--green)}
+.stat.orange{background:#fdf2e2;color:var(--orange)}
+.note{background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px;margin-top:10px}
+.gloss{font-size:15.5px}
+.gloss b{color:var(--navy)}
+.keybox{background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:12px 14px;margin:14px 0;font-size:16.5px}
+.keybox .lbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:15.5px;font-variant-numeric:tabular-nums;margin-top:8px}
+th,td{border-bottom:1px solid var(--line);padding:5px 7px;text-align:right}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--navy);font-size:14.5px;text-transform:uppercase;letter-spacing:.03em}
+tr.valgt td{background:#fff6e8}
+.legend{font-size:15px;margin-top:4px}
+.nullboks{background:#eef6f0;border:1px solid #bfd9c8;border-left:5px solid var(--green);
+  border-radius:10px;padding:11px 14px;margin:10px 0;font-size:16px}
+.nullboks .lbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--green);font-weight:700;margin-bottom:4px}
+.nullboks b{color:var(--navy)}
+.nullboks .par{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;margin-top:6px;font-size:15.5px}
+.nullboks .mrk{font-weight:700;color:var(--green);white-space:nowrap}
+@media(max-width:620px){.nullboks .par{grid-template-columns:1fr}}
+.teori{background:#fffaf0;border:1px solid #e7d7b8;border-left:5px solid var(--orange);
+  border-radius:10px;padding:11px 14px;margin:0 0 10px;font-size:16px}
+.teori .lbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--orange);font-weight:700;margin-bottom:3px}
+.teori .pastand{font-size:17px;color:#1a2233;margin:2px 0 8px}
+.teori .form{font-size:19px;font-weight:600;color:var(--navy);margin:6px 0 2px;font-variant-numeric:tabular-nums}
+.teori .les{display:block;font-size:14.5px;font-weight:400;color:#6b5426;margin:1px 0 8px}
+.teori ul{margin:6px 0 8px;padding-left:20px;font-size:15.5px}
+.teori li{margin:2px 0}
+.teori .tall{background:#fff;border:1px solid #e7d7b8;border-radius:8px;padding:8px 11px;margin-top:8px;font-size:15.5px}
+.teori .styrt{font-size:15px;color:#6b5426}
+.teori b{color:var(--navy)}
+.fane{background:#eef1f7;color:var(--navy);font-size:16.5px}
+.fane.on{background:var(--navy);color:#fff}
+.hide{display:none}
+.legend b{font-variant-numeric:tabular-nums}
+.presbtn{position:fixed;right:12px;bottom:12px;z-index:50;background:#fff;color:var(--navy);
+  border:1px solid var(--line);border-radius:20px;padding:7px 14px;font-size:14px;font-weight:700;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer;opacity:.75}
+.presbtn:hover{opacity:1}
+body.pres header{padding:6px 14px}
+body.pres header h1{font-size:17px}
+body.pres header p{display:none}
+body.pres .wrap{max-width:1240px;padding:6px 14px}
+body.pres .card{padding:10px 12px;margin:8px 0}
+body.pres h2{font-size:16.5px;margin:.1em 0 .3em}
+body.pres .muted:not([id]){display:none}
+body.pres .card.docs{display:none}
+body.pres .stat{font-size:16.5px}
+body.pres .note{padding:8px 11px;margin-top:7px}
+body.pres .keybox{font-size:18px}
+
+.person{background:#fff;border:2px solid var(--line);border-radius:14px;padding:14px 18px;text-align:center;margin:8px 0}
+.person .nr{font-size:13.5px;letter-spacing:.09em;text-transform:uppercase;color:#62708a;font-weight:700}
+.person .ikon{font-size:46px;line-height:1.05;margin:2px 0;color:#9aa5bb}
+.person .ingen{font-size:16px;color:#62708a}
+.fasit{font-size:19px;font-weight:700;margin-top:8px;min-height:26px}
+.kort{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}
+.kort > div{flex:1 1 150px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:9px 12px}
+.kort .etikett{font-size:12.5px;color:#62708a;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.kort .stor{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--navy)}
+.kort .under{font-size:13px;color:#62708a}
+.kort .roed .stor{color:var(--red)} .kort .gronn .stor{color:var(--green)}
+td.avvik{font-weight:700}
+tr.ny td{background:#fff6e8}
+.regnesteg{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 13px;margin:8px 0;
+  font-size:16.5px}
+.regnesteg .nr{display:inline-block;background:var(--navy);color:#fff;border-radius:50%;width:22px;height:22px;
+  line-height:22px;text-align:center;font-size:13px;font-weight:700;margin-right:8px}
+.regnesteg .res{font-size:19px;font-weight:700;color:var(--navy);font-variant-numeric:tabular-nums}
+</style></head><body>
+<header><h1>Sim 30 &middot; Gjettelaben</h1>
+<p>PSY300 &middot; Forelesning 1 &middot; &laquo;Alle har IQ 100&raquo; er en statistisk modell. Her m&aring;ler vi hvor feil den tar &mdash; og oppdager standardavviket p&aring; veien</p></header>
+<div class="wrap">
+
+<div class="card">
+<h2>1. Alt vi vet p&aring; forh&aring;nd</h2>
+<p class="muted">IQ-skalaen er konstruert slik at befolkningen har gjennomsnitt <b>100</b> og standardavvik <b>15</b>. Det er hele kunnskapen vi har f&oslash;r vi m&oslash;ter noen som helst.</p>
+<canvas id="cvPop" height="290"></canvas>
+<div class="legend" id="legPop"></div>
+<div class="teori" style="margin-top:10px">
+<span class="lbl">Dette er en statistisk modell</span>
+<div class="pastand">Du skal gjette IQ-en til tilfeldige personer uten &aring; f&aring; vite noe om dem. Svaret er &aring; si <b>100</b> hver gang &mdash; toppen av kurven. Og det er verdt &aring; stoppe ved hva du da faktisk gj&oslash;r: du har satt opp en <b>modell</b>.</div>
+<div class="formel">observert verdi = modell + feil</div>
+<span class="les">Her: IQ = 100 + avvik. Hele modellen er <b>ett eneste tall</b>.</span>
+<ul>
+<li>En statistisk modell er en <b>regel for hva du forventer</b>. Denne regelen er den enklest tenkelige: forvent gjennomsnittet, samme hvem det gjelder.</li>
+<li>Alt annet i emnet er samme sak med flere ledd. En regresjonslinje sier &laquo;forvent 100 pluss noe som avhenger av skolekarakteren&raquo;. En t-test sier &laquo;forvent &eacute;n verdi for gruppe A og en annen for gruppe B&raquo;.</li>
+<li>Ingen modell treffer blink. Forskjellen mellom det modellen sa og det som faktisk skjedde, kalles <b>feilen</b> &mdash; eller residualet.</li>
+<li><b>En modell vurderes p&aring; hvor sm&aring; feilene er.</b> Det er derfor det neste panelet handler om &aring; m&aring;le dem.</li>
+</ul>
+<div class="tall"><b>Sp&oslash;rsm&aring;let vi skal svare p&aring;:</b> hvor feil tar &laquo;alle er 100&raquo;? Du bommer p&aring; hver eneste person &mdash; men hvor mye, i snitt? Svaret viser seg &aring; ha et navn du allerede har h&oslash;rt.</div>
+</div>
+</div>
+
+<div class="card">
+<h2>2. Bygg opp m&aring;let, ett steg om gangen</h2>
+<p class="muted">Modellen din sier <b>100</b> for alle. Trykk deg gjennom de fire knappene under &mdash; hver av dem legger til &eacute;n kolonne eller &eacute;n linje i regnskapet over hvor feil modellen tar, og forklarer hva m&aring;let er godt for.</p>
+<div class="person">
+<div class="nr" id="personNr">Ingen trukket enn&aring;</div>
+<div class="ikon">&#128100;</div>
+<div class="ingen">Du vet ingenting om denne personen. Modellen din sier <b>100</b>.</div>
+<div class="fasit" id="fasit">&nbsp;</div>
+</div>
+<div class="rad" style="margin-top:10px">
+<button class="btn" id="tipp">Tipp ny deltaker</button>
+<button class="btn2" id="tipp100" disabled>Tipp 100 deltakere</button>
+<button class="btn2" id="tipp1000" disabled>Tipp 1000 deltakere</button>
+<button class="btn2" id="btnKvadrat" disabled>Kvadreringstrikset</button>
+<button class="btn2" id="btnVarians" disabled>Varians</button>
+<button class="btn2" id="btnSD" disabled>Standardavvik</button>
+<button class="btn2" id="nullstill">Nullstill</button>
+<span class="muted" id="stegHint"></span>
+</div>
+<div id="tabellBoks" style="margin-top:10px"></div>
+<div id="stegTekst"></div>
+
+</div>
+
+<div class="card">
+<div class="keybox">
+<span class="lbl">Hovedpoenget</span>
+<b>Standardavviket er ikke et abstrakt m&aring;l p&aring; spredning &mdash; det er hvor feil du tar n&aring;r du gjetter gjennomsnittet.</b>
+Uten opplysninger om personen er 100 det beste gjettet du kan gj&oslash;re. Du bommer likevel p&aring; alle: i snitt med rundt 15 poeng. Det tallet <i>er</i> standardavviket. Derfor er gjennomsnittet og standardavviket et par: det f&oslash;rste er modellen, det andre er hvor d&aring;rlig modellen passer. Og derfor kvadrerer vi avvikene f&oslash;rst &mdash; summen av dem er null, uansett hvor spredt gruppa er. Resten av emnet handler om &eacute;n ting: &aring; finne opplysninger som gj&oslash;r gjetningen bedre enn 100, og m&aring;le hvor mye bedre.
+</div>
+</div>
+
+<div class="card docs" id="ordforklaringer">
+<h2>Ordforklaringer</h2>
+<p class="gloss">
+<b>Avvik</b> &mdash; faktisk verdi minus gjetningen. Positivt n&aring;r personen ligger over 100, negativt n&aring;r hun ligger under.<br>
+<b>Hvorfor summen av avvikene er null</b> &mdash; fordi like mye ligger over som under gjennomsnittet. Derfor kan man ikke bare ta snittet av avvikene; man m&aring; f&oslash;rst fjerne fortegnet.<br>
+<b>Kvadrert avvik</b> &mdash; avviket ganget med seg selv. Fjerner fortegnet, og straffer store bommer hardere enn sm&aring;.<br>
+<b>Kvadratsum (SS)</b> &mdash; summen av de kvadrerte avvikene. Grunnsteinen i nesten alt vi gj&oslash;r senere i emnet.<br>
+<b>Varians</b> &mdash; kvadratsummen delt p&aring; antall personer. Gjennomsnittlig kvadrert avvik.<br>
+<b>Standardavvik (SD)</b> &mdash; kvadratroten av variansen. Tilbake i IQ-poeng, s&aring; tallet er til &aring; forst&aring;.<br>
+<b>&mu; (my)</b> &mdash; gjennomsnittet i befolkningen. Her 100, og kjent p&aring; forh&aring;nd fordi IQ-skalaen er laget slik.<br>
+<b>&sigma; (sigma)</b> &mdash; standardavviket i befolkningen. Her 15.<br>
+<b>&divide; n eller &divide; (n &minus; 1)?</b> &mdash; her deler vi p&aring; <b>n</b>, fordi vi kjenner gjennomsnittet p&aring; forh&aring;nd og ikke har brukt dataene til &aring; finne det. M&aring; du f&oslash;rst regne ut gjennomsnittet av dine egne tall, deler du p&aring; n &minus; 1 i stedet. Se Sim 4.<br>
+<b>Normalfordeling</b> &mdash; den symmetriske klokkeformen. For IQ ligger omtrent 68 % innenfor &plusmn;1 SD (85&ndash;115) og 95 % innenfor &plusmn;2 SD (70&ndash;130).
+</p>
+</div>
+
+</div><!-- /wrap -->
+<script>
+"use strict";
+const FREQ = {"79":98,"103":279,"110":198,"81":124,"105":221,"108":215,"104":272,"123":76,"119":122,"101":264,"106":264,"114":188,"100":285,"107":230,"115":158,"84":150,"102":255,"82":146,"120":112,"94":244,"76":66,"89":207,"125":67,"98":254,"88":194,"63":10,"91":242,"96":258,"113":170,"83":152,"97":279,"112":193,"92":235,"99":245,"95":269,"116":141,"90":198,"128":55,"87":174,"72":52,"109":225,"117":138,"131":31,"129":32,"75":71,"130":27,"85":142,"134":21,"124":77,"121":109,"93":239,"86":174,"73":45,"65":16,"118":128,"111":210,"122":102,"68":22,"139":8,"127":46,"74":57,"71":47,"56":3,"78":86,"69":30,"132":24,"67":18,"80":112,"138":11,"70":33,"52":4,"126":70,"59":8,"64":14,"77":67,"61":12,"57":7,"142":7,"135":18,"143":7,"60":8,"133":20,"51":4,"137":11,"136":17,"58":8,"149":2,"140":6,"154":1,"144":3,"141":7,"66":17,"150":1,"34":1,"152":3,"62":10,"147":1,"53":4,"146":2,"145":2,"148":2,"54":2,"153":1,"42":1,"50":2,"55":3,"151":1};
+const $ = s => document.getElementById(s);
+const fmt = (v,d)=> (v==null||!isFinite(v)) ? '\u2013' :
+  v.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+function ctx2d(cv){
+  const r=window.devicePixelRatio||1, w=cv.clientWidth, h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r; cv.height=h*r; cv.style.height=h+'px';
+  const c=cv.getContext('2d'); c.setTransform(r,0,0,r,0,0); c.clearRect(0,0,w,h); return [c,w,h];
+}
+/* Samme simulerte IQ-populasjon som Sim 2 og Sim 3, så tallene henger sammen
+   på tvers av appene. */
+const POP=[]; for(const k in FREQ){ const v=+k; for(let i=0;i<FREQ[k];i++) POP.push(v); }
+const MU=100, SIGMA=15, GJETT=100;
+const F_KURVE='#C0392B', F_PERSON='#2E5496', F_SD='#7B3F9E';
+function trekk(){ return POP[(Math.random()*POP.length)|0]; }
+let runder=[];               /* faktiske IQ-skårer, i trekkerekkefølge */
+
+/* ---------- panel 1: normalkurven ---------- */
+function tegnPop(){
+  const [c,w,h]=ctx2d($('cvPop'));
+  const lo=100-4*SIGMA, hi=100+4*SIGMA;
+  const x0=44,y0=h-42,pw=w-x0-16,ph=y0-24;
+  const X=v=>x0+(v-lo)/(hi-lo)*pw;
+  const tett=v=>Math.exp(-0.5*Math.pow((v-MU)/SIGMA,2))/(SIGMA*Math.sqrt(2*Math.PI));
+  const maks=tett(MU), Y=v=>y0-v/(maks*1.1)*ph;
+  /* ±1 og ±2 SD som bånd, slik at 68 og 95 blir noe man ser og ikke pugger */
+  const band=(a,b,farge)=>{ c.fillStyle=farge; c.beginPath(); c.moveTo(X(a),y0);
+    for(let v=a;v<=b;v+=0.5) c.lineTo(X(v),Y(tett(v)));
+    c.lineTo(X(b),y0); c.closePath(); c.fill(); };
+  band(MU-2*SIGMA,MU+2*SIGMA,'rgba(192,57,43,0.10)');
+  band(MU-SIGMA,MU+SIGMA,'rgba(192,57,43,0.20)');
+  c.beginPath();
+  for(let v=lo;v<=hi;v+=0.5){ const px=X(v),py=Y(tett(v)); v===lo?c.moveTo(px,py):c.lineTo(px,py); }
+  c.strokeStyle=F_KURVE; c.lineWidth=3; c.stroke();
+  /* de trukne personene som prikker langs aksen */
+  runder.forEach((v,i)=>{
+    c.beginPath(); c.arc(X(v), y0-6-((i%6)*7), 4.2, 0, 6.284);
+    c.fillStyle='rgba(46,84,150,0.75)'; c.fill();
+  });
+  c.strokeStyle='#8a93a6'; c.lineWidth=1.5;
+  c.beginPath(); c.moveTo(x0,y0); c.lineTo(x0+pw,y0); c.stroke();
+  /* markører */
+  const strek=(v,farge,txt,dy,dash)=>{
+    c.strokeStyle=farge; c.lineWidth=2.5; c.setLineDash(dash||[]);
+    c.beginPath(); c.moveTo(X(v),14); c.lineTo(X(v),y0); c.stroke(); c.setLineDash([]);
+    c.fillStyle=farge; c.font='bold 14px sans-serif'; c.textAlign='center';
+    c.fillText(txt, X(v), dy);
+  };
+  strek(MU,F_KURVE,'μ = 100',26);
+  [[MU-SIGMA,'85'],[MU+SIGMA,'115']].forEach(([v,t])=>strek(v,F_KURVE,t,46,[5,4]));
+  c.fillStyle='#8a4a44'; c.font='bold 13.5px sans-serif'; c.textAlign='center';
+  c.fillText('68 % av alle', X(MU), y0-ph*0.42);
+  c.fillText('95 %', X(MU), y0-ph*0.12);
+  c.fillStyle='#62708a'; c.font='13px sans-serif';
+  for(let v=40;v<=160;v+=20){ if(v<lo||v>hi) continue;
+    c.beginPath(); c.moveTo(X(v),y0); c.lineTo(X(v),y0+4); c.strokeStyle='#8a93a6'; c.stroke();
+    c.fillText(String(v), X(v), y0+18); }
+  c.font='bold 13px sans-serif'; c.fillText('IQ', x0+pw/2, y0+36);
+  $('legPop').innerHTML='<b style="color:'+F_KURVE+'">rød kurve</b> = normalfordelingen med μ = 100 og σ = 15 · '
+    +'de skraverte båndene er ±1 og ±2 standardavvik'
+    +(runder.length ? ' · <b style="color:'+F_PERSON+'">blå prikker</b> = de '+runder.length+' du har trukket' : '');
+}
+
+/* ---------- panel 2: den trinnvise oppbyggingen ----------------------------
+   Kolonnene dukker opp én om gangen, styrt av «steg»:
+     0 = bare avvikene · 1 = kvadrerte avvik · 2 = varians · 3 = standardavvik
+   Poenget med rekkefølgen er at hvert steg svarer på et problem det forrige
+   skapte: summen av avvik blir null, så vi kvadrerer; kvadratsummen vokser med
+   n, så vi deler; variansen er i kvadrerte poeng, så vi tar roten.          */
+const MAL=10;
+let steg=0;
+
+function sumAvvik(){ return runder.reduce((t,x)=>t+(x-GJETT),0); }
+function sumKvadrat(){ return runder.reduce((t,x)=>t+(x-GJETT)*(x-GJETT),0); }
+function varians(){ return sumKvadrat()/runder.length; }
+function standardavvik(){ return Math.sqrt(varians()); }
+
+function knapper(){
+  const n=runder.length;
+  $('btnKvadrat').disabled = !(n>=MAL && steg<1);
+  $('tipp100').disabled  = n<MAL || n>=100;
+  $('tipp1000').disabled = n<MAL || n>=1000;
+  $('btnVarians').disabled = !(steg>=1 && steg<2);
+  $('btnSD').disabled      = !(steg>=2 && steg<3);
+  const h=$('stegHint');
+  h.textContent = n<MAL ? (MAL-n)+' igjen til vi har '+MAL+' avvik'
+    : steg===0 && n<100 ? 'Ti avvik i boks. Tipp 100 eller 1000 og se hva som skjer med summen — så «Kvadreringstrikset»'
+    : steg===0 ? n.toLocaleString('nb-NO')+' deltakere. Se på snittavviket, og trykk «Kvadreringstrikset»'
+    : steg===1 ? 'Trykk «Regn ut varians»'
+    : steg===2 ? 'Trykk «Standardavvik»'
+    : 'Ferdig — trekk gjerne flere og se anslaget bli sikrere';
+}
+
+/* Forklaringene skal peke på deltakerne studenten faktisk har trukket, ikke på
+   et generisk eksempel — det er forskjellen på å lese om kvadrering og å se den. */
+function ytterpunkt(){
+  let stor=0, liten=0, iS=0, iL=0;
+  const d=runder.slice(0,MAL);
+  d.forEach((x,i)=>{ const a=Math.abs(x-GJETT);
+    if(a>stor){stor=a; iS=i;} if(i===0||a<liten){liten=a; iL=i;} });
+  return {stor:stor, liten:liten, nrS:iS+1, nrL:iL+1, iqS:d[iS], iqL:d[iL]};
+}
+const SJEKK=[10,100,1000];
+/* Statistikk for de m første personene, slik at 10, 100 og 1000 kan leses rett
+   nedover i samme tabell — samme personer, bare flere av dem. */
+function statFor(m){
+  const d=runder.slice(0,m);
+  const sumA=d.reduce((t,x)=>t+(x-GJETT),0);
+  const SS=d.reduce((t,x)=>t+(x-GJETT)*(x-GJETT),0);
+  const v=SS/m;
+  return {n:m, sumA:sumA, SS:SS, v:v, sd:Math.sqrt(v)};
+}
+function tabell(){
+  const boks=$('tabellBoks'), n=runder.length;
+  if(!n){ boks.innerHTML='<p class="muted">Trykk <b>Tipp ny deltaker</b> for å komme i gang.</p>'; return; }
+  const kv=steg>=1, va=steg>=2, sd=steg>=3;
+  const vist=Math.min(n,MAL);
+  const kol=3+1+(kv?1:0)+(va?1:0)+(sd?1:0);
+  const ut=['<table><tr><th>Person</th><th>Faktisk IQ</th><th>Modellen sier</th>'+
+            '<th>Avvik<br><span class="muted" style="font-weight:400;font-size:13px">IQ &minus; 100</span></th>'+
+            (kv?'<th>Avvik&sup2;</th>':'')+(va?'<th>Varians</th>':'')+(sd?'<th>Standardavvik</th>':'')+'</tr>'];
+  for(let k=0;k<vist;k++){
+    const x=runder[k], a=x-GJETT;
+    ut.push('<tr'+(k===n-1?' class="ny"':'')+'><td>'+(k+1)+'</td><td>'+x+'</td><td>'+GJETT+'</td>'+
+      '<td class="avvik" style="color:'+(a>=0?'#2E7D32':'#C0392B')+'">'+(a>0?'+':'')+a+'</td>'+
+      (kv?'<td style="color:#7B3F9E;font-weight:700">'+(a*a)+'</td>':'')+
+      (va?'<td></td>':'')+(sd?'<td></td>':'')+'</tr>');
+  }
+  if(n>MAL) ut.push('<tr><td colspan="'+kol+'" class="muted">… de øvrige '+
+    (n-MAL).toLocaleString('nb-NO')+' er trukket, men ikke listet opp — se sumradene under</td></tr>');
+  /* Sumrader for hver størrelse som er nådd, rett under de ti personene.
+     Da kan 10, 100 og 1000 leses rett nedover i samme tabell. */
+  SJEKK.filter(m=>n>=m).forEach(m=>{
+    const r=statFor(m), naer=Math.abs(r.sd-15)<0.5;
+    ut.push('<tr style="background:#f4f6fb;font-weight:700">'+
+      '<td>Sum (n = '+m.toLocaleString('nb-NO')+')</td><td></td><td></td>'+
+      '<td style="color:'+(Math.abs(r.sumA/m)<0.5?'#2E7D32':'#1a2233')+'">'+
+        (r.sumA>0?'+':'')+Math.round(r.sumA).toLocaleString('nb-NO')+
+        '<br><span class="muted" style="font-weight:400;font-size:13px">snitt '+fmt(r.sumA/m,2)+'</span></td>'+
+      (kv?'<td style="color:#7B3F9E">'+Math.round(r.SS).toLocaleString('nb-NO')+'</td>':'')+
+      (va?'<td style="color:#7B3F9E">'+fmt(r.v,1)+'</td>':'')+
+      (sd?'<td style="color:'+(naer?'#2E7D32':'#7B3F9E')+';font-size:17px">'+fmt(r.sd,2)+'</td>':'')+
+      '</tr>');
+  });
+  if(va||sd) ut.push('<tr style="background:#fbecea;font-weight:700"><td>Fasit i befolkningen</td>'+
+    '<td></td><td></td><td>0<br><span class="muted" style="font-weight:400;font-size:13px">snitt 0,00</span></td>'+
+    (kv?'<td>&mdash;</td>':'')+(va?'<td>225,0</td>':'')+
+    (sd?'<td style="color:#C0392B;font-size:17px">15,00</td>':'')+'</tr>');
+  ut.push('</table>');
+  boks.innerHTML=ut.join('');
+}
+
+function stegTekst(){
+  const boks=$('stegTekst'), n=runder.length;
+  const bit=[];
+  const kort=(farge,tittel,tekst)=>'<div class="note" style="border-left:5px solid '+farge+'"><b>'+tittel+'</b> '+tekst+'</div>';
+  if(n>=MAL && steg===0){
+    const sA=sumAvvik(), y=ytterpunkt();
+    const snitt=sA/n;
+    /* Ærlighet framfor et pent poeng: med ti personer og σ = 15 svinger summen
+       med rundt ±47, så den er sjelden nær null i absolutt forstand. Det som
+       ER poenget, er at den er liten sammenlignet med de enkelte avvikene —
+       og at den ikke vokser slik kvadratsummen gjør. */
+    bit.push(kort('#2E7D32','Summen av avvikene ble '+(sA>0?'+':'')+sA+'.',
+      'Sammenlign med de enkelte avvikene: den største bommen din alene var '+y.stor+' poeng. '+
+      'Ti avvik som hver er opptil '+y.stor+' store, summerer seg til bare '+(sA>0?'+':'')+sA+
+      ' — i snitt '+fmt(snitt,1)+' per person. De positive og negative spiser nesten hverandre opp, og det gjør de '+
+      '<b>uansett hvor spredt gruppa er</b>.'+
+      '<br><br>Det er selve problemet. Summen av avvik svinger rundt null og vokser ikke når spredningen vokser, '+
+      'så den kan ikke brukes til å måle hvor feil du tar. '+
+      (Math.abs(sA)>2*n ? 'At den ble så vidt stor som '+Math.abs(sA)+' her, er ren tilfeldighet — trekk flere og se '+
+       'gjennomsnittet krype mot null. ' : '')+
+      'Vil du se det tydeligst: hadde du gjettet gjennomsnittet av dine egne ti i stedet for 100, ville summen blitt '+
+      '<b>nøyaktig</b> null. Alltid.'+
+      '<br><br>Vi trenger altså et triks for å bli kvitt fortegnene.'));
+  }
+  if(steg>=1){
+    bit.push(kort('#7B3F9E','Kvadreringstrikset.',
+      'Vi ganger hvert avvik med seg selv. Minus ganger minus blir pluss, så fortegnene forsvinner — og store '+
+      'bommer teller mer enn små.'+
+      (function(){ const y=ytterpunkt();
+        if(y.stor===y.liten) return '';
+        return ' Se på dine egne to ytterpunkter: person '+y.nrS+' hadde IQ '+y.iqS+', altså '+y.stor+
+          ' unna gjetningen din, og bidrar med '+(y.stor*y.stor)+' til kolonnen. Person '+y.nrL+' hadde IQ '+
+          y.iqL+', bare '+y.liten+' unna, og bidrar med '+(y.liten*y.liten)+'. '+
+          (y.liten>0 ? 'Den ene bommen teller '+fmt((y.stor*y.stor)/(y.liten*y.liten),0)+' ganger så mye som den andre.'
+                     : 'Den som ble truffet blank, bidrar med ingenting.'); })()+
+      ' Summen av kolonnen heter <b>kvadratsummen</b> (engelsk: <i>sum of squares</i>, SS), og for dine tall er den <b>'+sumKvadrat()+'</b>.'+
+      '<br><br>SS er det mest brukte målet på <b>samlet modellfeil</b> i statistikk. Modellen her er den enklest '+
+      'tenkelige — «alle er 100» — og SS er prisen du betaler for den. Resten av emnet handler om å bytte den ut '+
+      'med bedre modeller og se SS krympe: en regresjonslinje, en gruppeforskjell, en interaksjon. Hver gang er '+
+      'spørsmålet det samme: <i>hvor mye av kvadratsummen klarte modellen å spise opp?</i>'));
+  }
+  if(steg>=2){
+    bit.push(kort('#7B3F9E','Variansen.',
+      'Kvadratsummen har en åpenbar svakhet: den vokser bare fordi du trekker flere personer. Trekker du dobbelt '+
+      'så mange, blir SS omtrent dobbelt så stor, uten at spredningen har endret seg. Løsningen er å dele på '+
+      'antallet.'+
+      '<div class="formel" style="margin:8px 0 2px">varians = kvadratsummen / n = '+sumKvadrat()+' / '+n+' = '+fmt(varians(),1)+'</div>'+
+      '<span class="styrt">Gjennomsnittlig kvadrert avvik.</span>'+
+      '<br><br>Lest tilbake på gjetteoppgaven: du bommet i snitt <b>'+fmt(varians(),0)+' kvadrerte IQ-poeng</b> '+
+      'per person. Det er et tall som lar seg regne videre på, men som ingen kan kjenne igjen — '+
+      'ingen sier «jeg bommet 225 kvadrerte poeng».'+
+      '<br><br>Variansen er byggesteinen i nesten alt som kommer senere: ANOVA deler den opp i biter, '+
+      'regresjonens R² er andelen av den som forklares, og t-testen sammenligner grupper i enheter av den. '+
+      'Ulempen er at tallet er i <i>kvadrerte</i> IQ-poeng, og det har ingen mennesker intuisjon for. '+
+      '<br><br>Her deler vi på n, rett og slett fordi vi kjente gjennomsnittet 100 på forhånd og ikke har brukt '+
+      'dataene til å finne det. Hva som skjer når man må estimere gjennomsnittet fra utvalget selv, er tema i Sim 31.'));
+  }
+  if(steg>=3){
+    const sd=standardavvik();
+    bit.push(kort('#2E7D32','Standardavviket.',
+      'Kvadratroten setter tallet tilbake på skalaen vi startet med.'+
+      '<div class="formel" style="margin:8px 0 2px">standardavvik = &radic;varians = &radic;'+fmt(varians(),1)+' = '+fmt(sd,2)+'</div>'+
+      '<span class="styrt">Tilbake i IQ-poeng, og dermed til å forstå.</span>'+
+      '<br><br><b>Og der er svaret på spørsmålet vi startet med.</b> Du gjettet 100 på alle '+n+' personene, og '+
+      'bommet i gjennomsnitt med <b>'+fmt(sd,1)+' IQ-poeng</b>. Fasiten er σ = 15'+
+      (n<30 ? ', og med bare '+n+' personer spretter anslaget en del — trekk flere og se det falle på plass.'
+            : ', og du ligger '+fmt(Math.abs(sd-15),1)+' unna.')+
+      '<br><br>Standardavviket er altså ikke et abstrakt spredningsmål. Det er <b>hvor feil du tar når du gjetter '+
+      'gjennomsnittet</b> — og derfor hører gjennomsnittet og standardavviket alltid sammen: det første er modellen, '+
+      'det andre er hvor dårlig den passer.'));
+  }
+  boks.innerHTML=bit.join('');
+}
+
+function alt(){ tegnPop(); tabell(); stegTekst(); knapper(); }
+
+/* ---------- trekking ---------- */
+function nyPerson(){
+  const x=trekk(); runder.push(x);
+  const a=x-GJETT;
+  $('personNr').textContent='Person '+runder.length;
+  $('fasit').innerHTML='Faktisk IQ: <b>'+x+'</b> &nbsp;·&nbsp; din gjetning: 100 &nbsp;·&nbsp; '+
+    'avvik: <b style="color:'+(a>=0?'#2E7D32':'#C0392B')+'">'+(a>0?'+':'')+a+'</b>';
+  return x;
+}
+function fyllTil(m){
+  while(runder.length<m) nyPerson();
+  alt();
+}
+$('tipp').onclick=()=>{ nyPerson(); alt(); };
+$('btnKvadrat').onclick=()=>{ steg=Math.max(steg,1); alt(); };
+$('btnVarians').onclick=()=>{ steg=Math.max(steg,2); alt(); };
+$('btnSD').onclick=()=>{ steg=Math.max(steg,3); alt(); };
+$('tipp100').onclick=()=>fyllTil(100);
+$('tipp1000').onclick=()=>fyllTil(1000);
+$('nullstill').onclick=()=>{ runder=[]; steg=0;
+  $('personNr').textContent='Ingen trukket ennå'; $('fasit').innerHTML='&nbsp;';
+  alt(); };
+window.addEventListener('resize', tegnPop);
+alt();
+
+
+/* ===== PSY300 anonym bruksstatistikk ===== */
+const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA05xK7n1rC0ex_UVpNAjJPYNmRqvGfgUGuXp0EclxmyFUeKeVktMfg5YQ/exec";
+(function(){
+  if(!PSY300_USAGE_URL || PSY300_USAGE_URL.indexOf("PASTE_")>=0) return;
+  var APP="Sim 30", NAVN="Gjettelaben";
+  var sid = Math.random().toString(36).slice(2)+Date.now().toString(36);
+  var aktiv=0, sist=Date.now(), interaksjoner=0, sendt=false;
+  function tikk(){ if(!document.hidden){ var na=Date.now(); aktiv+=Math.min(30000,na-sist); sist=na; } else { sist=Date.now(); } }
+  setInterval(tikk, 5000);
+  document.addEventListener("visibilitychange", function(){ tikk(); sist=Date.now(); });
+  ["click","change","input"].forEach(function(t){
+    document.addEventListener(t, function(){ interaksjoner++; }, true);
+  });
+  function PSY300_ROLLE(){
+    try{
+      var q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'')).get("rolle");
+      if(q==="underviser"||q==="student"){ localStorage.setItem("psy300_rolle",q); }
+      return localStorage.getItem("psy300_rolle")||"student";
+    }catch(e){ return "student"; }
+  }
+  function send(type){
+    if(type==="lukket"){ if(sendt) return; sendt=true; tikk(); }
+    var payload=JSON.stringify({kind:"usage", app:APP, navn:NAVN, event:type,
+      session_id:sid, sekunder:Math.round(aktiv/1000), interaksjoner:interaksjoner,
+      innebygd:(window.top!==window.self)?1:0, rolle:PSY300_ROLLE()});
+    try{
+      if(type==="lukket" && navigator.sendBeacon){
+        navigator.sendBeacon(PSY300_USAGE_URL, new Blob([payload],{type:"text/plain;charset=utf-8"}));
+      } else {
+        fetch(PSY300_USAGE_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:payload, keepalive:true}).catch(function(){});
+      }
+    }catch(e){}
+  }
+  send("apnet");
+  window.addEventListener("pagehide", function(){ send("lukket"); });
+  document.addEventListener("visibilitychange", function(){ if(document.hidden) send("lukket"); });
+})();
+
+/* ===== Presentasjonsmodus ===== */
+(function(){
+  var b=document.createElement("button");
+  b.className="presbtn"; b.type="button";
+  b.title="Skjuler forklarende tekst og ordlisten, slik at figuren og kontrollene fyller lerretet (snarvei: P)";
+  var av="Presentasjonsmodus", pa="Vis all tekst igjen";
+  b.textContent=av;
+  function veksle(){
+    var pa2=document.body.classList.toggle("pres");
+    b.textContent=pa2?pa:av;
+    window.dispatchEvent(new Event("resize"));
+  }
+  b.addEventListener("click",veksle);
+  document.addEventListener("keydown",function(e){
+    if((e.key==="p"||e.key==="P")&&!/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) veksle();
+  });
+  document.body.appendChild(b);
+})();
+</script>
+<script>
+/* ===== PSY300 språklag ===== */
+/* Engelsk drakt oppå den norske. Norsk er kilden; engelsk ligger i ordbøkene
+   under. Valget huskes i nettleseren, og deles mellom appene fordi de har
+   samme opphav. */
+(function(){
+  var AVSNITT_EN = {};
+  var ORD_EN = {"Ordforklaringer": "Glossary", "Hovedpoenget": "The main point", "Oppsett": "Setup", "Oppsettet": "The setup", "Nullstill": "Reset", "Nullstill telleren": "Reset the counter", "Poenget:": "The point:", "Hva skal du se?": "What should you look for?", "Presentasjonsmodus": "Presentation mode", "Vis all tekst igjen": "Show all the text again", "Frys denne fordelingen": "Freeze this distribution", "Frys denne fordelingen (behold som bakgrunn)": "Freeze this distribution (keep it as a backdrop)", "Fjern frossen": "Remove the frozen one", "Kjør simuleringen": "Run the simulation", "Kjør simuleringen.": "Run the simulation.", "Variabel:": "Variable:", "Variabel": "Variable", "Utvalgsstørrelse n": "Sample size n", "Utvalgsstørrelse n:": "Sample size n:", "Konfidensnivå": "Confidence level", "Tabell": "Table", "Total n": "Total n", "Antall grupper k": "Number of groups k", "Ingen data ennå.": "No data yet.", "Depresjon (pre) · Terapi-RCT": "Depression (pre) · therapy trial", "Undertrykkende forsvar (pre) · Terapi-RCT": "Defensive functioning (pre) · therapy trial", "Aggresjonsundertrykking (pre) · Terapi-RCT": "Suppressed aggression (pre) · therapy trial", "Statistikk-selvtillit (pre) · arbeidskravet": "Statistics self-efficacy (pre) · assignment data", "Selvkritisk perfeksjonisme · arbeidskravet": "Self-critical perfectionism · assignment data", "Angstsensitivitet · arbeidskravet": "Anxiety sensitivity · assignment data", "Depresjon (pre)": "Depression (pre)", "Depresjon (post)": "Depression (post)", "Undertrykkende forsvar (pre)": "Defensive functioning (pre)", "Aggresjonsundertrykking (pre)": "Suppressed aggression (pre)", "Statistikk-selvtillit (pre)": "Statistics self-efficacy (pre)", "Selvkritisk perfeksjonisme (trekk)": "Self-critical perfectionism (trait)", "Angstsensitivitet (trekk)": "Anxiety sensitivity (trait)", "Rigid perfeksjonisme (trekk)": "Rigid perfectionism (trait)", "Alder": "Age", "Kjønn": "Sex", "populasjonen": "the population", "Populasjonen": "The population", "utvalget": "the sample", "Median": "Median", "Modus": "Mode", "Skjevhet": "Skewness", "Høyreskjev": "Right-skewed", "venstreskjev": "left-skewed", "skjev": "skewed", "lineære": "linear", "observerte": "observed", "eget": "own", "uten": "without", "krit": "crit", "total": "total", "sanne μ": "true μ", "prosedyren": "the procedure", "metoden": "the method", "σ (sigma)": "σ (sigma)", "x̄ (x-strek)": "x̄ (x-bar)", "t-fordelingen": "the t distribution", "Spearmans rho": "Spearman's rho", "Sentralgrenseteoremet": "The central limit theorem", "sentralgrenseteoremet": "the central limit theorem", "Utvalgsfordeling": "Sampling distribution", "utvalgsgjennomsnittet x̄": "the sample mean x̄", "tyngre i halene": "heavier in the tails", "RCT": "RCT", "ISTDP": "ISTDP", "JASP": "JASP", "SSE": "SSE", "Terapi-RCT-studie": "therapy trial", "sammenligner": "compares", "Sim 17": "Sim 17", "— gjennomsnittet i et utvalg (skrives også x̄).": "— the mean of a sample (also written x̄).", "= midtverdien når verdiene sorteres.": "= the middle value once the values are sorted.", "= den hyppigste verdien.": "= the most frequent value.", "— standardavvik: typisk avstand fra gjennomsnittet, i variabelens egen enhet. Kvadratet er variansen.": "— standard deviation: the typical distance from the mean, in the variable's own units. Its square is the variance.", "— asymmetri i fordelingen.": "— asymmetry in the distribution.", "= lang hale mot høye verdier (gjennomsnittet ligger over medianen),": "= a long tail towards high values (the mean sits above the median),", "= motsatt.": "= the other way round.", "— standardfeil: hvor mye et estimat ville variert mellom gjentatte utvalg. For et gjennomsnitt: SE = σ/√n.": "— standard error: how much an estimate would vary across repeated samples. For a mean: SE = σ/√n.", "— gjennomsnittet i": "— the mean of", ": sannheten vi prøver å treffe, og som forskeren i praksis aldri får se.": ": the truth we are trying to hit, and which a researcher never actually gets to see.", "— standardavviket i": "— the standard deviation of", ". σ² er populasjonsvariansen.": ". σ² is the population variance.", "— gjennomsnittet i utvalget, altså estimatet av μ.": "— the mean of the sample, that is, the estimate of μ.", "— utvalgsgjennomsnitt blir tilnærmet normalfordelte når n vokser, selv om populasjonen er skjev.": "— sample means become approximately normal as n grows, even when the population is skewed.", "— fordelingen av en statistikk (f.eks. gjennomsnittet) over mange tenkte gjentakelser av studien. Ikke det samme som fordelingen av rådata.": "— the distribution of a statistic (the mean, say) across many imagined repetitions of the study. Not the same thing as the distribution of the raw data.", "— regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren.": "— regression coefficient: how much ŷ changes per one-unit increase in the predictor.", "er den standardiserte varianten (i standardavvik).": "is the standardised version (in standard deviations).", "— Pearsons korrelasjon: styrken på den": "— Pearson's correlation: the strength of the", "sammenhengen mellom to variabler (−1 til +1).": "relationship between two variables (−1 to +1).", "gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.": "does the same on ranks, and suits ordinal data and curved but monotone relationships.", "— randomisert kontrollert studie. Emnets": "— randomised controlled trial. The course's", "(intensiv dynamisk korttidsterapi) med venteliste, N = 86.": "(intensive short-term dynamic psychotherapy) against a waiting list, N = 86.", "— statistikkprogrammet vi bruker i emnet (gratis og åpen kildekode).": "— the statistics package used in the course (free and open source).", "— konfidensintervall: estimat ± kritisk verdi · SE. «95 %» beskriver metoden over mange studier, ikke sannsynligheten for det ene intervallet du har.": "— confidence interval: estimate ± critical value · SE. «95 %» describes the method across many studies, not the probability for the single interval you happen to have.", "— frihetsgrader (degrees of freedom): antall verdier som fritt kan variere gitt det du allerede har estimert.": "— degrees of freedom: the number of values free to vary, given what you have already estimated.", "— kvadratsum (sum of squares): summen av kvadrerte avvik.": "— sum of squares: the sum of squared deviations.", "er kvadratsummen av feilene (residualene).": "is the sum of squares of the errors (the residuals).", "= SS/df, altså en varians.": "= SS/df, that is, a variance.", "— testobservator for gjennomsnitt: forskjell delt på standardfeil.": "— test statistic for means: a difference divided by a standard error.", "er litt tyngre i halene enn normalfordelingen ved lav df.": "has slightly heavier tails than the normal distribution when df is low.", "— p-verdi: sannsynligheten for et resultat minst så ekstremt som ditt, GITT at nullhypotesen er sann.": "— p-value: the probability of a result at least as extreme as yours, GIVEN that the null hypothesis is true.", "— effektstørrelse: forskjellen i antall standardavvik.": "— effect size: the difference expressed in standard deviations.", "— nullhypotesen: påstanden om at det ikke finnes noen effekt.": "— the null hypothesis: the claim that there is no effect.", "— statistisk styrke: sannsynligheten for å oppdage en effekt som faktisk finnes.": "— statistical power: the probability of detecting an effect that really is there.", "— type I-feil: å forkaste en sann nullhypotese (falskt funn).": "— type I error: rejecting a true null hypothesis (a false positive).", "— type II-feil: å beholde en gal nullhypotese (oversett effekt).": "— type II error: retaining a false null hypothesis (a missed effect).", "— residual: avstanden mellom observert verdi og modellens prediksjon.": "— residual: the distance between an observed value and the model's prediction.", "— heteroskedastisitet: residualspredningen endrer seg utover x-aksen (trakten).": "— heteroscedasticity: the spread of the residuals changes along the x-axis (the funnel).", "Tipp ny deltaker": "Guess a new participant", "Tipp 100 deltakere": "Guess 100 participants", "Tipp 1000 deltakere": "Guess 1000 participants", "Kvadreringstrikset": "The squaring trick", "Varians": "Variance", "Standardavvik": "Standard deviation", "Person": "Person", "Faktisk IQ": "Actual IQ", "Modellen sier": "The model says", "Avvik": "Deviation", "Fasit i befolkningen": "The truth in the population", "Ingen trukket ennå": "None drawn yet", "Hele modellen er": "The whole model is", "ett eneste tall": "one single number"};
+  var SPRAAK = 'no';
+  try { SPRAAK = localStorage.getItem('psy300_app_spraak') || 'no'; } catch(e) {}
+
+  var NO_TEKST = new WeakMap();      // opprinnelig norsk tekst per tekstnode
+  var NO_AVSNITT = {};               // opprinnelig norsk html per data-t
+
+  function tekstnoder(rot){
+    var ut = [];
+    (function gaa(n){
+      for (var i = 0; i < n.childNodes.length; i++){
+        var b = n.childNodes[i];
+        if (b.nodeType === 3){ if (b.nodeValue.trim()) ut.push(b); }
+        else if (b.nodeType === 1 && b.tagName !== 'SCRIPT' && b.tagName !== 'STYLE'
+                 && !b.hasAttribute('data-t')) gaa(b);
+      }
+    })(rot);
+    return ut;
+  }
+  function oversettNode(t){
+    if (!NO_TEKST.has(t)) NO_TEKST.set(t, t.nodeValue);
+    var no = NO_TEKST.get(t);
+    if (SPRAAK !== 'en'){ t.nodeValue = no; return; }
+    var kjerne = no.trim(),
+        pre = no.slice(0, no.length - no.replace(/^\s+/, '').length),
+        post = no.slice(no.replace(/\s+$/, '').length),
+        flat = kjerne.replace(/\s+/g, ' ');
+    var ny = ORD_EN[kjerne] || ORD_EN[flat];
+    t.nodeValue = pre + (ny == null ? kjerne : ny) + post;
+  }
+  function oversettAlt(){
+    try {
+      var rot = document.body;
+      var blokker = rot.querySelectorAll('[data-t]');
+      for (var i = 0; i < blokker.length; i++){
+        var el = blokker[i], k = el.getAttribute('data-t');
+        if (NO_AVSNITT[k] == null) NO_AVSNITT[k] = el.innerHTML;
+        el.innerHTML = (SPRAAK === 'en' && AVSNITT_EN[k]) ? AVSNITT_EN[k] : NO_AVSNITT[k];
+      }
+      var noder = tekstnoder(rot);
+      for (var j = 0; j < noder.length; j++) oversettNode(noder[j]);
+      document.documentElement.lang = (SPRAAK === 'en') ? 'en' : 'no';
+      /* <title> ligger utenfor body og fanges ikke av vandringen over. */
+      if (NO_AVSNITT.__tittel == null) NO_AVSNITT.__tittel = document.title;
+      var tEn = ORD_EN[NO_AVSNITT.__tittel];
+      document.title = (SPRAAK === 'en' && tEn) ? tEn : NO_AVSNITT.__tittel;
+      var b = document.getElementById('psy300LangBtn');
+      if (b) b.textContent = (SPRAAK === 'en') ? 'Norsk' : 'English';
+    } catch(e){ if (window.console) console.error('språkbytte feilet:', e); }
+  }
+  window.PSY300_T = function(s){ return (SPRAAK === 'en') ? (ORD_EN[s] || s) : s; };
+  window.PSY300_SPRAAK = function(){ return SPRAAK; };
+  window.PSY300_oversett = oversettAlt;
+
+  var knapp = document.createElement('button');
+  knapp.id = 'psy300LangBtn';
+  knapp.type = 'button';
+  knapp.title = 'Switch between Norwegian and English';
+  knapp.style.cssText = 'position:fixed;right:12px;top:12px;z-index:60;background:#fff;color:#1F3864;'
+    + 'border:1px solid #d9dee8;border-radius:20px;padding:7px 14px;font-size:14px;font-weight:700;'
+    + 'box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer;opacity:.85;font-family:inherit';
+  knapp.textContent = 'English';
+  knapp.addEventListener('click', function(){
+    SPRAAK = (SPRAAK === 'en') ? 'no' : 'en';
+    try { localStorage.setItem('psy300_app_spraak', SPRAAK); } catch(e){}
+    oversettAlt();
+    /* Appene tegner selv på nytt ved resize; det er den enkleste måten å få
+       canvas-tekst og genererte tabeller med på språkbyttet. */
+    window.dispatchEvent(new Event('resize'));
+    setTimeout(oversettAlt, 30);
+  });
+  document.body.appendChild(knapp);
+
+  /* Tegner appen om, oversetter vi på nytt: ellers står nye celler på norsk. */
+  var gammelRAF = window.requestAnimationFrame;
+  var planlagt = false;
+  window.addEventListener('resize', function(){
+    if (planlagt) return;
+    planlagt = true;
+    setTimeout(function(){ planlagt = false; if (SPRAAK === 'en') oversettAlt(); }, 60);
+  });
+  document.addEventListener('click', function(){
+    if (SPRAAK === 'en') setTimeout(oversettAlt, 40);
+  }, true);
+  document.addEventListener('change', function(){
+    if (SPRAAK === 'en') setTimeout(oversettAlt, 40);
+  }, true);
+
+  oversettAlt();
+})();
+</script>
+</body></html>

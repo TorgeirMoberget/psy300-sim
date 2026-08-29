@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY300 &middot; Sim 29 &mdash; Kji-kvadratlaben</title>
+<style>
+:root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--orange:#B26A00;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:20.5px;margin:0;font-weight:700}
+header p{margin:2px 0 0;font-size:15.5px;opacity:.85}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+h2{color:var(--navy);margin:.2em 0 .5em;font-size:19px}
+button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+.btn{background:var(--blue);color:#fff}.btn:hover{background:var(--navy)}
+.btn:disabled{background:#9fb0cd;cursor:progress}
+.btn2{background:#eef1f7;color:var(--navy)}.btn2:hover{background:var(--light)}
+.muted{color:#62708a;font-size:16px}
+canvas{width:100%;display:block}
+select,input[type=number]{padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:16px;font-family:inherit;background:#fff;color:#1a2233}
+input[type=number]{width:88px}
+.rad{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:6px 0}
+.rad label{font-size:16px;color:var(--navy);font-weight:600}
+.stat{display:inline-block;background:var(--light);color:var(--navy);border-radius:8px;padding:3px 10px;font-size:15.5px;font-weight:600;margin:3px 4px 3px 0;font-variant-numeric:tabular-nums}
+.stat.red{background:#fbeceb;color:var(--red)}
+.stat.green{background:#eaf6ea;color:var(--green)}
+.stat.orange{background:#fdf2e2;color:var(--orange)}
+.note{background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px;margin-top:10px}
+.gloss{font-size:15.5px}
+.gloss b{color:var(--navy)}
+.keybox{background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:12px 14px;margin:14px 0;font-size:16.5px}
+.keybox .lbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:15.5px;font-variant-numeric:tabular-nums;margin-top:8px}
+th,td{border-bottom:1px solid var(--line);padding:5px 7px;text-align:right}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--navy);font-size:14.5px;text-transform:uppercase;letter-spacing:.03em}
+tr.valgt td{background:#fff6e8}
+.legend{font-size:15px;margin-top:4px}
+.nullboks{background:#eef6f0;border:1px solid #bfd9c8;border-left:5px solid var(--green);
+  border-radius:10px;padding:11px 14px;margin:10px 0;font-size:16px}
+.nullboks .lbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--green);font-weight:700;margin-bottom:4px}
+.nullboks b{color:var(--navy)}
+.nullboks .par{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;margin-top:6px;font-size:15.5px}
+.nullboks .mrk{font-weight:700;color:var(--green);white-space:nowrap}
+@media(max-width:620px){.nullboks .par{grid-template-columns:1fr}}
+.teori{background:#fffaf0;border:1px solid #e7d7b8;border-left:5px solid var(--orange);
+  border-radius:10px;padding:11px 14px;margin:0 0 10px;font-size:16px}
+.teori .lbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--orange);font-weight:700;margin-bottom:3px}
+.teori .pastand{font-size:17px;color:#1a2233;margin:2px 0 8px}
+.teori .form{font-size:19px;font-weight:600;color:var(--navy);margin:6px 0 2px;font-variant-numeric:tabular-nums}
+.teori .les{display:block;font-size:14.5px;font-weight:400;color:#6b5426;margin:1px 0 8px}
+.teori ul{margin:6px 0 8px;padding-left:20px;font-size:15.5px}
+.teori li{margin:2px 0}
+.teori .tall{background:#fff;border:1px solid #e7d7b8;border-radius:8px;padding:8px 11px;margin-top:8px;font-size:15.5px}
+.teori .styrt{font-size:15px;color:#6b5426}
+.teori b{color:var(--navy)}
+.fane{background:#eef1f7;color:var(--navy);font-size:16.5px}
+.fane.on{background:var(--navy);color:#fff}
+.hide{display:none}
+.legend b{font-variant-numeric:tabular-nums}
+.presbtn{position:fixed;right:12px;bottom:12px;z-index:50;background:#fff;color:var(--navy);
+  border:1px solid var(--line);border-radius:20px;padding:7px 14px;font-size:14px;font-weight:700;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer;opacity:.75}
+.presbtn:hover{opacity:1}
+body.pres header{padding:6px 14px}
+body.pres header h1{font-size:17px}
+body.pres header p{display:none}
+body.pres .wrap{max-width:1240px;padding:6px 14px}
+body.pres .card{padding:10px 12px;margin:8px 0}
+body.pres h2{font-size:16.5px;margin:.1em 0 .3em}
+body.pres .muted:not([id]){display:none}
+body.pres .card.docs{display:none}
+body.pres .stat{font-size:16.5px}
+body.pres .note{padding:8px 11px;margin-top:7px}
+body.pres .keybox{font-size:18px}
+
+.tabinn input[type=number]{width:74px;padding:4px 6px;font-size:15.5px;text-align:right}
+.tabinn th,.tabinn td{padding:4px 6px}
+.tabinn td.navn,.tabinn th.navn{text-align:left;font-weight:600;color:var(--navy)}
+.tabinn input[type=text]{padding:4px 6px;border:1px solid var(--line);border-radius:7px;
+  font-size:15.5px;font-family:inherit;width:150px}
+.sum{background:#f4f6fb;font-weight:700}
+.advarsel{background:#fdf2e2;border:1px solid #e7d7b8;border-left:5px solid var(--orange);
+  border-radius:9px;padding:9px 12px;margin-top:9px;font-size:15.5px}
+.ok{background:#eaf6ea;border:1px solid #bfd9c8;border-left:5px solid var(--green);
+  border-radius:9px;padding:9px 12px;margin-top:9px;font-size:15.5px}
+.liten{font-size:14.5px;color:#62708a}
+.formel{font-size:19px;font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums;margin:4px 0}
+td.lav{background:#fdf2e2}
+.spor{font-size:17px;color:#1a2233;margin:2px 0 6px}
+</style></head><body>
+<header><h1>Sim 29 &middot; Kji-kvadratlaben</h1>
+<p>PSY300 &middot; Forelesning 8 &middot; Fra en krysstabell til en p-verdi &mdash; og en test av om &chi;&sup2;-fordelingen faktisk beskriver virkeligheten</p></header>
+<div class="wrap">
+
+<div class="card">
+<h2>1. Velg en analyse</h2>
+<div class="rad">
+<label>Analyse: <select id="valg" style="max-width:100%"><optgroup label="Forelesning 2 · klinkekulene"><option value="kuler" selected>Klinkekuler: 9 svarte og 1 hvit mot 50/50</option></optgroup><optgroup label="Arbeidskravet · statistikkangst-eksperimentet (N = 391)"><option value="ak_kjonn">Kjønn mot 50/50</option><option value="ak_stem">Kjønn × STEM-fag</option><option value="ak_fagfelt">Fagfelt mot lik fordeling</option><option value="ak_kjonn_fag">Kjønn × Fagfelt (2×5)</option><option value="ak_rand">Randomiseringssjekk: lett vs. vanskelig quiz</option><option value="ak_perf">Selvkritisk perfeksjonisme × Angstsensitivitet (3×3)</option><option value="ak_quiz">Quiz-betingelse × Quiz-resultat (manipulasjonssjekk)</option></optgroup><optgroup label="Terapi-RCT · ISTDP mot venteliste (N = 86)"><option value="rct_kjonn">Kjønn mot 50/50</option><option value="rct_gr_kjonn">Gruppe × Kjønn</option><option value="rct_dropout">Gruppe × Frafall</option><option value="rct_medisin">Gruppe × Medisinbruk</option><option value="rct_kj_med">Kjønn × Medisinbruk</option></optgroup><optgroup label="Klassiske eksempler"><option value="royk_dh">Røyking × lungekreft (kasus-kontroll)</option><option value="royk_dose">Antall sigaretter per dag × lungekreft (4×2)</option><option value="royk_fram">Røykestatus × lungekreft (Framingham, moderne kohort)</option></optgroup><optgroup label="Egne tall"><option value="egen_gof">Egen tilpasningstest (goodness of fit)</option><option value="egen_uav">Egen krysstabell (uavhengighetstest)</option></optgroup></select></label>
+<label>&alpha; = <select id="alfa"><option value="0.05" selected>0,05</option><option value="0.01">0,01</option><option value="0.10">0,10</option></select></label>
+<label id="utvalgWrap" style="display:none">Utvalg: <select id="utvalg"><option value="alle" selected>Alle 86 randomiserte</option><option value="fullf">De 75 som fullførte</option></select></label>
+<button class="btn2" id="tilbake">Tilbakestill tallene</button>
+</div>
+<p class="spor" id="spor"></p>
+<p class="muted" id="kildeLinje"></p>
+</div>
+
+<div class="card">
+<h2>2. Dataene &mdash; det vi faktisk telte opp</h2>
+<p class="muted">Alle tallene er redigerbare. Endre ett og se hva som skjer nedover siden: forventede frekvenser, &chi;&sup2;, p-verdien, kurven og simuleringen regnes om med en gang.</p>
+<div id="dimRad" class="rad" style="display:none"></div>
+<div id="obsTab"></div>
+</div>
+
+<div class="card">
+<h2>3. Forventede frekvenser gitt at H&#8320; er sann</h2>
+<div id="forvForklaring" class="note"></div>
+<div id="forvTab"></div>
+<div id="antakelse"></div>
+</div>
+
+<div class="card">
+<h2>4. Utregningen, celle for celle</h2>
+<p class="muted">&chi;&sup2; er ikke annet enn en sum: for hver celle regner vi ut hvor langt observert ligger fra forventet, kvadrerer avstanden, og deler p&aring; forventet. Kvadreringen gj&oslash;r at retningen forsvinner; delingen p&aring; forventet gj&oslash;r at et avvik p&aring; 10 teller mer n&aring;r vi ventet 20 enn n&aring;r vi ventet 200.</p>
+<div id="regnTab"></div>
+<div id="resultat" class="keybox" style="margin-top:12px"></div>
+</div>
+
+<div class="card">
+<h2>5. Den teoretiske &chi;&sup2;-fordelingen</h2>
+<div class="teori">
+<span class="lbl">Teorien sier</span>
+<div class="pastand">Er H&#8320; sann, skal &chi;&sup2;-verdiene fra gjentatte studier f&oslash;lge en bestemt kurve. Hvilken kurve, bestemmes av <b>&eacute;n eneste ting</b>: antall frihetsgrader.</div>
+<div class="formel" id="dfFormel"></div>
+<span class="les" id="dfLes"></span>
+<ul>
+<li>Kurven har <b>gjennomsnitt lik df</b> og <b>varians lik 2 &middot; df</b>. Det er hele beskrivelsen.</li>
+<li>Den er h&oslash;yreskjev, og starter i null &mdash; &chi;&sup2; kan aldri bli negativ, siden vi summerer kvadrater.</li>
+<li>Den <b>kritiske verdien</b> er punktet der de &oslash;verste &alpha; av arealet begynner. Havner du til h&oslash;yre for den, forkaster du H&#8320;.</li>
+<li>p-verdien er <b>arealet til h&oslash;yre for din egen &chi;&sup2;</b>: andelen studier som ville gitt et minst like stort avvik hvis H&#8320; var sann.</li>
+</ul>
+<div class="tall" id="teoriTall"></div>
+</div>
+<canvas id="cvTeori" height="330"></canvas>
+<div class="legend" id="teoriLegend"></div>
+</div>
+
+<div class="card">
+<h2>6. Simuleringen &mdash; holder teorien?</h2>
+<div class="nullboks">
+<span class="lbl">Null-verdenen vi trekker fra</span>
+Teorien over er en <b>p&aring;stand</b>. Her tester vi den. Vi bygger en verden der <span id="nullBeskriv"></span> &mdash; alt annet er som i tabellen din: samme N, samme marginalfordeling. S&aring; trekker vi tusenvis av studier fra den verdenen, regner ut &chi;&sup2; i hver, og ser om de simulerte verdiene f&oslash;lger kurven teorien lovet.
+<div class="par">
+<span class="mrk">Stemmer teorien:</span><span>ligger s&oslash;ylene under kurven, treffer den m&aring;lte p-verdien formelens p, og forkastningsraten lander p&aring; &alpha;.</span>
+<span class="mrk">Stemmer den ikke:</span><span>spriker de &mdash; og da er det ikke tilfeldigheter, men en test brukt utenfor sitt gyldighetsomr&aring;de.</span>
+</div>
+</div>
+<div class="rad">
+<button class="btn" id="kjor10k">Kj&oslash;r 10 000 nullstudier</button>
+<button class="btn2" id="kjor1k">Kj&oslash;r 1 000</button>
+<button class="btn2" id="kjor1">Trekk &eacute;n enkelt nullstudie</button>
+<button class="btn2" id="nullstill">Nullstill</button>
+<label>Framstilling: <select id="simForm"><option value="hist" selected>histogram</option><option value="tetthet">tetthetskurve (glatt)</option></select></label>
+</div>
+<canvas id="cvSim" height="340"></canvas>
+<div class="legend" id="simLegend"></div>
+<div id="simStats" class="muted" style="margin-top:6px">Ingen simulering kj&oslash;rt enn&aring;.</div>
+<div id="simNote" class="note" style="display:none"></div>
+<div id="enTab" style="margin-top:10px"></div>
+</div>
+
+<div class="card">
+<div class="keybox">
+<span class="lbl">Hovedpoenget</span>
+<b>&chi;&sup2; er en avstand, og &chi;&sup2;-fordelingen er en tiln&aelig;rming til hvordan den avstanden oppf&oslash;rer seg n&aring;r ingenting foreg&aring;r.</b>
+Testen sammenligner det du telte med det du ville ventet hvis H&#8320; var sann, og gj&oslash;r forskjellen om til ett tall. p-verdien er arealet i halen: hvor ofte ren tilfeldighet ville gitt et minst like stort avvik. Tiln&aelig;rmingen er god n&aring;r cellene er romslige. Blir de forventede frekvensene sm&aring;, svikter den &mdash; som regel ved at testen blir <i>konservativ</i> og forkaster sjeldnere enn den lover, fordi antall er hele tall og en glatt kurve ikke klarer &aring; treffe en trappetrinnsfordeling. Prøv en tabell med E rundt 1: simuleringen kan lande p&aring; under 1 % forkastninger der testen lovet 5 %. Da er Fishers eksakte test svaret, ikke et st&oslash;rre &chi;&sup2;. Og husk hva testen <i>ikke</i> sier: den sier ingenting om hvor sterk sammenhengen er. Det er derfor Cram&eacute;rs V st&aring;r ved siden av.
+</div>
+</div>
+
+<div class="card docs" id="ordforklaringer">
+<h2>Ordforklaringer</h2>
+<p class="gloss">
+<b>Kategorisk variabel</b> &mdash; en variabel med kategorier, ikke tall: kj&oslash;nn, fagfelt, falt fra / fullf&oslash;rte. Kalles ogs&aring; nominal.<br>
+<b>Krysstabell</b> &mdash; opptellingen av hvor mange som havner i hver kombinasjon av to kategoriske variabler.<br>
+<b>Marginalfordeling</b> &mdash; rad- og kolonnesummene: hvor mange menn og kvinner det var totalt, uavhengig av den andre variabelen.<br>
+<b>O (observert)</b> &mdash; antallet du faktisk telte i en celle.<br>
+<b>E (forventet)</b> &mdash; antallet du ville ventet i cellen <i>hvis</i> H&#8320; var sann. Ikke et antall noen har observert, men et regnestykke.<br>
+<b>H&#8320; (nullhypotesen)</b> &mdash; i tilpasningstesten: at fordelingen f&oslash;lger bestemte andeler. I uavhengighetstesten: at de to variablene ikke henger sammen.<br>
+<b>&chi;&sup2; (kji-kvadrat)</b> &mdash; summen av (O &minus; E)&sup2;/E over alle celler. Null n&aring;r observert og forventet er like; vokser med avviket.<br>
+<b>df (frihetsgrader)</b> &mdash; antall verdier som fritt kan variere. Tilpasningstest: antall kategorier &minus; 1. Uavhengighetstest: (rader &minus; 1) &middot; (kolonner &minus; 1).<br>
+<b>Kritisk verdi</b> &mdash; grensen der de &oslash;verste &alpha; av &chi;&sup2;-fordelingen begynner. Sammenlign din &chi;&sup2; med den.<br>
+<b>p-verdi</b> &mdash; sannsynligheten for et avvik minst s&aring; stort som ditt, GITT at H&#8320; er sann. Ikke sannsynligheten for at H&#8320; er sann.<br>
+<b>Cram&eacute;rs V</b> &mdash; effektst&oslash;rrelse for krysstabeller, fra 0 til 1. Uavhengig av N, i motsetning til &chi;&sup2; selv.<br>
+<b>Cohens w</b> &mdash; effektst&oslash;rrelse for tilpasningstesten: &radic;(&chi;&sup2;/N).<br>
+<b>Antakelsen om forventede frekvenser</b> &mdash; tommelregelen er at alle E b&oslash;r v&aelig;re minst 5 (noen sier: minst 80 % av cellene over 5, ingen under 1). Er de mindre, er &chi;&sup2;-fordelingen en d&aring;rlig tiln&aelig;rming.<br>
+<b>Fishers eksakte test</b> &mdash; regner ut sannsynligheten direkte i stedet for &aring; tiln&aelig;rme den. Det riktige valget n&aring;r cellene er sm&aring;.<br>
+<b>Nullstudie</b> &mdash; en simulert studie trukket fra en verden der H&#8320; er sann per konstruksjon. Alt vi ser av &laquo;funn&raquo; der, er falske positive.
+</p>
+</div>
+
+</div><!-- /wrap -->
+<script>
+"use strict";
+const ANALYSER = {"ak_kjonn": {"type": "gof", "kilde": "Arbeidskravet · N = 391", "navn": "Kjønn mot 50/50", "sp": "Er kjønnsfordelingen i utvalget forenlig med at menn og kvinner rekrutteres like ofte?", "kat": ["Mann", "Kvinne"], "obs": [143, 248], "andel": [0.5, 0.5], "kom": "Fasit i løsningsforslaget: χ²(1) = 28,20, p &lt; ,001. Klart flere kvinner enn menn — som ventet når utvalget er rekruttert via psykologi- og samfunnsfagsmiljøer."}, "ak_stem": {"type": "uav", "kilde": "Arbeidskravet · N = 391", "navn": "Kjønn × STEM-fag", "sp": "Henger kjønn sammen med om man studerer et realfag?", "rad": ["Mann", "Kvinne"], "kol": ["Ikke STEM", "STEM"], "obs": [[74, 69], [187, 61]], "kom": "Fasit: χ²(1) = 22,87, p &lt; ,001, Cramérs V = ,24. 48 % av mennene mot 25 % av kvinnene studerer et STEM-fag."}, "ak_fagfelt": {"type": "gof", "kilde": "Arbeidskravet · N = 391", "navn": "Fagfelt mot lik fordeling", "sp": "Fordeler deltakerne seg jevnt over de fem fagfeltene?", "kat": ["Økonomi, jus, adm.", "Naturvit. og teknologi", "Samfunnsfag og psykologi", "Helse og medisin", "Humaniora og kunst"], "obs": [114, 121, 70, 70, 16], "andel": [0.2, 0.2, 0.2, 0.2, 0.2], "kom": "Fem kategorier gir df = 4. Nullhypotesen «like mange i hvert fagfelt» er en påstand nesten ingen ville trodd på i utgangspunktet — legg merke til hvor lite informativt et signifikant svar da er."}, "ak_kjonn_fag": {"type": "uav", "kilde": "Arbeidskravet · N = 391", "navn": "Kjønn × Fagfelt (2×5)", "sp": "Studerer menn og kvinner ulike fagfelt?", "rad": ["Mann", "Kvinne"], "kol": ["Øk./jus", "Naturvit.", "Samf./psyk.", "Helse", "Humaniora"], "obs": [[29, 65, 18, 24, 7], [85, 56, 52, 46, 9]], "kom": "Her er den minste forventede frekvensen 5,85 — akkurat over grensa på 5. Prøv å slette noen humaniora-studenter og se antakelsen ryke."}, "ak_rand": {"type": "gof", "kilde": "Arbeidskravet · N = 391", "navn": "Randomiseringssjekk: lett vs. vanskelig quiz", "sp": "Ble omtrent like mange loddet til hver betingelse?", "kat": ["Vanskelig quiz", "Lett quiz"], "obs": [199, 192], "andel": [0.5, 0.5], "kom": "χ²(1) = 0,13, p = ,72. Et <b>ikke-signifikant</b> resultat, og her er det gode nyheter: randomiseringen ser ut til å ha virket. Merk at dette ikke <i>beviser</i> 50/50 — det viser bare at tallene er forenlige med det."}, "ak_perf": {"type": "uav", "kilde": "Arbeidskravet · N = 391", "navn": "Selvkritisk perfeksjonisme × Angstsensitivitet (3×3)", "sp": "Henger de to trekkene sammen når begge deles i lav, middels og høy?", "rad": ["Lav selvkritisk", "Middels", "Høy selvkritisk"], "kol": ["Lav angstsens.", "Middels", "Høy angstsens."], "obs": [[77, 34, 22], [37, 54, 37], [19, 41, 70]], "kom": "En tydelig diagonal: χ²(4) = 71,94, V = ,30. Dette er to kontinuerlige variabler kuttet i tre — kji-kvadrat kan brukes, men en korrelasjon ville brukt informasjonen bedre."}, "ak_quiz": {"type": "uav", "kilde": "Arbeidskravet · N = 391", "navn": "Quiz-betingelse × Quiz-resultat (manipulasjonssjekk)", "sp": "Fikk de som fikk vanskelig quiz faktisk færre riktige?", "rad": ["Vanskelig quiz", "Lett quiz"], "kol": ["0 rette", "1", "2", "3", "4", "5 rette"], "obs": [[78, 36, 6, 1, 0, 78], [5, 7, 29, 66, 84, 1]], "kom": "Manipulasjonssjekken: χ²(5) = 321, V = ,91. Slik ser en effekt ut når manipulasjonen virkelig virket. Merk cellen med 0 — nullceller er lov, nullceller i <i>forventet</i> er ikke."}, "rct_kjonn": {"type": "gof", "kilde": "Terapi-RCT · N = 86", "navn": "Kjønn mot 50/50", "sp": "Er kjønnsfordelingen blant pasientene forenlig med 50/50?", "kat": ["Mann", "Kvinne"], "obs": [33, 53], "andel": [0.5, 0.5], "kom": "χ²(1) = 4,65, p = ,031. Så vidt under ,05 — et fint eksempel på et resultat som ville byttet side med noen få pasienter fra eller til. Blant de 75 som fullførte er fordelingen 31/44, og χ² faller til 2,25 (p = ,13) — det signifikante resultatet forsvinner når elleve personer faller fra.", "obs86": [33, 53], "obs75": [31, 44]}, "rct_gr_kjonn": {"type": "uav", "kilde": "Terapi-RCT · N = 86", "navn": "Gruppe × Kjønn", "sp": "Ble kjønnene jevnt fordelt mellom terapi og venteliste?", "rad": ["ISTDP", "Venteliste"], "kol": ["Mann", "Kvinne"], "obs": [[15, 28], [18, 25]], "kom": "χ²(1) = 0,44, p = ,51. Randomiseringen har gjort jobben sin. Balansesjekker som denne skal helst være kjedelige. Bytt mellom <b>alle 86 randomiserte</b> og <b>de 75 som fullførte</b> i velgeren over, og se hva frafallet gjør med tabellen.", "obs86": [[15, 28], [18, 25]], "obs75": [[22, 14], [22, 17]]}, "rct_dropout": {"type": "uav", "kilde": "Terapi-RCT · N = 86", "navn": "Gruppe × Frafall", "sp": "Falt flere fra i terapigruppa enn på ventelista?", "rad": ["ISTDP", "Venteliste"], "kol": ["Falt fra", "Fullførte"], "obs": [[7, 36], [4, 39]], "kom": "Minste forventede frekvens er 5,5 — nesten under grensa. Med så små tall er Fishers eksakte test et tryggere valg enn χ²."}, "rct_medisin": {"type": "uav", "kilde": "Terapi-RCT · N = 86", "navn": "Gruppe × Medisinbruk", "sp": "Brukte gruppene like mye medisiner ved oppstart?", "rad": ["ISTDP", "Venteliste"], "kol": ["Bruker medisin", "Bruker ikke"], "obs": [[33, 10], [35, 8]], "kom": "χ²(1) = 0,28, p = ,60. Enda en balansesjekk uten funn. Bytt mellom <b>alle 86 randomiserte</b> og <b>de 75 som fullførte</b> i velgeren over, og se hva frafallet gjør med tabellen.", "obs86": [[33, 10], [35, 8]], "obs75": [[26, 10], [32, 7]]}, "rct_kj_med": {"type": "uav", "kilde": "Terapi-RCT · N = 86", "navn": "Kjønn × Medisinbruk", "sp": "Brukte kvinner og menn medisiner like ofte?", "rad": ["Kvinne", "Mann"], "kol": ["Bruker medisin", "Bruker ikke"], "obs": [[45, 8], [23, 10]], "kom": "χ²(1) = 2,84, p = ,092. Ikke signifikant — men se på prosentene: 15 % mot 30 %. Med N = 86 er testen rett og slett ikke sterk nok til å skille dem. Bytt mellom <b>alle 86 randomiserte</b> og <b>de 75 som fullførte</b> i velgeren over, og se hva frafallet gjør med tabellen.", "obs86": [[45, 8], [23, 10]], "obs75": [[37, 7], [21, 10]]}, "royk_dh": {"type": "uav", "kilde": "Doll & Hill 1948–52 · N = 2 714 menn", "navn": "Røyking × lungekreft (kasus-kontroll)", "sp": "Røykte lungekreftpasientene oftere enn kontrollene?", "rad": ["Røyker", "Ikke-røyker"], "kol": ["Lungekreft (kasus)", "Kontroll"], "obs": [[1350, 1296], [7, 61]], "kildeUrl": "https://www.cdc.gov/eis/downloads/xsmoke-student-731-703.pdf", "kildeNavn": "Doll &amp; Hill (1952), BMJ 2:1271–1286 — tabell 1 og 2, gjengitt i CDC EIS Case Studies in Applied Epidemiology nr. 731-703", "kom": "χ²(1) = 43,98, p &lt; ,001, Cramérs V = ,13. Bare 7 av 1 357 lungekreftpasienter var ikke-røykere, mot 61 av 1 357 kontroller — oddsforholdet er 9,1. Legg merke til hvor liten V er (,13) i forhold til hvor dramatisk forskjellen er: når nesten alle i begge grupper røyker, blir det lite av tabellen igjen å «forklare». Studien er en <b>kasus-kontroll-studie</b>: forskerne bestemte selv at det skulle være 1 357 i hver kolonne. Kolonnesummene er altså ikke noe naturen har levert, og derfor kan du <b>ikke</b> lese risiko ut av tabellen — bare oddsforhold. χ² tester likevel uavhengighet på vanlig måte."}, "royk_dose": {"type": "uav", "kilde": "Doll & Hill 1948–52 · N = 2 714 menn", "navn": "Antall sigaretter per dag × lungekreft (4×2)", "sp": "Stiger overhyppigheten med antall sigaretter per dag?", "rad": ["0 per dag", "1–14", "15–24", "25 eller flere"], "kol": ["Lungekreft (kasus)", "Kontroll"], "obs": [[7, 61], [565, 706], [445, 408], [340, 182]], "kildeUrl": "https://www.cdc.gov/eis/downloads/xsmoke-student-731-703.pdf", "kildeNavn": "Doll &amp; Hill (1952), BMJ 2:1271–1286 — tabell 1 og 2, gjengitt i CDC EIS Case Studies in Applied Epidemiology nr. 731-703", "kom": "χ²(3) = 107,95, p &lt; ,001, Cramérs V = ,20. Oddsforholdene mot ikke-røykerne er 7,0 · 9,5 · 16,3 — en dose–respons-sammenheng, og et av Bradford Hills egne kriterier for årsak. En trendtest fanger 86 % av χ²-en, så dette er ikke fire tilfeldig ulike grupper, men en stige. Studien er en <b>kasus-kontroll-studie</b>: forskerne bestemte selv at det skulle være 1 357 i hver kolonne. Kolonnesummene er altså ikke noe naturen har levert, og derfor kan du <b>ikke</b> lese risiko ut av tabellen — bare oddsforhold. χ² tester likevel uavhengighet på vanlig måte."}, "egen_gof": {"type": "gof", "kilde": "Egne tall", "navn": "Egen tilpasningstest (goodness of fit)", "sp": "Skriv inn dine egne kategorier, observerte antall og forventede andeler.", "kat": ["Kategori 1", "Kategori 2", "Kategori 3"], "obs": [30, 45, 25], "andel": [0.3333333333333333, 0.3333333333333333, 0.3333333333333333], "kom": "Andelene under H₀ må summere til 1. Skriver du dem inn manuelt, normaliseres de automatisk hvis de ikke gjør det."}, "egen_uav": {"type": "uav", "kilde": "Egne tall", "navn": "Egen krysstabell (uavhengighetstest)", "sp": "Skriv inn din egen krysstabell.", "rad": ["Rad 1", "Rad 2"], "kol": ["Kolonne 1", "Kolonne 2"], "obs": [[20, 30], [35, 15]], "kom": "Endre ett tall om gangen og se hvordan χ² og p flytter seg. Legg særlig merke til hvor lite som skal til når N er liten."}, "royk_fram": {"type": "uav", "kilde": "Framingham Heart Study 1954–2013 · 75 805 undersøkelser", "navn": "Røykestatus × lungekreft (Framingham, moderne kohort)", "sp": "Hvordan ser den samme sammenhengen ut i en moderne kohortstudie?", "rad": ["Aldri røykt", "Tidligere røyker", "Røyker nå"], "kol": ["Lungekreft", "Ikke lungekreft"], "obs": [[25, 30822], [120, 22753], [139, 21946]], "kildeUrl": "https://doi.org/10.1093/jnci/djy041", "kildeNavn": "Tindle HA m.fl. (2018), JNCI 110(11):1201–07, tabell 2 (samlet kohort)", "kom": "χ²(2) = 123,43, p &lt; ,001, Cramérs V = ,04. Andelen med lungekreft er 0,08 % · 0,53 % · 0,63 %, og oddsforholdene mot «aldri røykt» er 6,5 og 7,8 — samme størrelsesorden som hos Doll og Hill, 70 år senere og med helt annen design. <b>To viktige forbehold.</b> (1) Radene er <i>undersøkelser</i>, ikke personer: hver deltaker møtte til mange kontroller, så observasjonene er ikke uavhengige og p-verdien er for optimistisk. Tabellen er tatt med nettopp fordi den ser ut som en lovlig krysstabell uten å være det. (2) V = ,04 ser ut som ingenting ved siden av OR = 7,8 — når utfallet er så sjeldent, er det meste av tabellen «ikke lungekreft» uansett."}, "kuler": {"type": "gof", "kilde": "Forelesning 2 · klinkekulene", "navn": "Klinkekuler: 9 svarte og 1 hvit mot 50/50", "sp": "Du trekker 10 kuler i blinde og får 9 svarte og 1 hvit. Er det forenlig med at krukka er 50/50?", "kat": ["Svarte", "Hvite"], "obs": [9, 1], "andel": [0.5, 0.5], "kom": "Eksempelet fra forelesningen, med tall små nok til &aring; regnes for h&aring;nd: E = 5 og 5, s&aring; &chi;&sup2; = (9&minus;5)&sup2;/5 + (1&minus;5)&sup2;/5 = 3,2 + 3,2 = <b>6,4</b>, df = 1. Den kritiske verdien er 3,84, s&aring; vi forkaster 50/50. <b>Men legg merke til to ting.</b> (1) Den <i>eksakte</i> sannsynligheten for et minst s&aring; skjevt utvalg er 22/1024 = <b>2,1 %</b> &mdash; ikke 5 %. Med n = 10 kan &chi;&sup2; bare ta seks verdier (0 &middot; 0,4 &middot; 1,6 &middot; 3,6 &middot; 6,4 &middot; 10), og sprangene g&aring;r rett forbi 95 %-punktet. Ingen grense treffer 5 % n&oslash;yaktig, og testen blir derfor <b>konservativ</b>, ikke liberal. (2) Forventet frekvens er 5, alts&aring; akkurat p&aring; grensa i tommelfingerregelen. Kj&oslash;r simuleringen nederst og se det selv: forkastningsraten lander rundt 2 %, ikke 5 %. Det er hele grunnen til at kravet om forventede frekvenser &ge; 5 finnes."}};
+const $ = s => document.getElementById(s);
+const fmt = (v,d)=> (v==null||!isFinite(v)) ? '&ndash;' :
+  v.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function ctx2d(cv){
+  const r=window.devicePixelRatio||1, w=cv.clientWidth, h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r; cv.height=h*r; cv.style.height=h+'px';
+  const c=cv.getContext('2d'); c.setTransform(r,0,0,r,0,0); c.clearRect(0,0,w,h); return [c,w,h];
+}
+function lgamma(x){
+  const g=[676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,
+           12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(x<0.5) return Math.log(Math.PI/Math.sin(Math.PI*x))-lgamma(1-x);
+  x-=1; let a=0.99999999999980993; const t=x+7.5;
+  for(let i=0;i<8;i++) a+=g[i]/(x+i+1);
+  return 0.5*Math.log(2*Math.PI)+(x+0.5)*Math.log(t)-t+Math.log(a);
+}
+/* Regularisert ufullstendig betafunksjon, kjedebrøk (Lentz). */
+function betacf(a,b,x){
+  const FPMIN=1e-300, EPS=3e-14;
+  let qab=a+b, qap=a+1, qam=a-1, c=1, d=1-qab*x/qap;
+  if(Math.abs(d)<FPMIN) d=FPMIN;
+  d=1/d; let h=d;
+  for(let m=1;m<=300;m++){
+    const m2=2*m;
+    let aa=m*(b-m)*x/((qam+m2)*(a+m2));
+    d=1+aa*d; if(Math.abs(d)<FPMIN) d=FPMIN;
+    c=1+aa/c; if(Math.abs(c)<FPMIN) c=FPMIN;
+    d=1/d; h*=d*c;
+    aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
+    d=1+aa*d; if(Math.abs(d)<FPMIN) d=FPMIN;
+    c=1+aa/c; if(Math.abs(c)<FPMIN) c=FPMIN;
+    d=1/d; const del=d*c; h*=del;
+    if(Math.abs(del-1)<EPS) break;
+  }
+  return h;
+}
+function ibeta(a,b,x){
+  if(x<=0) return 0; if(x>=1) return 1;
+  const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));
+  return x < (a+1)/(a+b+2) ? bt*betacf(a,b,x)/a : 1-bt*betacf(b,a,1-x)/b;
+}
+/* Tosidig p for Students t. */
+function tP(t,df){
+  if(!isFinite(t)) return 0;
+  return ibeta(df/2, 0.5, df/(df+t*t));
+}
+/* Regularisert ufullstendig gammafunksjon, nedre (P) og øvre (Q). */
+function gammaP(s,x){
+  if(x<0||s<=0) return NaN;
+  if(x===0) return 0;
+  if(x < s+1){                     // rekkeutvikling
+    let ap=s, sum=1/s, del=sum;
+    for(let i=0;i<500;i++){ ap++; del*=x/ap; sum+=del; if(Math.abs(del)<Math.abs(sum)*1e-15) break; }
+    return sum*Math.exp(-x+s*Math.log(x)-lgamma(s));
+  }
+  return 1-gammaQ(s,x);
+}
+function gammaQ(s,x){
+  if(x < s+1) return 1-gammaP(s,x);
+  const FPMIN=1e-300;
+  let b=x+1-s, c=1/FPMIN, d=1/b, h=d;
+  for(let i=1;i<=500;i++){
+    const an=-i*(i-s);
+    b+=2; d=an*d+b; if(Math.abs(d)<FPMIN) d=FPMIN;
+    c=b+an/c;       if(Math.abs(c)<FPMIN) c=FPMIN;
+    d=1/d; const del=d*c; h*=del;
+    if(Math.abs(del-1)<1e-15) break;
+  }
+  return Math.exp(-x+s*Math.log(x)-lgamma(s))*h;
+}
+const kjiP = (x,df)=> gammaQ(df/2, x/2);          // øvre hale: P(χ² ≥ x)
+const kjiTetthet=(x,df)=> x<=0?0:
+  Math.exp((df/2-1)*Math.log(x) - x/2 - lgamma(df/2) - (df/2)*Math.LN2);
+/* Kritisk verdi ved halvering — trygt nok, og kjøres bare noen få ganger. */
+function kjiKritisk(alfa,df){
+  let lo=0, hi=Math.max(20, df*6);
+  while(kjiP(hi,df)>alfa) hi*=2;
+  for(let i=0;i<200;i++){ const m=(lo+hi)/2; if(kjiP(m,df)>alfa) lo=m; else hi=m; }
+  return (lo+hi)/2;
+}
+
+/* ---------------- tilstand ---------------- */
+let ID='ak_kjonn';
+let A=null;              /* arbeidskopi av analysen &mdash; brukeren kan endre tallene */
+let SIM=null;            /* {x2:Float64Array, minEsnitt, minEmin, R} */
+let enStudie=null;       /* &eacute;n enkelt trukket nulltabell, til visning */
+
+function kopi(id){ return JSON.parse(JSON.stringify(ANALYSER[id])); }
+function alfa(){ return +$('alfa').value; }
+function erGof(){ return A.type==='gof'; }
+
+/* ---------------- regnestykket ---------------- */
+function regn(){
+  if(erGof()){
+    const k=A.obs.length, N=A.obs.reduce((a,b)=>a+b,0);
+    let s=A.andel.reduce((a,b)=>a+b,0); if(!(s>0)) s=1;
+    const p=A.andel.map(v=>v/s);
+    const E=p.map(v=>N*v);
+    const celler=A.obs.map((o,i)=>({i:i,j:0,o:o,e:E[i],d:o-E[i],
+      b:E[i]>0?(o-E[i])*(o-E[i])/E[i]:0}));
+    const x2=celler.reduce((a,b)=>a+b.b,0), df=Math.max(1,k-1);
+    return {N:N, E:[E], celler:celler, x2:x2, df:df, p:kjiP(x2,df),
+            minE:Math.min.apply(null,E), pNull:p, rs:null, cs:null,
+            eff:N?Math.sqrt(x2/N):0, effNavn:'Cohens w'};
+  }
+  const r=A.obs.length, c=A.obs[0].length;
+  const rs=A.obs.map(rad=>rad.reduce((a,b)=>a+b,0));
+  const cs=[]; for(let j=0;j<c;j++){ let t=0; for(let i=0;i<r;i++) t+=A.obs[i][j]; cs.push(t); }
+  const N=rs.reduce((a,b)=>a+b,0);
+  const E=A.obs.map((rad,i)=>rad.map((_,j)=> N? rs[i]*cs[j]/N : 0));
+  const celler=[];
+  for(let i=0;i<r;i++) for(let j=0;j<c;j++){
+    const o=A.obs[i][j], e=E[i][j];
+    celler.push({i:i,j:j,o:o,e:e,d:o-e,b:e>0?(o-e)*(o-e)/e:0});
+  }
+  const x2=celler.reduce((a,b)=>a+b.b,0), df=Math.max(1,(r-1)*(c-1));
+  let mE=Infinity; E.forEach(rad=>rad.forEach(v=>{ if(v<mE) mE=v; }));
+  return {N:N, E:E, celler:celler, x2:x2, df:df, p:kjiP(x2,df), minE:mE,
+          rs:rs, cs:cs, eff:(N&&Math.min(r,c)>1)?Math.sqrt(x2/(N*Math.min(r-1,c-1))):0,
+          effNavn:"Cram\u00e9rs V"};
+}
+
+/* ---------------- tabellene ---------------- */
+function tabellObs(){
+  const R=regn(), ut=[];
+  if(erGof()){
+    ut.push('<table class="tabinn"><tr><th class="navn">Kategori</th><th>Observert antall (O)</th><th>Andel under H₀</th><th>= prosent</th></tr>');
+    const sumA=A.andel.reduce((a,b)=>a+b,0)||1;
+    A.kat.forEach((k,i)=>{
+      ut.push('<tr><td class="navn"><input type="text" data-navn="'+i+'" value="'+esc(k)+'"></td>'+
+        '<td><input type="number" min="0" step="1" data-o="'+i+'" value="'+A.obs[i]+'"></td>'+
+        '<td><input type="number" min="0" step="0.01" data-a="'+i+'" value="'+(+A.andel[i].toFixed(4))+'"></td>'+
+        '<td>'+fmt(A.andel[i]/sumA*100,1)+' %</td></tr>');
+    });
+    ut.push('<tr class="sum"><td class="navn">Sum</td><td>'+R.N+'</td><td>'+fmt(sumA,3)+'</td><td>100,0 %</td></tr></table>');
+    if(Math.abs(sumA-1)>1e-6) ut.push('<p class="liten">Andelene summerer til '+fmt(sumA,3)+
+      ' og skaleres derfor til 1 før de brukes — forholdet mellom dem er det som betyr noe.</p>');
+    $('obsTab').innerHTML=ut.join('');
+    return;
+  }
+  ut.push('<table class="tabinn"><tr><th class="navn"></th>');
+  A.kol.forEach((k,j)=>ut.push('<th><input type="text" data-kolnavn="'+j+'" value="'+esc(k)+'" style="width:100px;text-align:right"></th>'));
+  ut.push('<th>Sum</th></tr>');
+  A.rad.forEach((rn,i)=>{
+    ut.push('<tr><td class="navn"><input type="text" data-navn="'+i+'" value="'+esc(rn)+'"></td>');
+    A.obs[i].forEach((v,j)=>ut.push('<td><input type="number" min="0" step="1" data-o="'+i+'_'+j+'" value="'+v+'"></td>'));
+    ut.push('<td class="sum">'+R.rs[i]+'</td></tr>');
+  });
+  ut.push('<tr class="sum"><td class="navn">Sum</td>');
+  R.cs.forEach(v=>ut.push('<td>'+v+'</td>'));
+  ut.push('<td>'+R.N+'</td></tr></table>');
+  $('obsTab').innerHTML=ut.join('');
+}
+
+function tabellForventet(){
+  const R=regn(), ut=[];
+  if(erGof()){
+    $('forvForklaring').innerHTML='<b>Slik regnes de ut:</b> forventet antall i en kategori er '+
+      'totalen ganger andelen H₀ påstår. Med N = '+R.N+' og en H₀ som sier '+
+      fmt(R.pNull[0]*100,1)+' % i første kategori, blir E = '+R.N+' &times; '+fmt(R.pNull[0],3)+
+      ' = '+fmt(R.E[0][0],2)+'. Legg merke til at E godt kan være et desimaltall — '+
+      'det er ikke et antall noen har talt opp, men et regnestykke.';
+    ut.push('<table><tr><th class="navn">Kategori</th><th>Observert O</th><th>Forventet E</th><th>O &minus; E</th></tr>');
+    A.kat.forEach((k,i)=>{
+      const e=R.E[0][i];
+      ut.push('<tr><td class="navn">'+esc(k)+'</td><td>'+A.obs[i]+'</td>'+
+        '<td'+(e<5?' class="lav"':'')+'>'+fmt(e,2)+'</td><td>'+fmt(A.obs[i]-e,2)+'</td></tr>');
+    });
+    ut.push('</table>');
+  } else {
+    $('forvForklaring').innerHTML='<b>Slik regnes de ut:</b> hvis rad og kolonne er uavhengige, '+
+      'skal andelen i en kolonne være den samme i alle rader. Da blir forventet antall i en celle '+
+      '<span class="formel" style="display:inline">E = radsum &times; kolonnesum / N</span>. '+
+      'For øverste venstre celle: '+R.rs[0]+' &times; '+R.cs[0]+' / '+R.N+' = '+fmt(R.E[0][0],2)+
+      '. Marginalene holdes altså fast — det er bare fordelingen <i>inni</i> tabellen H₀ uttaler seg om.';
+    ut.push('<table><tr><th class="navn"></th>');
+    A.kol.forEach(k=>ut.push('<th>'+esc(k)+'</th>'));
+    ut.push('</tr>');
+    A.rad.forEach((rn,i)=>{
+      ut.push('<tr><td class="navn">'+esc(rn)+'</td>');
+      R.E[i].forEach(e=>ut.push('<td'+(e<5?' class="lav"':'')+'>'+fmt(e,2)+'</td>'));
+      ut.push('</tr>');
+    });
+    ut.push('</table>');
+  }
+  $('forvTab').innerHTML=ut.join('');
+  const antall=R.celler.length, under5=R.celler.filter(c=>c.e<5).length, under1=R.celler.filter(c=>c.e<1).length;
+  if(under5===0){
+    $('antakelse').innerHTML='<div class="ok"><b>Antakelsen holder.</b> Minste forventede frekvens er '+
+      fmt(R.minE,2)+', og alle '+antall+' cellene ligger over 5. χ²-fordelingen er en god tilnærming her.</div>';
+  } else {
+    $('antakelse').innerHTML='<div class="advarsel"><b>Pass på antakelsen.</b> '+under5+' av '+antall+
+      ' celler har forventet frekvens under 5 (minste er '+fmt(R.minE,2)+')'+
+      (under1?', og '+under1+' ligger under 1':'')+
+      '. Tommelregelen er at alle E bør være minst 5. Kjør simuleringen nedenfor og se selv hva det koster: '+
+      'lander de simulerte χ²-verdiene fortsatt under kurven, og treffer forkastningsraten α? '+
+      'Er svaret nei, er <b>Fishers eksakte test</b> riktig valg.</div>';
+  }
+}
+
+function tabellRegn(){
+  const R=regn(), ut=[];
+  ut.push('<table><tr><th class="navn">Celle</th><th>O</th><th>E</th><th>O &minus; E</th><th>(O &minus; E)&sup2;</th><th>(O &minus; E)&sup2; / E</th></tr>');
+  R.celler.forEach(c=>{
+    const navn = erGof() ? A.kat[c.i] : (A.rad[c.i]+' · '+A.kol[c.j]);
+    ut.push('<tr><td class="navn">'+esc(navn)+'</td><td>'+c.o+'</td><td>'+fmt(c.e,2)+'</td>'+
+      '<td>'+fmt(c.d,2)+'</td><td>'+fmt(c.d*c.d,2)+'</td><td><b>'+fmt(c.b,3)+'</b></td></tr>');
+  });
+  ut.push('<tr class="sum"><td class="navn">Sum = χ²</td><td></td><td></td><td></td><td></td><td>'+fmt(R.x2,3)+'</td></tr></table>');
+  $('regnTab').innerHTML=ut.join('');
+
+  const krit=kjiKritisk(alfa(),R.df), sig=R.x2>krit;
+  const pTxt = R.p<0.001 ? '&lt; ,001' : fmt(R.p,3).replace('0,',',');
+  $('resultat').innerHTML='<span class="lbl">Resultatet</span>'+
+    '<span class="stat">χ²('+R.df+', N = '+R.N+') = '+fmt(R.x2,2)+'</span>'+
+    '<span class="stat'+(sig?' red':' green')+'">p = '+pTxt+'</span>'+
+    '<span class="stat">kritisk verdi ved α = '+fmt(alfa(),2)+': '+fmt(krit,2)+'</span>'+
+    '<span class="stat">'+R.effNavn+' = '+fmt(R.eff,3).replace('0,',',')+'</span><br>'+
+    (sig
+      ? 'χ² ligger <b>over</b> den kritiske verdien, så H₀ forkastes. Slik rapporteres det: '+
+        '&laquo;χ²('+R.df+') = '+fmt(R.x2,2)+', p '+pTxt+', '+R.effNavn+' = '+
+        fmt(R.eff,2).replace('0,',',')+'&raquo;. Merk at p sier hvor uvanlig avviket er, ikke hvor stort det er — '+
+        'det er '+R.effNavn+' som svarer på det.'
+      : 'χ² ligger <b>under</b> den kritiske verdien, så H₀ beholdes. Det betyr ikke at H₀ er sann: '+
+        'det betyr at disse dataene ikke er uforenlige med den. Med N = '+R.N+' kan en reell sammenheng godt '+
+        'være for svak til å få øye på.');
+}
+
+/* ---------------- den teoretiske kurven ---------------- */
+const FARGE_TEORI='#C0392B';      /* teori/parameter: rødt   */
+const FARGE_MALT ='#2E5496';      /* målt/simulert: blått    */
+const FARGE_DIN  ='#B26A00';      /* din egen χ²: oransje    */
+
+function kurvePunkter(df, hi, G){
+  const ut=new Array(G);
+  for(let i=0;i<G;i++){ const x=hi*(i+0.5)/G; ut[i]={x:x, y:kjiTetthet(x,df)}; }
+  return ut;
+}
+function tegnTeori(){
+  const [c,w,h]=ctx2d($('cvTeori'));
+  const R=regn(), df=R.df, krit=kjiKritisk(alfa(),df);
+  const hi=Math.max(krit*1.7, R.x2*1.2, df+4*Math.sqrt(2*df)+4);
+  const x0=44,y0=h-42,pw=w-x0-16,ph=y0-26, G=420;
+  const P=kurvePunkter(df,hi,G);
+  /* Ved df = 1 og 2 går tettheten mot uendelig i null. Skalaen settes derfor
+     etter kurven fra 2 % og utover, ellers presses hele figuren flat. */
+  let maks=0; P.forEach(pt=>{ if(pt.x>hi*0.02 && pt.y>maks) maks=pt.y; });
+  if(!(maks>0)) maks=1;
+  const X=v=>x0+v/hi*pw, Y=v=>y0-Math.min(v,maks*1.06)/(maks*1.06)*ph;
+
+  /* halen til høyre for din χ²: dette ER p-verdien, som areal */
+  c.beginPath(); c.moveTo(X(Math.min(R.x2,hi)),y0);
+  P.forEach(pt=>{ if(pt.x>=R.x2) c.lineTo(X(pt.x),Y(pt.y)); });
+  c.lineTo(X(hi),y0); c.closePath();
+  c.fillStyle='rgba(178,106,0,0.22)'; c.fill();
+
+  c.beginPath(); P.forEach((pt,i)=> i?c.lineTo(X(pt.x),Y(pt.y)):c.moveTo(X(pt.x),Y(pt.y)));
+  c.strokeStyle=FARGE_TEORI; c.lineWidth=3; c.stroke();
+
+  const strek=(v,farge,txt,dy,dash)=>{
+    if(v>hi) { c.fillStyle=farge; c.font='bold 14px sans-serif'; c.textAlign='right';
+               c.fillText(txt+' →', x0+pw-4, dy); return; }
+    c.strokeStyle=farge; c.lineWidth=2.5; c.setLineDash(dash||[]);
+    c.beginPath(); c.moveTo(X(v),14); c.lineTo(X(v),y0); c.stroke(); c.setLineDash([]);
+    c.fillStyle=farge; c.font='bold 14px sans-serif';
+    c.textAlign = X(v)>x0+pw*0.72 ? 'right' : 'left';
+    c.fillText(txt, X(v)+(X(v)>x0+pw*0.72?-5:5), dy);
+  };
+  strek(krit,FARGE_TEORI,'kritisk verdi = '+fmt(krit,2),24,[6,4]);
+  strek(R.x2,FARGE_DIN,'din χ² = '+fmt(R.x2,2),46);
+
+  c.strokeStyle='#8a93a6'; c.lineWidth=1.5;
+  c.beginPath(); c.moveTo(x0,y0); c.lineTo(x0+pw,y0); c.stroke();
+  c.fillStyle='#62708a'; c.font='13px sans-serif'; c.textAlign='center';
+  for(let i=0;i<=5;i++){ const v=hi*i/5; c.fillText(fmt(v,hi<12?1:0),X(v),y0+16); }
+  c.font='bold 13px sans-serif';
+  c.fillText('χ²-verdi',x0+pw/2,y0+34);
+
+  const pTxt = R.p<0.001 ? '&lt; ,001' : fmt(R.p,3).replace('0,',',');
+  $('dfFormel').innerHTML = erGof()
+    ? 'df = antall kategorier &minus; 1 = '+A.kat.length+' &minus; 1 = <b>'+R.df+'</b>'
+    : 'df = (rader &minus; 1) &middot; (kolonner &minus; 1) = ('+A.rad.length+' &minus; 1) &middot; ('+
+      A.kol.length+' &minus; 1) = <b>'+R.df+'</b>';
+  $('dfLes').innerHTML = erGof()
+    ? 'Kjenner du '+(A.kat.length-1)+' av de '+A.kat.length+' antallene og totalen, er det siste gitt.'
+    : 'Holdes rad- og kolonnesummene fast, er det bare '+R.df+' av de '+R.celler.length+
+      ' cellene som kan velges fritt — resten følger av marginalene.';
+  $('teoriTall').innerHTML='<b>For denne analysen:</b> kurven har gjennomsnitt '+R.df+
+    ' og standardavvik &radic;(2 &middot; '+R.df+') = '+fmt(Math.sqrt(2*R.df),2)+
+    '. Kritisk verdi ved α = '+fmt(alfa(),2)+' er '+fmt(krit,2)+
+    ', og arealet til høyre for din χ² = '+fmt(R.x2,2)+' er p '+
+    (R.p<0.001?pTxt:'= '+pTxt)+'.';
+  $('teoriLegend').innerHTML='<b style="color:'+FARGE_TEORI+'">rød kurve</b> = χ²-fordelingen med df = '+R.df+
+    ' · <b style="color:'+FARGE_TEORI+'">rød stiplet</b> = kritisk verdi · '+
+    '<b style="color:'+FARGE_DIN+'">oransje</b> = din χ², og det skraverte arealet til høyre for den er p-verdien';
+}
+
+/* ---------------- simuleringen ---------------- */
+function nullAndeler(){
+  if(erGof()){ const s=A.andel.reduce((a,b)=>a+b,0)||1; return A.andel.map(v=>v/s); }
+  const R=regn(), N=R.N||1, ut=[];
+  for(let i=0;i<A.rad.length;i++) for(let j=0;j<A.kol.length;j++) ut.push((R.rs[i]/N)*(R.cs[j]/N));
+  return ut;
+}
+/* Trekker N personer én for én og teller dem opp i celler. Kunne vært gjort
+   raskere med betingede binomialtrekk, men dette er nøyaktig det studenten
+   skal forestille seg, og 10 000 &times; 391 trekk går unna på et blunk. */
+function trekkFlat(N, kum){
+  const K=kum.length, t=new Int32Array(K), S=kum[K-1];
+  for(let k=0;k<N;k++){
+    const u=Math.random()*S;
+    let lo=0, hi=K-1;
+    while(lo<hi){ const m=(lo+hi)>>1; if(kum[m]<u) lo=m+1; else hi=m; }
+    t[lo]++;
+  }
+  return t;
+}
+function x2AvFlat(t, N, r, cc, Efast){
+  let x2=0, mE=Infinity;
+  if(Efast){
+    for(let i=0;i<t.length;i++){ const e=Efast[i]; if(e<mE)mE=e;
+      if(e>0){ const d=t[i]-e; x2+=d*d/e; } }
+    return [x2,mE];
+  }
+  const rs=new Array(r).fill(0), cs=new Array(cc).fill(0);
+  for(let i=0;i<r;i++) for(let j=0;j<cc;j++){ const v=t[i*cc+j]; rs[i]+=v; cs[j]+=v; }
+  for(let i=0;i<r;i++) for(let j=0;j<cc;j++){
+    const e=N? rs[i]*cs[j]/N : 0; if(e<mE)mE=e;
+    if(e>0){ const d=t[i*cc+j]-e; x2+=d*d/e; }
+  }
+  return [x2,mE];
+}
+function simuler(Rantall){
+  const R=regn(), N=R.N, p=nullAndeler();
+  const kum=[]; { let s=0; for(const v of p){ s+=v; kum.push(s); } }
+  const gof=erGof();
+  const r=gof?1:A.rad.length, cc=gof?p.length:A.kol.length;
+  const Efast = gof ? p.map(v=>N*v) : null;
+  const ut=new Float64Array(Rantall);
+  let sumE=0, minE=Infinity;
+  for(let s=0;s<Rantall;s++){
+    const t=trekkFlat(N,kum);
+    const [x2,mE]=x2AvFlat(t,N,r,cc,Efast);
+    ut[s]=x2; sumE+=mE; if(mE<minE) minE=mE;
+  }
+  ut.sort();
+  return {x2:ut, minEsnitt:sumE/Rantall, minEmin:minE, R:Rantall, N:N, df:R.df};
+}
+
+/* ---------------- tegning av simuleringen ---------------- */
+function bandbredde(a){
+  const n=a.length, m=a.reduce((x,y)=>x+y,0)/n;
+  let v=0; for(const x of a) v+=(x-m)*(x-m);
+  const sd=Math.sqrt(v/(n-1));
+  const q=t=>a[Math.min(n-1,Math.floor(t*(n-1)))];
+  const iqr=q(0.75)-q(0.25);
+  const spr = iqr>0 ? Math.min(sd, iqr/1.349) : sd;
+  return 0.9*((spr||sd)||1e-6)*Math.pow(n,-0.2);
+}
+function tetthet(a, lo, hi, G, bw){
+  const dx=(hi-lo)/(G-1), raa=new Array(G).fill(0);
+  for(const v of a){ let i=Math.round((v-lo)/dx); if(i<0)i=0; if(i>=G)i=G-1; raa[i]++; }
+  const rr=Math.max(1,Math.ceil(3*bw/dx)), kj=new Array(2*rr+1);
+  for(let k=-rr;k<=rr;k++) kj[k+rr]=Math.exp(-0.5*(k*dx/bw)*(k*dx/bw));
+  const ut=new Array(G).fill(0);
+  for(let i=0;i<G;i++){ if(!raa[i]) continue;
+    for(let k=-rr;k<=rr;k++){ const j=i+k; if(j>=0&&j<G) ut[j]+=raa[i]*kj[k+rr]; } }
+  const norm=a.length*bw*Math.sqrt(2*Math.PI);
+  for(let i=0;i<G;i++) ut[i]/=norm;
+  return ut;
+}
+function tegnSim(){
+  const [c,w,h]=ctx2d($('cvSim'));
+  const R=regn(), df=R.df, krit=kjiKritisk(alfa(),df);
+  if(!SIM){
+    c.fillStyle='#9aa5bb'; c.font='bold 17px sans-serif'; c.textAlign='center';
+    c.fillText('Kjør nullstudiene for å se om de simulerte χ²-verdiene følger kurven', w/2, h/2);
+    $('simLegend').innerHTML=''; return;
+  }
+  const dat=Array.prototype.slice.call(SIM.x2);
+  const hi=Math.max(krit*1.7, R.x2*1.15, dat[Math.floor(dat.length*0.999)]*1.05,
+                    df+4*Math.sqrt(2*df)+4);
+  const x0=44,y0=h-42,pw=w-x0-16,ph=y0-26, G=420;
+  const X=v=>x0+Math.min(v,hi)/hi*pw;
+  const P=kurvePunkter(df,hi,G);
+  let maks=0; P.forEach(pt=>{ if(pt.x>hi*0.02 && pt.y>maks) maks=pt.y; });
+
+  const glatt = $('simForm').value==='tetthet';
+  let malt=null, maltX=null;
+  if(glatt){
+    const bw=bandbredde(dat), d=tetthet(dat,0,hi,G,bw);
+    malt=d; maltX=i=>x0+i/(G-1)*pw;
+    d.forEach(v=>{ if(v>maks) maks=v; });
+  } else {
+    const NB=Math.max(30, Math.min(80, Math.round(1.4*Math.sqrt(dat.length))));
+    const bins=new Array(NB).fill(0);
+    for(const v of dat){ let i=Math.floor(v/hi*NB); if(i>=NB)i=NB-1; if(i>=0) bins[i]++; }
+    const bredde=hi/NB;
+    /* skaleres til tetthet, ellers kan søylene ikke sammenlignes med kurven */
+    malt=bins.map(v=>v/(dat.length*bredde));
+    malt.forEach(v=>{ if(v>maks) maks=v; });
+    maltX=i=>x0+(i/NB)*pw;
+    var NBg=NB;
+  }
+  if(!(maks>0)) maks=1;
+  const Y=v=>y0-Math.min(v,maks*1.06)/(maks*1.06)*ph;
+
+  if(glatt){
+    c.beginPath(); c.moveTo(maltX(0),y0);
+    for(let i=0;i<G;i++) c.lineTo(maltX(i),Y(malt[i]));
+    c.lineTo(maltX(G-1),y0); c.closePath();
+    c.fillStyle='rgba(46,84,150,0.42)'; c.fill();
+    c.strokeStyle=FARGE_MALT; c.lineWidth=2.5; c.stroke();
+  } else {
+    const bw2=Math.max(1,pw/NBg-1);
+    c.fillStyle='rgba(46,84,150,0.5)';
+    for(let i=0;i<NBg;i++) c.fillRect(maltX(i),Y(malt[i]),bw2,y0-Y(malt[i]));
+  }
+  c.beginPath(); P.forEach((pt,i)=> i?c.lineTo(X(pt.x),Y(pt.y)):c.moveTo(X(pt.x),Y(pt.y)));
+  c.strokeStyle=FARGE_TEORI; c.lineWidth=3; c.stroke();
+
+  const strek=(v,farge,txt,dy,dash)=>{
+    if(v>hi){ c.fillStyle=farge; c.font='bold 14px sans-serif'; c.textAlign='right';
+              c.fillText(txt+' →', x0+pw-4, dy); return; }
+    c.strokeStyle=farge; c.lineWidth=2.5; c.setLineDash(dash||[]);
+    c.beginPath(); c.moveTo(X(v),14); c.lineTo(X(v),y0); c.stroke(); c.setLineDash([]);
+    c.fillStyle=farge; c.font='bold 14px sans-serif';
+    c.textAlign = X(v)>x0+pw*0.72 ? 'right' : 'left';
+    c.fillText(txt, X(v)+(X(v)>x0+pw*0.72?-5:5), dy);
+  };
+  strek(krit,FARGE_TEORI,'kritisk verdi = '+fmt(krit,2),24,[6,4]);
+  strek(R.x2,FARGE_DIN,'din χ² = '+fmt(R.x2,2),46);
+
+  c.strokeStyle='#8a93a6'; c.lineWidth=1.5;
+  c.beginPath(); c.moveTo(x0,y0); c.lineTo(x0+pw,y0); c.stroke();
+  c.fillStyle='#62708a'; c.font='13px sans-serif'; c.textAlign='center';
+  for(let i=0;i<=5;i++){ const v=hi*i/5; c.fillText(fmt(v,hi<12?1:0),X(v),y0+16); }
+  c.font='bold 13px sans-serif';
+  c.fillText('χ² i '+SIM.R.toLocaleString('nb-NO')+' studier der H₀ er sann', x0+pw/2, y0+34);
+  $('simLegend').innerHTML='<b style="color:'+FARGE_MALT+'">blått</b> = de simulerte χ²-verdiene · '+
+    '<b style="color:'+FARGE_TEORI+'">rød kurve</b> = det teorien lovet · '+
+    '<b style="color:'+FARGE_DIN+'">oransje</b> = din egen χ²';
+  simTall();
+}
+
+function simTall(){
+  if(!SIM){ $('simStats').textContent='Ingen simulering kjørt ennå.'; $('simNote').style.display='none'; return; }
+  const R=regn(), df=R.df, krit=kjiKritisk(alfa(),df), dat=SIM.x2, Rn=SIM.R;
+  let minst=0, over=0, snitt=0;
+  for(let i=0;i<Rn;i++){ const v=dat[i]; snitt+=v; if(v>=R.x2) minst++; if(v>krit) over++; }
+  snitt/=Rn;
+  const pMalt=minst/Rn, rate=over/Rn;
+  const pForm=R.p;
+  const pTxt=v=> v<1/Rn ? '&lt; '+fmt(1/Rn,4).replace('0,',',') : fmt(v,4).replace('0,',',');
+  $('simStats').innerHTML=
+    '<span class="stat">'+Rn.toLocaleString('nb-NO')+' nullstudier</span>'+
+    '<span class="stat red">formelens p = '+(pForm<0.0001?'&lt; ,0001':fmt(pForm,4).replace('0,',','))+'</span>'+
+    '<span class="stat">målt p = '+pTxt(pMalt)+'</span>'+
+    '<span class="stat red">teoretisk gjennomsnitt = df = '+df+'</span>'+
+    '<span class="stat">målt gjennomsnitt = '+fmt(snitt,3)+'</span>'+
+    '<span class="stat'+(Math.abs(rate-alfa())<=Math.max(0.008,2.6*Math.sqrt(alfa()*(1-alfa())/Rn))?' green':' red')+
+      '">forkastningsrate = '+fmt(rate*100,2)+' % (lovet '+fmt(alfa()*100,0)+' %)</span>'+
+    '<span class="stat">minste forventede frekvens i snitt = '+fmt(SIM.minEsnitt,2)+'</span>';
+  const avvikRate=Math.abs(rate-alfa()), grense=Math.max(0.008,2.6*Math.sqrt(alfa()*(1-alfa())/Rn));
+  const avvikSnitt=Math.abs(snitt-df)/df;
+  $('simNote').style.display='';
+  $('simNote').innerHTML = (avvikRate<=grense && avvikSnitt<0.06)
+    ? '<b>Teorien holder her.</b> De simulerte χ²-verdiene legger seg under kurven, gjennomsnittet '+
+      'lander på df = '+df+' (målt '+fmt(snitt,2)+'), og testen forkaster i '+fmt(rate*100,2)+
+      ' % av tilfellene når den lovet '+fmt(alfa()*100,0)+' %. Og legg merke til at den målte p-verdien, '+
+      pTxt(pMalt)+', er en ren opptelling: så stor andel av nullstudiene ga et minst like stort avvik som ditt. '+
+      'Formelens p = '+(pForm<0.0001?'&lt; ,0001':fmt(pForm,4).replace('0,',','))+
+      ' er den samme størrelsen, bare lest av en kurve i stedet for talt opp.'
+    : '<b>Her spriker teori og virkelighet.</b> Gjennomsnittet skulle vært df = '+df+', men ble '+fmt(snitt,2)+
+      ', og forkastningsraten ble '+fmt(rate*100,2)+' % der testen lovet '+fmt(alfa()*100,0)+' % — '+
+      (rate<alfa()
+        ? 'altså <b>for sjelden</b>. Testen er her <i>konservativ</i>: den holder på H₀ oftere enn den skal, '+
+          'og betaler for det med tapt styrke. Det er den vanlige feilen når cellene blir små — antallene '+
+          'er hele tall, og en kontinuerlig kurve klarer ikke å treffe en trappetrinnsfordeling presist.'
+        : 'altså <b>for ofte</b>. Testen er her <i>liberal</i>: den produserer flere falske funn enn den lover.')+
+      ' Se på de forventede frekvensene i punkt 3. Er de små, er χ²-fordelingen en dårlig tilnærming til '+
+      'det som faktisk skjer, og p-verdien blir tilsvarende upålitelig — uansett retning. Det er ikke en '+
+      'dårlig test, det er en test brukt utenfor sitt gyldighetsområde, og da er Fishers eksakte test svaret.';
+}
+
+/* én enkelt nulltabell, så det blir konkret hva «en nullstudie» er */
+function tegnEnStudie(){
+  if(!enStudie){ $('enTab').innerHTML=''; return; }
+  const R=regn(), t=enStudie.t, ut=[];
+  ut.push('<p class="muted" style="margin-bottom:2px"><b>Én enkelt studie fra null-verdenen.</b> '+
+    'Ingen sammenheng er lagt inn — likevel er tallene ikke helt like de forventede. '+
+    'Det er tilfeldig variasjon, og χ² måler nettopp hvor mye av den vi ser.</p>');
+  if(erGof()){
+    ut.push('<table><tr><th class="navn">Kategori</th>');
+    A.kat.forEach(k=>ut.push('<th>'+esc(k)+'</th>'));
+    ut.push('</tr><tr><td class="navn">Trukket antall</td>');
+    for(let i=0;i<t.length;i++) ut.push('<td>'+t[i]+'</td>');
+    ut.push('</tr></table>');
+  } else {
+    const cc=A.kol.length;
+    ut.push('<table><tr><th class="navn"></th>');
+    A.kol.forEach(k=>ut.push('<th>'+esc(k)+'</th>'));
+    ut.push('</tr>');
+    A.rad.forEach((rn,i)=>{
+      ut.push('<tr><td class="navn">'+esc(rn)+'</td>');
+      for(let j=0;j<cc;j++) ut.push('<td>'+t[i*cc+j]+'</td>');
+      ut.push('</tr>');
+    });
+    ut.push('</table>');
+  }
+  const sig=enStudie.x2>kjiKritisk(alfa(),R.df);
+  ut.push('<p class="muted" style="margin-top:4px"><span class="stat">χ² = '+fmt(enStudie.x2,2)+'</span>'+
+    '<span class="stat'+(sig?' red':' green')+'">p = '+
+    (kjiP(enStudie.x2,R.df)<0.001?'&lt; ,001':fmt(kjiP(enStudie.x2,R.df),3).replace('0,',','))+
+    (sig?' — et falskt funn':' — ingen forkastning')+'</span></p>');
+  $('enTab').innerHTML=ut.join('');
+}
+
+/* ---------------- dimensjoner for egne tall ---------------- */
+function tegnDim(){
+  const boks=$('dimRad');
+  if(ID.indexOf('egen')!==0){ boks.style.display='none'; boks.innerHTML=''; return; }
+  boks.style.display='';
+  boks.innerHTML = erGof()
+    ? '<label>Antall kategorier: <select id="dimK">'+
+      [2,3,4,5,6,7,8].map(v=>'<option value="'+v+'"'+(v===A.kat.length?' selected':'')+'>'+v+'</option>').join('')+
+      '</select></label><span class="liten">df blir kategorier &minus; 1.</span>'
+    : '<label>Rader: <select id="dimR">'+
+      [2,3,4,5].map(v=>'<option value="'+v+'"'+(v===A.rad.length?' selected':'')+'>'+v+'</option>').join('')+
+      '</select></label><label>Kolonner: <select id="dimC">'+
+      [2,3,4,5,6].map(v=>'<option value="'+v+'"'+(v===A.kol.length?' selected':'')+'>'+v+'</option>').join('')+
+      '</select></label><span class="liten">df blir (rader &minus; 1) &middot; (kolonner &minus; 1).</span>';
+  if(erGof()){
+    $('dimK').onchange=()=>{
+      const k=+$('dimK').value;
+      while(A.kat.length<k){ A.kat.push('Kategori '+(A.kat.length+1)); A.obs.push(20); A.andel.push(0); }
+      A.kat.length=k; A.obs.length=k; A.andel.length=k;
+      A.andel=A.andel.map(()=>1/k);
+      nullstillSim(); alt();
+    };
+  } else {
+    const bygg=()=>{
+      const r=+$('dimR').value, cc=+$('dimC').value;
+      while(A.rad.length<r) A.rad.push('Rad '+(A.rad.length+1));
+      A.rad.length=r;
+      while(A.kol.length<cc) A.kol.push('Kolonne '+(A.kol.length+1));
+      A.kol.length=cc;
+      const ny=[];
+      for(let i=0;i<r;i++){ const rad=[];
+        for(let j=0;j<cc;j++) rad.push((A.obs[i]&&A.obs[i][j]!=null)?A.obs[i][j]:20);
+        ny.push(rad); }
+      A.obs=ny; nullstillSim(); alt();
+    };
+    $('dimR').onchange=bygg; $('dimC').onchange=bygg;
+  }
+}
+
+/* ---------------- lyttere på tallene ---------------- */
+function koblInput(){
+  $('obsTab').querySelectorAll('input').forEach(e=>{
+    e.addEventListener('input',()=>{
+      if(e.dataset.o!=null){
+        const v=Math.max(0,Math.round(+e.value||0));
+        if(erGof()) A.obs[+e.dataset.o]=v;
+        else { const d=e.dataset.o.split('_'); A.obs[+d[0]][+d[1]]=v; }
+        nullstillSim(); regnOgTegn(); return;
+      }
+      if(e.dataset.a!=null){ A.andel[+e.dataset.a]=Math.max(0,+e.value||0); nullstillSim(); regnOgTegn(); return; }
+      if(e.dataset.navn!=null){ const i=+e.dataset.navn; if(erGof()) A.kat[i]=e.value; else A.rad[i]=e.value;
+        tabellForventet(); tabellRegn(); tegnEnStudie(); return; }
+      if(e.dataset.kolnavn!=null){ A.kol[+e.dataset.kolnavn]=e.value;
+        tabellForventet(); tabellRegn(); tegnEnStudie(); return; }
+    });
+  });
+}
+/* Tallene endres mens man skriver, og da skal ikke fokus hoppe ut av feltet.
+   Derfor tegnes bare det som ligger UTENFOR inndatatabellen på nytt. */
+function regnOgTegn(){
+  const R=regn();
+  oppdaterSummer(R);
+  tabellForventet(); tabellRegn(); tegnTeori(); tegnSim(); tegnEnStudie(); nullTekst();
+}
+function oppdaterSummer(R){
+  const t=$('obsTab').querySelector('table'); if(!t) return;
+  const rader=t.querySelectorAll('tr');
+  if(erGof()){
+    const sumA=A.andel.reduce((a,b)=>a+b,0)||1;
+    A.kat.forEach((k,i)=>{ const c=rader[i+1]&&rader[i+1].cells[3];
+      if(c) c.textContent=fmt(A.andel[i]/sumA*100,1)+' %'; });
+    const sist=rader[rader.length-1];
+    if(sist){ sist.cells[1].textContent=R.N; sist.cells[2].textContent=fmt(sumA,3); }
+  } else {
+    A.rad.forEach((rn,i)=>{ const c=rader[i+1]&&rader[i+1].cells[A.kol.length+1];
+      if(c) c.textContent=R.rs[i]; });
+    const sist=rader[rader.length-1];
+    if(sist){ R.cs.forEach((v,j)=>{ if(sist.cells[j+1]) sist.cells[j+1].textContent=v; });
+      if(sist.cells[A.kol.length+1]) sist.cells[A.kol.length+1].textContent=R.N; }
+  }
+}
+function nullTekst(){
+  $('nullBeskriv').innerHTML = erGof()
+    ? 'kategoriene virkelig har andelene H₀ påstår ('+
+      A.kat.map((k,i)=>esc(k)+': '+fmt(regn().pNull[i]*100,1)+' %').join(', ')+')'
+    : '<b>rad og kolonne er helt uavhengige</b> — sannsynligheten for hver kolonne er den samme uansett rad';
+}
+function nullstillSim(){ SIM=null; enStudie=null; $('simNote').style.display='none'; }
+
+/* ---------------- bytte analyse ---------------- */
+/* Noen analyser finnes i to versjoner: alle randomiserte, og bare de som
+   fullførte. Frafall er ikke tilfeldig, så de to tabellene kan gi ulike svar —
+   og det er nettopp poenget med å kunne bytte mellom dem. */
+function harUtvalg(id){ return !!(ANALYSER[id] && ANALYSER[id].obs75); }
+function utvalgValg(){ const e=$('utvalg'); return e ? e.value : 'alle'; }
+function last(id){
+  ID=id; A=kopi(id);
+  $('utvalgWrap').style.display = harUtvalg(id) ? '' : 'none';
+  if(harUtvalg(id)){
+    const v = utvalgValg()==='fullf' ? A.obs75 : A.obs86;
+    A.obs = JSON.parse(JSON.stringify(v));
+  }
+  if(erGof()){ const s=A.andel.reduce((a,b)=>a+b,0)||1; A.andel=A.andel.map(v=>v/s); }
+  nullstillSim();
+  $('spor').innerHTML='<b>Spørsmålet:</b> '+ANALYSER[id].sp;
+  const u=ANALYSER[id].kildeUrl;
+  const uMerke = harUtvalg(id)
+      ? ' · <b>'+(utvalgValg()==='fullf' ? 'bare de 75 som fullførte' : 'alle 86 randomiserte')+'</b>'
+      : '';
+  $('kildeLinje').innerHTML='<b>'+esc(ANALYSER[id].kilde)+'</b>'+uMerke+' · '+
+    (erGof()?'tilpasningstest (goodness of fit)':'uavhengighetstest (krysstabell)')+
+    (ANALYSER[id].kom ? ' — '+ANALYSER[id].kom : '')+
+    (u ? '<br><b>Kilde:</b> <a href="'+esc(u)+'" target="_blank" rel="noopener">'+
+         esc(ANALYSER[id].kildeNavn||u)+'</a>' : '');
+  alt();
+}
+function alt(){
+  tegnDim(); tabellObs(); koblInput();
+  tabellForventet(); tabellRegn(); tegnTeori(); tegnSim(); tegnEnStudie(); nullTekst();
+}
+
+/* ---------------- knapper ---------------- */
+$('valg').onchange=()=>last($('valg').value);
+$('utvalg').onchange=()=>last(ID);
+$('alfa').onchange=()=>{ tabellRegn(); tegnTeori(); tegnSim(); tegnEnStudie(); };
+$('tilbake').onclick=()=>last(ID);
+$('simForm').onchange=tegnSim;
+$('nullstill').onclick=()=>{ nullstillSim(); tegnSim(); tegnEnStudie(); };
+function kjor(n,knapp){
+  const b=$(knapp), gml=b.textContent;
+  b.disabled=true; b.textContent='Kjører …';
+  setTimeout(()=>{
+    try{ SIM=simuler(n); } finally { b.disabled=false; b.textContent=gml; }
+    tegnSim();
+  }, 30);
+}
+$('kjor10k').onclick=()=>kjor(10000,'kjor10k');
+$('kjor1k').onclick=()=>kjor(1000,'kjor1k');
+$('kjor1').onclick=()=>{
+  const R=regn(), p=nullAndeler();
+  const kum=[]; { let s=0; for(const v of p){ s+=v; kum.push(s); } }
+  const gof=erGof();
+  const t=trekkFlat(R.N,kum);
+  const x2=x2AvFlat(t,R.N,gof?1:A.rad.length,gof?p.length:A.kol.length,
+                    gof?p.map(v=>R.N*v):null)[0];
+  enStudie={t:t, x2:x2};
+  tegnEnStudie();
+};
+window.addEventListener('resize',()=>{ tegnTeori(); tegnSim(); });
+
+/* dyplenke: ?analyse=ak_stem gir egen QR-kode per analyse */
+(function(){
+  const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'')).get('analyse');
+  const start=(q && ANALYSER[q]) ? q : 'kuler';
+  $('valg').value=start; last(start);
+})();
+</script>
+
+<script>
+/* ===== PSY300 anonym bruksstatistikk =====================================
+   Ingen navn, ingen koder, ingen IP-adresser: bare hvor lenge appen var åpen
+   og hvor mange ganger noe ble klikket.                                     */
+const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA05xK7n1rC0ex_UVpNAjJPYNmRqvGfgUGuXp0EclxmyFUeKeVktMfg5YQ/exec";
+(function(){
+  if(!PSY300_USAGE_URL || PSY300_USAGE_URL.indexOf("PASTE_")>=0) return;
+  var APP="Sim 29", NAVN="Kji-kvadratlaben";
+  var sid = Math.random().toString(36).slice(2)+Date.now().toString(36);
+  var aktiv=0, sist=Date.now(), interaksjoner=0, sendt=false;
+  function tikk(){ if(!document.hidden){ var na=Date.now(); aktiv+=Math.min(30000,na-sist); sist=na; } else { sist=Date.now(); } }
+  setInterval(tikk, 5000);
+  document.addEventListener("visibilitychange", function(){ tikk(); sist=Date.now(); });
+  ["click","change","input"].forEach(function(t){
+    document.addEventListener(t, function(){ interaksjoner++; }, true);
+  });
+  function PSY300_ROLLE(){
+    try{
+      var q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'')).get("rolle");
+      if(q==="underviser"||q==="student"){ localStorage.setItem("psy300_rolle",q); }
+      return localStorage.getItem("psy300_rolle")||"student";
+    }catch(e){ return "student"; }
+  }
+  function send(type){
+    if(type==="lukket"){ if(sendt) return; sendt=true; tikk(); }
+    var payload=JSON.stringify({kind:"usage", app:APP, navn:NAVN, event:type,
+      session_id:sid, sekunder:Math.round(aktiv/1000), interaksjoner:interaksjoner,
+      innebygd:(window.top!==window.self)?1:0, rolle:PSY300_ROLLE()});
+    try{
+      if(type==="lukket" && navigator.sendBeacon){
+        navigator.sendBeacon(PSY300_USAGE_URL, new Blob([payload],{type:"text/plain;charset=utf-8"}));
+      } else {
+        fetch(PSY300_USAGE_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:payload, keepalive:true}).catch(function(){});
+      }
+    }catch(e){}
+  }
+  send("apnet");
+  window.addEventListener("pagehide", function(){ send("lukket"); });
+  document.addEventListener("visibilitychange", function(){ if(document.hidden) send("lukket"); });
+})();
+
+/* ===== Presentasjonsmodus ============================================== */
+(function(){
+  var b=document.createElement("button");
+  b.className="presbtn"; b.type="button";
+  b.title="Skjuler forklarende tekst og ordlisten, slik at figuren og kontrollene fyller lerretet (snarvei: P)";
+  var av="Presentasjonsmodus", pa="Vis all tekst igjen";
+  b.textContent=av;
+  function veksle(){
+    var på=document.body.classList.toggle("pres");
+    b.textContent=på?pa:av;
+    window.dispatchEvent(new Event("resize"));
+  }
+  b.addEventListener("click",veksle);
+  document.addEventListener("keydown",function(e){
+    if((e.key==="p"||e.key==="P")&&!/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) veksle();
+  });
+  document.body.appendChild(b);
+})();
+</script>
+<script>
+
+</script>
+<script>
+
+</script>
+<script>
+
+</script>
+<script>
+
+</script>
+<script>
+/* ===== PSY300 språklag ===== */
+/* Engelsk drakt oppå den norske. Norsk er kilden; engelsk ligger i ordbøkene
+   under. Valget huskes i nettleseren, og deles mellom appene fordi de har
+   samme opphav. */
+(function(){
+  var AVSNITT_EN = {};
+  var ORD_EN = {"Ordforklaringer": "Glossary", "Hovedpoenget": "The main point", "Oppsett": "Setup", "Oppsettet": "The setup", "Nullstill": "Reset", "Nullstill telleren": "Reset the counter", "Poenget:": "The point:", "Hva skal du se?": "What should you look for?", "Presentasjonsmodus": "Presentation mode", "Vis all tekst igjen": "Show all the text again", "Frys denne fordelingen": "Freeze this distribution", "Frys denne fordelingen (behold som bakgrunn)": "Freeze this distribution (keep it as a backdrop)", "Fjern frossen": "Remove the frozen one", "Kjør simuleringen": "Run the simulation", "Kjør simuleringen.": "Run the simulation.", "Variabel:": "Variable:", "Variabel": "Variable", "Utvalgsstørrelse n": "Sample size n", "Utvalgsstørrelse n:": "Sample size n:", "Konfidensnivå": "Confidence level", "Tabell": "Table", "Total n": "Total n", "Antall grupper k": "Number of groups k", "Ingen data ennå.": "No data yet.", "Depresjon (pre) · Terapi-RCT": "Depression (pre) · therapy trial", "Undertrykkende forsvar (pre) · Terapi-RCT": "Defensive functioning (pre) · therapy trial", "Aggresjonsundertrykking (pre) · Terapi-RCT": "Suppressed aggression (pre) · therapy trial", "Statistikk-selvtillit (pre) · arbeidskravet": "Statistics self-efficacy (pre) · assignment data", "Selvkritisk perfeksjonisme · arbeidskravet": "Self-critical perfectionism · assignment data", "Angstsensitivitet · arbeidskravet": "Anxiety sensitivity · assignment data", "Depresjon (pre)": "Depression (pre)", "Depresjon (post)": "Depression (post)", "Undertrykkende forsvar (pre)": "Defensive functioning (pre)", "Aggresjonsundertrykking (pre)": "Suppressed aggression (pre)", "Statistikk-selvtillit (pre)": "Statistics self-efficacy (pre)", "Selvkritisk perfeksjonisme (trekk)": "Self-critical perfectionism (trait)", "Angstsensitivitet (trekk)": "Anxiety sensitivity (trait)", "Rigid perfeksjonisme (trekk)": "Rigid perfectionism (trait)", "Alder": "Age", "Kjønn": "Sex", "populasjonen": "the population", "Populasjonen": "The population", "utvalget": "the sample", "Median": "Median", "Modus": "Mode", "Skjevhet": "Skewness", "Høyreskjev": "Right-skewed", "venstreskjev": "left-skewed", "skjev": "skewed", "lineære": "linear", "observerte": "observed", "eget": "own", "uten": "without", "krit": "crit", "total": "total", "sanne μ": "true μ", "prosedyren": "the procedure", "metoden": "the method", "σ (sigma)": "σ (sigma)", "x̄ (x-strek)": "x̄ (x-bar)", "t-fordelingen": "the t distribution", "Spearmans rho": "Spearman's rho", "Sentralgrenseteoremet": "The central limit theorem", "sentralgrenseteoremet": "the central limit theorem", "Utvalgsfordeling": "Sampling distribution", "utvalgsgjennomsnittet x̄": "the sample mean x̄", "tyngre i halene": "heavier in the tails", "RCT": "RCT", "ISTDP": "ISTDP", "JASP": "JASP", "SSE": "SSE", "Terapi-RCT-studie": "therapy trial", "sammenligner": "compares", "Sim 17": "Sim 17", "— gjennomsnittet i et utvalg (skrives også x̄).": "— the mean of a sample (also written x̄).", "= midtverdien når verdiene sorteres.": "= the middle value once the values are sorted.", "= den hyppigste verdien.": "= the most frequent value.", "— standardavvik: typisk avstand fra gjennomsnittet, i variabelens egen enhet. Kvadratet er variansen.": "— standard deviation: the typical distance from the mean, in the variable's own units. Its square is the variance.", "— asymmetri i fordelingen.": "— asymmetry in the distribution.", "= lang hale mot høye verdier (gjennomsnittet ligger over medianen),": "= a long tail towards high values (the mean sits above the median),", "= motsatt.": "= the other way round.", "— standardfeil: hvor mye et estimat ville variert mellom gjentatte utvalg. For et gjennomsnitt: SE = σ/√n.": "— standard error: how much an estimate would vary across repeated samples. For a mean: SE = σ/√n.", "— gjennomsnittet i": "— the mean of", ": sannheten vi prøver å treffe, og som forskeren i praksis aldri får se.": ": the truth we are trying to hit, and which a researcher never actually gets to see.", "— standardavviket i": "— the standard deviation of", ". σ² er populasjonsvariansen.": ". σ² is the population variance.", "— gjennomsnittet i utvalget, altså estimatet av μ.": "— the mean of the sample, that is, the estimate of μ.", "— utvalgsgjennomsnitt blir tilnærmet normalfordelte når n vokser, selv om populasjonen er skjev.": "— sample means become approximately normal as n grows, even when the population is skewed.", "— fordelingen av en statistikk (f.eks. gjennomsnittet) over mange tenkte gjentakelser av studien. Ikke det samme som fordelingen av rådata.": "— the distribution of a statistic (the mean, say) across many imagined repetitions of the study. Not the same thing as the distribution of the raw data.", "— regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren.": "— regression coefficient: how much ŷ changes per one-unit increase in the predictor.", "er den standardiserte varianten (i standardavvik).": "is the standardised version (in standard deviations).", "— Pearsons korrelasjon: styrken på den": "— Pearson's correlation: the strength of the", "sammenhengen mellom to variabler (−1 til +1).": "relationship between two variables (−1 to +1).", "gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.": "does the same on ranks, and suits ordinal data and curved but monotone relationships.", "— randomisert kontrollert studie. Emnets": "— randomised controlled trial. The course's", "(intensiv dynamisk korttidsterapi) med venteliste, N = 86.": "(intensive short-term dynamic psychotherapy) against a waiting list, N = 86.", "— statistikkprogrammet vi bruker i emnet (gratis og åpen kildekode).": "— the statistics package used in the course (free and open source).", "— konfidensintervall: estimat ± kritisk verdi · SE. «95 %» beskriver metoden over mange studier, ikke sannsynligheten for det ene intervallet du har.": "— confidence interval: estimate ± critical value · SE. «95 %» describes the method across many studies, not the probability for the single interval you happen to have.", "— frihetsgrader (degrees of freedom): antall verdier som fritt kan variere gitt det du allerede har estimert.": "— degrees of freedom: the number of values free to vary, given what you have already estimated.", "— kvadratsum (sum of squares): summen av kvadrerte avvik.": "— sum of squares: the sum of squared deviations.", "er kvadratsummen av feilene (residualene).": "is the sum of squares of the errors (the residuals).", "= SS/df, altså en varians.": "= SS/df, that is, a variance.", "— testobservator for gjennomsnitt: forskjell delt på standardfeil.": "— test statistic for means: a difference divided by a standard error.", "er litt tyngre i halene enn normalfordelingen ved lav df.": "has slightly heavier tails than the normal distribution when df is low.", "— p-verdi: sannsynligheten for et resultat minst så ekstremt som ditt, GITT at nullhypotesen er sann.": "— p-value: the probability of a result at least as extreme as yours, GIVEN that the null hypothesis is true.", "— effektstørrelse: forskjellen i antall standardavvik.": "— effect size: the difference expressed in standard deviations.", "— nullhypotesen: påstanden om at det ikke finnes noen effekt.": "— the null hypothesis: the claim that there is no effect.", "— statistisk styrke: sannsynligheten for å oppdage en effekt som faktisk finnes.": "— statistical power: the probability of detecting an effect that really is there.", "— type I-feil: å forkaste en sann nullhypotese (falskt funn).": "— type I error: rejecting a true null hypothesis (a false positive).", "— type II-feil: å beholde en gal nullhypotese (oversett effekt).": "— type II error: retaining a false null hypothesis (a missed effect).", "— residual: avstanden mellom observert verdi og modellens prediksjon.": "— residual: the distance between an observed value and the model's prediction.", "— heteroskedastisitet: residualspredningen endrer seg utover x-aksen (trakten).": "— heteroscedasticity: the spread of the residuals changes along the x-axis (the funnel).", "PSY300 · Sim 29 — Kji-kvadratlaben": "PSY300 · Sim 29 — The chi-square lab", "Sim 29 · Kji-kvadratlaben": "Sim 29 · The chi-square lab", "PSY300 · Forelesning 8 · Fra en krysstabell til en p-verdi — og en test av om χ²-fordelingen faktisk beskriver virkeligheten": "PSY300 · Lecture 8 · From a contingency table to a p-value — and a test of whether the χ² distribution really describes reality", "1. Velg en analyse": "1. Choose an analysis", "Analyse:": "Analysis:", "Tilbakestill tallene": "Reset the numbers", "2. Dataene — det vi faktisk telte opp": "2. The data — what we actually counted", "Alle tallene er redigerbare. Endre ett og se hva som skjer nedover siden: forventede frekvenser, χ², p-verdien, kurven og simuleringen regnes om med en gang.": "Every number is editable. Change one and watch what happens down the page: expected frequencies, χ², the p-value, the curve and the simulation are all recomputed at once.", "3. Forventede frekvenser gitt at H₀ er sann": "3. Expected frequencies if H₀ is true", "4. Utregningen, celle for celle": "4. The calculation, cell by cell", "χ² er ikke annet enn en sum: for hver celle regner vi ut hvor langt observert ligger fra forventet, kvadrerer avstanden, og deler på forventet. Kvadreringen gjør at retningen forsvinner; delingen på forventet gjør at et avvik på 10 teller mer når vi ventet 20 enn når vi ventet 200.": "χ² is nothing but a sum: for each cell we work out how far observed lies from expected, square that distance, and divide by expected. Squaring removes the direction; dividing by expected makes a discrepancy of 10 count for more when we expected 20 than when we expected 200.", "5. Den teoretiske χ²-fordelingen": "5. The theoretical χ² distribution", "Teorien sier": "Theory says", "Er H₀ sann, skal χ²-verdiene fra gjentatte studier følge en bestemt kurve. Hvilken kurve, bestemmes av": "If H₀ is true, the χ² values from repeated studies should follow a particular curve. Which curve is settled by", "én eneste ting": "one single thing", ": antall frihetsgrader.": ": the number of degrees of freedom.", "Kurven har": "The curve has", "gjennomsnitt lik df": "mean equal to df", "varians lik 2 · df": "variance equal to 2 · df", ". Det er hele beskrivelsen.": ". That is the whole description.", "Den er høyreskjev, og starter i null — χ² kan aldri bli negativ, siden vi summerer kvadrater.": "It is right-skewed and starts at zero — χ² can never be negative, since we are summing squares.", "kritiske verdien": "critical value", "er punktet der de øverste α av arealet begynner. Havner du til høyre for den, forkaster du H₀.": "is the point where the upper α of the area begins. Land to the right of it and you reject H₀.", "p-verdien er": "The p-value is", "arealet til høyre for din egen χ²": "the area to the right of your own χ²", ": andelen studier som ville gitt et minst like stort avvik hvis H₀ var sann.": ": the proportion of studies that would give a discrepancy at least as large if H₀ were true.", "6. Simuleringen — holder teorien?": "6. The simulation — does the theory hold?", "Null-verdenen vi trekker fra": "The null world we draw from", "Teorien over er en": "The theory above is a", "påstand": "claim", ". Her tester vi den. Vi bygger en verden der": ". Here we test it. We build a world in which", "— alt annet er som i tabellen din: samme N, samme marginalfordeling. Så trekker vi tusenvis av studier fra den verdenen, regner ut χ² i hver, og ser om de simulerte verdiene følger kurven teorien lovet.": "— everything else is as in your table: the same N, the same marginals. Then we draw thousands of studies from that world, compute χ² in each, and see whether the simulated values follow the curve the theory promised.", "Stemmer teorien:": "If the theory holds:", "ligger søylene under kurven, treffer den målte p-verdien formelens p, og forkastningsraten lander på α.": "the bars sit under the curve, the measured p-value matches the formula's p, and the rejection rate lands on α.", "Stemmer den ikke:": "If it does not:", "spriker de — og da er det ikke tilfeldigheter, men en test brukt utenfor sitt gyldighetsområde.": "they diverge — and that is not chance, but a test used outside the range where it is valid.", "Kjør 10 000 nullstudier": "Run 10 000 null studies", "Kjør 1 000": "Run 1 000", "Trekk én enkelt nullstudie": "Draw a single null study", "Framstilling:": "Display:", "histogram": "histogram", "tetthetskurve (glatt)": "density curve (smooth)", "Ingen simulering kjørt ennå.": "No simulation has been run yet.", "Kjører …": "Running …", "Spørsmålet:": "The question:", "Kjønn mot 50/50": "Sex against 50/50", "Kjønn × STEM-fag": "Sex × STEM subject", "Fagfelt mot lik fordeling": "Field of study against an even split", "Kjønn × Fagfelt (2×5)": "Sex × field of study (2×5)", "Randomiseringssjekk: lett vs. vanskelig quiz": "Randomisation check: easy vs. difficult quiz", "Selvkritisk perfeksjonisme × Angstsensitivitet (3×3)": "Self-critical perfectionism × anxiety sensitivity (3×3)", "Quiz-betingelse × Quiz-resultat (manipulasjonssjekk)": "Quiz condition × quiz score (manipulation check)", "Gruppe × Kjønn": "Group × sex", "Gruppe × Frafall": "Group × dropout", "Gruppe × Medisinbruk": "Group × medication", "Kjønn × Medisinbruk": "Sex × medication", "Egen tilpasningstest (goodness of fit)": "Your own goodness-of-fit test", "Egen krysstabell (uavhengighetstest)": "Your own contingency table (test of independence)", "Kategori": "Category", "Observert antall (O)": "Observed count (O)", "Andel under H₀": "Proportion under H₀", "= prosent": "= per cent", "Sum": "Total", "Sum = χ²": "Total = χ²", "Celle": "Cell", "Observert O": "Observed O", "Forventet E": "Expected E", "O − E": "O − E", "(O − E)²": "(O − E)²", "(O − E)² / E": "(O − E)² / E", "Trukket antall": "Drawn count", "Antall kategorier:": "Number of categories:", "Rader:": "Rows:", "Kolonner:": "Columns:", "Resultatet": "The result", "Kategorisk variabel": "Categorical variable", "Krysstabell": "Contingency table", "Marginalfordeling": "Marginal distribution", "O (observert)": "O (observed)", "E (forventet)": "E (expected)", "H₀ (nullhypotesen)": "H₀ (the null hypothesis)", "χ² (kji-kvadrat)": "χ² (chi-square)", "df (frihetsgrader)": "df (degrees of freedom)", "Kritisk verdi": "Critical value", "p-verdi": "p-value", "Cramérs V": "Cramér's V", "Cohens w": "Cohen's w", "Antakelsen om forventede frekvenser": "The expected-frequency assumption", "Fishers eksakte test": "Fisher's exact test", "Nullstudie": "Null study", "— en variabel med kategorier, ikke tall: kjønn, fagfelt, falt fra / fullførte. Kalles også nominal.": "— a variable with categories rather than numbers: sex, field of study, dropped out / completed. Also called nominal.", "— opptellingen av hvor mange som havner i hver kombinasjon av to kategoriske variabler.": "— the count of how many fall into each combination of two categorical variables.", "— rad- og kolonnesummene: hvor mange menn og kvinner det var totalt, uavhengig av den andre variabelen.": "— the row and column totals: how many men and women there were altogether, regardless of the other variable.", "— antallet du faktisk telte i en celle.": "— the count you actually observed in a cell.", "— antallet du ville ventet i cellen": "— the count you would expect in the cell", "hvis": "if", "H₀ var sann. Ikke et antall noen har observert, men et regnestykke.": "H₀ were true. Not a count anyone observed, but a calculation.", "— i tilpasningstesten: at fordelingen følger bestemte andeler. I uavhengighetstesten: at de to variablene ikke henger sammen.": "— in the goodness-of-fit test: that the distribution follows particular proportions. In the test of independence: that the two variables are unrelated.", "— summen av (O − E)²/E over alle celler. Null når observert og forventet er like; vokser med avviket.": "— the sum of (O − E)²/E across all cells. Zero when observed and expected agree; it grows with the discrepancy.", "— antall verdier som fritt kan variere. Tilpasningstest: antall kategorier − 1. Uavhengighetstest: (rader − 1) · (kolonner − 1).": "— the number of values free to vary. Goodness of fit: number of categories − 1. Independence: (rows − 1) · (columns − 1).", "— grensen der de øverste α av χ²-fordelingen begynner. Sammenlign din χ² med den.": "— the boundary where the upper α of the χ² distribution begins. Compare your χ² against it.", "— sannsynligheten for et avvik minst så stort som ditt, GITT at H₀ er sann. Ikke sannsynligheten for at H₀ er sann.": "— the probability of a discrepancy at least as large as yours, GIVEN that H₀ is true. Not the probability that H₀ is true.", "— effektstørrelse for krysstabeller, fra 0 til 1. Uavhengig av N, i motsetning til χ² selv.": "— an effect size for contingency tables, from 0 to 1. Independent of N, unlike χ² itself.", "— effektstørrelse for tilpasningstesten: √(χ²/N).": "— an effect size for the goodness-of-fit test: √(χ²/N).", "— regner ut sannsynligheten direkte i stedet for å tilnærme den. Det riktige valget når cellene er små.": "— computes the probability directly instead of approximating it. The right choice when the cells are small.", "— en simulert studie trukket fra en verden der H₀ er sann per konstruksjon. Alt vi ser av «funn» der, er falske positive.": "— a simulated study drawn from a world where H₀ is true by construction. Every «finding» there is a false positive.", "Lungekreft": "Lung cancer", "Røyking × lungekreft (kasus-kontroll)": "Smoking × lung cancer (case-control)", "Antall sigaretter per dag × lungekreft (4×2)": "Cigarettes per day × lung cancer (4×2)", "Røyker": "Smoker", "Ikke-røyker": "Non-smoker", "Lungekreft (kasus)": "Lung cancer (case)", "Kontroll": "Control", "0 per dag": "0 per day", "1–14": "1–14", "15–24": "15–24", "25 eller flere": "25 or more", "Kilde:": "Source:", "Klassiske eksempler": "Classic examples", "Røykestatus × lungekreft (Framingham, moderne kohort)": "Smoking status × lung cancer (Framingham, modern cohort)", "Aldri røykt": "Never smoked", "Tidligere røyker": "Former smoker", "Røyker nå": "Current smoker", "Ikke lungekreft": "No lung cancer", "Utvalg:": "Sample:", "Alle 86 randomiserte": "All 86 randomised", "De 75 som fullførte": "The 75 completers", "alle 86 randomiserte": "all 86 randomised", "bare de 75 som fullførte": "only the 75 completers", "Forelesning 2 · klinkekulene": "Lecture 2 · the marbles", "Klinkekuler: 9 svarte og 1 hvit mot 50/50": "Marbles: 9 black and 1 white against 50/50", "Svarte": "Black", "Hvite": "White"};
+  var SPRAAK = 'no';
+  try { SPRAAK = localStorage.getItem('psy300_app_spraak') || 'no'; } catch(e) {}
+
+  var NO_TEKST = new WeakMap();      // opprinnelig norsk tekst per tekstnode
+  var NO_AVSNITT = {};               // opprinnelig norsk html per data-t
+
+  function tekstnoder(rot){
+    var ut = [];
+    (function gaa(n){
+      for (var i = 0; i < n.childNodes.length; i++){
+        var b = n.childNodes[i];
+        if (b.nodeType === 3){ if (b.nodeValue.trim()) ut.push(b); }
+        else if (b.nodeType === 1 && b.tagName !== 'SCRIPT' && b.tagName !== 'STYLE'
+                 && !b.hasAttribute('data-t')) gaa(b);
+      }
+    })(rot);
+    return ut;
+  }
+  function oversettNode(t){
+    if (!NO_TEKST.has(t)) NO_TEKST.set(t, t.nodeValue);
+    var no = NO_TEKST.get(t);
+    if (SPRAAK !== 'en'){ t.nodeValue = no; return; }
+    var kjerne = no.trim(),
+        pre = no.slice(0, no.length - no.replace(/^\s+/, '').length),
+        post = no.slice(no.replace(/\s+$/, '').length),
+        flat = kjerne.replace(/\s+/g, ' ');
+    var ny = ORD_EN[kjerne] || ORD_EN[flat];
+    t.nodeValue = pre + (ny == null ? kjerne : ny) + post;
+  }
+  function oversettAlt(){
+    try {
+      var rot = document.body;
+      var blokker = rot.querySelectorAll('[data-t]');
+      for (var i = 0; i < blokker.length; i++){
+        var el = blokker[i], k = el.getAttribute('data-t');
+        if (NO_AVSNITT[k] == null) NO_AVSNITT[k] = el.innerHTML;
+        el.innerHTML = (SPRAAK === 'en' && AVSNITT_EN[k]) ? AVSNITT_EN[k] : NO_AVSNITT[k];
+      }
+      var noder = tekstnoder(rot);
+      for (var j = 0; j < noder.length; j++) oversettNode(noder[j]);
+      document.documentElement.lang = (SPRAAK === 'en') ? 'en' : 'no';
+      /* <title> ligger utenfor body og fanges ikke av vandringen over. */
+      if (NO_AVSNITT.__tittel == null) NO_AVSNITT.__tittel = document.title;
+      var tEn = ORD_EN[NO_AVSNITT.__tittel];
+      document.title = (SPRAAK === 'en' && tEn) ? tEn : NO_AVSNITT.__tittel;
+      var b = document.getElementById('psy300LangBtn');
+      if (b) b.textContent = (SPRAAK === 'en') ? 'Norsk' : 'English';
+    } catch(e){ if (window.console) console.error('språkbytte feilet:', e); }
+  }
+  window.PSY300_T = function(s){ return (SPRAAK === 'en') ? (ORD_EN[s] || s) : s; };
+  window.PSY300_SPRAAK = function(){ return SPRAAK; };
+  window.PSY300_oversett = oversettAlt;
+
+  var knapp = document.createElement('button');
+  knapp.id = 'psy300LangBtn';
+  knapp.type = 'button';
+  knapp.title = 'Switch between Norwegian and English';
+  knapp.style.cssText = 'position:fixed;right:12px;top:12px;z-index:60;background:#fff;color:#1F3864;'
+    + 'border:1px solid #d9dee8;border-radius:20px;padding:7px 14px;font-size:14px;font-weight:700;'
+    + 'box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer;opacity:.85;font-family:inherit';
+  knapp.textContent = 'English';
+  knapp.addEventListener('click', function(){
+    SPRAAK = (SPRAAK === 'en') ? 'no' : 'en';
+    try { localStorage.setItem('psy300_app_spraak', SPRAAK); } catch(e){}
+    oversettAlt();
+    /* Appene tegner selv på nytt ved resize; det er den enkleste måten å få
+       canvas-tekst og genererte tabeller med på språkbyttet. */
+    window.dispatchEvent(new Event('resize'));
+    setTimeout(oversettAlt, 30);
+  });
+  document.body.appendChild(knapp);
+
+  /* Tegner appen om, oversetter vi på nytt: ellers står nye celler på norsk. */
+  var gammelRAF = window.requestAnimationFrame;
+  var planlagt = false;
+  window.addEventListener('resize', function(){
+    if (planlagt) return;
+    planlagt = true;
+    setTimeout(function(){ planlagt = false; if (SPRAAK === 'en') oversettAlt(); }, 60);
+  });
+  document.addEventListener('click', function(){
+    if (SPRAAK === 'en') setTimeout(oversettAlt, 40);
+  }, true);
+  document.addEventListener('change', function(){
+    if (SPRAAK === 'en') setTimeout(oversettAlt, 40);
+  }, true);
+
+  oversettAlt();
+})();
+</script>
+</body></html>

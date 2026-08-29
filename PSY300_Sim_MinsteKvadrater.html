@@ -431,7 +431,7 @@ const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA0
      ?rolle=student. Ingen innlogging, ingen personopplysninger.            */
   function PSY300_ROLLE(){
     try{
-      var q=new URLSearchParams(location.search).get("rolle");
+      var q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'')).get("rolle");
       if(q==="underviser"||q==="student"){ localStorage.setItem("psy300_rolle",q); }
       return localStorage.getItem("psy300_rolle")||"student";
     }catch(e){ return "student"; }
