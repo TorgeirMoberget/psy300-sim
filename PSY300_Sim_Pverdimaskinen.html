@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PSY300 · Sim 7 — P-verdimaskinen</title>
+<title>PSY300 · Sim 7 — P-verdien og det som truer den</title>
 <style>
 :root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
 *{box-sizing:border-box}
@@ -52,11 +52,37 @@ body.pres .sl{margin:4px 0}
 body.pres .sl label{font-size:15px;min-width:210px}
 body.pres .note{padding:8px 11px;margin-top:7px}
 body.pres .keybox{font-size:18px}
-</style></head><body>
-<header><h1>Sim 7 · P-verdimaskinen</h1>
-<p>PSY300 · Forelesning 2 og 4 · P-verdier i nullverdenen — og innengruppevariansen som målestokk</p></header>
-<div class="wrap">
 
+/* ===== Fordypning: hovedpoenget står framme, detaljene ligger bak et klikk ===== */
+details.mer{margin:8px 0 0;border-top:1px solid rgba(0,0,0,.10);padding-top:7px}
+details.mer>summary{cursor:pointer;font-size:14.5px;font-weight:700;color:#1C7293;list-style:none;
+  display:inline-flex;align-items:center;gap:6px;padding:2px 0}
+details.mer>summary::-webkit-details-marker{display:none}
+details.mer>summary::before{content:"▸";font-size:12px;transition:transform .15s}
+details.mer[open]>summary::before{transform:rotate(90deg)}
+details.mer>summary:hover{text-decoration:underline}
+details.mer>*:not(summary){margin-top:8px}
+details.ordbok{border:1px solid var(--line,#d9dee8);border-radius:12px;background:#fff;padding:12px 16px;margin:14px 0}
+details.ordbok>summary{cursor:pointer;font-size:18px;font-weight:700;color:#1F3864;list-style:none}
+details.ordbok>summary::-webkit-details-marker{display:none}
+details.ordbok>summary::before{content:"▸ ";font-size:14px;color:#1C7293}
+details.ordbok[open]>summary::before{content:"▾ "}
+.fane{background:#fff;border:1px solid #d9dee8;border-radius:9px;padding:7px 13px;font-size:15px;
+  font-family:inherit;cursor:pointer;color:#1F3864}
+.fane.on{background:#1F3864;color:#fff;border-color:#1F3864;font-weight:700}
+.hide{display:none}
+</style></head><body>
+<header><h1>Sim 7 · P-verdien og det som truer den</h1>
+<p>PSY300 · Forelesning 2 og 4 · Fire faner: hva p-verdien faktisk måler, hva den ikke fanger, og de to tingene som gjør den upålitelig i praksis — mange tester og selektiv publisering.</p></header>
+<div class="wrap">
+<div class="rad" style="gap:6px;margin:2px 0 6px">
+<button class="fane on" data-fane="p">1 · Hva er en p-verdi?</button>
+<button class="fane" data-fane="styrke">2 · Styrke og type II-feil</button>
+<button class="fane" data-fane="mange">3 · Mange tester</button>
+<button class="fane" data-fane="bias">4 · Publikasjonsskjevhet</button>
+</div>
+
+<div id="fane-p">
 <div class="card">
 <button class="tabbtn on" id="tabA">P-verdimaskinen (F2)</button>
 <button class="tabbtn" id="tabB">Råforskjell vs. støy (F4)</button>
@@ -117,27 +143,219 @@ body.pres .keybox{font-size:18px}
 </div>
 <div class="card note"><b>Poenget:</b> Råforskjellen står bom stille, men d, t, p og styrken endres når du skrur på innengruppe-SD. Både signifikans og effektstørrelse måles i <b>støyenheter</b>: d = forskjell/SD. Derfor kan du kjøpe styrke ved å <i>redusere støy</i> (reliable mål, homogene utvalg, paret design), ikke bare ved å øke n. Denne nevneren er nøyaktig det som blir «varians innen grupper» i ANOVA (forelesning 5), og t-testens brøk er F-forholdet i miniatyr: F = t².</div>
 </div>
-<div class="card docs" id="ordforklaringer">
-<h2>Ordforklaringer</h2>
+</div><!-- /fane-p -->
+
+<div id="fane-styrke" class="hide">
+<div class="card">
+<h2>Studien din</h2>
+<p class="muted">To grupper (f.eks. terapi mot venteliste) med like mange deltakere i hver. Du setter <b>den sanne effektstørrelsen</b> (Cohens d) og <b>n per gruppe</b>. Alt annet følger av matematikken.</p>
+<div class="sl"><label>Sann effektstørrelse (Cohens d)</label><input type="range" id="dST" min="0.05" max="2" step="0.05" value="0.4"><output id="do">0,40</output></div>
+<div class="sl"><label>n per gruppe</label><input type="range" id="nST" min="5" max="300" step="5" value="30"><output id="no">30</output></div>
+<div class="sl"><label>Signifikansnivå α</label><input type="range" id="al" min="0.001" max="0.10" step="0.001" value="0.05"><output id="alo">0,050</output></div>
+<button class="btn2" id="small">Typisk liten psykologistudie (d = ,40 · n = 20)</button>
+<button class="btn2" id="istdp">Terapi-RCT-studien (d ≈ 1,7 · n = 45)</button>
+<div id="statsTop" style="margin-top:8px"></div>
+</div>
+
+<div class="tabs">
+<div class="tab on" data-t="A">A · De to fordelingene</div>
+<div class="tab" data-t="B">B · Styrkekurven</div>
+<div class="tab" data-t="C">C · Vinnerens forbannelse</div>
+</div>
+
+<div id="paneA">
+<div class="card" style="border-top-left-radius:0">
+<h2>Der α og β bor</h2>
+<p class="muted">Begge kurvene viser hva du kan få ut av studien din, den <b>blå</b> hvis nullhypotesen er sann (ingen effekt), den <b>grønne</b> hvis din sanne d gjelder. Den røde streken er beslutningsgrensen: alt til høyre kalles «signifikant». <b>Rødt areal</b> = α, sjansen for å rope ulv når det ikke er noen ulv (type I-feil). <b>Grått areal</b> = β, sjansen for å overse en effekt som faktisk finnes (type II-feil). <b>Styrken</b> er det grønne arealet: 1 − β.</p>
+<canvas id="cvA" height="270"></canvas>
+<div id="statsA"></div>
+<div class="note" id="verdictA"></div>
+</div>
+</div>
+
+<div id="paneB" style="display:none">
+<div class="card" style="border-top-left-radius:0">
+<h2>Styrke som funksjon av n</h2>
+<p class="muted">Kurven gjelder din sanne d og din α. Den grønne streken er konvensjonen om <b>80 % styrke</b>; den røde prikken er studien din. Legg merke til formen: styrken stiger bratt i starten og flater ut, de siste prosentene er dyre.</p>
+<canvas id="cvB" height="250"></canvas>
+<div id="statsB"></div>
+<div class="note" id="verdictB"></div>
+</div>
+</div>
+
+<div id="paneC" style="display:none">
+<div class="card" style="border-top-left-radius:0">
+<h2>Vinnerens forbannelse: hva de signifikante studiene rapporterer</h2>
+<p class="muted">Her kjører vi mange studier i den samme sanne verdenen og ser på <b>observert</b> d i hver. Grå søyler = alle studiene; røde søyler = de som ble signifikante og dermed havner i litteraturen. Den grønne streken er sannheten.</p>
+<button class="btn" id="runST">Kjør 2 000 studier</button>
+<canvas id="cvC" height="260"></canvas>
+<div id="statsC"></div>
+<div class="note" id="verdictC"></div>
+</div>
+</div>
+
+
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>Styrke er noe du <b>kjøper</b> med deltakere, mens type I-raten er noe du <b>velger</b>. En liten studie som likevel blir signifikant, overdriver nesten alltid effekten. Det er derfor pilotfunn så sjelden lar seg replikere.</b></div></div>
+<div class="card">
+<h2>Slik leser du det</h2>
+<div class="note"><b>Prøv dette:</b> (1) Sett d = 0,40 (en helt vanlig effekt i psykologi) og n = 20 per gruppe: styrken er bare rundt 24 %. Studien har altså tre av fire sjanser til å <b>ikke</b> finne en effekt som faktisk finnes, og pengene er brukt uansett. (2) Se på fane C med de samme innstillingene: de signifikante studiene rapporterer i snitt en d som er to–tre ganger for stor. Ingen har jukset; det er bare de heldigste utvalgene som passerer terskelen. Dette er hovedgrunnen til at små, «signifikante» pilotfunn ofte ikke lar seg replikere. (3) Dra n oppover og se overdrivelsen forsvinne: med god styrke ligner de signifikante studiene på sannheten. (4) Merk at α-arealet ikke endrer seg når du endrer n. Type I-raten er noe du <b>velger</b>, mens styrken er noe du <b>kjøper</b> med deltakere.</div>
+<div class="note"><b>Til artikkelen:</b> en styrkeberegning gjøres <i>før</i> datainnsamling og svarer på «hvor mange deltakere trenger jeg for å ha 80 % sjanse til å oppdage den minste effekten jeg bryr meg om?». Å regne ut styrken <i>etterpå</i>, basert på effekten du faktisk fant («observert styrke»), gir ingen ny informasjon, den er bare en omregning av p-verdien din.</div>
+</div>
+</div><!-- /fane-styrke -->
+
+<div id="fane-mange" class="hide">
+<div class="card">
+<h2>Oppsett</h2>
+<p class="muted">En «familie» er én studie som kjører k tester (f.eks. alle parvise sammenligninger). <b>Alle nullhypoteser er sanne</b>, enhver «oppdagelse» er en falsk positiv.</p>
+<div class="sl"><label>Antall tester i familien k</label><input type="range" id="k" min="1" max="20" value="3"><output id="kOut">3</output>
+<label style="min-width:auto">Korreksjon:</label>
+<select id="corr"><option value="none" selected>Ingen (α = 0,05 per test)</option><option value="bonf">Bonferroni (α = 0,05/k)</option></select>
+</div>
+<button class="btn" id="one">Kjør én familie</button>
+<button class="btn" id="many">Kjør 1 000 familier</button>
+<button class="btn2" id="resetFW">Nullstill kurvepunktene</button>
+</div>
+
+<div class="card">
+<h2>Én familie: k p-verdier (rød = «signifikant» = falsk positiv)</h2>
+<div class="cells" id="cells"><span class="muted">Trykk «Kjør én familie».</span></div>
+<div id="famOut" class="muted" style="margin-top:6px"></div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>Feilraten gjelder per test, ikke per studie. Kjører du mange sammenligninger uten korreksjon, er en falsk positiv ikke uflaks, men det forventede utfallet.</b></div></div>
+
+<div class="card">
+<h2>Sannsynligheten for minst én falsk positiv</h2>
+<p class="muted">Linje = teori: 1 − (1 − α)<sup>k</sup> (uten korreksjon). Punkter = dine simuleringer (1 000 familier per punkt).</p>
+<canvas id="cv" height="240"></canvas>
+<div id="simOut" class="muted"></div>
+</div>
+
+<div class="card note"><b>Poenget:</b> Med k = 3 tester er sjansen for minst én falsk positiv allerede ≈ 14 %; med k = 10 er den ≈ 40 %. Det er derfor vi bruker <b>én</b> ANOVA i stedet for mange t-tester, og derfor post hoc-tester korrigerer α. Slå på Bonferroni og se raten falle tilbake til ≈ 5 %. Prisen er lavere styrke per test.</div>
+<div class="card">
+<h2>Din studie (n = 50, to grupper, ingen sanne effekter)</h2>
+<p class="muted">Du har samlet inn data og hovedanalysen ble ikke signifikant. Men du har jo … valgmuligheter. Hvert klikk er en beslutning ekte forskere kan ta: hver av dem er en ny loddtrekning med α = ,05.</p>
+<button class="btn" id="b0">Test hovedutfallet</button>
+<button class="btn2" id="b1">Prøv de 3 andre utfallsmålene</button>
+<button class="btn2" id="b2">Del opp etter kjønn (2 undergrupper)</button>
+<button class="btn2" id="b3">Fjern «utliggere» og test igjen</button>
+<button class="btn2" id="b4">Legg til en kovariat (3 varianter)</button>
+<button class="btn2" id="b5">Samle 10 til og test på nytt</button>
+<button class="btn" id="resetPH" style="background:#62708a">Ny studie (nullstill)</button>
+<div style="margin-top:10px">
+<span class="stat">analyser prøvd: <span class="big" id="ntest">0</span></span>
+<span class="stat" id="expect">forventede falske positiver så langt: 0,0</span>
+</div>
+<div class="pub" id="pub">🎉 «SIGNIFIKANT»! Skriv artikkelen! … eller? Du fant den i en verden der ingenting er sant. Dette er en falsk positiv du selv har produsert.</div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>Med nok valgfrihet i analysen finner du «signifikante» funn i data der ingenting finnes. Det er derfor det teller hva du bestemte <i>før</i> du så dataene. Forhåndsregistrering er ikke byråkrati, det er den eneste kuren.</b></div></div>
+
+<div class="card">
+<h2>Analyselogg (rødt = p &lt; ,05 = falsk positiv)</h2>
+<div class="log" id="log"><span class="muted">Ingen analyser ennå.</span></div>
+<div class="note"><b>Poenget:</b> α = ,05 gjelder ÉN forhåndsbestemt test. «Forskerens frihetsgrader» (utfall, undergrupper, utliggere, kovariater, valgfri stopping) gjør den reelle feilraten mye høyere, uten at noen bevisst jukser. Etter ~20 forsøk er sjansen for minst én «oppdagelse» ≈ 64 %. Motgift: forhåndsregistrering, skille mellom planlagte og utforskende analyser, og å rapportere ALT man prøvde. (Jf. Sim 19: dette er familievis feil i naturlig habitat.)</div>
+</div>
+</div><!-- /fane-mange -->
+
+<div id="fane-bias" class="hide">
+<div class="card">
+<button class="tab on" id="tabS">A · Seleksjonsbias</button>
+<button class="tab" id="tabF">B · Frafall i en RCT</button>
+<button class="tab" id="tabP">C · Publikasjonsbias</button>
+</div>
+
+<div id="modeS">
+<div class="card">
+<h2>Hvem melder seg?</h2>
+<p class="muted">Populasjonen (grå) har sann gjennomsnittlig statistikkangst = <b>50</b>. Men sannsynligheten for å delta i studien din kan avhenge av angstnivået, de mest engstelige unngår kanskje en «statistikkstudie» (eller oppsøker den!).</p>
+<div class="sl"><label>Deltakelse avhenger av angst</label><input type="range" id="sel" min="-100" max="100" value="0"><output id="selOut">0</output></div>
+<p class="muted">← engstelige unngår studien · 0 = tilfeldig utvalg · engstelige oppsøker studien →</p>
+<button class="btn" id="runS">Trekk utvalg (n = 100)</button>
+<canvas id="cvS" height="220"></canvas>
+<div id="outS"></div>
+<div class="note"><b>Poenget:</b> utvalgsgjennomsnittet er en <i>forventningsskjev</i> estimator når deltakelsen henger sammen med det du måler, og mer data hjelper ikke: du estimerer presist feil tall. Tilfeldig utvalg er en <i>design</i>-egenskap, ikke noe statistikken kan reparere i etterkant.</div>
+</div>
+</div>
+
+<div id="modeF" class="hide">
+<div class="card">
+<h2>Frafall som ikke er tilfeldig</h2>
+<p class="muted">En RCT uten reell behandlingseffekt (sann effekt = 0). Men deltakere i <b>tiltaksgruppen</b> som ikke opplever bedring, faller oftere fra, og analysen kjøres bare på dem som fullfører («kompletterer-analyse»).</p>
+<div class="sl"><label>Frafall blant ikke-forbedrede i tiltak</label><input type="range" id="drop" min="0" max="80" value="0"><output id="dropOut">0 %</output></div>
+<button class="btn" id="runF">Kjør 1 000 studier</button>
+<canvas id="cvF" height="200"></canvas>
+<div id="outF"></div>
+<div class="note"><b>Poenget:</b> med differensielt frafall ser kompletterer-analysen en «effekt» som ikke finnes, de som ble igjen i tiltaksgruppen, er de som tilfeldigvis bedret seg. Derfor er intention-to-treat-prinsippet og frafallsrapportering (CONSORT) obligatorisk i ekte RCT-er. <b>I terapistudien vår:</b> 7 av 43 falt fra i ISTDP-gruppen mot 4 av 43 på venteliste (χ² = 0,94, p = ,333), og de som falt fra lignet fullførerne ved baseline. Det er dét man må vise, ikke bare anta.</div>
+</div>
+</div>
+
+<div id="modeP" class="hide">
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>Systematisk skjevhet fikses ikke av flere deltakere. Et større utvalg gjør et skjevt estimat mer <i>presist</i>, ikke mer <i>riktig</i>. Feilen må ut av datainnsamlingen, ikke ut av statistikken.</b></div></div>
+
+<div class="card">
+<h2>Bare «signifikante» funn publiseres</h2>
+<p class="muted">100 laboratorier studerer nøyaktig samme effekt (velg sann d under, gjerne 0) med n = 40 per gruppe. Tidsskriftene trykker bare p &lt; ,05.</p>
+<div class="sl"><label>Sann effekt (Cohens d)</label><input type="range" id="trued" min="0" max="0.8" step="0.1" value="0"><output id="dOutBI">0,0</output></div>
+<button class="btn" id="runP">Kjør 100 studier</button>
+<canvas id="cvPBI" height="240"></canvas>
+<div id="outP"></div>
+<div class="note"><b>Poenget:</b> gjennomsnittet av <i>publiserte</i> effekter overdriver alltid sannheten, dramatisk når sann d er liten. Litteraturen du leser er et selektert utvalg av alle studier som ble kjørt. (Dette er også hvorfor replikasjoner «skuffer».)</div>
+</div>
+</div>
+</div><!-- /fane-bias -->
+
+<details class="ordbok" id="ordforklaringer"><summary>Ordforklaringer</summary>
 <div class="gloss">
-<p><b>SD</b> — standardavvik: typisk avstand fra gjennomsnittet, i variabelens egen enhet. Kvadratet er variansen.<br>
+<p><b>ANOVA</b> — variansanalyse (analysis of variance): tester om flere gruppegjennomsnitt er like.<br>
+<b>Bias</b> — systematisk skjevhet som ikke forsvinner med større n: <b>seleksjonsbias</b> (hvem som blir med), <b>frafallsbias</b> (hvem som forsvinner) og <b>publikasjonsbias</b> (hvilke resultater som blir publisert).<br>
+<b>CONSORT</b> — den internasjonale malen for hvordan en randomisert studie skal rapporteres, blant annet med et flytskjema over hvem som falt fra og når.<br>
+<b>Effektstørrelse</b> — hvor stor forskjellen eller sammenhengen er, uavhengig av n. <b>Cohens d</b> = forskjell mellom to gjennomsnitt målt i standardavvik.<br>
+<b>F</b> — testobservator i variansanalyse: MS mellom grupper delt på MS innen grupper. Forventes ≈ 1 når H₀ er sann.<br>
+<b>Familievis feilrate</b> — sjansen for minst én falsk positiv når man kjører flere tester. <b>Bonferroni</b>-korreksjonen deler α på antall tester.<br>
+<b>H₀</b> — nullhypotesen: «ingen effekt / ingen sammenheng». <b>H₁</b> er alternativhypotesen.<br>
+<b>M</b> — gjennomsnittet i et utvalg (skrives også x̄). <b>Median</b> = midtverdien når verdiene sorteres. <b>Modus</b> = den hyppigste verdien.<br>
+<b>RCT</b> — randomisert kontrollert studie. Emnets <b>Terapi-RCT-studie</b> sammenligner <b>ISTDP</b> (intensiv dynamisk korttidsterapi) med venteliste, N = 86.<br>
+<b>SD</b> — standardavvik: typisk avstand fra gjennomsnittet, i variabelens egen enhet. Kvadratet er variansen.<br>
+<b>Statistisk styrke</b> — sannsynligheten for å oppdage en effekt som faktisk finnes (1 − type II-risikoen). Se Sim 20.<br>
+<b>Type I-feil</b> — å finne en effekt som ikke finnes (falsk positiv). <b>Type II-feil</b> — å overse en effekt som finnes (falsk negativ).<br>
+<b>Utligger</b> — en observasjon som ligger langt fra resten. <b>Trimmet gjennomsnitt</b> = regn ut etter å ha kuttet de mest ekstreme prosentene; <b>winsorisering</b> = erstatt dem med grenseverdien i stedet for å kutte.<br>
+<b>b</b> — regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren. <b>β</b> er den standardiserte varianten (i standardavvik).<br>
 <b>df</b> — frihetsgrader (degrees of freedom): antall verdier som fritt kan variere gitt det du allerede har estimert.<br>
 <b>p-verdi</b> — sannsynligheten for et resultat minst så ekstremt som ditt, <i>gitt at H₀ er sann</i>. Ikke sannsynligheten for at H₀ er sann.<br>
-<b>α (alfa)</b> — signifikansnivået du velger på forhånd, altså den aksepterte risikoen for type I-feil (vanligvis ,05).<br>
-<b>Type I-feil</b> — å finne en effekt som ikke finnes (falsk positiv). <b>Type II-feil</b> — å overse en effekt som finnes (falsk negativ).<br>
-<b>Statistisk styrke</b> — sannsynligheten for å oppdage en effekt som faktisk finnes (1 − type II-risikoen). Se Sim 20.<br>
-<b>Effektstørrelse</b> — hvor stor forskjellen eller sammenhengen er, uavhengig av n. <b>Cohens d</b> = forskjell mellom to gjennomsnitt målt i standardavvik.<br>
+<b>r</b> — Pearsons korrelasjon: styrken på den <i>lineære</i> sammenhengen mellom to variabler (−1 til +1). <b>Spearmans rho</b> gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.<br>
 <b>t</b> — testobservator for gjennomsnitt: forskjell delt på standardfeil. <b>t-fordelingen</b> er litt tyngre i halene enn normalfordelingen ved lav df.<br>
-<b>F</b> — testobservator i variansanalyse: MS mellom grupper delt på MS innen grupper. Forventes ≈ 1 når H₀ er sann.<br>
-<b>ANOVA</b> — variansanalyse (analysis of variance): tester om flere gruppegjennomsnitt er like.<br>
-<b>b</b> — regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren. <b>β</b> er den standardiserte varianten (i standardavvik).<br>
-<b>r</b> — Pearsons korrelasjon: styrken på den <i>lineære</i> sammenhengen mellom to variabler (−1 til +1). <b>Spearmans rho</b> gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.</p>
-</div>
-</div>
-
-</div>
-
+<b>α (alfa)</b> — signifikansnivået du velger på forhånd, altså den aksepterte risikoen for type I-feil (vanligvis ,05).<br>
+<b>χ² (kjikvadrat)</b> — test for frekvensdata: sammenligner observerte og forventede antall i en krysstabell.<br>
+<b>Overdrivelsesfaktor (type M-feil)</b> — hvor mange ganger for stor den gjennomsnittlige signifikante effekten er.<br>
+<b>SE</b> — standardfeil: usikkerheten i et estimat. Her er SE for forskjellen ≈ √(2/n) i d-enheter.<br>
+<b>Statistisk styrke (power)</b> — sannsynligheten for å få et signifikant resultat gitt at effekten faktisk finnes. Styrke = 1 − β.<br>
+<b>Vinnerens forbannelse</b> — at de effektene som passerer signifikansterskelen i studier med lav styrke, systematisk er større enn sannheten.<br>
+<b>β (beta)</b> — sannsynligheten for type II-feil. (Ikke å forveksle med regresjonens β, som er en koeffisient.)</p>
+</div></details>
+</div><!-- /wrap -->
 <script>
+
+/* ---------- faner ---------- */
+const FANER=['p','styrke','mange','bias'];
+function visFane(f){
+  if(FANER.indexOf(f)<0) f='p';
+  FANER.forEach(x=>{const e=document.getElementById('fane-'+x); if(e) e.classList.toggle('hide', x!==f);});
+  document.querySelectorAll('.fane').forEach(b=>b.classList.toggle('on', b.dataset.fane===f));
+  /* lerret som var skjult har bredde 0 og må tegnes på nytt når fanen åpnes */
+  window.dispatchEvent(new Event('resize'));
+  (window.__tegn&&window.__tegn[f]||function(){})();
+  try{ history.replaceState(null,'','#fane='+f); }catch(e){}
+}
+window.__tegn={};
+document.querySelectorAll('.fane').forEach(b=>b.addEventListener('click',()=>visFane(b.dataset.fane)));
+(function(){ const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,''));
+  const f=q.get('fane'); if(f && FANER.indexOf(f)>=0) visFane(f); })();
+
+/* ===== Fane «p» — hentet fra Pverdimaskinen. Egen lukking fordi appene
+   deler navn som $, fmt, kick, lgamma og rnorm. */
+(function(){
 "use strict";
 const $=id=>document.getElementById(id);
 const fmt=(x,d=2)=>x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -326,7 +544,549 @@ setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
  if(__mis>=2){__mis=0;safe();}},700);})();
 updateOutputs();
 run(1);
+})();
 
+
+/* ===== Fane «styrke» — hentet fra Styrkelaben. Egen lukking fordi appene
+   deler navn som $, fmt, kick, lgamma og rnorm. */
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const fmt=(x,d=2)=>x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct=x=>fmt(100*x,1)+' %';
+function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function fit(cv){const r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);c.clearRect(0,0,w,h);return [c,w,h];}
+function erf(x){const s=x<0?-1:1;x=Math.abs(x);const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+  const t=1/(1+p*x),y=1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);return s*y;}
+const ncdf=z=>0.5*(1+erf(z/Math.SQRT2));
+const npdf=z=>Math.exp(-z*z/2)/Math.sqrt(2*Math.PI);
+function zcrit(a){let lo=0,hi=6;for(let i=0;i<80;i++){const m=(lo+hi)/2;if(ncdf(m)<1-a/2)lo=m;else hi=m;}return (lo+hi)/2;}
+// t-fordelingen (for de simulerte studiene)
+function lgamma(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
+  let y=x,tmp=x+5.5;tmp-=(x+0.5)*Math.log(tmp);let ser=1.000000000190015;for(let j=0;j<6;j++)ser+=c[j]/++y;return -tmp+Math.log(2.5066282746310005*ser/x);}
+function betacf(a,b,x){const MAXIT=200,EPS=3e-12,FPMIN=1e-30;const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<FPMIN)d=FPMIN;d=1/d;let h=d;
+  for(let m=1;m<=MAXIT;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;h*=d*c;
+  aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<EPS)break;}return h;}
+function ibeta(a,b,x){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));
+  return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+const pT=(t,df)=>ibeta(df/2,0.5,df/(df+t*t));   // tosidig p
+
+const P=()=>({d:+$('dST').value,n:+$('nST').value,a:+$('al').value});
+function power(d,n,a){const se=Math.sqrt(2/n),zc=zcrit(a);
+  return 1-ncdf(zc-d/se)+ncdf(-zc-d/se);}
+function nFor(d,a,target){for(let n=4;n<=100000;n++){if(power(d,n,a)>=target)return n;}return NaN;}
+
+// ---------- A: de to fordelingene ----------
+function drawA(){
+  const [c,w,h]=fit($('cvA')); const p=P(), se=Math.sqrt(2/p.n), zc=zcrit(p.a), crit=zc*se;
+  const lo=Math.min(-4*se,p.d-4*se), hi=Math.max(4*se,p.d+4*se);
+  const x0=16,y0=h-40,pw=w-32,ph=y0-24;
+  const X=v=>x0+(v-lo)/(hi-lo)*pw;
+  const f0=v=>npdf((v-0)/se)/se, f1=v=>npdf((v-p.d)/se)/se;
+  const mx=Math.max(f0(0),f1(p.d));
+  const Y=y=>y0-y/mx*ph;
+  const area=(f,a1,b1,style)=>{c.fillStyle=style;c.beginPath();c.moveTo(X(a1),y0);
+    for(let i=0;i<=120;i++){const v=a1+(b1-a1)*i/120;c.lineTo(X(v),Y(f(v)));}
+    c.lineTo(X(b1),y0);c.closePath();c.fill();};
+  // β (type II) og styrke under H1
+  area(f1,lo,crit,'rgba(120,130,150,0.35)');
+  area(f1,crit,hi,'rgba(46,125,50,0.32)');
+  // α under H0
+  area(f0,crit,hi,'rgba(192,57,43,0.45)');
+  area(f0,lo,-crit,'rgba(192,57,43,0.45)');
+  const curve=(f,col)=>{c.strokeStyle=col;c.lineWidth=3;c.beginPath();
+    for(let i=0;i<=240;i++){const v=lo+(hi-lo)*i/240;const x=X(v),y=Y(f(v));if(i===0)c.moveTo(x,y);else c.lineTo(x,y);}c.stroke();};
+  curve(f0,'#2E5496'); curve(f1,'#2E7D32');
+  // beslutningsgrense
+  c.strokeStyle='#C0392B';c.lineWidth=2.5;c.setLineDash([6,4]);
+  c.beginPath();c.moveTo(X(crit),18);c.lineTo(X(crit),y0);c.stroke();c.setLineDash([]);
+  c.fillStyle='#C0392B';c.font='bold 15px sans-serif';c.textAlign='center';
+  c.fillText('signifikansgrense',X(crit),14);
+  // etiketter
+  c.fillStyle='#2E5496';c.font='bold 16px sans-serif';c.textAlign='center';c.fillText('H₀: ingen effekt',X(0),Y(f0(0))-8);
+  c.fillStyle='#2E7D32';c.fillText('H₁: d = '+fmt(p.d),X(p.d),Y(f1(p.d))-8);
+  // akse
+  c.strokeStyle='#b9c3d6';c.lineWidth=1.5;c.beginPath();c.moveTo(x0,y0);c.lineTo(x0+pw,y0);c.stroke();
+  c.fillStyle='#62708a';c.font='bold 15px sans-serif';c.textAlign='center';
+  for(let i=0;i<=5;i++){const v=lo+(hi-lo)*i/5;c.fillText(fmt(v),X(v),y0+18);}
+  c.fillText('observert forskjell (i standardavvik)',x0+pw/2,h-4);
+}
+// ---------- B: styrkekurven ----------
+function drawB(){
+  const [c,w,h]=fit($('cvB')); const p=P();
+  const x0=52,y0=h-40,pw=w-x0-16,ph=y0-20, NMAX=300;
+  const X=n=>x0+(n-5)/(NMAX-5)*pw, Y=q=>y0-q*ph;
+  c.strokeStyle='#eef1f7';c.lineWidth=1;
+  for(let q=0;q<=1.001;q+=0.25){c.beginPath();c.moveTo(x0,Y(q));c.lineTo(x0+pw,Y(q));c.stroke();}
+  c.strokeStyle='#2E7D32';c.setLineDash([6,5]);c.lineWidth=2;
+  c.beginPath();c.moveTo(x0,Y(0.8));c.lineTo(x0+pw,Y(0.8));c.stroke();c.setLineDash([]);
+  c.fillStyle='#2E7D32';c.font='bold 15px sans-serif';c.textAlign='left';c.fillText('80 %',x0+4,Y(0.8)-6);
+  // andre d-verdier som blek referanse
+  [0.2,0.5,0.8].forEach(dd=>{
+    c.strokeStyle='rgba(46,84,150,0.22)';c.lineWidth=2;c.beginPath();
+    for(let n=5;n<=NMAX;n+=2){const x=X(n),y=Y(power(dd,n,p.a));if(n===5)c.moveTo(x,y);else c.lineTo(x,y);}
+    c.stroke();
+    c.fillStyle='rgba(46,84,150,0.55)';c.font='bold 13px sans-serif';c.textAlign='left';
+    c.fillText('d = '+fmt(dd,1),X(NMAX)-46,Y(power(dd,NMAX,p.a))-6);
+  });
+  c.strokeStyle='#2E5496';c.lineWidth=3.5;c.beginPath();
+  for(let n=5;n<=NMAX;n+=2){const x=X(n),y=Y(power(p.d,n,p.a));if(n===5)c.moveTo(x,y);else c.lineTo(x,y);}
+  c.stroke();
+  const pw_=power(p.d,p.n,p.a);
+  c.fillStyle='#C0392B';c.beginPath();c.arc(X(Math.min(p.n,NMAX)),Y(pw_),7,0,7);c.fill();
+  c.strokeStyle='#b9c3d6';c.lineWidth=1.5;c.beginPath();c.moveTo(x0,y0);c.lineTo(x0+pw,y0);c.stroke();
+  c.fillStyle='#62708a';c.font='bold 15px sans-serif';c.textAlign='center';
+  for(let n=50;n<=NMAX;n+=50)c.fillText(n,X(n),y0+18);
+  c.fillText('n per gruppe',x0+pw/2,h-4);
+  c.textAlign='right';
+  for(let q=0;q<=1.001;q+=0.25)c.fillText(Math.round(q*100)+' %',x0-6,Y(q)+5);
+}
+// ---------- C: vinnerens forbannelse ----------
+let sim=null;
+function runSim(){
+  const p=P(), K=2000, df=2*p.n-2, out=[];
+  for(let k=0;k<K;k++){
+    let s1=0,ss1=0,s2=0,ss2=0;
+    for(let i=0;i<p.n;i++){const a=rnorm(); const b=p.d+rnorm(); s1+=a;ss1+=a*a;s2+=b;ss2+=b*b;}
+    const m1=s1/p.n,m2=s2/p.n;
+    const v1=(ss1-p.n*m1*m1)/(p.n-1), v2=(ss2-p.n*m2*m2)/(p.n-1);
+    const sp=Math.sqrt((v1+v2)/2), dObs=(m2-m1)/sp, t=dObs*Math.sqrt(p.n/2);
+    out.push([dObs, pT(Math.abs(t),df)<p.a, dObs>0]);
+  }
+  sim={p:p,out:out};
+  drawC();
+}
+function drawC(){
+  const [c,w,h]=fit($('cvC'));
+  if(!sim){c.fillStyle='#9aa5bb';c.font='bold 18px sans-serif';c.textAlign='center';c.fillText('Trykk «Kjør 2 000 studier»',w/2,h/2);$('statsC').innerHTML='';$('verdictC').textContent='';return;}
+  const p=sim.p, ds=sim.out.map(o=>o[0]);
+  const lo=Math.min(-0.6,Math.min(...ds)), hi=Math.max(p.d+0.8,Math.max(...ds));
+  const B=44, x0=16,y0=h-42,pw=w-32,ph=y0-24;
+  const bins=new Array(B).fill(0), sigb=new Array(B).fill(0);
+  ds.forEach((v,i)=>{const b=Math.min(B-1,Math.max(0,Math.floor((v-lo)/(hi-lo)*B)));bins[b]++;if(sim.out[i][1])sigb[b]++;});
+  const mx=Math.max(...bins);
+  const X=v=>x0+(v-lo)/(hi-lo)*pw, bw=pw/B;
+  for(let b=0;b<B;b++){
+    const hAll=bins[b]/mx*ph, hSig=sigb[b]/mx*ph;
+    c.fillStyle='#cbd3e2';c.fillRect(x0+b*bw+0.5,y0-hAll,bw-1,hAll);
+    c.fillStyle='rgba(192,57,43,0.75)';c.fillRect(x0+b*bw+0.5,y0-hSig,bw-1,hSig);
+  }
+  // sannhet + gjennomsnitt blant signifikante
+  const sig=sim.out.filter(o=>o[1]&&o[2]).map(o=>o[0]);
+  const mSig=sig.length?sig.reduce((a,b)=>a+b,0)/sig.length:NaN;
+  const line=(v,col,lab,dy)=>{c.strokeStyle=col;c.lineWidth=2.5;c.setLineDash([6,4]);
+    c.beginPath();c.moveTo(X(v),16);c.lineTo(X(v),y0);c.stroke();c.setLineDash([]);
+    c.fillStyle=col;c.font='bold 15px sans-serif';c.textAlign='center';c.fillText(lab,X(v),dy);};
+  line(p.d,'#2E7D32','sann d = '+fmt(p.d),13);
+  if(sig.length)line(mSig,'#C0392B','snitt blant signifikante = '+fmt(mSig),31);
+  c.strokeStyle='#b9c3d6';c.lineWidth=1.5;c.beginPath();c.moveTo(x0,y0);c.lineTo(x0+pw,y0);c.stroke();
+  c.fillStyle='#62708a';c.font='bold 15px sans-serif';c.textAlign='center';
+  for(let i=0;i<=5;i++){const v=lo+(hi-lo)*i/5;c.fillText(fmt(v,1),X(v),y0+18);}
+  c.fillText('observert Cohens d i hver studie',x0+pw/2,h-4);
+  const nSig=sim.out.filter(o=>o[1]).length, nWrongDir=sim.out.filter(o=>o[1]&&!o[2]).length;
+  const infl=mSig/p.d;
+  $('statsC').innerHTML=
+    '<span class="stat">signifikante: '+nSig+' av 2 000 ('+pct(nSig/2000)+')</span>'+
+    '<span class="stat green">teoretisk styrke: '+pct(power(p.d,p.n,p.a))+'</span>'+
+    '<span class="stat'+(infl>1.3?' red':'')+'">snitt-d blant signifikante: '+fmt(mSig)+'</span>'+
+    '<span class="stat'+(infl>1.3?' red':'')+'">overdrivelsesfaktor: '+fmt(infl)+'×</span>'+
+    (nWrongDir?'<span class="stat red">signifikante i FEIL retning: '+nWrongDir+'</span>':'');
+  $('verdictC').innerHTML= infl>1.3
+    ? 'De signifikante studiene rapporterer i snitt en effekt <b>'+fmt(infl)+' ganger større</b> enn sannheten. Ingen har jukset — terskelen slipper bare gjennom de heldigste utvalgene. Blir en slik studie replikert med samme n, vil den «skuffe», og med større n vil effekten se ut til å ha «krympet».'
+    : 'Med denne styrken ligner de signifikante studiene på sannheten (overdrivelse '+fmt(infl)+'×). Godt drevne studier gir ikke bare oftere funn. De gir <b>riktigere</b> tall.';
+}
+function render(){
+  const p=P();
+  $('do').textContent=fmt(p.d);$('no').textContent=p.n;$('alo').textContent=fmt(p.a,3);
+  const pw_=power(p.d,p.n,p.a), n80=nFor(p.d,p.a,0.8), n95=nFor(p.d,p.a,0.95);
+  $('statsTop').innerHTML=
+    '<span class="stat'+(pw_<0.5?' red':(pw_>=0.8?' green':' orange'))+'">styrke = '+pct(pw_)+'</span>'+
+    '<span class="stat">β (type II) = '+pct(1-pw_)+'</span>'+
+    '<span class="stat">α (type I) = '+pct(p.a)+'</span>'+
+    '<span class="stat">totalt N = '+(2*p.n)+'</span>'+
+    '<span class="stat">n for 80 % styrke: '+n80+' per gruppe ('+(2*n80)+' totalt)</span>'+
+    '<span class="stat">for 95 %: '+n95+' per gruppe</span>';
+  drawA();drawB();drawC();
+  $('statsA').innerHTML='<span class="stat green">grønt areal (styrke) = '+pct(pw_)+'</span>'+
+    '<span class="stat">grått areal (β) = '+pct(1-pw_)+'</span>'+
+    '<span class="stat red">rødt areal (α) = '+pct(p.a)+'</span>'+
+    '<span class="stat">SE for forskjellen = '+fmt(Math.sqrt(2/p.n),3)+'</span>';
+  $('verdictA').innerHTML = pw_<0.5
+    ? '<b>Studien er underdimensjonert.</b> Med styrke '+pct(pw_)+' er sjansen for å overse en ekte effekt på d = '+fmt(p.d)+' hele '+pct(1-pw_)+'. Et ikke-signifikant resultat herfra betyr nesten ingenting: fraværet av bevis er ikke bevis på fravær.'
+    : (pw_>=0.8 ? '<b>Godt dimensjonert.</b> Styrke '+pct(pw_)+' oppfyller 80 %-konvensjonen. Merk at det røde α-arealet er uendret — antall deltakere kjøper styrke, ikke beskyttelse mot falske positive.'
+      : 'Styrke '+pct(pw_)+', under konvensjonen på 80 %. Du trenger '+n80+' per gruppe for å komme dit.');
+  $('statsB').innerHTML='<span class="stat">din studie: n = '+p.n+' → '+pct(pw_)+'</span>'+
+    '<span class="stat">n for 80 %: '+n80+'</span>'+
+    '<span class="stat">n for 95 %: '+n95+'</span>'+
+    '<span class="stat">dobler du n til '+(2*p.n)+': '+pct(power(p.d,2*p.n,p.a))+'</span>';
+  $('verdictB').innerHTML='Styrken avhenger av produktet d·√(n/2). Det betyr at en <b>halvert effekt krever fire ganger så mange deltakere</b> for samme styrke — derfor er små effekter så dyre å studere. For d = ,20 trengs '+nFor(0.2,p.a,0.8)+' per gruppe for 80 % styrke, mot bare '+nFor(0.8,p.a,0.8)+' for d = ,80.';
+}
+['d','n','al'].forEach(id=>$(id).oninput=()=>{sim=null;render();});
+$('runST').onclick=runSim;
+$('small').onclick=()=>{$('dST').value=0.4;$('nST').value=20;$('al').value=0.05;sim=null;render();};
+$('istdp').onclick=()=>{$('dST').value=1.7;$('nST').value=45;$('al').value=0.05;sim=null;render();};
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));t.classList.add('on');
+  ['A','B','C'].forEach(k=>$('pane'+k).style.display=(k===t.dataset.t?'':'none'));
+  render();
+});
+render();
+const __fsRedraw=()=>{render();};
+(function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
+const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
+window.addEventListener('resize',kick);
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{kick();setTimeout(safe,600);}));
+let __mis=0;
+setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
+ document.querySelectorAll('canvas').forEach(c=>{if(c.clientWidth>0&&c.width>0&&Math.abs(c.width-Math.round(c.clientWidth*r))>2)bad=true;});
+ __mis=bad?__mis+1:0;
+ if(__mis>=2){__mis=0;safe();}},700);})();
+})();
+
+
+/* ===== Fane «mange» — hentet fra FamilievisFeil. Egen lukking fordi appene
+   deler navn som $, fmt, kick, lgamma og rnorm. */
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const fmt=(x,d=1)=>x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+const ALPHA=0.05;
+let results={none:{},bonf:{}}; // k -> proportion
+
+function alphaEff(){const k=+$('k').value;return $('corr').value==='bonf'?ALPHA/k:ALPHA;}
+
+function oneFamily(){
+  const k=+$('k').value,a=alphaEff();
+  const box=$('cells');box.innerHTML='';
+  let any=false;
+  for(let i=0;i<k;i++){
+    const p=Math.random(); // p-verdier er uniforme under H0
+    const sig=p<a;if(sig)any=true;
+    const div=document.createElement('div');
+    div.className='cell'+(sig?' sig':'');
+    div.textContent=p<0.001?'<0,001':fmt(p,3).replace('.',',');
+    box.appendChild(div);
+  }
+  $('famOut').innerHTML=any
+    ?'<span class="stat red">Denne studien ville rapportert et «funn», men alt er støy.</span>'
+    :'<span class="stat green">Ingen falske positiver denne gangen.</span>';
+}
+
+function manyFamilies(){
+  const k=+$('k').value,a=alphaEff(),mode=$('corr').value;
+  let fams=0;
+  const K=1000;
+  for(let f=0;f<K;f++){
+    for(let i=0;i<k;i++){if(Math.random()<a){fams++;break;}}
+  }
+  results[mode][k]=fams/K;
+  $('simOut').innerHTML='<span class="stat '+(fams/K>0.08?'red':'green')+'">k = '+k+(mode==='bonf'?' (Bonferroni)':'')+': '+fmt(100*fams/K,1)+' % av familiene hadde minst én falsk positiv</span>';
+  draw();
+}
+
+function draw(){
+  const cv=$('cv'),r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';
+  const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);
+  c.clearRect(0,0,w,h);
+  const x0=42,y0=h-28,pw=w-x0-14,ph=y0-14;
+  const X=k=>x0+(k-1)/19*pw, Y=p=>y0-p*ph;
+  // axes
+  c.strokeStyle='#e3e8f0';c.strokeRect(x0,14,pw,ph);
+  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';
+  for(let k=1;k<=20;k+=(k===1?1:2))c.fillText(k,X(k),y0+14);
+  c.textAlign='right';
+  for(let p=0;p<=1;p+=0.25)c.fillText(fmt(100*p,0)+'%',x0-5,Y(p)+3);
+  c.textAlign='center';c.fillText('antall tester (k)',x0+pw/2,h-4);
+  // theory curves
+  c.strokeStyle='#C0392B';c.lineWidth=2;c.beginPath();
+  for(let k=1;k<=20;k++){const p=1-Math.pow(1-ALPHA,k);if(k===1)c.moveTo(X(k),Y(p));else c.lineTo(X(k),Y(p));}
+  c.stroke();
+  c.strokeStyle='#2E7D32';c.lineWidth=2;c.setLineDash([5,4]);c.beginPath();
+  for(let k=1;k<=20;k++){const p=1-Math.pow(1-ALPHA/k,k);if(k===1)c.moveTo(X(k),Y(p));else c.lineTo(X(k),Y(p));}
+  c.stroke();c.setLineDash([]);
+  // alpha reference
+  c.strokeStyle='#9aa5bb';c.setLineDash([2,4]);c.beginPath();c.moveTo(x0,Y(ALPHA));c.lineTo(x0+pw,Y(ALPHA));c.stroke();c.setLineDash([]);
+  c.fillStyle='#C0392B';c.font='bold 16px sans-serif';c.textAlign='left';
+  c.fillText('uten korreksjon',X(13),Y(1-Math.pow(0.95,13))-8);
+  c.fillStyle='#2E7D32';c.fillText('Bonferroni',X(13),Y(0.05)-8);
+  // simulated points
+  for(const [mode,col] of [['none','#C0392B'],['bonf','#2E7D32']]){
+    for(const k in results[mode]){
+      c.fillStyle=col;
+      c.beginPath();c.arc(X(+k),Y(results[mode][k]),5,0,7);c.fill();
+      c.strokeStyle='#fff';c.lineWidth=1.5;c.stroke();
+    }
+  }
+}
+
+$('k').oninput=()=>{$('kOut').textContent=$('k').value;};
+$('one').onclick=oneFamily;
+$('many').onclick=manyFamilies;
+$('resetFW').onclick=()=>{results={none:{},bonf:{}};$('simOut').textContent='';draw();};
+const __fsRedraw=()=>{draw();};
+(function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
+const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
+window.addEventListener('resize',kick);
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{kick();setTimeout(safe,600);}));
+let __mis=0;
+setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
+ document.querySelectorAll('canvas').forEach(c=>{if(c.clientWidth>0&&c.width>0&&Math.abs(c.width-Math.round(c.clientWidth*r))>2)bad=true;});
+ __mis=bad?__mis+1:0;
+ if(__mis>=2){__mis=0;safe();}},700);})();
+draw();
+})();
+
+
+/* ===== Fane «mange» — hentet fra Phackinghagen. Egen lukking fordi appene
+   deler navn som $, fmt, kick, lgamma og rnorm. */
+(function(){
+const $=id=>document.getElementById(id);
+function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function lgamma(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];let y=x,tmp=x+5.5;tmp-=(x+0.5)*Math.log(tmp);let ser=1.000000000190015;for(let j=0;j<6;j++)ser+=c[j]/++y;return -tmp+Math.log(2.5066282746310005*ser/x);}
+function betacf(a,b,x){const MAXIT=200,EPS=3e-12,FPMIN=1e-30;const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<FPMIN)d=FPMIN;d=1/d;let h=d;for(let m=1;m<=MAXIT;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;h*=d*c;aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<EPS)break;}return h;}
+function ibeta(a,b,x){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+function pT(t,df){return ibeta(df/2,0.5,df/(df+t*t));}
+function fmt(x,d=3){return x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});}
+let nTests=0,found=false;
+function oneNullTest(n){ // uavhengig t på nulldata
+  n=n||25;
+  let s1=0,ss1=0,s2=0,ss2=0;
+  for(let i=0;i<n;i++){const x=rnorm();s1+=x;ss1+=x*x;}
+  for(let i=0;i<n;i++){const x=rnorm();s2+=x;ss2+=x*x;}
+  const m1=s1/n,m2=s2/n;
+  const v1=(ss1-n*m1*m1)/(n-1),v2=(ss2-n*m2*m2)/(n-1);
+  const sp2=(v1+v2)/2;
+  const t=(m1-m2)/Math.sqrt(sp2*2/n);
+  return pT(t,2*n-2);
+}
+function logTests(labels,n){
+  const log=$('log');
+  if(nTests===0)log.innerHTML='';
+  labels.forEach(lab=>{
+    const p=oneNullTest(n);
+    nTests++;
+    const sig=p<0.05;
+    if(sig)found=true;
+    const div=document.createElement('div');
+    div.innerHTML=(sig?'<span class="sig">':'<span>')+String(nTests).padStart(2,'0')+' · '+lab+' — p = '+fmt(p)+(sig?'  ← «FUNN»':'')+'</span>';
+    log.prepend(div);
+  });
+  $('ntest').textContent=nTests;
+  $('expect').innerHTML='forventet antall falske positiver så langt: '+fmt(nTests*0.05,1)+' · P(minst én) = '+fmt(100*(1-Math.pow(0.95,nTests)),0)+' %';
+  $('expect').className='stat '+(nTests>=10?'red':'');
+  $('pub').style.display=found?'block':'none';
+}
+$('b0').onclick=()=>logTests(['Hovedutfall (som planlagt)']);
+$('b1').onclick=()=>logTests(['Utfall 2 (angst)','Utfall 3 (motivasjon)','Utfall 4 (trivsel)']);
+$('b2').onclick=()=>logTests(['Bare kvinner','Bare menn'],13);
+$('b3').onclick=()=>logTests(['Uten «utliggere»']);
+$('b4').onclick=()=>logTests(['+ kovariat: alder','+ kovariat: baseline','+ kovariat: begge']);
+$('b5').onclick=()=>logTests(['Med 10 ekstra deltakere'],30);
+$('resetPH').onclick=()=>{nTests=0;found=false;$('log').innerHTML='<span class="muted">Ingen analyser ennå.</span>';$('ntest').textContent='0';$('expect').textContent='forventede falske positiver så langt: 0,0';$('expect').className='stat';$('pub').style.display='none';};
+const __fsRedraw=()=>{};
+(function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
+const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
+window.addEventListener('resize',kick);
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{kick();setTimeout(safe,600);}));})();
+})();
+
+
+/* ===== Fane «bias» — hentet fra Biasfabrikken. Egen lukking fordi appene
+   deler navn som $, fmt, kick, lgamma og rnorm. */
+(function(){
+const $=id=>document.getElementById(id);
+function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function lgamma(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];let y=x,tmp=x+5.5;tmp-=(x+0.5)*Math.log(tmp);let ser=1.000000000190015;for(let j=0;j<6;j++)ser+=c[j]/++y;return -tmp+Math.log(2.5066282746310005*ser/x);}
+function betacf(a,b,x){const MAXIT=200,EPS=3e-12,FPMIN=1e-30;const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<FPMIN)d=FPMIN;d=1/d;let h=d;for(let m=1;m<=MAXIT;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;h*=d*c;aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<EPS)break;}return h;}
+function ibeta(a,b,x){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+function pT(t,df){return ibeta(df/2,0.5,df/(df+t*t));}
+function fmt(x,d=1){return x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function fit(cv){const r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);c.clearRect(0,0,w,h);return [c,w,h];}
+
+/* ---------- A: seleksjon ---------- */
+let lastS=null;
+function runS(){
+  const s=+$('sel').value/100; // -1..1
+  const samp=[];
+  let guard=0;
+  while(samp.length<100&&guard<100000){
+    guard++;
+    const x=50+10*rnorm();
+    const z=(x-50)/10;
+    const p=1/(1+Math.exp(-2.5*s*z)); // deltakelsessannsynlighet
+    if(Math.random()<p)samp.push(x);
+  }
+  lastS=samp;
+  drawS();
+}
+function drawS(){
+  const [c,w,h]=fit($('cvS'));
+  // populasjonskurve (grå)
+  const xmin=15,xmax=85;
+  const X=v=>30+(v-xmin)/(xmax-xmin)*(w-50);
+  c.strokeStyle='#c3cad9';c.lineWidth=2;c.beginPath();
+  for(let v=xmin;v<=xmax;v+=0.5){
+    const y=Math.exp(-((v-50)**2)/(2*100));
+    const py=h-30-y*(h-70);
+    v===xmin?c.moveTo(X(v),py):c.lineTo(X(v),py);
+  }
+  c.stroke();
+  // sann verdi
+  c.strokeStyle='#62708a';c.setLineDash([5,4]);c.beginPath();c.moveTo(X(50),12);c.lineTo(X(50),h-25);c.stroke();c.setLineDash([]);
+  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';c.fillText('sann μ = 50',X(50),10);
+  c.fillStyle='#8894ad';c.textAlign='left';c.fillText('populasjonen',34,26);
+  if(lastS){
+    // utvalgsprikker
+    lastS.forEach(v=>{
+      c.fillStyle='rgba(46,84,150,.5)';
+      c.beginPath();c.arc(X(v),h-42-Math.random()*24,3.5,0,7);c.fill();
+    });
+    const m=lastS.reduce((a,b)=>a+b,0)/lastS.length;
+    c.strokeStyle='#C0392B';c.lineWidth=2.5;c.beginPath();c.moveTo(X(m),12);c.lineTo(X(m),h-25);c.stroke();
+    c.fillStyle='#C0392B';c.textAlign='center';c.font='bold 16px sans-serif';c.fillText('utvalget: '+fmt(m),X(m),h-12);
+    const bias=m-50;
+    $('outS').innerHTML='<span class="stat">utvalgs-M = '+fmt(m)+'</span>'+
+     '<span class="stat '+(Math.abs(bias)<1?'green':'red')+'">bias = '+fmt(bias)+(Math.abs(bias)<1?' (ok)':': systematisk feil!')+'</span>';
+  }
+}
+
+/* ---------- B: frafall ---------- */
+let lastF=null;
+function runF(){
+  const pdrop=+$('drop').value/100;
+  const K=1000,n=40;let effs=[],sig=0;
+  for(let k=0;k<K;k++){
+    // endringsskår, sann effekt 0 i begge grupper
+    const ctrl=[];for(let i=0;i<n;i++)ctrl.push(rnorm());
+    const treat=[];
+    for(let i=0;i<n;i++){
+      const ch=rnorm();
+      const improved=ch>0;
+      if(!improved&&Math.random()<pdrop)continue; // faller fra
+      treat.push(ch);
+    }
+    if(treat.length<5)continue;
+    const m1=treat.reduce((a,b)=>a+b,0)/treat.length, m2=ctrl.reduce((a,b)=>a+b,0)/n;
+    const v1=treat.reduce((a,b)=>a+(b-m1)**2,0)/(treat.length-1), v2=ctrl.reduce((a,b)=>a+(b-m2)**2,0)/(n-1);
+    const sp2=((treat.length-1)*v1+(n-1)*v2)/(treat.length+n-2);
+    const d=(m1-m2)/Math.sqrt(sp2);
+    const t=(m1-m2)/Math.sqrt(sp2*(1/treat.length+1/n));
+    effs.push(d);
+    if(pT(t,treat.length+n-2)<0.05&&t>0)sig++;
+  }
+  lastF={effs,sig,K:effs.length};
+  drawF();
+}
+function drawF(){
+  const [c,w,h]=fit($('cvF'));
+  if(!lastF){c.fillStyle='#9aa5bb';c.font='bold 18px sans-serif';c.textAlign='center';c.fillText('(kjør simuleringen)',w/2,h/2);return;}
+  // histogram av observerte d-er
+  const bins=new Array(30).fill(0);
+  lastF.effs.forEach(d=>{const b=Math.floor((d+1)/2*30);if(b>=0&&b<30)bins[b]++;});
+  const mx=Math.max(...bins);
+  const X=i=>30+i/30*(w-50);
+  bins.forEach((b,i)=>{
+    c.fillStyle='#2E5496';
+    const bh=b/mx*(h-60);
+    c.fillRect(X(i),h-30-bh,(w-50)/30-2,bh);
+  });
+  const zero=30+(0+1)/2*(w-50);
+  c.strokeStyle='#62708a';c.setLineDash([5,4]);c.beginPath();c.moveTo(zero,10);c.lineTo(zero,h-25);c.stroke();c.setLineDash([]);
+  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';c.fillText('sann effekt = 0',zero,h-8);
+  const md=lastF.effs.reduce((a,b)=>a+b,0)/lastF.effs.length;
+  const mpx=30+(md+1)/2*(w-50);
+  c.strokeStyle='#C0392B';c.lineWidth=2.5;c.beginPath();c.moveTo(mpx,10);c.lineTo(mpx,h-25);c.stroke();
+  c.fillStyle='#C0392B';c.font='bold 16px sans-serif';c.fillText('observert d = '+fmt(md,2),mpx,8);
+  $('outF').innerHTML='<span class="stat '+(Math.abs(md)<0.05?'green':'red')+'">gj.sn. observert d = '+fmt(md,2)+' (sann: 0)</span>'+
+   '<span class="stat '+(lastF.sig/lastF.K<0.04?'green':'red')+'">«signifikant bedre»: '+fmt(100*lastF.sig/lastF.K)+' % av studiene</span>';
+}
+
+/* ---------- C: publikasjon ---------- */
+let lastP=null;
+function runP(){
+  const d0=+$('trued').value,n=40;
+  const studies=[];
+  for(let k=0;k<100;k++){
+    let s1=0,ss1=0,s2=0,ss2=0;
+    for(let i=0;i<n;i++){const x=rnorm()+d0;s1+=x;ss1+=x*x;}
+    for(let i=0;i<n;i++){const x=rnorm();s2+=x;ss2+=x*x;}
+    const m1=s1/n,m2=s2/n;
+    const v1=(ss1-n*m1*m1)/(n-1),v2=(ss2-n*m2*m2)/(n-1);
+    const sp2=(v1+v2)/2, d=(m1-m2)/Math.sqrt(sp2);
+    const t=(m1-m2)/Math.sqrt(sp2*2/n);
+    const p=pT(t,2*n-2);
+    studies.push({d,pub:p<0.05&&t>0});
+  }
+  lastP={studies,d0};
+  drawP();
+}
+function drawP(){
+  const [c,w,h]=fit($('cvPBI'));
+  if(!lastP){c.fillStyle='#9aa5bb';c.font='bold 18px sans-serif';c.textAlign='center';c.fillText('(kjør studiene)',w/2,h/2);return;}
+  const X=d=>30+(d+1)/2.4*(w-50);
+  // akse
+  c.strokeStyle='#d9dee8';c.beginPath();c.moveTo(20,h-40);c.lineTo(w-15,h-40);c.stroke();
+  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';
+  [-0.5,0,0.5,1].forEach(v=>{c.fillText(fmt(v,1),X(v),h-26);});
+  c.fillText('observert d per studie',w/2,h-10);
+  // sann d
+  c.strokeStyle='#2E7D32';c.setLineDash([5,4]);c.beginPath();c.moveTo(X(lastP.d0),14);c.lineTo(X(lastP.d0),h-42);c.stroke();c.setLineDash([]);
+  c.fillStyle='#2E7D32';c.fillText('sann d = '+fmt(lastP.d0,1),X(lastP.d0),12);
+  // studier: prikker, publiserte røde, skuffestudier grå
+  let ys={},pubs=[];
+  lastP.studies.forEach(s=>{
+    const bx=Math.round(X(s.d)/9);
+    ys[bx]=(ys[bx]||0)+1;
+    const py=h-48-ys[bx]*7;
+    c.fillStyle=s.pub?'#C0392B':'rgba(150,160,180,.45)';
+    c.beginPath();c.arc(X(s.d),py,3.4,0,7);c.fill();
+    if(s.pub)pubs.push(s.d);
+  });
+  const mAll=lastP.studies.reduce((a,b)=>a+b.d,0)/lastP.studies.length;
+  const mPub=pubs.length?pubs.reduce((a,b)=>a+b,0)/pubs.length:NaN;
+  $('outP').innerHTML='<span class="stat">alle 100 studier: gj.sn. d = '+fmt(mAll,2)+'</span>'+
+   (pubs.length?'<span class="stat red">de '+pubs.length+' publiserte: gj.sn. d = '+fmt(mPub,2)+'</span>':'<span class="stat green">ingenting «publisert» denne gangen</span>')+
+   (pubs.length?'<span class="stat red">litteraturen overdriver med '+fmt(mPub-lastP.d0,2)+'</span>':'');
+}
+
+/* ---------- tabs & wiring ---------- */
+function show(which){
+  ['S','F','P'].forEach(k=>{
+    $('mode'+k).classList.toggle('hide',k!==which);
+    $('tab'+k).classList.toggle('on',k===which);
+  });
+  __fsRedraw();
+}
+$('tabS').onclick=()=>show('S');
+$('tabF').onclick=()=>show('F');
+$('tabP').onclick=()=>show('P');
+$('sel').oninput=()=>$('selOut').textContent=$('sel').value;
+$('drop').oninput=()=>$('dropOut').textContent=$('drop').value+' %';
+$('trued').oninput=()=>$('dOutBI').textContent=fmt(+$('trued').value,1);
+$('runS').onclick=runS;
+$('runF').onclick=runF;
+$('runP').onclick=runP;
+const __fsRedraw=()=>{
+  if(!$('modeS').classList.contains('hide'))drawS();
+  else if(!$('modeF').classList.contains('hide'))drawF();
+  else drawP();
+};
+(function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
+const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
+window.addEventListener('resize',kick);
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{kick();setTimeout(safe,600);}));
+let __mis=0;
+setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
+ document.querySelectorAll('canvas').forEach(c=>{if(c.clientWidth>0&&c.width>0&&Math.abs(c.width-Math.round(c.clientWidth*r))>2)bad=true;});
+ __mis=bad?__mis+1:0;
+ if(__mis>=2){__mis=0;safe();}},700);})();
+drawS();
+})();
+
+</script>
+<script>
 /* ===== PSY300 anonym bruksstatistikk =====================================
    Sender to signaler til det samme Apps Script-endepunktet som MCQ-appen:
    ett når appen åpnes, ett når fanen lukkes (med antall sekunder aktiv og
@@ -352,7 +1112,7 @@ const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA0
      ?rolle=student. Ingen innlogging, ingen personopplysninger.            */
   function PSY300_ROLLE(){
     try{
-      var q=new URLSearchParams(location.search).get("rolle");
+      var q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'')).get("rolle");
       if(q==="underviser"||q==="student"){ localStorage.setItem("psy300_rolle",q); }
       return localStorage.getItem("psy300_rolle")||"student";
     }catch(e){ return "student"; }

@@ -1901,7 +1901,7 @@ function kFyllTab(){
   }
   Array.from(document.querySelectorAll('.fane')).forEach(b=>b.onclick=()=>vis(b.dataset.fane));
   // dyplenke: ?fane=p gir egen QR-kode per tema
-  const q=new URLSearchParams(location.search).get('fane');
+  const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'')).get('fane');
   if(faner.indexOf(q)>=0) vis(q);
   window.addEventListener('resize',()=>{ pTegnQQ(); pTegnRate(); kTegnFord(); kTegnRate(); });
 })();
@@ -1924,7 +1924,7 @@ const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA0
   });
   function PSY300_ROLLE(){
     try{
-      var q=new URLSearchParams(location.search).get("rolle");
+      var q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'')).get("rolle");
       if(q==="underviser"||q==="student"){ localStorage.setItem("psy300_rolle",q); }
       return localStorage.getItem("psy300_rolle")||"student";
     }catch(e){ return "student"; }

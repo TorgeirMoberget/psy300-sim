@@ -56,14 +56,32 @@ body.pres .keybox{font-size:18px}
 .lede{min-height:2.9em;margin:0 0 4px}
 .fane{background:#eef1f7;color:var(--navy);font-size:16.5px}
 .fane.on{background:var(--navy);color:#fff}
+
+/* ===== Fordypning: hovedpoenget står framme, detaljene ligger bak et klikk =====
+   Innholdet er ikke fjernet, bare lukket. Det som er synlig ved åpning, skal
+   være det en student må ha med seg; resten er for den som vil grave. */
+details.mer{margin:8px 0 0;border-top:1px solid rgba(0,0,0,.10);padding-top:7px}
+details.mer>summary{cursor:pointer;font-size:14.5px;font-weight:700;color:#1C7293;list-style:none;
+  display:inline-flex;align-items:center;gap:6px;padding:2px 0}
+details.mer>summary::-webkit-details-marker{display:none}
+details.mer>summary::before{content:"▸";font-size:12px;transition:transform .15s}
+details.mer[open]>summary::before{transform:rotate(90deg)}
+details.mer>summary:hover{text-decoration:underline}
+details.mer>*:not(summary){margin-top:8px}
+details.ordbok{border:1px solid var(--line,#d9dee8);border-radius:12px;background:#fff;padding:12px 16px;margin:14px 0}
+details.ordbok>summary{cursor:pointer;font-size:18px;font-weight:700;color:#1F3864;list-style:none}
+details.ordbok>summary::-webkit-details-marker{display:none}
+details.ordbok>summary::before{content:"▸ ";font-size:14px;color:#1C7293}
+details.ordbok[open]>summary::before{content:"▾ "}
 </style></head><body>
 <header><h1>Sim 3 · Fra populasjon til utvalg og tilbake igjen</h1>
-<p>PSY300 · Forelesning 1–2 · Du har et utvalg, sannheten ligger i populasjonen. Hvor godt treffer estimatene dine — og hvor mye spriker de fra studie til studie?</p></header>
+<p>PSY300 · Forelesning 1–2 · Du har &eacute;tt utvalg, sannheten ligger i populasjonen. Fire faner: hvor mye gjennomsnittene spriker fra studie til studie, hva et konfidensintervall egentlig lover, hvor godt estimatene treffer &mdash; og hvorfor vi deler p&aring; n &minus; 1.</p></header>
 <div class="wrap">
 <div class="rad" style="gap:6px;margin:2px 0 6px">
 <button class="fane on" data-fane="utvalg">1 · Populasjon, utvalg og utvalgsfordeling</button>
-<button class="fane" data-fane="estimat">2 · Hvor godt estimerer vi?</button>
-<button class="fane" data-fane="frihet">3 · Hvorfor n − 1?</button>
+<button class="fane" data-fane="ki">2 · Konfidensintervaller</button>
+<button class="fane" data-fane="estimat">3 · Hvor godt estimerer vi?</button>
+<button class="fane" data-fane="frihet">4 · Hvorfor n − 1?</button>
 </div>
 <div id="fane-utvalg">
 
@@ -159,16 +177,50 @@ passer der &mdash; og hvor godt den passer p&aring; gjennomsnittene.
 </div>
 
 <div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
-<b>Standardfeilen er ikke spredningen i data, men spredningen i mulige gjennomsnitt fra utvalg til utvalg.</b>
-Populasjonen har &eacute;n spredning, og den endrer seg ikke uansett hvor mange du m&aring;ler. Men gjennomsnittene fra
+<b>Standardfeilen er ikke spredningen i data, men spredningen i mulige gjennomsnitt fra utvalg til utvalg.</b><details class="mer"><summary>Mer om dette</summary><div>Populasjonen har &eacute;n spredning, og den endrer seg ikke uansett hvor mange du m&aring;ler. Men gjennomsnittene fra
 gjentatte studier danner sin egen, mye smalere fordeling &mdash; og det er <i>den</i> spredningen som avgj&oslash;r hvor
 sikker du kan v&aelig;re p&aring; ditt ene resultat.
-<div style="margin-top:8px;font-size:18px;color:var(--navy);font-weight:600">Standardfeilen = standardavviket / kvadratroten av antall deltakere &nbsp;(SE = &sigma;/&radic;n)</div>
+<div style="margin-top:8px;font-size:18px;color:var(--navy);font-weight:600">Standardfeilen = standardavviket / kvadratroten av antall deltakere &nbsp;(SE = &sigma;/&radic;n)</div></div></details>
 <div style="margin-top:6px"><b>Firedoble n, og du halverer usikkerheten.</b> Legg ogs&aring; merke til at
 utvalgsfordelingen blir symmetrisk selv n&aring;r populasjonen er skjev &mdash; det er sentralgrenseteoremet, og du
 ser det tydeligst p&aring; inntekt og reaksjonstid.</div></div></div>
 
 </div><!-- /fane-utvalg -->
+
+<div id="fane-ki" class="hide">
+<div class="card">
+<h2>Oppsett</h2>
+<div style="margin:4px 0 8px"><label style="font-weight:600;color:var(--navy);font-size:16px">Variabel: <select id="vsel3"><option value="dep" selected>Depresjon (pre) · Terapi-RCT</option><option value="undf">Undertrykkende forsvar (pre) · Terapi-RCT</option><option value="agg">Aggresjonsundertrykking (pre) · Terapi-RCT</option><option value="selvt">Statistikk-selvtillit (pre) · arbeidskravet</option><option value="selvk">Selvkritisk perfeksjonisme · arbeidskravet</option><option value="angst">Angstsensitivitet · arbeidskravet</option></select></label></div>
+<p class="muted">Hver linje under er én studie: et tilfeldig utvalg fra <span id="popInfo3"><b>Depresjon (pre)</b> (Terapi-RCT-populasjonen, N = 10 000, μ = 30,04)</span>, med konfidensintervallet x̄ ± t<sub>krit</sub>·s/√n. Den røde vertikale streken er sannheten (μ), som forskeren aldri ser.</p>
+<div class="sl">
+<label>Konfidensnivå</label>
+<select id="level"><option value="0.80">80 %</option><option value="0.90">90 %</option><option value="0.95" selected>95 %</option><option value="0.99">99 %</option></select>
+<label style="min-width:60px">n</label>
+<input type="range" id="n" min="5" max="300" value="75"><output id="nOut">75</output>
+</div>
+<button class="btn" id="run">Trekk 100 nye studier</button>
+<button class="btn2" id="run1000">+1 000 (bare telling)</button>
+<button class="btn2" id="resetKI">Nullstill telleren</button>
+</div>
+
+<div class="card">
+<h2>100 konfidensintervaller</h2>
+<canvas id="cv" height="520"></canvas>
+<div id="stats" class="muted" style="margin-top:8px">Trykk «Trekk 100 nye studier».</div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>«95 % konfidens» er en egenskap ved <i>prosedyren</i>, ikke ved det ene intervallet du har foran deg. Ditt intervall inneholder enten μ eller ikke; det er metoden som treffer 95 av 100 ganger i det lange løp.</b></div></div>
+
+<div class="card">
+<h2>Hvorfor t og ikke z? Fordelingen med de tunge halene</h2>
+<p class="muted">Se <b>Sim 17</b> for den grundige versjonen med skala fra n = 2 til 120. Her holder vi oss til hva det betyr for intervallet. Konfidensintervallet bruker <b>t</b><sub>krit</sub>, ikke 1,96. Grunnen er at vi ikke kjenner populasjonens standardavvik σ, men må estimere det med s fra det samme lille utvalget, og det estimatet er selv usikkert. t-fordelingen (blå) legger inn nettopp den ekstra usikkerheten: den er litt lavere på midten og <b>tyngre i halene</b> enn normalfordelingen (grå stiplet). Dra n-slideren over og se hva som skjer.</p>
+<canvas id="cvT" height="250"></canvas>
+<div id="statsT"></div>
+<div class="note" id="verdictT"></div>
+</div>
+
+<div class="card note"><b>Poenget:</b> «95 %» beskriver <b>metoden</b>, ikke ett enkelt intervall. Over mange studier fanger 95 % av intervallene μ; et konkret intervall enten inneholder μ eller ikke. Se også: (1) med lavere konfidensnivå blir intervallene smalere, men bommer oftere; (2) med større n blir intervallene smalere <i>uten</i> at dekningen endres.</div>
+</div><!-- /fane-ki -->
 
 <div id="fane-estimat" class="hide">
 <div class="card">
@@ -208,10 +260,10 @@ ser det tydeligst p&aring; inntekt og reaksjonstid.</div></div></div>
 Med ett utvalg f&aring;r du &eacute;n verdi for x&#772; og &eacute;n for s, og de ser like presise ut. B&aring;ndene her viser hva de
 i virkeligheten er: et omr&aring;de der 95 % av parallelle studier ville havnet. Ved lav n er det omr&aring;det
 ubehagelig bredt, og det krymper bare med kvadratroten av n.
-<div style="margin-top:8px"><b>De to parameterne oppf&oslash;rer seg dessuten ulikt.</b> Gjennomsnittsb&aring;ndet ligger
+<div style="margin-top:8px"><details class="mer"><summary>Mer om dette</summary><div><b>De to parameterne oppf&oslash;rer seg dessuten ulikt.</b> Gjennomsnittsb&aring;ndet ligger
 symmetrisk rundt &mu; &mdash; x&#772; bommer like ofte for h&oslash;yt som for lavt. Standardavviksb&aring;ndet er skjevt: s kan
 aldri bli negativ, men kan gjerne bli dobbelt s&aring; stor som &sigma;. Derfor er det farligere &aring; stole p&aring; en spredning
-fra et lite utvalg enn p&aring; et gjennomsnitt fra det samme utvalget.</div></div></div>
+fra et lite utvalg enn p&aring; et gjennomsnitt fra det samme utvalget.</div></details></div></div></div>
 
 </div><!-- /fane-estimat -->
 
@@ -223,11 +275,8 @@ fra et lite utvalg enn p&aring; et gjennomsnitt fra det samme utvalget.</div></d
 <b>Gjennomsnittet av dine egne tall er, per definisjon, det punktet som ligger n&aelig;rmest dem.</b>
 M&aring;ler du avstandene fra det, f&aring;r du derfor alltid en mindre kvadratsum enn om du m&aring;lte fra den sanne &mu;.
 Ikke av og til &mdash; <i>alltid</i>. Deler du da p&aring; n, blir anslaget systematisk for lavt. &Aring; dele p&aring; n &minus; 1 er n&oslash;yaktig den kompensasjonen som trengs.
-<div class="par">
-<span class="mrk">Sagt annerledes:</span><span>du brukte dataene &eacute;n gang allerede &mdash; til &aring; finne gjennomsnittet. Den bruken koster deg &eacute;n opplysning, og n &minus; 1 er det du har igjen &aring; betale med.</span>
-<span class="mrk">Helt konkret:</span><span>kjenner du gjennomsnittet av ti tall og ni av tallene, s&aring; er det tiende <b>gitt</b>. Det kan ikke velges fritt. Ni av de ti avvikene er frie; det siste f&oslash;lger av de andre. Derfor n &minus; 1 frihetsgrader.</span>
-</div>
-</div>
+<div class="par"><details class="mer"><summary>Mer om dette: frihetsgrader</summary><div><span class="mrk">Sagt annerledes:</span><span>du brukte dataene &eacute;n gang allerede &mdash; til &aring; finne gjennomsnittet. Den bruken koster deg &eacute;n opplysning, og n &minus; 1 er det du har igjen &aring; betale med.</span>
+<span class="mrk">Helt konkret:</span><span>kjenner du gjennomsnittet av ti tall og ni av tallene, s&aring; er det tiende <b>gitt</b>. Det kan ikke velges fritt. Ni av de ti avvikene er frie; det siste f&oslash;lger av de andre. Derfor n &minus; 1 frihetsgrader.</span></div></details></div></div>
 <p class="muted">Under st&aring;r det siste utvalget du trakk i fane 1. Legg merke til at kvadratsummen rundt utvalgets eget gjennomsnitt er mindre enn den rundt den sanne &mu; &mdash; og at differansen er n&oslash;yaktig <i>n</i> ganger den kvadrerte bommen p&aring; sentrum.</p>
 <div id="dfTab"></div>
 <div id="dfNote" class="note"></div>
@@ -244,14 +293,13 @@ Ikke av og til &mdash; <i>alltid</i>. Deler du da p&aring; n, blir anslaget syst
 <div class="teori">
 <span class="lbl">Teorien sier</span>
 <div class="pastand">Deler du kvadratsummen på <b>n − 1</b>, treffer du populasjonsvariansen i gjennomsnitt. Deler du på <b>n</b>, bommer du med en kjent og eksakt brøk. Og tar du kvadratroten, oppstår en <i>ny</i> skjevhet som ikke fantes før.</div>
-<ul>
+<details class="mer"><summary>Mer om dette: hvorfor s bommer selv om s² treffer</summary><ul>
 <li><b>s² er forventningsrett:</b> gjennomsnittet av s² over uendelig mange utvalg er nøyaktig σ². Ingen skjevhet.</li>
 <li><b>SS/n er systematisk for liten:</b> gjennomsnittet er σ² · (n − 1)/n, altså for lite med nøyaktig 1/n. Ved n = 5 er det 20 % for lite; ved n = 75, 1,3 %.</li>
 <li><b>s er likevel ikke forventningsrett for σ.</b> Kvadratroten er en konkav funksjon, og gjennomsnittet av røttene er alltid mindre enn roten av gjennomsnittet (Jensens ulikhet). Utvalg med for stor s² løftes mindre opp enn utvalg med for liten s² trekkes ned.</li>
 <li>Under normalfordeling er den skjevheten <b>E[s] = c₄(n) · σ</b>, med c₄(5) = 0,940 og c₄(75) = 0,997. Det er nettopp restavviket i panelet over.</li>
-</ul>
-<div class="tall" id="varTeori"></div>
-</div>
+</ul></details>
+<div class="tall" id="varTeori"></div></div>
 <div style="margin:6px 0 2px">
 <label class="ck" style="margin-left:0"><input type="checkbox" id="varVisN1" checked> Vis <b style="color:#7B3F9E">s² (deler på n − 1)</b></label>
 <label class="ck"><input type="checkbox" id="varVisN" checked> Vis <b style="color:#B26A00">SS/n (deler på n)</b></label>
@@ -285,18 +333,43 @@ Ikke av og til &mdash; <i>alltid</i>. Deler du da p&aring; n, blir anslaget syst
 M&aring;ler du avvikene fra x&#772; i stedet for fra &mu;, blir kvadratsummen for liten hver eneste gang, ikke av og til.
 &Aring; dele p&aring; n &minus; 1 er n&oslash;yaktig den kompensasjonen som trengs, og korreksjonen er stor n&aring;r n er liten og
 forsvinner n&aring;r n er stor &mdash; alts&aring; nettopp der du trenger den.
-<div style="margin-top:8px"><b>Men hold to ting fra hverandre.</b> Frihetsgradene fjerner en <i>systematisk</i>
+<div style="margin-top:8px"><details class="mer"><summary>Mer om dette</summary><div><b>Men hold to ting fra hverandre.</b> Frihetsgradene fjerner en <i>systematisk</i>
 skjevhet. De gj&oslash;r ikke estimatet presist. Ved n = 5 flytter korreksjonen midtlinja rundt 10 %, mens de midterste
 95 % av s-verdiene spenner over en faktor p&aring; fire. Bias og usikkerhet er to ulike problemer, og bare det ene
-lar seg regne bort.</div></div></div>
+lar seg regne bort.</div></details></div></div></div>
 
+<div class="card">
+<h2>4. Hva korreksjonen koster deg hvis du dropper den</h2>
+<p class="muted">Panelene over viser at estimatet blir skjevt. Her går vi ett skritt videre: hva skjer med standardfeilen og med konfidensintervallets dekning når skjevheten får stå?</p>
+</div>
+<div class="card">
+<h2>Oppsett</h2>
+<p class="muted">Populasjonen har kjent σ = 10 (σ² = 100). Vi trekker mange utvalg og estimerer variansen på tre måter: dele kvadratsummen rundt <b>utvalgsgjennomsnittet x̄</b> på n, på n − 1, og (bare mulig i simulering!) dele kvadratsummen rundt den <b>sanne μ</b> på n.</p>
+<div class="sl"><label>Utvalgsstørrelse n</label><input type="range" id="nN1" min="2" max="30" value="5"><output id="nOutN1">5</output></div>
+<button class="btn" id="runN1">Trekk 20 000 utvalg</button>
+<div id="out"></div>
+</div>
+
+<div class="card">
+<h2>Gjennomsnittlig variansestimat (grønn strek = sann σ² = 100)</h2>
+<canvas id="cvN1" height="230"></canvas>
+<div class="note"><b>Forklaringen ligger i den grå søylen:</b> deler du på n men bruker den SANNE μ, treffer du perfekt. Problemet er altså ikke n, men at x̄ per definisjon legger seg midt i akkurat DITT utvalg. Avvikene rundt x̄ er derfor systematisk mindre enn avvikene rundt μ (i snitt nøyaktig faktoren (n − 1)/n). Utvalget «smigrer seg selv» med én frihetsgrad, og n − 1 korrigerer regnskapet. Prøv n = 2: da er halve variasjonen «spist opp» av x̄!</div>
+</div>
+
+
+
+<div class="card">
+<h2>Konsekvensen for standardfeil og konfidensintervaller</h2>
+<p class="muted">Vi lager 95 %-konfidensintervaller for gjennomsnittet (t-kritisk verdi, df = n − 1) med de to variansestimatene og teller hvor ofte intervallet faktisk fanger sann μ.</p>
+<canvas id="cvCI" height="170"></canvas>
+<div class="note" id="ciNote"><b>Kjør simuleringen.</b> Med n-varianten blir standardfeilen for liten → intervallene for smale → dekningen faller under 95 % (verst ved liten n). Med n − 1 holder «95 %» det den lover. Dette er samme løfte-logikk som i Sim 14: en prosedyre som sier 95 % skal LEVERE 95 %.</div>
+</div>
 </div><!-- /fane-frihet -->
 
 
 
 
-<div class="card docs" id="ordforklaringer">
-<h2>Ordforklaringer</h2>
+<details class="ordbok" id="ordforklaringer"><summary>Ordforklaringer</summary>
 <div class="gloss">
 <p><b>M</b> — gjennomsnittet i et utvalg (skrives også x̄). <b>Median</b> = midtverdien når verdiene sorteres. <b>Modus</b> = den hyppigste verdien.<br>
 <b>SD</b> — standardavvik: typisk avstand fra gjennomsnittet, i variabelens egen enhet. Kvadratet er variansen.<br>
@@ -309,9 +382,16 @@ lar seg regne bort.</div></div></div>
 <b>Utvalgsfordeling</b> — fordelingen av en statistikk (f.eks. gjennomsnittet) over mange tenkte gjentakelser av studien. Ikke det samme som fordelingen av rådata.<br>
 <b>b</b> — regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren. <b>β</b> er den standardiserte varianten (i standardavvik).<br>
 <b>r</b> — Pearsons korrelasjon: styrken på den <i>lineære</i> sammenhengen mellom to variabler (−1 til +1). <b>Spearmans rho</b> gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.<br>
-<b>RCT</b> — randomisert kontrollert studie. Emnets <b>Terapi-RCT-studie</b> sammenligner <b>ISTDP</b> (intensiv dynamisk korttidsterapi) med venteliste, N = 86.</p>
-</div>
-</div>
+<b>RCT</b> — randomisert kontrollert studie. Emnets <b>Terapi-RCT-studie</b> sammenligner <b>ISTDP</b> (intensiv dynamisk korttidsterapi) med venteliste, N = 86.<br>
+<b>KI</b> — konfidensintervall: estimat ± kritisk verdi · SE. «95 %» beskriver metoden over mange studier, ikke sannsynligheten for det ene intervallet du har.<br>
+<b>df</b> — frihetsgrader (degrees of freedom): antall verdier som fritt kan variere gitt det du allerede har estimert.<br>
+<b>t</b> — testobservator for gjennomsnitt: forskjell delt på standardfeil. <b>t-fordelingen</b> er litt tyngre i halene enn normalfordelingen ved lav df.<br>
+<b>t-fordelingen</b> er litt tyngre i halene enn normalfordelingen ved lav df.<br>
+<b>JASP</b> — statistikkprogrammet vi bruker i emnet (gratis og åpen kildekode).<br>
+<b>SS</b> — kvadratsum (sum of squares): summen av kvadrerte avvik. <b>SSE</b> er kvadratsummen av feilene (residualene). <b>MS</b> = SS/df, altså en varians.<br>
+<b>SSE</b> er kvadratsummen av feilene (residualene). <b>MS</b> = SS/df, altså en varians.<br>
+<b>MS</b> = SS/df, altså en varians.</p>
+</div></details>
 
 </div>
 
@@ -919,6 +999,258 @@ setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
  if(__mis>=2){__mis=0;safe();}},700);})();
 redraw();
 
+/* ===== Fane 2: konfidensintervaller — hentet fra den tidligere Sim 6.
+   Kjøres i sin egen lukking fordi begge appene definerer $, fmt, FREQ og
+   updateStats. Id-ene er unike på tvers, så DOM-en kolliderer ikke. */
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const fmt=(x,d=2)=>x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+
+// samme seks ekte variabler som i Sim 3
+const VARS3={"dep":{"lab":"Depresjon (pre)","kilde":"Terapi-RCT-populasjonen, N = 10 000","freq":{"30":910,"34":591,"29":930,"35":1778,"26":617,"28":812,"27":704,"33":736,"32":811,"31":852,"22":151,"25":403,"24":330,"23":206,"21":80,"18":9,"20":49,"19":23,"17":6,"14":1,"15":1},"lo":14,"hi":35,"step":1,"mu":30.05,"sigma":3.79},"undf":{"lab":"Undertrykkende forsvar (pre)","kilde":"Terapi-RCT-populasjonen, N = 10 000","freq":{"90":281,"85":380,"70":204,"66":100,"75":304,"82":411,"89":307,"81":348,"84":379,"72":228,"93":225,"80":384,"77":383,"79":417,"100":69,"65":105,"64":71,"71":212,"86":335,"52":6,"96":145,"97":127,"92":228,"76":339,"83":393,"73":275,"61":43,"101":75,"87":368,"91":282,"60":36,"74":293,"99":105,"94":213,"88":359,"78":337,"67":124,"102":60,"63":79,"69":146,"98":96,"62":56,"95":181,"103":206,"59":28,"68":162,"58":20,"56":13,"49":3,"50":9,"53":8,"55":17,"48":3,"54":7,"57":14,"51":1},"lo":48,"hi":103,"step":1,"mu":81.96,"sigma":9.92},"agg":{"lab":"Aggresjonsundertrykking (pre)","kilde":"Terapi-RCT-populasjonen, N = 10 000","freq":{"25":502,"35":363,"37":152,"26":656,"33":718,"27":803,"31":1012,"29":1106,"28":977,"23":231,"30":1013,"34":521,"32":841,"20":43,"39":47,"36":252,"38":85,"24":382,"22":140,"21":83,"40":16,"19":26,"18":8,"15":1,"41":8,"17":4,"16":3,"42":4,"43":3},"lo":15,"hi":43,"step":1,"mu":29.55,"sigma":3.76},"selvt":{"lab":"Statistikk-selvtillit (pre)","kilde":"Simulert populasjon, N = 10 000 (bygget fra arbeidskravdataene, N = 391)","freq":{"4.4":403,"1.8":279,"3.0":951,"4.0":862,"3.4":825,"3.6":781,"3.8":778,"4.8":99,"2.6":668,"2.8":785,"2.4":646,"2.2":424,"1.6":150,"4.2":625,"3.2":1035,"2.0":341,"1.2":48,"4.6":144,"1.4":91,"1.0":11,"5.0":54},"lo":1.0,"hi":5.0,"step":0.2,"mu":3.2,"sigma":0.78},"selvk":{"lab":"Selvkritisk perfeksjonisme (trekk)","kilde":"Simulert populasjon, N = 10 000 (bygget fra arbeidskravdataene, N = 391)","freq":{"2.0":485,"3.2":867,"3.6":934,"1.8":430,"1.6":238,"3.4":797,"3.8":831,"2.4":577,"2.2":476,"2.8":795,"3.0":858,"4.0":563,"1.0":78,"4.4":268,"1.2":93,"2.6":770,"5.0":47,"4.8":155,"4.2":402,"4.6":214,"1.4":122},"lo":1.0,"hi":5.0,"step":0.2,"mu":3.08,"sigma":0.84},"angst":{"lab":"Angstsensitivitet (trekk)","kilde":"Simulert populasjon, N = 10 000 (bygget fra arbeidskravdataene, N = 391)","freq":{"0.2":294,"0.6":492,"1.0":804,"0.8":627,"1.8":875,"1.2":889,"1.6":884,"2.2":686,"2.4":526,"2.8":451,"3.0":263,"3.2":293,"4.0":16,"0.4":423,"2.6":485,"3.4":233,"1.4":876,"2.0":688,"0.0":71,"3.8":31,"3.6":93},"lo":0.0,"hi":4.0,"step":0.2,"mu":1.68,"sigma":0.85}};
+let FREQ,POP,MU;
+function setVar3(k){const v=VARS3[k];FREQ=v.freq;MU=v.mu;POP=[];
+  for(const q in FREQ){const x=+q;for(let i=0;i<FREQ[q];i++)POP.push(x);}
+  const el=$('popInfo3');if(el)el.innerHTML='<b>'+v.lab+'</b> ('+v.kilde+', μ = '+fmt(MU)+')';}
+setVar3('dep');
+
+// t distribution (for critical values)
+function lgamma(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];let y=x,tmp=x+5.5;tmp-=(x+0.5)*Math.log(tmp);let ser=1.000000000190015;for(let j=0;j<6;j++)ser+=c[j]/++y;return -tmp+Math.log(2.5066282746310005*ser/x);}
+function betacf(a,b,x){const MAXIT=200,EPS=3e-12,FPMIN=1e-30;const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<FPMIN)d=FPMIN;d=1/d;let h=d;for(let m=1;m<=MAXIT;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;h*=d*c;aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<EPS)break;}return h;}
+function ibeta(a,b,x){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+function tcdf(t,df){const x=df/(df+t*t);const p=0.5*ibeta(df/2,0.5,x);return t>0?1-p:p;}
+function tcrit(level,df){ // two-sided critical value by bisection
+  const target=1-(1-level)/2;
+  let lo=0,hi=200;
+  for(let i=0;i<80;i++){const mid=(lo+hi)/2;if(tcdf(mid,df)<target)lo=mid;else hi=mid;}
+  return (lo+hi)/2;
+}
+
+let intervals=[]; // {lo,hi,mean,hit}
+let cumHit=0,cumTot=0;
+
+function makeCI(n,level){
+  let s=0,ss=0;
+  for(let i=0;i<n;i++){const v=POP[(Math.random()*POP.length)|0];s+=v;ss+=v*v;}
+  const m=s/n,sdv=Math.sqrt((ss-n*m*m)/(n-1));
+  const tc=makeCI._tc, half=tc*sdv/Math.sqrt(n);
+  return {lo:m-half,hi:m+half,mean:m,hit:(m-half<=MU&&MU<=m+half)};
+}
+
+function draw(){
+  const cv=$('cv'),r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';
+  const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);
+  c.clearRect(0,0,w,h);
+  if(!intervals.length){c.fillStyle='#9aa5bb';c.font='bold 18px sans-serif';c.textAlign='center';c.fillText('(ingen studier ennå)',w/2,h/2);return;}
+  // x-range from data
+  let lo=Math.min(...intervals.map(i=>i.lo)),hi=Math.max(...intervals.map(i=>i.hi));
+  lo=Math.min(lo,MU-0.5);hi=Math.max(hi,MU+0.5);
+  const pad=(hi-lo)*0.05;lo-=pad;hi+=pad;
+  const X=v=>(v-lo)/(hi-lo)*(w-20)+10;
+  const y0=18,rowH=(h-40-y0)/intervals.length;
+  // mu line
+  c.strokeStyle='#C0392B';c.lineWidth=2;
+  c.beginPath();c.moveTo(X(MU),6);c.lineTo(X(MU),h-30);c.stroke();
+  c.fillStyle='#C0392B';c.font='bold 16px sans-serif';c.textAlign='left';
+  c.fillText('μ = '+fmt(MU),X(MU)+5,14);
+  intervals.forEach((iv,i)=>{
+    const y=y0+i*rowH+rowH/2;
+    c.strokeStyle=iv.hit?'#7ea3d6':'#C0392B';
+    c.lineWidth=iv.hit?1.6:2.4;
+    c.beginPath();c.moveTo(X(iv.lo),y);c.lineTo(X(iv.hi),y);c.stroke();
+    c.fillStyle=iv.hit?'#2E5496':'#C0392B';
+    c.beginPath();c.arc(X(iv.mean),y,2,0,7);c.fill();
+  });
+  // axis
+  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';
+  for(let i=0;i<=4;i++){const v=lo+(hi-lo)*i/4;c.fillText(fmt(v,1),X(v),h-16);}
+}
+
+function npdf(z){return Math.exp(-z*z/2)/Math.sqrt(2*Math.PI);}
+function tpdf(t,df){return Math.exp(lgamma((df+1)/2)-lgamma(df/2))/Math.sqrt(df*Math.PI)*Math.pow(1+t*t/df,-(df+1)/2);}
+function drawT(){
+  const cv=$('cvT'); if(!cv)return;
+  const r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';
+  const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);c.clearRect(0,0,w,h);
+  const n=+$('n').value, df=n-1, lvl=+$('level').value;
+  const tc=tcrit(lvl,df), zc=tcrit(lvl,100000);
+  const LO=-5,HI=5,x0=16,y0=h-42,pw=w-32,ph=y0-22;
+  const X=v=>x0+(v-LO)/(HI-LO)*pw, mx=npdf(0), Y=y=>y0-y/mx*ph;
+  // haleområdene under t
+  const tail=(a,b)=>{c.fillStyle='rgba(192,57,43,0.35)';c.beginPath();c.moveTo(X(a),y0);
+    for(let i=0;i<=60;i++){const v=a+(b-a)*i/60;c.lineTo(X(v),Y(tpdf(v,df)));}c.lineTo(X(b),y0);c.closePath();c.fill();};
+  tail(tc,HI); tail(LO,-tc);
+  // normalfordelingen
+  c.strokeStyle='#8894ad';c.setLineDash([6,4]);c.lineWidth=2.5;c.beginPath();
+  for(let i=0;i<=300;i++){const v=LO+(HI-LO)*i/300;const x=X(v),y=Y(npdf(v));if(i===0)c.moveTo(x,y);else c.lineTo(x,y);}
+  c.stroke();c.setLineDash([]);
+  // t-fordelingen
+  c.strokeStyle='#2E5496';c.lineWidth=3.5;c.beginPath();
+  for(let i=0;i<=300;i++){const v=LO+(HI-LO)*i/300;const x=X(v),y=Y(tpdf(v,df));if(i===0)c.moveTo(x,y);else c.lineTo(x,y);}
+  c.stroke();
+  // kritiske verdier
+  const mark=(v,col,lab,dy)=>{c.strokeStyle=col;c.lineWidth=2;c.setLineDash([5,4]);
+    c.beginPath();c.moveTo(X(v),16);c.lineTo(X(v),y0);c.stroke();c.setLineDash([]);
+    c.fillStyle=col;c.font='bold 15px sans-serif';c.textAlign='center';c.fillText(lab,X(v),dy);};
+  mark(tc,'#2E5496','t = '+fmt(tc),13);
+  mark(zc,'#8894ad','z = '+fmt(zc),31);
+  c.fillStyle='#2E5496';c.font='bold 16px sans-serif';c.textAlign='left';
+  c.fillText('t-fordelingen (df = '+df+')',x0+6,Y(tpdf(0,df))+2);
+  c.fillStyle='#8894ad';c.fillText('normalfordelingen',x0+6,Y(npdf(0))-14);
+  c.strokeStyle='#b9c3d6';c.lineWidth=1.5;c.beginPath();c.moveTo(x0,y0);c.lineTo(x0+pw,y0);c.stroke();
+  c.fillStyle='#62708a';c.font='bold 15px sans-serif';c.textAlign='center';
+  for(let v=-4;v<=4;v+=2)c.fillText(v,X(v),y0+18);
+  c.fillText('antall standardfeil fra gjennomsnittet',x0+pw/2,h-4);
+  const ekstra=100*(tc/zc-1);
+  $('statsT').innerHTML='<span class="stat">n = '+n+' → df = '+df+'</span>'+
+    '<span class="stat">t-kritisk = '+fmt(tc,3)+'</span>'+
+    '<span class="stat">z-kritisk = '+fmt(zc,3)+'</span>'+
+    '<span class="stat'+(ekstra>5?' red':' green')+'">intervallet blir '+fmt(ekstra,1)+' % bredere enn med z</span>';
+  $('verdictT').innerHTML = df<10
+    ? 'Med bare '+df+' frihetsgrader er t-fordelingen tydelig tyngre i halene, og t-kritisk ('+fmt(tc,2)+') ligger langt over 1,96. Det er <b>prisen for å måtte estimere σ</b>: intervallet må være bredere for likevel å fange μ i 95 % av tilfellene. Bruker du 1,96 her, får du for smale intervaller og en dekning under det du lovet — akkurat samme feil som å dele på n i stedet for n − 1 (Sim 4).'
+    : (df<40 ? 'Med df = '+df+' er t-fordelingen fortsatt litt bredere enn normalfordelingen, men forskjellen er i ferd med å bli liten ('+fmt(ekstra,1)+' %).'
+             : 'Med df = '+df+' er t-fordelingen praktisk talt sammenfallende med normalfordelingen (bare '+fmt(ekstra,1)+' % forskjell). Derfor kan man ved store utvalg bruke 1,96 uten at det merkes — men t er alltid riktig, og JASP bruker t uansett.');
+}
+function updateStats(runHit,runTot){
+  const lvl=+$('level').value;
+  let s='';
+  if(runTot)s+='<span class="stat">Denne runden: '+runHit+' av '+runTot+' fanget μ</span>'+
+    '<span class="stat '+(runHit<runTot?'red':'')+'">'+(runTot-runHit)+' bommet</span>';
+  if(cumTot)s+='<span class="stat green">Kumulativt: '+fmt(100*cumHit/cumTot,1)+' % dekning ('+cumTot.toLocaleString('nb-NO')+' studier; forventet '+fmt(lvl*100,0)+' %)</span>';
+  $('stats').innerHTML=s||'Trykk «Trekk 100 nye studier».';
+}
+
+function run100(){
+  const n=+$('n').value,lvl=+$('level').value;
+  makeCI._tc=tcrit(lvl,n-1);
+  intervals=[];let hit=0;
+  for(let i=0;i<100;i++){const iv=makeCI(n,lvl);intervals.push(iv);if(iv.hit)hit++;}
+  cumHit+=hit;cumTot+=100;
+  draw();updateStats(hit,100);
+}
+function run1000(){
+  const n=+$('n').value,lvl=+$('level').value;
+  makeCI._tc=tcrit(lvl,n-1);
+  let hit=0;
+  for(let i=0;i<1000;i++){if(makeCI(n,lvl).hit)hit++;}
+  cumHit+=hit;cumTot+=1000;
+  updateStats(hit,1000);
+}
+
+$('run').onclick=run100;
+$('run1000').onclick=run1000;
+$('resetKI').onclick=()=>{cumHit=0;cumTot=0;updateStats(0,0);};
+$('n').oninput=()=>{$('nOut').textContent=$('n').value;drawT();};
+$('level').onchange=()=>{cumHit=0;cumTot=0;updateStats(0,0);drawT();};
+$('vsel3').onchange=()=>{setVar3($('vsel3').value);intervals=[];cumHit=0;cumTot=0;draw();updateStats(0,0);};
+drawT();
+const __fsRedraw=()=>{draw();drawT();};
+(function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
+const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
+window.addEventListener('resize',kick);
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{kick();setTimeout(safe,600);}));
+let __mis=0;
+setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
+ document.querySelectorAll('canvas').forEach(c=>{if(c.clientWidth>0&&c.width>0&&Math.abs(c.width-Math.round(c.clientWidth*r))>2)bad=true;});
+ __mis=bad?__mis+1:0;
+ if(__mis>=2){__mis=0;safe();}},700);})();
+window.__kiTegn=function(){ try{ draw(); drawT(); }catch(e){} };
+})();
+
+/* ===== Fane 4, siste del: dekningssimuleringen — hentet fra den tidligere Sim 4.
+   Egen lukking fordi begge appene definerer $, fmt, draw, lgamma og ibeta. */
+(function(){
+const $=id=>document.getElementById(id);
+function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function lgamma(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];let y=x,tmp=x+5.5;tmp-=(x+0.5)*Math.log(tmp);let ser=1.000000000190015;for(let j=0;j<6;j++)ser+=c[j]/++y;return -tmp+Math.log(2.5066282746310005*ser/x);}
+function betacf(a,b,x){const MAXIT=200,EPS=3e-12,FPMIN=1e-30;const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<FPMIN)d=FPMIN;d=1/d;let h=d;for(let m=1;m<=MAXIT;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;h*=d*c;aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<EPS)break;}return h;}
+function ibeta(a,b,x){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+function tCrit(df){ // 97,5-persentil via bisseksjon på t-CDF
+  const cdf=t=>{const x=df/(df+t*t);const p=0.5*ibeta(df/2,0.5,x);return t>0?1-p:p;};
+  let lo=0,hi=100;
+  for(let i=0;i<60;i++){const mid=(lo+hi)/2;(cdf(mid)<0.975)?lo=mid:hi=mid;}
+  return (lo+hi)/2;
+}
+function fmt(x,d=1){return x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function fit(cv){const r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);c.clearRect(0,0,w,h);return [c,w,h];}
+const MU=50,SIG=10;
+let res=null;
+function run(){
+  const n=+$('nN1').value,K=20000,tc=tCrit(n-1);
+  let sumN=0,sumN1=0,sumMu=0,cov=0,covN=0;
+  for(let k=0;k<K;k++){
+    let s=0,ss=0,ssMu=0;
+    const xs=new Array(n);
+    for(let i=0;i<n;i++){const x=MU+SIG*rnorm();xs[i]=x;s+=x;ssMu+=(x-MU)**2;}
+    const m=s/n;
+    for(let i=0;i<n;i++)ss+=(xs[i]-m)**2;
+    sumN+=ss/n; sumN1+=ss/(n-1); sumMu+=ssMu/n;
+    const se1=Math.sqrt(ss/(n-1)/n), se0=Math.sqrt(ss/n/n);
+    if(Math.abs(m-MU)<=tc*se1)cov++;
+    if(Math.abs(m-MU)<=tc*se0)covN++;
+  }
+  res={n,mN:sumN/K,mN1:sumN1/K,mMu:sumMu/K,cov:cov/K,covN:covN/K};
+  draw();
+}
+function draw(){
+  if(!res){run();return;}
+  const [c,w,h]=fit($('cvN1'));
+  const bars=[['÷ n (rundt x̄)',res.mN,'#C0392B'],['÷ (n − 1) (rundt x̄)',res.mN1,'#2E7D32'],['÷ n (rundt sann μ)',res.mMu,'#8894ad']];
+  const mx=130;
+  const bw=(w-90)/3;
+  // sann varians-linje
+  const yTrue=h-40-(100/mx)*(h-80);
+  c.strokeStyle='#2E7D32';c.setLineDash([6,4]);c.lineWidth=2;
+  c.beginPath();c.moveTo(40,yTrue);c.lineTo(w-15,yTrue);c.stroke();c.setLineDash([]);
+  c.fillStyle='#2E7D32';c.font='bold 16px sans-serif';c.textAlign='left';c.fillText('σ² = 100',44,yTrue-6);
+  bars.forEach(([lab,v,col],i)=>{
+    const x=55+i*bw+10, bh=(v/mx)*(h-80);
+    c.fillStyle=col;c.fillRect(x,h-40-bh,bw-50,bh);
+    c.fillStyle='#1a2233';c.font='bold 17px sans-serif';c.textAlign='center';
+    c.fillText(fmt(v),x+(bw-50)/2,h-46-bh);
+    c.font='bold 16px sans-serif';c.fillStyle='#62708a';
+    c.fillText(lab,x+(bw-50)/2,h-18);
+  });
+  const teo=100*(res.n-1)/res.n;
+  $('out').innerHTML='<span class="stat red">÷ n: '+fmt(res.mN)+' (teori: 100·(n−1)/n = '+fmt(teo)+')</span>'+
+   '<span class="stat green">÷ (n − 1): '+fmt(res.mN1)+', treffer σ² = 100</span>'+
+   '<span class="stat">÷ n rundt sann μ: '+fmt(res.mMu)+', også korrekt!</span>';
+  // KI-dekning
+  const [c2,w2,h2]=fit($('cvCI'));
+  const rows=[['KI med s² = SS/(n − 1)',res.cov,'#2E7D32'],['KI med s² = SS/n',res.covN,'#C0392B']];
+  const x0=Math.min(330,w2*0.42),bw2=w2-x0-70;
+  const gx=x0+bw2*0.95;
+  c2.strokeStyle='#2E7D32';c2.setLineDash([5,4]);c2.beginPath();c2.moveTo(gx,8);c2.lineTo(gx,h2-24);c2.stroke();c2.setLineDash([]);
+  c2.fillStyle='#2E7D32';c2.font='bold 16px sans-serif';c2.textAlign='center';c2.fillText('95 %',gx,h2-8);
+  rows.forEach(([lab,r,col],i)=>{
+    const y=16+i*52,bh=30;
+    c2.fillStyle='#eef1f7';c2.fillRect(x0,y,bw2,bh);
+    c2.fillStyle=Math.abs(r-0.95)<0.006?'#2E7D32':col;
+    c2.fillRect(x0,y,bw2*r,bh);
+    c2.fillStyle='#1a2233';c2.font='bold 16px sans-serif';c2.textAlign='right';c2.fillText(lab,x0-8,y+20);
+    c2.textAlign='left';c2.font='bold 16px sans-serif';
+    c2.fillText(fmt(100*r)+' %',x0+bw2*r-58,y+20);
+  });
+  $('ciNote').innerHTML='<b>Dekning ved n = '+res.n+':</b> med n − 1 fanger intervallene sann μ i '+fmt(100*res.cov)+' % av tilfellene (løftet er 95 %); med n bare '+fmt(100*res.covN)+' % — for smale intervaller, for skråsikre konklusjoner. Prisen for å «jukse» med frihetsgraden betales i falsk sikkerhet.';
+}
+$('nN1').oninput=()=>{$('nOutN1').textContent=$('nN1').value;};
+$('runN1').onclick=run;
+const __fsRedraw=()=>{draw();};
+(function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
+const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
+window.addEventListener('resize',kick);
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{kick();setTimeout(safe,600);}));
+let __mis=0;
+setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
+ document.querySelectorAll('canvas').forEach(c=>{if(c.clientWidth>0&&c.width>0&&Math.abs(c.width-Math.round(c.clientWidth*r))>2)bad=true;});
+ __mis=bad?__mis+1:0;
+ if(__mis>=2){__mis=0;safe();}},700);})();
+run();
+})();
+
 /* ===== PSY300 anonym bruksstatistikk =====================================
    Sender to signaler til det samme Apps Script-endepunktet som MCQ-appen:
    ett når appen åpnes, ett når fanen lukkes (med antall sekunder aktiv og
@@ -1162,13 +1494,14 @@ function tegnKurver(){
 }
 
 /* ---------- faner ---------- */
-const FANER=['utvalg','estimat','frihet'];
+const FANER=['utvalg','ki','estimat','frihet'];
 function visFane(f){
   if(FANER.indexOf(f)<0) f='utvalg';
   FANER.forEach(x=>$('fane-'+x).classList.toggle('hide', x!==f));
   document.querySelectorAll('.fane').forEach(b=>b.classList.toggle('on', b.dataset.fane===f));
   /* lerret som var skjult har bredde 0 og må tegnes på nytt når fanen åpnes */
   window.dispatchEvent(new Event('resize'));
+  if(f==='ki' && window.__kiTegn) window.__kiTegn();
   if(f==='estimat'){ tegnKurver(); tegnUs(); }
   if(f==='frihet'){ dfBoks(); drawVar(); tegnUs(); }
 }
@@ -1327,7 +1660,7 @@ function us3Note(){
    samme opphav. */
 (function(){
   var AVSNITT_EN = {};
-  var ORD_EN = {"Ordforklaringer": "Glossary", "Hovedpoenget": "The main point", "Oppsett": "Setup", "Oppsettet": "The setup", "Nullstill": "Reset", "Nullstill telleren": "Reset the counter", "Poenget:": "The point:", "Hva skal du se?": "What should you look for?", "Presentasjonsmodus": "Presentation mode", "Vis all tekst igjen": "Show all the text again", "Frys denne fordelingen": "Freeze this distribution", "Frys denne fordelingen (behold som bakgrunn)": "Freeze this distribution (keep it as a backdrop)", "Fjern frossen": "Remove the frozen one", "Kjør simuleringen": "Run the simulation", "Kjør simuleringen.": "Run the simulation.", "Variabel:": "Variable:", "Variabel": "Variable", "Utvalgsstørrelse n": "Sample size n", "Utvalgsstørrelse n:": "Sample size n:", "Konfidensnivå": "Confidence level", "Tabell": "Table", "Total n": "Total n", "Antall grupper k": "Number of groups k", "Ingen data ennå.": "No data yet.", "Depresjon (pre) · Terapi-RCT": "Depression (pre) · therapy trial", "Undertrykkende forsvar (pre) · Terapi-RCT": "Defensive functioning (pre) · therapy trial", "Aggresjonsundertrykking (pre) · Terapi-RCT": "Suppressed aggression (pre) · therapy trial", "Statistikk-selvtillit (pre) · arbeidskravet": "Statistics self-efficacy (pre) · assignment data", "Selvkritisk perfeksjonisme · arbeidskravet": "Self-critical perfectionism · assignment data", "Angstsensitivitet · arbeidskravet": "Anxiety sensitivity · assignment data", "Depresjon (pre)": "Depression (pre)", "Depresjon (post)": "Depression (post)", "Undertrykkende forsvar (pre)": "Defensive functioning (pre)", "Aggresjonsundertrykking (pre)": "Suppressed aggression (pre)", "Statistikk-selvtillit (pre)": "Statistics self-efficacy (pre)", "Selvkritisk perfeksjonisme (trekk)": "Self-critical perfectionism (trait)", "Angstsensitivitet (trekk)": "Anxiety sensitivity (trait)", "Rigid perfeksjonisme (trekk)": "Rigid perfectionism (trait)", "Alder": "Age", "Kjønn": "Sex", "populasjonen": "the population", "Populasjonen": "The population", "utvalget": "the sample", "Median": "Median", "Modus": "Mode", "Skjevhet": "Skewness", "Høyreskjev": "Right-skewed", "venstreskjev": "left-skewed", "skjev": "skewed", "lineære": "linear", "observerte": "observed", "eget": "own", "uten": "without", "krit": "crit", "total": "total", "sanne μ": "true μ", "prosedyren": "the procedure", "metoden": "the method", "σ (sigma)": "σ (sigma)", "x̄ (x-strek)": "x̄ (x-bar)", "t-fordelingen": "the t distribution", "Spearmans rho": "Spearman's rho", "Sentralgrenseteoremet": "The central limit theorem", "sentralgrenseteoremet": "the central limit theorem", "Utvalgsfordeling": "Sampling distribution", "utvalgsgjennomsnittet x̄": "the sample mean x̄", "tyngre i halene": "heavier in the tails", "RCT": "RCT", "ISTDP": "ISTDP", "JASP": "JASP", "SSE": "SSE", "Terapi-RCT-studie": "therapy trial", "sammenligner": "compares", "Sim 17": "Sim 17", "— gjennomsnittet i et utvalg (skrives også x̄).": "— the mean of a sample (also written x̄).", "= midtverdien når verdiene sorteres.": "= the middle value once the values are sorted.", "= den hyppigste verdien.": "= the most frequent value.", "— standardavvik: typisk avstand fra gjennomsnittet, i variabelens egen enhet. Kvadratet er variansen.": "— standard deviation: the typical distance from the mean, in the variable's own units. Its square is the variance.", "— asymmetri i fordelingen.": "— asymmetry in the distribution.", "= lang hale mot høye verdier (gjennomsnittet ligger over medianen),": "= a long tail towards high values (the mean sits above the median),", "= motsatt.": "= the other way round.", "— standardfeil: hvor mye et estimat ville variert mellom gjentatte utvalg. For et gjennomsnitt: SE = σ/√n.": "— standard error: how much an estimate would vary across repeated samples. For a mean: SE = σ/√n.", "— gjennomsnittet i": "— the mean of", ": sannheten vi prøver å treffe, og som forskeren i praksis aldri får se.": ": the truth we are trying to hit, and which a researcher never actually gets to see.", "— standardavviket i": "— the standard deviation of", ". σ² er populasjonsvariansen.": ". σ² is the population variance.", "— gjennomsnittet i utvalget, altså estimatet av μ.": "— the mean of the sample, that is, the estimate of μ.", "— utvalgsgjennomsnitt blir tilnærmet normalfordelte når n vokser, selv om populasjonen er skjev.": "— sample means become approximately normal as n grows, even when the population is skewed.", "— fordelingen av en statistikk (f.eks. gjennomsnittet) over mange tenkte gjentakelser av studien. Ikke det samme som fordelingen av rådata.": "— the distribution of a statistic (the mean, say) across many imagined repetitions of the study. Not the same thing as the distribution of the raw data.", "— regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren.": "— regression coefficient: how much ŷ changes per one-unit increase in the predictor.", "er den standardiserte varianten (i standardavvik).": "is the standardised version (in standard deviations).", "— Pearsons korrelasjon: styrken på den": "— Pearson's correlation: the strength of the", "sammenhengen mellom to variabler (−1 til +1).": "relationship between two variables (−1 to +1).", "gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.": "does the same on ranks, and suits ordinal data and curved but monotone relationships.", "— randomisert kontrollert studie. Emnets": "— randomised controlled trial. The course's", "(intensiv dynamisk korttidsterapi) med venteliste, N = 86.": "(intensive short-term dynamic psychotherapy) against a waiting list, N = 86.", "— statistikkprogrammet vi bruker i emnet (gratis og åpen kildekode).": "— the statistics package used in the course (free and open source).", "— konfidensintervall: estimat ± kritisk verdi · SE. «95 %» beskriver metoden over mange studier, ikke sannsynligheten for det ene intervallet du har.": "— confidence interval: estimate ± critical value · SE. «95 %» describes the method across many studies, not the probability for the single interval you happen to have.", "— frihetsgrader (degrees of freedom): antall verdier som fritt kan variere gitt det du allerede har estimert.": "— degrees of freedom: the number of values free to vary, given what you have already estimated.", "— kvadratsum (sum of squares): summen av kvadrerte avvik.": "— sum of squares: the sum of squared deviations.", "er kvadratsummen av feilene (residualene).": "is the sum of squares of the errors (the residuals).", "= SS/df, altså en varians.": "= SS/df, that is, a variance.", "— testobservator for gjennomsnitt: forskjell delt på standardfeil.": "— test statistic for means: a difference divided by a standard error.", "er litt tyngre i halene enn normalfordelingen ved lav df.": "has slightly heavier tails than the normal distribution when df is low.", "— p-verdi: sannsynligheten for et resultat minst så ekstremt som ditt, GITT at nullhypotesen er sann.": "— p-value: the probability of a result at least as extreme as yours, GIVEN that the null hypothesis is true.", "— effektstørrelse: forskjellen i antall standardavvik.": "— effect size: the difference expressed in standard deviations.", "— nullhypotesen: påstanden om at det ikke finnes noen effekt.": "— the null hypothesis: the claim that there is no effect.", "— statistisk styrke: sannsynligheten for å oppdage en effekt som faktisk finnes.": "— statistical power: the probability of detecting an effect that really is there.", "— type I-feil: å forkaste en sann nullhypotese (falskt funn).": "— type I error: rejecting a true null hypothesis (a false positive).", "— type II-feil: å beholde en gal nullhypotese (oversett effekt).": "— type II error: retaining a false null hypothesis (a missed effect).", "— residual: avstanden mellom observert verdi og modellens prediksjon.": "— residual: the distance between an observed value and the model's prediction.", "— heteroskedastisitet: residualspredningen endrer seg utover x-aksen (trakten).": "— heteroscedasticity: the spread of the residuals changes along the x-axis (the funnel).", "Trekk utvalg": "Draw samples", "Variabel (gjelder både populasjon og utvalg):": "Variable (applies to both the population and the sample):", "n = 75 (som studien)": "n = 75 (as in the study)", "Trekk 1 utvalg": "Draw 1 sample", "Trekk 100": "Draw 100", "Trekk 5 000": "Draw 5 000", "Vis normalkurve (sentralgrenseteoremet)": "Show the normal curve (the central limit theorem)", "Populasjonen (N = 10 000)": "The population (N = 10 000)", "Siste utvalg": "The latest sample", "Trekk et utvalg for å starte.": "Draw a sample to begin.", "Utvalgsfordelingen til gjennomsnittet": "The sampling distribution of the mean", "én hel studie": "one whole study", "Blå søyler": "Blue bars", "oransje omriss": "orange outline", "rød stiplet": "red dashed", "Ingen utvalg trukket ennå.": "No samples drawn yet.", "gjennomsnittet ditt": "your mean", "Ett histogram = én studie. Gjennomsnittet (blå strek) blir ett datapunkt i panelet under.": "One histogram = one study. Its mean (blue line) becomes a single data point in the panel below.", "Hvert punkt her er gjennomsnittet fra": "Every point here is the mean from", ". Rød strek = populasjonens μ.": ". The red line is the population's μ.", "= fordelingen du bygger nå ·": "= the distribution you are building now ·", "= den frosne til sammenligning ·": "= the frozen one, for comparison ·", "= populasjonens sanne gjennomsnitt μ": "= the population's true mean μ", "Frossen bakgrunn: n = ": "Frozen backdrop: n = ", "(trekk noen utvalg først)": "(draw some samples first)", "Marker": "Mark", "SD-en til utvalgsfordelingen": "the SD of the sampling distribution", "— dette ER standardfeilen": "— this IS the standard error", "Marker persentiler:": "Mark percentiles:", "midterste 95 % (2,5 og 97,5)": "middle 95 % (2.5 and 97.5)", "midterste 90 % (5 og 95)": "middle 90 % (5 and 95)", "midterste 50 % (25 og 75)": "middle 50 % (25 and 75)", "Hva forskeren faktisk regner ut: s/√n — og hvorfor nevneren må være n − 1": "What the researcher actually computes: s/√n — and why the denominator must be n − 1", "Trekk minst 30 utvalg for å se fordelingene.": "Draw at least 30 samples to see the distributions.", "Blå": "Blue", "rød": "red", "grønn strek": "green line", "= s/√n med n − 1 ·": "= s/√n using n − 1 ·", "= s/√n med n ·": "= s/√n using n ·", "= den sanne standardfeilen σ/√n": "= the true standard error σ/√n", "Panelet over viser fasiten: den": "The panel above shows the ground truth: the", "sanne": "true", "standardfeilen, målt som spredningen mellom gjennomsnittene. Men en forsker har bare ett utvalg og må": "standard error, measured as the spread between the means. But a researcher has only one sample and must", "estimere": "estimate", "den med": "it with", ". Her er fordelingen av de estimatene fra nøyaktig de samme utvalgene, regnet på to måter: med": ". Here is the distribution of those estimates from exactly the same samples, computed two ways: with", "i nevneren for s (riktig), og med": "in the denominator of s (correct), and with", "(den intuitive, men gale). Se hvor de to gjennomsnittene lander i forhold til den sanne standardfeilen.": "(the intuitive but wrong one). Watch where the two averages land relative to the true standard error.", "Ett utvalg om gangen": "One sample at a time", "‹ forrige": "‹ previous", "neste ›": "next ›", "nyeste": "latest", "også på normalkurven (se hvor godt de overlapper)": "on the normal curve as well (see how closely they agree)", "Ett histogram = én studie. Gjennomsnittet (blå strek) blir ett datapunkt i panelet under. Bla mellom utvalgene og se at fordelingen skifter litt hver gang — og at gjennomsnittet flytter seg. X-aksen står stille, og er den samme som populasjonens, så det du ser er ekte bevegelse og ikke en akse som endrer seg.": "One histogram = one study. Its mean (blue line) becomes a single data point in the panel below. Step through the samples and watch the distribution shift a little each time — and the mean move with it. The x-axis stays put, and is the same as the population's, so what you see is real movement rather than a rescaling axis.", "hvis": "if", "Tre slags tall — og tre farger": "Three kinds of number — and three colours", "Hele appen bruker samme fargekode. Den sier ikke hva tallet": "The whole app uses the same colour code. It does not say what the number", "er": "is", ", men hvilken": ", but which", "rolle": "role", "det spiller.": "it plays.", "■ Rødt — parameter": "■ Red — parameter", "■ Blått — statistikk": "■ Blue — statistic", "■ Lilla — parameterestimat": "■ Purple — parameter estimate", "statistikk": "statistic", "parameter": "parameter", "estimat av σ": "estimate of σ", "estimat av SE": "estimate of SE", "Egenskaper ved": "Properties of", ": μ, σ, og den sanne standardfeilen σ/√n. Dette er sannheten vi jakter på, og i virkeligheten kjenner ingen den. Her ser vi den bare fordi populasjonen er simulert.": ": μ, σ, and the true standard error σ/√n. This is the truth we are after, and in real life nobody knows it. We can see it here only because the population is simulated.", "Tall regnet ut av": "Numbers computed from", "data vi faktisk har": "data we actually have", ": gjennomsnittet x̄ i ett utvalg, og spredningen mellom de simulerte gjennomsnittene. Rene beskrivelser av det som ligger foran oss.": ": the mean x̄ of one sample, and the spread among the simulated means. Plain descriptions of what lies in front of us.", "En statistikk brukt som": "A statistic used as a", "gjetning på en parameter": "guess at a parameter", ": s som gjetning på σ, og s/√n som gjetning på σ/√n. Dette er alt forskeren har.": ": s as a guess at σ, and s/√n as a guess at σ/√n. This is all a researcher ever has.", "Merk at grensen mellom blått og lilla ligger i": "Note that the line between blue and purple lies in the", "bruken": "use", ", ikke i tallet. x̄ er en statistikk når vi beskriver utvalget, og et estimat når vi bruker det til å gjette på μ. Fargen forteller hvilken av delene tallet gjør akkurat der det står.": ", not in the number. x̄ is a statistic when we describe the sample, and an estimate when we use it to guess at μ. The colour tells you which of the two the number is doing where it stands.", "Lilla søyler": "Purple bars", "rød strek": "red line", "= s/√n med n − 1 (estimatet) ·": "= s/√n using n − 1 (the estimate) ·", "= s/√n med n (det gale estimatet) ·": "= s/√n using n (the wrong estimate) ·", "= den sanne standardfeilen σ/√n (parameteren)": "= the true standard error σ/√n (the parameter)", "normalkurve fra μ og σ (sentralgrenseteoremet)": "normal curve from μ and σ (the central limit theorem)", "samme persentiler fra normalkurven": "the same percentiles from the normal curve", "Standardfeilen er ikke spredningen i data, men spredningen i mulige gjennomsnitt fra utvalg til utvalg.": "The standard error is not the spread of the data, but the spread of the possible means from sample to sample.", "Øker du antall deltakere (n) så krymper standardfeilen og vi blir sikrere på estimatet.": "Increase the number of participants (n) and the standard error shrinks — we become more certain of the estimate.", "Formel: Standardfeilen = standardavviket / kvadratroten av antall deltakere  (SE = σ/√n)": "Formula: the standard error = the standard deviation / the square root of the number of participants  (SE = σ/√n)", "Firedoble n, og du halverer usikkerheten.": "Quadruple n and you halve the uncertainty.", "(4) Slå på": "(4) Switch on", "SD-markøren": "the SD marker", ": den blå pila er standardavviket til utvalgsfordelingen — og det": ": the blue arrow is the standard deviation of the sampling distribution — and that", "IQ (simulert, μ = 100, σ = 15)": "IQ (simulated, μ = 100, σ = 15)", "simulert normalfordeling, N = 10 000": "simulated normal distribution, N = 10 000", "Vis": "Show", "z-skala": "z scale", "under aksen — samme fordeling, målt i standardfeil": "below the axis — the same distribution, measured in standard errors", "Inntekt i 1000 kr (simulert, høyreskjev)": "Income in 1000s of NOK (simulated, right-skewed)", "Reaksjonstid i ms (simulert, høyreskjev)": "Reaction time in ms (simulated, right-skewed)", "IQ · simulert normalfordeling": "IQ · simulated normal distribution", "årsinntekt i 1000 kr · simulert, høyreskjev": "annual income in 1000s of NOK · simulated, right-skewed", "reaksjonstid i ms · simulert, gulv på 180 ms": "reaction time in ms · simulated, floor at 180 ms", "simulert lognormal fordeling, N = 10 000": "simulated lognormal distribution, N = 10 000", "simulert forskjøvet lognormal, N = 10 000": "simulated shifted lognormal, N = 10 000", "«Virkeligheten» vi ellers aldri ser.": "The «reality» we otherwise never get to see.", "Den er": "It is", "tilnærmet symmetrisk": "very nearly symmetric", "— her ligner den faktisk en normalfordeling, og gjennomsnitt, median og modus faller nesten sammen.": "— here it really does resemble a normal distribution, and the mean, median and mode nearly coincide.", "litt høyreskjev (lang hale mot høye verdier)": "slightly right-skewed (a long tail towards high values)", "litt venstreskjev (lang hale mot lave verdier)": "slightly left-skewed (a long tail towards low values)", "tydelig høyreskjev (lang hale mot høye verdier)": "clearly right-skewed (a long tail towards high values)", "tydelig venstreskjev (lang hale mot lave verdier)": "clearly left-skewed (a long tail towards low values)", ", altså ikke helt normalfordelt.": ", so not quite normal.", "og slett ikke normalfordelt — legg merke til at utvalgsfordelingen under likevel blir symmetrisk.": "and nothing like normal — note that the sampling distribution below turns out symmetric anyway.", "skjevhet =": "skewness =", "PSY300 · Sim 3 — Utvalgsfordelingen og standardfeilen": "PSY300 · Sim 3 — The sampling distribution and the standard error", "Sim 3 · Utvalgsfordelingen og standardfeilen": "Sim 3 · The sampling distribution and the standard error", "IQ-populasjonen": "the IQ population", "z-skalaen": "the z scale", "persentilene": "the percentiles", "Trekk minst 30 utvalg — da vises begge fordelingene her": "Draw at least 30 samples — both distributions then appear here", "estimert standardfeil s/√n i hvert enkelt utvalg": "estimated standard error s/√n in each individual sample", "PSY300 · Forelesning 1–2 · Trekk utvalg fra en kjent populasjon (N = 10 000), se SE = σ/√n bli til, og se hva forskeren faktisk kan estimere fra ett eneste utvalg": "PSY300 · Lectures 1–2 · Draw samples from a known population (N = 10 000), watch SE = σ/√n take shape, and see what a researcher can actually estimate from a single sample", "s/√n med n − 1": "s/√n using n − 1", "s/√n med n": "s/√n using n", "Framstilling:": "Display:", "tetthetskurve (glatt)": "density curve (smooth)", "histogram": "histogram", "Slå på minst én av fordelingene for å se noe her": "Switch on at least one of the distributions to see anything here", "Ingen fordeling er valgt.": "No distribution is selected.", "Variansen bak det hele: s² treffer σ², men s bommer på σ": "The variance behind it all: s² hits σ², but s misses σ", "Panelet over viste at s/√n med n − 1 fortsatt ligger litt under den sanne standardfeilen. Her er forklaringen, ett hakk lenger ned i regnestykket. Vi ser på": "The panel above showed that s/√n with n − 1 still sits slightly below the true standard error. Here is the explanation, one step further down the calculation. We look at", "variansen": "the variance", "i hvert utvalg — samme utvalg som over, bare før kvadratroten er tatt.": "in each sample — the same samples as above, just before the square root is taken.", "Teorien sier": "Theory says", "Deler du kvadratsummen på": "If you divide the sum of squares by", "n − 1": "n − 1", "n": "n", ", treffer du populasjonsvariansen i gjennomsnitt. Deler du på": ", you hit the population variance on average. Divide by", ", bommer du med en kjent og eksakt brøk. Og tar du kvadratroten, oppstår en": " and you miss by a known, exact fraction. And once you take the square root, a", "ny": "new", "skjevhet som ikke fantes før.": "bias appears that was not there before.", "s² er forventningsrett:": "s² is unbiased:", "gjennomsnittet av s² over uendelig mange utvalg er nøyaktig σ². Ingen skjevhet.": "the average of s² across infinitely many samples is exactly σ². No bias at all.", "SS/n er systematisk for liten:": "SS/n is systematically too small:", "gjennomsnittet er σ² · (n − 1)/n, altså for lite med nøyaktig 1/n. Ved n = 5 er det 20 % for lite; ved n = 75, 1,3 %.": "its average is σ² · (n − 1)/n, that is, too low by exactly 1/n. At n = 5 that is 20 % too low; at n = 75, 1.3 %.", "s er likevel ikke forventningsrett for σ.": "s is nevertheless not unbiased for σ.", "Kvadratroten er en konkav funksjon, og gjennomsnittet av røttene er alltid mindre enn roten av gjennomsnittet (Jensens ulikhet). Utvalg med for stor s² løftes mindre opp enn utvalg med for liten s² trekkes ned.": "The square root is a concave function, and the average of the roots is always smaller than the root of the average (Jensen's inequality). Samples with too large an s² are lifted less than samples with too small an s² are pulled down.", "Under normalfordeling er den skjevheten": "Under normality that bias is", "E[s] = c₄(n) · σ": "E[s] = c₄(n) · σ", ", med c₄(5) = 0,940 og c₄(75) = 0,997. Det er nettopp restavviket i panelet over.": ", with c₄(5) = 0.940 and c₄(75) = 0.997. That is precisely the residual discrepancy in the panel above.", "s² (deler på n − 1)": "s² (dividing by n − 1)", "SS/n (deler på n)": "SS/n (dividing by n)", "Lilla": "Purple", "= s² med n − 1 ·": "= s² using n − 1 ·", "= SS/n ·": "= SS/n ·", "= den sanne populasjonsvariansen σ²": "= the true population variance σ²", "De to nivåene, side om side.": "The two levels, side by side.", "Variansen i": "The variance of the", "data": "data", "er σ², og den krymper ikke når du samler flere deltakere — populasjonen er like spredt uansett. Variansen i": "is σ², and it does not shrink when you collect more participants — the population is just as spread out either way. The variance of the", "gjennomsnittene": "means", "er σ²/n, og den krymper. Det er den eneste forskjellen mellom de to fordelingene, og hele grunnen til at store utvalg hjelper.": "is σ²/n, and that one does shrink. It is the only difference between the two distributions, and the whole reason large samples help.", "PSY300 · Forelesning 1–2 · Du har et utvalg, sannheten ligger i populasjonen. Hvor godt treffer estimatene dine — og hvor mye spriker de fra studie til studie?": "PSY300 · Lectures 1–2 · You have a sample; the truth lies in the population. How close do your estimates come — and how much do they vary from study to study?", "1. Tre slags tall — og tre farger": "1. Three kinds of number — and three colours", "2. Trekk utvalg": "2. Draw samples", "3. Populasjonen — sannheten vi jakter på (N = 10 000)": "3. The population — the truth we are after (N = 10 000)", "4. Ett utvalg — det forskeren faktisk har": "4. One sample — what a researcher actually has", "1. Utvalgsfordelingen til gjennomsnittet": "1. The sampling distribution of the mean", "3. Variansen bak det hele: s² treffer σ², men s bommer på σ": "3. The variance behind it all: s² hits σ², but s misses σ", "2. Hvor godt estimerer vi parametrene i populasjonen?": "2. How well do we estimate the population parameters?", "Estimert gjennomsnitt — x̄ mot μ": "Estimated mean — x̄ against μ", "Estimert standardavvik — s mot σ": "Estimated standard deviation — s against σ", "Kjør 2000 utvalg og se": "Run 2000 samples and see", "Voks til 100": "Grow to 100", "Voks til 1000": "Grow to 1000", "Voks til 10 000": "Grow to 10 000", "Start på nytt": "Start over", "Den korte forklaringen": "The short explanation", "Sagt annerledes:": "Put differently:", "Helt konkret:": "Concretely:", "Er dette systematisk, eller var utvalget bare uheldig?": "Is this systematic, or was the sample just unlucky?", "1 · Populasjon, utvalg og utvalgsfordeling": "1 · Population, sample and sampling distribution", "2 · Hvor godt estimerer vi?": "2 · How well do we estimate?", "3 · Hvorfor n − 1?": "3 · Why n − 1?", "3. Populasjonen — sannheten vi jakter på": "3. The population — the truth we are after", "5. Utvalgsfordelingen til gjennomsnittet": "5. The sampling distribution of the mean", "1. Hvor godt estimerer vi parametrene i populasjonen?": "1. How well do we estimate the population parameters?", "2. Hvor mye usikkerhet følger med hver n?": "2. How much uncertainty comes with each n?", "1. Frihetsgrader på ett minutt": "1. Degrees of freedom in one minute", "2. Variansen: s² treffer σ², men s bommer på σ": "2. The variance: s² hits σ², but s misses σ", "3. Hva korreksjonen betyr ved hver n": "3. What the correction means at each n", "Alle 10 000. Dette ser en forsker aldri.": "All 10 000. A researcher never sees this.", "Ett histogram = én studie. Samme akse som over.": "One histogram = one study. Same axis as above.", "Kjør 10 000 utvalg per n": "Run 10 000 samples per n", "Hovedpoenget i denne fanen": "The main point in this tab", "Hva skal du se i denne fanen?": "What should you look for in this tab?", "Et estimat er ikke ett tall, men et intervall du ikke får se.": "An estimate is not one number, but an interval you never get to see.", "Gjennomsnittet av dine egne tall ligger nærmere dem enn sannheten gjør — alltid.": "The mean of your own numbers lies closer to them than the truth does — always.", "De to parameterne oppfører seg dessuten ulikt.": "And the two parameters behave differently.", "Men hold to ting fra hverandre.": "But keep two things apart.", "PSY300 · Sim 3 — Fra populasjon til utvalg og tilbake igjen": "PSY300 · Sim 3 — From population to sample and back again", "Sim 3 · Fra populasjon til utvalg og tilbake igjen": "Sim 3 · From population to sample and back again"};
+  var ORD_EN = {"Ordforklaringer": "Glossary", "Hovedpoenget": "The main point", "Oppsett": "Setup", "Oppsettet": "The setup", "Nullstill": "Reset", "Nullstill telleren": "Reset the counter", "Poenget:": "The point:", "Hva skal du se?": "What should you look for?", "Presentasjonsmodus": "Presentation mode", "Vis all tekst igjen": "Show all the text again", "Frys denne fordelingen": "Freeze this distribution", "Frys denne fordelingen (behold som bakgrunn)": "Freeze this distribution (keep it as a backdrop)", "Fjern frossen": "Remove the frozen one", "Kjør simuleringen": "Run the simulation", "Kjør simuleringen.": "Run the simulation.", "Variabel:": "Variable:", "Variabel": "Variable", "Utvalgsstørrelse n": "Sample size n", "Utvalgsstørrelse n:": "Sample size n:", "Konfidensnivå": "Confidence level", "Tabell": "Table", "Total n": "Total n", "Antall grupper k": "Number of groups k", "Ingen data ennå.": "No data yet.", "Depresjon (pre) · Terapi-RCT": "Depression (pre) · therapy trial", "Undertrykkende forsvar (pre) · Terapi-RCT": "Defensive functioning (pre) · therapy trial", "Aggresjonsundertrykking (pre) · Terapi-RCT": "Suppressed aggression (pre) · therapy trial", "Statistikk-selvtillit (pre) · arbeidskravet": "Statistics self-efficacy (pre) · assignment data", "Selvkritisk perfeksjonisme · arbeidskravet": "Self-critical perfectionism · assignment data", "Angstsensitivitet · arbeidskravet": "Anxiety sensitivity · assignment data", "Depresjon (pre)": "Depression (pre)", "Depresjon (post)": "Depression (post)", "Undertrykkende forsvar (pre)": "Defensive functioning (pre)", "Aggresjonsundertrykking (pre)": "Suppressed aggression (pre)", "Statistikk-selvtillit (pre)": "Statistics self-efficacy (pre)", "Selvkritisk perfeksjonisme (trekk)": "Self-critical perfectionism (trait)", "Angstsensitivitet (trekk)": "Anxiety sensitivity (trait)", "Rigid perfeksjonisme (trekk)": "Rigid perfectionism (trait)", "Alder": "Age", "Kjønn": "Sex", "populasjonen": "the population", "Populasjonen": "The population", "utvalget": "the sample", "Median": "Median", "Modus": "Mode", "Skjevhet": "Skewness", "Høyreskjev": "Right-skewed", "venstreskjev": "left-skewed", "skjev": "skewed", "lineære": "linear", "observerte": "observed", "eget": "own", "uten": "without", "krit": "crit", "total": "total", "sanne μ": "true μ", "prosedyren": "the procedure", "metoden": "the method", "σ (sigma)": "σ (sigma)", "x̄ (x-strek)": "x̄ (x-bar)", "t-fordelingen": "the t distribution", "Spearmans rho": "Spearman's rho", "Sentralgrenseteoremet": "The central limit theorem", "sentralgrenseteoremet": "the central limit theorem", "Utvalgsfordeling": "Sampling distribution", "utvalgsgjennomsnittet x̄": "the sample mean x̄", "tyngre i halene": "heavier in the tails", "RCT": "RCT", "ISTDP": "ISTDP", "JASP": "JASP", "SSE": "SSE", "Terapi-RCT-studie": "therapy trial", "sammenligner": "compares", "Sim 17": "Sim 17", "— gjennomsnittet i et utvalg (skrives også x̄).": "— the mean of a sample (also written x̄).", "= midtverdien når verdiene sorteres.": "= the middle value once the values are sorted.", "= den hyppigste verdien.": "= the most frequent value.", "— standardavvik: typisk avstand fra gjennomsnittet, i variabelens egen enhet. Kvadratet er variansen.": "— standard deviation: the typical distance from the mean, in the variable's own units. Its square is the variance.", "— asymmetri i fordelingen.": "— asymmetry in the distribution.", "= lang hale mot høye verdier (gjennomsnittet ligger over medianen),": "= a long tail towards high values (the mean sits above the median),", "= motsatt.": "= the other way round.", "— standardfeil: hvor mye et estimat ville variert mellom gjentatte utvalg. For et gjennomsnitt: SE = σ/√n.": "— standard error: how much an estimate would vary across repeated samples. For a mean: SE = σ/√n.", "— gjennomsnittet i": "— the mean of", ": sannheten vi prøver å treffe, og som forskeren i praksis aldri får se.": ": the truth we are trying to hit, and which a researcher never actually gets to see.", "— standardavviket i": "— the standard deviation of", ". σ² er populasjonsvariansen.": ". σ² is the population variance.", "— gjennomsnittet i utvalget, altså estimatet av μ.": "— the mean of the sample, that is, the estimate of μ.", "— utvalgsgjennomsnitt blir tilnærmet normalfordelte når n vokser, selv om populasjonen er skjev.": "— sample means become approximately normal as n grows, even when the population is skewed.", "— fordelingen av en statistikk (f.eks. gjennomsnittet) over mange tenkte gjentakelser av studien. Ikke det samme som fordelingen av rådata.": "— the distribution of a statistic (the mean, say) across many imagined repetitions of the study. Not the same thing as the distribution of the raw data.", "— regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren.": "— regression coefficient: how much ŷ changes per one-unit increase in the predictor.", "er den standardiserte varianten (i standardavvik).": "is the standardised version (in standard deviations).", "— Pearsons korrelasjon: styrken på den": "— Pearson's correlation: the strength of the", "sammenhengen mellom to variabler (−1 til +1).": "relationship between two variables (−1 to +1).", "gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.": "does the same on ranks, and suits ordinal data and curved but monotone relationships.", "— randomisert kontrollert studie. Emnets": "— randomised controlled trial. The course's", "(intensiv dynamisk korttidsterapi) med venteliste, N = 86.": "(intensive short-term dynamic psychotherapy) against a waiting list, N = 86.", "— statistikkprogrammet vi bruker i emnet (gratis og åpen kildekode).": "— the statistics package used in the course (free and open source).", "— konfidensintervall: estimat ± kritisk verdi · SE. «95 %» beskriver metoden over mange studier, ikke sannsynligheten for det ene intervallet du har.": "— confidence interval: estimate ± critical value · SE. «95 %» describes the method across many studies, not the probability for the single interval you happen to have.", "— frihetsgrader (degrees of freedom): antall verdier som fritt kan variere gitt det du allerede har estimert.": "— degrees of freedom: the number of values free to vary, given what you have already estimated.", "— kvadratsum (sum of squares): summen av kvadrerte avvik.": "— sum of squares: the sum of squared deviations.", "er kvadratsummen av feilene (residualene).": "is the sum of squares of the errors (the residuals).", "= SS/df, altså en varians.": "= SS/df, that is, a variance.", "— testobservator for gjennomsnitt: forskjell delt på standardfeil.": "— test statistic for means: a difference divided by a standard error.", "er litt tyngre i halene enn normalfordelingen ved lav df.": "has slightly heavier tails than the normal distribution when df is low.", "— p-verdi: sannsynligheten for et resultat minst så ekstremt som ditt, GITT at nullhypotesen er sann.": "— p-value: the probability of a result at least as extreme as yours, GIVEN that the null hypothesis is true.", "— effektstørrelse: forskjellen i antall standardavvik.": "— effect size: the difference expressed in standard deviations.", "— nullhypotesen: påstanden om at det ikke finnes noen effekt.": "— the null hypothesis: the claim that there is no effect.", "— statistisk styrke: sannsynligheten for å oppdage en effekt som faktisk finnes.": "— statistical power: the probability of detecting an effect that really is there.", "— type I-feil: å forkaste en sann nullhypotese (falskt funn).": "— type I error: rejecting a true null hypothesis (a false positive).", "— type II-feil: å beholde en gal nullhypotese (oversett effekt).": "— type II error: retaining a false null hypothesis (a missed effect).", "— residual: avstanden mellom observert verdi og modellens prediksjon.": "— residual: the distance between an observed value and the model's prediction.", "— heteroskedastisitet: residualspredningen endrer seg utover x-aksen (trakten).": "— heteroscedasticity: the spread of the residuals changes along the x-axis (the funnel).", "Trekk utvalg": "Draw samples", "Variabel (gjelder både populasjon og utvalg):": "Variable (applies to both the population and the sample):", "n = 75 (som studien)": "n = 75 (as in the study)", "Trekk 1 utvalg": "Draw 1 sample", "Trekk 100": "Draw 100", "Trekk 5 000": "Draw 5 000", "Vis normalkurve (sentralgrenseteoremet)": "Show the normal curve (the central limit theorem)", "Populasjonen (N = 10 000)": "The population (N = 10 000)", "Siste utvalg": "The latest sample", "Trekk et utvalg for å starte.": "Draw a sample to begin.", "Utvalgsfordelingen til gjennomsnittet": "The sampling distribution of the mean", "én hel studie": "one whole study", "Blå søyler": "Blue bars", "oransje omriss": "orange outline", "rød stiplet": "red dashed", "Ingen utvalg trukket ennå.": "No samples drawn yet.", "gjennomsnittet ditt": "your mean", "Ett histogram = én studie. Gjennomsnittet (blå strek) blir ett datapunkt i panelet under.": "One histogram = one study. Its mean (blue line) becomes a single data point in the panel below.", "Hvert punkt her er gjennomsnittet fra": "Every point here is the mean from", ". Rød strek = populasjonens μ.": ". The red line is the population's μ.", "= fordelingen du bygger nå ·": "= the distribution you are building now ·", "= den frosne til sammenligning ·": "= the frozen one, for comparison ·", "= populasjonens sanne gjennomsnitt μ": "= the population's true mean μ", "Frossen bakgrunn: n = ": "Frozen backdrop: n = ", "(trekk noen utvalg først)": "(draw some samples first)", "Marker": "Mark", "SD-en til utvalgsfordelingen": "the SD of the sampling distribution", "— dette ER standardfeilen": "— this IS the standard error", "Marker persentiler:": "Mark percentiles:", "midterste 95 % (2,5 og 97,5)": "middle 95 % (2.5 and 97.5)", "midterste 90 % (5 og 95)": "middle 90 % (5 and 95)", "midterste 50 % (25 og 75)": "middle 50 % (25 and 75)", "Hva forskeren faktisk regner ut: s/√n — og hvorfor nevneren må være n − 1": "What the researcher actually computes: s/√n — and why the denominator must be n − 1", "Trekk minst 30 utvalg for å se fordelingene.": "Draw at least 30 samples to see the distributions.", "Blå": "Blue", "rød": "red", "grønn strek": "green line", "= s/√n med n − 1 ·": "= s/√n using n − 1 ·", "= s/√n med n ·": "= s/√n using n ·", "= den sanne standardfeilen σ/√n": "= the true standard error σ/√n", "Panelet over viser fasiten: den": "The panel above shows the ground truth: the", "sanne": "true", "standardfeilen, målt som spredningen mellom gjennomsnittene. Men en forsker har bare ett utvalg og må": "standard error, measured as the spread between the means. But a researcher has only one sample and must", "estimere": "estimate", "den med": "it with", ". Her er fordelingen av de estimatene fra nøyaktig de samme utvalgene, regnet på to måter: med": ". Here is the distribution of those estimates from exactly the same samples, computed two ways: with", "i nevneren for s (riktig), og med": "in the denominator of s (correct), and with", "(den intuitive, men gale). Se hvor de to gjennomsnittene lander i forhold til den sanne standardfeilen.": "(the intuitive but wrong one). Watch where the two averages land relative to the true standard error.", "Ett utvalg om gangen": "One sample at a time", "‹ forrige": "‹ previous", "neste ›": "next ›", "nyeste": "latest", "også på normalkurven (se hvor godt de overlapper)": "on the normal curve as well (see how closely they agree)", "Ett histogram = én studie. Gjennomsnittet (blå strek) blir ett datapunkt i panelet under. Bla mellom utvalgene og se at fordelingen skifter litt hver gang — og at gjennomsnittet flytter seg. X-aksen står stille, og er den samme som populasjonens, så det du ser er ekte bevegelse og ikke en akse som endrer seg.": "One histogram = one study. Its mean (blue line) becomes a single data point in the panel below. Step through the samples and watch the distribution shift a little each time — and the mean move with it. The x-axis stays put, and is the same as the population's, so what you see is real movement rather than a rescaling axis.", "hvis": "if", "Tre slags tall — og tre farger": "Three kinds of number — and three colours", "Hele appen bruker samme fargekode. Den sier ikke hva tallet": "The whole app uses the same colour code. It does not say what the number", "er": "is", ", men hvilken": ", but which", "rolle": "role", "det spiller.": "it plays.", "■ Rødt — parameter": "■ Red — parameter", "■ Blått — statistikk": "■ Blue — statistic", "■ Lilla — parameterestimat": "■ Purple — parameter estimate", "statistikk": "statistic", "parameter": "parameter", "estimat av σ": "estimate of σ", "estimat av SE": "estimate of SE", "Egenskaper ved": "Properties of", ": μ, σ, og den sanne standardfeilen σ/√n. Dette er sannheten vi jakter på, og i virkeligheten kjenner ingen den. Her ser vi den bare fordi populasjonen er simulert.": ": μ, σ, and the true standard error σ/√n. This is the truth we are after, and in real life nobody knows it. We can see it here only because the population is simulated.", "Tall regnet ut av": "Numbers computed from", "data vi faktisk har": "data we actually have", ": gjennomsnittet x̄ i ett utvalg, og spredningen mellom de simulerte gjennomsnittene. Rene beskrivelser av det som ligger foran oss.": ": the mean x̄ of one sample, and the spread among the simulated means. Plain descriptions of what lies in front of us.", "En statistikk brukt som": "A statistic used as a", "gjetning på en parameter": "guess at a parameter", ": s som gjetning på σ, og s/√n som gjetning på σ/√n. Dette er alt forskeren har.": ": s as a guess at σ, and s/√n as a guess at σ/√n. This is all a researcher ever has.", "Merk at grensen mellom blått og lilla ligger i": "Note that the line between blue and purple lies in the", "bruken": "use", ", ikke i tallet. x̄ er en statistikk når vi beskriver utvalget, og et estimat når vi bruker det til å gjette på μ. Fargen forteller hvilken av delene tallet gjør akkurat der det står.": ", not in the number. x̄ is a statistic when we describe the sample, and an estimate when we use it to guess at μ. The colour tells you which of the two the number is doing where it stands.", "Lilla søyler": "Purple bars", "rød strek": "red line", "= s/√n med n − 1 (estimatet) ·": "= s/√n using n − 1 (the estimate) ·", "= s/√n med n (det gale estimatet) ·": "= s/√n using n (the wrong estimate) ·", "= den sanne standardfeilen σ/√n (parameteren)": "= the true standard error σ/√n (the parameter)", "normalkurve fra μ og σ (sentralgrenseteoremet)": "normal curve from μ and σ (the central limit theorem)", "samme persentiler fra normalkurven": "the same percentiles from the normal curve", "Standardfeilen er ikke spredningen i data, men spredningen i mulige gjennomsnitt fra utvalg til utvalg.": "The standard error is not the spread of the data, but the spread of the possible means from sample to sample.", "Øker du antall deltakere (n) så krymper standardfeilen og vi blir sikrere på estimatet.": "Increase the number of participants (n) and the standard error shrinks — we become more certain of the estimate.", "Formel: Standardfeilen = standardavviket / kvadratroten av antall deltakere  (SE = σ/√n)": "Formula: the standard error = the standard deviation / the square root of the number of participants  (SE = σ/√n)", "Firedoble n, og du halverer usikkerheten.": "Quadruple n and you halve the uncertainty.", "(4) Slå på": "(4) Switch on", "SD-markøren": "the SD marker", ": den blå pila er standardavviket til utvalgsfordelingen — og det": ": the blue arrow is the standard deviation of the sampling distribution — and that", "IQ (simulert, μ = 100, σ = 15)": "IQ (simulated, μ = 100, σ = 15)", "simulert normalfordeling, N = 10 000": "simulated normal distribution, N = 10 000", "Vis": "Show", "z-skala": "z scale", "under aksen — samme fordeling, målt i standardfeil": "below the axis — the same distribution, measured in standard errors", "Inntekt i 1000 kr (simulert, høyreskjev)": "Income in 1000s of NOK (simulated, right-skewed)", "Reaksjonstid i ms (simulert, høyreskjev)": "Reaction time in ms (simulated, right-skewed)", "IQ · simulert normalfordeling": "IQ · simulated normal distribution", "årsinntekt i 1000 kr · simulert, høyreskjev": "annual income in 1000s of NOK · simulated, right-skewed", "reaksjonstid i ms · simulert, gulv på 180 ms": "reaction time in ms · simulated, floor at 180 ms", "simulert lognormal fordeling, N = 10 000": "simulated lognormal distribution, N = 10 000", "simulert forskjøvet lognormal, N = 10 000": "simulated shifted lognormal, N = 10 000", "«Virkeligheten» vi ellers aldri ser.": "The «reality» we otherwise never get to see.", "Den er": "It is", "tilnærmet symmetrisk": "very nearly symmetric", "— her ligner den faktisk en normalfordeling, og gjennomsnitt, median og modus faller nesten sammen.": "— here it really does resemble a normal distribution, and the mean, median and mode nearly coincide.", "litt høyreskjev (lang hale mot høye verdier)": "slightly right-skewed (a long tail towards high values)", "litt venstreskjev (lang hale mot lave verdier)": "slightly left-skewed (a long tail towards low values)", "tydelig høyreskjev (lang hale mot høye verdier)": "clearly right-skewed (a long tail towards high values)", "tydelig venstreskjev (lang hale mot lave verdier)": "clearly left-skewed (a long tail towards low values)", ", altså ikke helt normalfordelt.": ", so not quite normal.", "og slett ikke normalfordelt — legg merke til at utvalgsfordelingen under likevel blir symmetrisk.": "and nothing like normal — note that the sampling distribution below turns out symmetric anyway.", "skjevhet =": "skewness =", "PSY300 · Sim 3 — Utvalgsfordelingen og standardfeilen": "PSY300 · Sim 3 — The sampling distribution and the standard error", "Sim 3 · Utvalgsfordelingen og standardfeilen": "Sim 3 · The sampling distribution and the standard error", "IQ-populasjonen": "the IQ population", "z-skalaen": "the z scale", "persentilene": "the percentiles", "Trekk minst 30 utvalg — da vises begge fordelingene her": "Draw at least 30 samples — both distributions then appear here", "estimert standardfeil s/√n i hvert enkelt utvalg": "estimated standard error s/√n in each individual sample", "PSY300 · Forelesning 1–2 · Trekk utvalg fra en kjent populasjon (N = 10 000), se SE = σ/√n bli til, og se hva forskeren faktisk kan estimere fra ett eneste utvalg": "PSY300 · Lectures 1–2 · Draw samples from a known population (N = 10 000), watch SE = σ/√n take shape, and see what a researcher can actually estimate from a single sample", "s/√n med n − 1": "s/√n using n − 1", "s/√n med n": "s/√n using n", "Framstilling:": "Display:", "tetthetskurve (glatt)": "density curve (smooth)", "histogram": "histogram", "Slå på minst én av fordelingene for å se noe her": "Switch on at least one of the distributions to see anything here", "Ingen fordeling er valgt.": "No distribution is selected.", "Variansen bak det hele: s² treffer σ², men s bommer på σ": "The variance behind it all: s² hits σ², but s misses σ", "Panelet over viste at s/√n med n − 1 fortsatt ligger litt under den sanne standardfeilen. Her er forklaringen, ett hakk lenger ned i regnestykket. Vi ser på": "The panel above showed that s/√n with n − 1 still sits slightly below the true standard error. Here is the explanation, one step further down the calculation. We look at", "variansen": "the variance", "i hvert utvalg — samme utvalg som over, bare før kvadratroten er tatt.": "in each sample — the same samples as above, just before the square root is taken.", "Teorien sier": "Theory says", "Deler du kvadratsummen på": "If you divide the sum of squares by", "n − 1": "n − 1", "n": "n", ", treffer du populasjonsvariansen i gjennomsnitt. Deler du på": ", you hit the population variance on average. Divide by", ", bommer du med en kjent og eksakt brøk. Og tar du kvadratroten, oppstår en": " and you miss by a known, exact fraction. And once you take the square root, a", "ny": "new", "skjevhet som ikke fantes før.": "bias appears that was not there before.", "s² er forventningsrett:": "s² is unbiased:", "gjennomsnittet av s² over uendelig mange utvalg er nøyaktig σ². Ingen skjevhet.": "the average of s² across infinitely many samples is exactly σ². No bias at all.", "SS/n er systematisk for liten:": "SS/n is systematically too small:", "gjennomsnittet er σ² · (n − 1)/n, altså for lite med nøyaktig 1/n. Ved n = 5 er det 20 % for lite; ved n = 75, 1,3 %.": "its average is σ² · (n − 1)/n, that is, too low by exactly 1/n. At n = 5 that is 20 % too low; at n = 75, 1.3 %.", "s er likevel ikke forventningsrett for σ.": "s is nevertheless not unbiased for σ.", "Kvadratroten er en konkav funksjon, og gjennomsnittet av røttene er alltid mindre enn roten av gjennomsnittet (Jensens ulikhet). Utvalg med for stor s² løftes mindre opp enn utvalg med for liten s² trekkes ned.": "The square root is a concave function, and the average of the roots is always smaller than the root of the average (Jensen's inequality). Samples with too large an s² are lifted less than samples with too small an s² are pulled down.", "Under normalfordeling er den skjevheten": "Under normality that bias is", "E[s] = c₄(n) · σ": "E[s] = c₄(n) · σ", ", med c₄(5) = 0,940 og c₄(75) = 0,997. Det er nettopp restavviket i panelet over.": ", with c₄(5) = 0.940 and c₄(75) = 0.997. That is precisely the residual discrepancy in the panel above.", "s² (deler på n − 1)": "s² (dividing by n − 1)", "SS/n (deler på n)": "SS/n (dividing by n)", "Lilla": "Purple", "= s² med n − 1 ·": "= s² using n − 1 ·", "= SS/n ·": "= SS/n ·", "= den sanne populasjonsvariansen σ²": "= the true population variance σ²", "De to nivåene, side om side.": "The two levels, side by side.", "Variansen i": "The variance of the", "data": "data", "er σ², og den krymper ikke når du samler flere deltakere — populasjonen er like spredt uansett. Variansen i": "is σ², and it does not shrink when you collect more participants — the population is just as spread out either way. The variance of the", "gjennomsnittene": "means", "er σ²/n, og den krymper. Det er den eneste forskjellen mellom de to fordelingene, og hele grunnen til at store utvalg hjelper.": "is σ²/n, and that one does shrink. It is the only difference between the two distributions, and the whole reason large samples help.", "PSY300 · Forelesning 1–2 · Du har et utvalg, sannheten ligger i populasjonen. Hvor godt treffer estimatene dine — og hvor mye spriker de fra studie til studie?": "PSY300 · Lectures 1–2 · You have a sample; the truth lies in the population. How close do your estimates come — and how much do they vary from study to study?", "1. Tre slags tall — og tre farger": "1. Three kinds of number — and three colours", "2. Trekk utvalg": "2. Draw samples", "3. Populasjonen — sannheten vi jakter på (N = 10 000)": "3. The population — the truth we are after (N = 10 000)", "4. Ett utvalg — det forskeren faktisk har": "4. One sample — what a researcher actually has", "1. Utvalgsfordelingen til gjennomsnittet": "1. The sampling distribution of the mean", "3. Variansen bak det hele: s² treffer σ², men s bommer på σ": "3. The variance behind it all: s² hits σ², but s misses σ", "2. Hvor godt estimerer vi parametrene i populasjonen?": "2. How well do we estimate the population parameters?", "Estimert gjennomsnitt — x̄ mot μ": "Estimated mean — x̄ against μ", "Estimert standardavvik — s mot σ": "Estimated standard deviation — s against σ", "Kjør 2000 utvalg og se": "Run 2000 samples and see", "Voks til 100": "Grow to 100", "Voks til 1000": "Grow to 1000", "Voks til 10 000": "Grow to 10 000", "Start på nytt": "Start over", "Den korte forklaringen": "The short explanation", "Sagt annerledes:": "Put differently:", "Helt konkret:": "Concretely:", "Er dette systematisk, eller var utvalget bare uheldig?": "Is this systematic, or was the sample just unlucky?", "1 · Populasjon, utvalg og utvalgsfordeling": "1 · Population, sample and sampling distribution", "2 · Hvor godt estimerer vi?": "2 · How well do we estimate?", "3 · Hvorfor n − 1?": "3 · Why n − 1?", "3. Populasjonen — sannheten vi jakter på": "3. The population — the truth we are after", "5. Utvalgsfordelingen til gjennomsnittet": "5. The sampling distribution of the mean", "1. Hvor godt estimerer vi parametrene i populasjonen?": "1. How well do we estimate the population parameters?", "2. Hvor mye usikkerhet følger med hver n?": "2. How much uncertainty comes with each n?", "1. Frihetsgrader på ett minutt": "1. Degrees of freedom in one minute", "2. Variansen: s² treffer σ², men s bommer på σ": "2. The variance: s² hits σ², but s misses σ", "3. Hva korreksjonen betyr ved hver n": "3. What the correction means at each n", "Alle 10 000. Dette ser en forsker aldri.": "All 10 000. A researcher never sees this.", "Ett histogram = én studie. Samme akse som over.": "One histogram = one study. Same axis as above.", "Kjør 10 000 utvalg per n": "Run 10 000 samples per n", "Hovedpoenget i denne fanen": "The main point in this tab", "Hva skal du se i denne fanen?": "What should you look for in this tab?", "Et estimat er ikke ett tall, men et intervall du ikke får se.": "An estimate is not one number, but an interval you never get to see.", "Gjennomsnittet av dine egne tall ligger nærmere dem enn sannheten gjør — alltid.": "The mean of your own numbers lies closer to them than the truth does — always.", "De to parameterne oppfører seg dessuten ulikt.": "And the two parameters behave differently.", "Men hold to ting fra hverandre.": "But keep two things apart.", "PSY300 · Sim 3 — Fra populasjon til utvalg og tilbake igjen": "PSY300 · Sim 3 — From population to sample and back again", "Sim 3 · Fra populasjon til utvalg og tilbake igjen": "Sim 3 · From population to sample and back again", "Mer om dette": "More on this", "2 · Konfidensintervaller": "2 · Confidence intervals", "3 · Hvor godt estimerer vi?": "3 · How well do we estimate?", "4 · Hvorfor n − 1?": "4 · Why n − 1?", "4. Hva korreksjonen koster deg hvis du dropper den": "4. What skipping the correction costs you"};
   var SPRAAK = 'no';
   try { SPRAAK = localStorage.getItem('psy300_app_spraak') || 'no'; } catch(e) {}
 

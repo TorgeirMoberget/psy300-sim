@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PSY300 · Sim 5 — Minste kvadraters metode</title>
+<title>PSY300 · Sim 5 — Regresjonsmodellen</title>
 <style>
 :root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
 *{box-sizing:border-box}
@@ -18,6 +18,21 @@ button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px
 .muted{color:#62708a;font-size:16px}
 canvas{width:100%;display:block;touch-action:none}
 .stat{display:inline-block;background:var(--light);color:var(--navy);border-radius:8px;padding:3px 10px;font-size:15.5px;font-weight:600;margin:3px 4px 3px 0;font-variant-numeric:tabular-nums}
+.rgtab{border-collapse:collapse;width:100%;font-size:15.5px;font-variant-numeric:tabular-nums}
+.rgtab th,.rgtab td{border-bottom:1px solid #e6eaf2;padding:6px 8px;text-align:right}
+.rgtab th:first-child,.rgtab td:first-child{text-align:left}
+.rgtab th{color:#4a5568;font-weight:600;font-size:14px;white-space:nowrap}
+.rgtab tr.sig td{background:rgba(46,125,50,.09)}
+.rgtab td.b{font-weight:700;color:var(--navy)}
+.rgvelg{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:6px 0}
+.rgvelg label{font-size:15.5px;font-weight:600;color:var(--navy)}
+.rgvelg select,.rgvelg input[type=number]{padding:6px 8px;border:1px solid var(--line);border-radius:8px;
+  font-size:15.5px;font-family:inherit;background:#fff}
+.rgapa{background:#f7f9ff;border:1px solid var(--line);border-left:5px solid var(--navy);
+  border-radius:10px;padding:12px 14px;margin-top:10px;font-size:16px;line-height:1.55}
+.rgapa b{color:var(--navy)}
+.rgto{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:860px){.rgto{grid-template-columns:1fr}}
 .stat.green{background:#eaf6ea;color:var(--green)}
 .stat.red{background:#fbeceb;color:var(--red)}
 .note{background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px;margin-top:10px}
@@ -46,37 +61,127 @@ body.pres .sl{margin:4px 0}
 body.pres .sl label{font-size:15px;min-width:210px}
 body.pres .note{padding:8px 11px;margin-top:7px}
 body.pres .keybox{font-size:18px}
+
+/* ===== Fordypning og faner ===== */
+details.mer{margin:8px 0 0;border-top:1px solid rgba(0,0,0,.10);padding-top:7px}
+details.mer>summary{cursor:pointer;font-size:14.5px;font-weight:700;color:#1C7293;list-style:none;padding:2px 0}
+details.mer>summary::-webkit-details-marker{display:none}
+details.mer>summary::before{content:"▸ ";font-size:12px}
+details.mer[open]>summary::before{content:"▾ "}
+details.mer>*:not(summary){margin-top:8px}
+details.ordbok{border:1px solid var(--line,#d9dee8);border-radius:12px;background:#fff;padding:12px 16px;margin:14px 0}
+details.ordbok>summary{cursor:pointer;font-size:18px;font-weight:700;color:#1F3864;list-style:none}
+details.ordbok>summary::-webkit-details-marker{display:none}
+details.ordbok>summary::before{content:"▸ ";font-size:14px;color:#1C7293}
+details.ordbok[open]>summary::before{content:"▾ "}
+.fane{background:#fff;border:1px solid #d9dee8;border-radius:9px;padding:7px 13px;font-size:15px;
+  font-family:inherit;cursor:pointer;color:#1F3864}
+.fane.on{background:#1F3864;color:#fff;border-color:#1F3864;font-weight:700}
+.hide{display:none}
 </style></head><body>
-<header><h1>Sim 5 · Minste kvadraters metode</h1>
-<p>PSY300 · Forelesning 1 &amp; 3 · Ekte data fra Terapi-RCT-studien (n = 75). Dra i modellen, se avvikene — og mal fram SSE-kurven selv</p></header>
+<header><h1>Sim 5 · Regresjonsmodellen</h1>
+<p>PSY300 · Forelesning 1 og 3 · Fire faner: en modell bygget på ekte data, hvorfor linja ligger der den ligger, hvor mye av variasjonen den forklarer — og hva residualene røper når modellen ikke passer.</p></header>
 <div class="wrap">
+<div class="rad" style="gap:6px;margin:2px 0 6px">
+<button class="fane on" data-fane="data">1 · Ekte data: bygg en modell</button>
+<button class="fane" data-fane="kvadrat">2 · Minste kvadrater: hvorfor akkurat denne linja?</button>
+<button class="fane" data-fane="r2">3 · R² — hvor mye forklarer modellen?</button>
+<button class="fane" data-fane="residual">4 · Residualantakelsene</button>
+</div>
+
+<div id="fane-data">
+<div class="card">
+<h2>Ekte data: bygg en modell</h2>
+<p class="muted">Velg et datasett, et utfall og én eller to prediktorer. Appen regner nøyaktig
+det JASP regner — på de samme radene — og skriver setningen du ville satt i artikkelen.</p>
+
+<div class="rgvelg">
+<label>Datasett
+<select id="rgSett"></select></label>
+<span id="rgKilde" class="muted"></span>
+<span class="muted" style="font-size:14px">Tips: velg <b>NULL-versjonen</b> for å se hvordan de samme figurene ser ut når det ikke finnes noen sammenheng.</span>
+</div>
+<div class="rgvelg">
+<label>Utfall (Y) <select id="rgY"></select></label>
+<label>Prediktor X₁ <select id="rgX1"></select></label>
+<label>Prediktor X₂ <select id="rgX2"></select></label>
+<button class="btn2" id="rgBytt">Bytt X₁ og X₂</button>
+</div>
+<div id="rgSpm" class="note" style="background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-size:16px"></div>
+</div>
 
 <div class="card">
-<button class="tab on" id="tabA">Del A: Gjennomsnittet som modell</button>
-<button class="tab" id="tabB">Del B: Regresjonslinjen</button>
+<h2>1. Punktskyen og linja</h2>
+<div class="rad" style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin:2px 0 8px">
+<label class="chk" style="font-size:15.5px;font-weight:600;color:var(--navy)">
+<input type="checkbox" id="rgVisKI"> vis 95 % konfidensintervall for <b>linja</b></label>
+<label class="chk" style="font-size:15.5px;font-weight:600;color:var(--navy)">
+<input type="checkbox" id="rgVisPI"> vis 95 % prediksjonsintervall for <b>én person</b></label>
+</div>
+<canvas id="cvRg" height="330"></canvas>
+<div class="muted" style="font-size:14.5px;margin-top:4px">
+Rød linje = modellens beste gjetning. Skru på båndene når du vil vise forskjellen på hvor sikkert
+vi kjenner <b>linja</b> (smalt) og hvor lite vi vet om <b>neste menneske</b> (bredt).
+Med to prediktorer tegnes X₁ mot Y, med X₂ holdt på sitt gjennomsnitt.</div>
+<div id="rgTall" style="margin-top:8px"></div>
 </div>
 
-<!-- ===== A ===== -->
-<div id="modeA">
 <div class="card">
-<h2>75 målinger av én variabel (ekte data). Hvor bør «modellen» ligge?</h2>
-<p class="muted"><b>Dra den blå markøren</b> sideveis. De tynne røde strekene er <b>avvikene</b> (residualene) fra hvert datapunkt til modellen. Samme seks ekte variabler som i Sim 3. Finn posisjonen som gir minst total kvadrert feil (SSE).</p>
-<div style="margin:4px 0 8px"><label style="font-weight:600;color:var(--navy);font-size:16px">Variabel: <select id="vselA" style="padding:6px 8px;border:1px solid #d9dee8;border-radius:8px;font-size:16px;font-family:inherit"><option value="dep" selected>Depresjon (pre) · Terapi-RCT</option><option value="undf">Undertrykkende forsvar (pre) · Terapi-RCT</option><option value="agg">Aggresjonsundertrykking (pre) · Terapi-RCT</option><option value="selvt">Statistikk-selvtillit (pre) · arbeidskravet</option><option value="selvk">Selvkritisk perfeksjonisme · arbeidskravet</option><option value="angst">Angstsensitivitet · arbeidskravet</option></select></label> <span id="popInfoA" class="muted"></span></div>
-<div style="margin:2px 0 6px">
-<button class="btn2" id="fullA">Vis hele SSE-kurven og x̄</button>
-<button class="btn2" id="toMean">Hopp til gjennomsnittet</button>
-<button class="btn2" id="newA">Trekk 75 nye fra populasjonen (N = 10 000)</button>
-</div>
-<div id="statsA" class="muted"></div>
-<canvas id="cvA" height="260"></canvas>
-<canvas id="cvA2" height="180"></canvas>
-<p class="muted" style="margin-top:2px">Kurven tegnes bare der markøren har vært. Sveip sakte fra side til side og se parabelen avsløre seg. Hvor bunner den? (y-aksen er zoomet inn mot bunnen, så minimum er lett å se; det som ligger høyt oppe klippes i toppen.)</p>
-</div>
-<div class="card note"><b>Poenget:</b> Kurven bunner ut <i>nøyaktig</i> ved gjennomsnittet. Gjennomsnittet er altså ikke bare «et sentralmål». Det er den <b>minste-kvadraters-modellen</b> for data uten prediktor. Varians og SD er bygget av akkurat disse kvadrerte avvikene.</div>
+<h2>2. Koeffisienttabellen</h2>
+<div id="rgKoef"></div>
+<details class="mer"><summary>Hva er forskjellen på b og &beta;?</summary>
+<p class="muted"><b>b</b> er i variabelens egne enheter: «ett poeng mer på X gir b poeng mer på Y».
+<b>&beta;</b> er den samme effekten i standardavvik, og lar deg sammenligne prediktorer som
+måles i helt ulike enheter. Med bare én prediktor er &beta; nøyaktig det samme som korrelasjonen r.</p></details>
 </div>
 
-<!-- ===== B ===== -->
-<div id="modeB" class="hide">
+<div class="card">
+<h2>3. Hva la den andre prediktoren til?</h2>
+<div id="rgModell"></div>
+<div id="rgDelta" class="note" style="background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px;margin-top:8px"></div>
+</div>
+
+<div class="card">
+<h2>4. Prediksjon for én person</h2>
+<div class="rgvelg">
+<label id="rgLab1">X₁ <input type="number" id="rgInn1" step="any"></label>
+<label id="rgLab2">X₂ <input type="number" id="rgInn2" step="any"></label>
+<button class="btn" id="rgPred">Regn ut</button>
+</div>
+<div id="rgPredUt" class="note" style="background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px"></div>
+</div>
+
+<div class="card">
+<h2>5. Holder forutsetningene?</h2>
+<div class="rgto">
+<div><canvas id="cvRgRes" height="240"></canvas>
+<div class="muted" style="font-size:14px;text-align:center">Residualer mot predikert — se etter trakt og krumning</div></div>
+<div><canvas id="cvRgQQ" height="240"></canvas>
+<div class="muted" style="font-size:14px;text-align:center">Q–Q-plott av residualene — punktene skal følge linja</div></div>
+</div>
+<div id="rgDiag" style="margin-top:8px"></div>
+</div>
+
+<div class="card">
+<h2>6. Slik ville du skrevet det</h2>
+<div id="rgApa" class="rgapa"></div>
+<div class="muted" style="font-size:14.5px;margin-top:8px">Setningen er bygd etter APA: effekten
+først, testen etterpå, frihetsgradene i parentes, og effektstørrelsen med. Legg merke til at det
+ikke står noe om <i>årsak</i> — det kan ikke en regresjon på tverrsnittsdata gi deg.</div>
+</div>
+
+<div class="card">
+<div class="keybox" style="background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:12px 14px;font-size:16.5px">
+<b>Hovedpoenget i denne fanen:</b> en regresjon gir deg tre helt ulike ting, og de må ikke forveksles.
+<b>b</b> sier hvor bratt sammenhengen er, <b>R²</b> sier hvor mye av variasjonen modellen fanger,
+og <b>prediksjonsintervallet</b> — som du kan slå på i figuren øverst, eller regne ut for én
+person i punkt 4 — sier hvor lite du likevel vet om det neste mennesket.
+</div>
+</div>
+</div><!-- /fane-data -->
+
+<div id="fane-kvadrat" class="hide">
+<div id="modeB">
 <div class="card">
 <h2>Prediker depresjon fra undertrykkende forsvar (ekte baseline-data, n = 75)</h2>
 <p class="muted"><b>Dra de to håndtakene</b> (endene av linjen) opp og ned. De tynne røde strekene er residualene; SSE er summen av kvadratene deres. Den stiplede lyseblå linjen er din <b>beste hittil</b>.</p>
@@ -89,31 +194,620 @@ body.pres .keybox{font-size:18px}
 
 <div class="card">
 <h2 id="hB2">SSE som funksjon av håndtaket du drar</h2>
-<p class="muted">Samme idé som i Del A: kurven viser total kvadrert feil når du flytter <b>ett</b> håndtak (det andre holdes fast). Grønn stiplet strek = beste posisjon for dette håndtaket. (y-aksen er zoomet inn mot bunnen.)</p>
+<p class="muted">Kurven viser total kvadrert feil når du flytter <b>ett</b> håndtak (det andre holdes fast). Grønn stiplet strek = beste posisjon for dette håndtaket. (y-aksen er zoomet inn mot bunnen.)</p>
 <canvas id="cvB2" height="160"></canvas>
 </div>
 <div class="card note"><b>Poenget:</b> Regresjon gjør akkurat det du nettopp gjorde for hånd, men matematisk: den finner b₀ og b₁ som minimerer summen av kvadrerte residualer. På de ekte dataene er fasit ŷ ≈ 13,2 + 0,21·x (som i forelesningen). Klarer du å slå OLS-linjen? (Nei.)</div>
 </div>
+</div><!-- /fane-kvadrat -->
 
-<div class="card docs" id="ordforklaringer">
-<h2>Ordforklaringer</h2>
+<div id="fane-r2" class="hide">
+<div class="card">
+<h2>1. Tre kvadratsummer, ett regnskap</h2>
+<p class="muted">Uten modellen er ditt beste gjett p&aring; y alltid <b>&#375;</b>. Med modellen gjetter du p&aring; linja. R&sup2; er hvor stor del av bommen som forsvant.</p>
+<div class="rad">
+<label>Sammenheng: <input type="range" id="r2R" min="0" max="95" value="65" step="5" style="width:180px"> <output id="r2ROut">0,65</output></label>
+<label>Vis: <select id="r2Vis">
+<option value="sst" selected>SST — avvik fra &#375;</option>
+<option value="sse">SSE — avvik fra linja</option>
+<option value="ssr">SSR — det linja forklarer</option>
+<option value="alle">alle tre ved siden av hverandre</option></select></label>
+<button class="btn" id="r2Ny">Trekk nye data</button>
+</div>
+<canvas id="cvR2" height="320"></canvas>
+<div class="legend">Hver strek er ett avvik. Kvadrer dem og legg sammen &mdash; det er en kvadratsum.</div>
+</div>
+
+<div class="card">
+<h2>2. Regnskapet g&aring;r opp</h2>
+<div id="r2Tab"></div>
+<div class="note" id="r2Note"></div>
+</div>
+
+<div class="card">
+<div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>R&sup2; er andelen av variasjonen i y som modellen gj&oslash;r rede for: SSR / SST. Med &eacute;n prediktor er den n&oslash;yaktig r&sup2; &mdash; korrelasjonen kvadrert.</b>
+<details class="mer"><summary>Mer om dette: hva R&sup2; ikke forteller deg</summary><div>
+<b>R&sup2; sier ingenting om at modellen er riktig.</b> En krum sammenheng kan gi h&oslash;y R&sup2; med en rett linje, og en helt korrekt modell kan ha lav R&sup2; hvis st&oslash;yen er stor. Det er residualplottet, ikke R&sup2;, som avsl&oslash;rer feil form.
+<b>R&sup2; vokser alltid n&aring;r du legger til prediktorer</b> &mdash; ogs&aring; helt tilfeldige. Derfor rapporterer JASP ogs&aring; justert R&sup2;, som trekker fra for antall prediktorer.
+<b>Og R&sup2; er ikke et m&aring;l p&aring; viktighet.</b> I psykologi er R&sup2; = 0,10 helt vanlig for reelle effekter; i fysikk ville det samme tallet v&aelig;rt en katastrofe. Sammenlign alltid med feltet, ikke med 1.
+</div></details></div>
+</div>
+</div><!-- /fane-r2 -->
+
+<div id="fane-residual" class="hide">
+<div class="card">
+<h2>Bygg din regresjonsverden (sann effekt = 0; H0 er sann)</h2>
+<div class="sl"><label>n</label><input type="range" id="nRA" min="10" max="200" step="5" value="40"><output id="nOut">40</output></div>
+<div class="sl"><label>Feilleddets fordeling</label>
+<select id="err"><option value="norm" selected>Normal</option><option value="skew">Sterkt skjev</option><option value="heavy">Tunghalede (utligger-utsatt)</option></select>
+<label style="min-width:auto">x-fordeling:</label>
+<select id="xdist"><option value="unif" selected>Jevn</option><option value="skew">Skjev (få høye verdier)</option></select>
+</div>
+<div class="sl"><label>Heteroskedastisitet (spredning øker med x)</label><input type="range" id="het" min="0" max="3" step="0.5" value="0"><output id="hetOut">0,0</output></div>
+<button class="btn" id="one">Trekk ETT utvalg (diagnostikk)</button>
+<button class="btn" id="many">Kjør 5 000 studier under H0</button>
+<button class="btn2" id="danger">Sett opp den farlige kombinasjonen</button>
+<div id="out" style="margin-top:8px"></div>
+</div>
+
+<div class="grid">
+<div class="card"><h2>Data + regresjonslinje</h2><canvas id="cvS" height="250"></canvas></div>
+<div class="card"><h2>Residualplottet (det JASP viser deg)</h2><canvas id="cvR" height="250"></canvas></div>
+</div>
+<div class="card"><h2>Residualenes fordeling</h2><canvas id="cvH" height="170"></canvas></div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>Forutsetningene gjelder <b>residualene</b>, ikke råskårene. Derfor er residualplottet, ikke histogrammet av utfallsvariabelen, som er stedet du oppdager at modellen ikke holder.</b></div></div>
+
+<div class="card">
+<h2>Konsekvensen: type I-rate for testen av stigningstallet (mål: 5 %)</h2>
+<canvas id="cvRate" height="200"></canvas>
+<div class="note" id="verdict"><b>Prøv i rekkefølge:</b> (1) alt normalt → residualplottet er et jevnt bånd, testen holder 5 %; (2) skru heteroskedastisitet til 3 → <b>trakten</b> vises i residualplottet; med jevn x-fordeling koster det litt (~6–7 %); (3) trykk «den farlige kombinasjonen» (trakt + skjev x: de få høye x-verdiene har både mest innflytelse OG mest støy) → ~20–25 % falske positiver; (4) bytt til skjeve/tunghalede feil uten heteroskedastisitet → histogrammet ser stygt ut, men testen holder likevel ≈ 5 % (sentralgrenseteoremet igjen!). Merk: gjennomsnittlig b̂ er ≈ 0 hele veien. Bruddene gir IKKE skjeve estimater; de får standardfeilene, p-verdiene og KI-ene til å lyve. Botemidler i praksis: se residualplottet, vurder transformasjon eller Spearman (korrelasjon), og vær på vakt når trakt møter skjev x. Tunge haler straffer dessuten styrken og enkeltutvalg (jf. Sim 8 om utliggere).</div>
+</div>
+</div><!-- /fane-residual -->
+
+<details class="ordbok" id="ordforklaringer"><summary>Ordforklaringer</summary>
 <div class="gloss">
-<p><b>M</b> — gjennomsnittet i et utvalg (skrives også x̄). <b>Median</b> = midtverdien når verdiene sorteres. <b>Modus</b> = den hyppigste verdien.<br>
-<b>SD</b> — standardavvik: typisk avstand fra gjennomsnittet, i variabelens egen enhet. Kvadratet er variansen.<br>
-<b>μ (my)</b> — gjennomsnittet i <i>populasjonen</i>: sannheten vi prøver å treffe, og som forskeren i praksis aldri får se.<br>
-<b>x̄ (x-strek)</b> — gjennomsnittet i utvalget, altså estimatet av μ.<br>
-<b>SS</b> — kvadratsum (sum of squares): summen av kvadrerte avvik. <b>SSE</b> er kvadratsummen av feilene (residualene). <b>MS</b> = SS/df, altså en varians.<br>
-<b>Minste kvadraters metode (OLS, ordinary least squares)</b> — modellen som gjør summen av kvadrerte avvik minst mulig.<br>
+<p><b>Homoskedastisitet</b> — at spredningen i residualene er omtrent like stor over hele x-aksen. Brudd på dette kalles<br>
+<b>H₀</b> — nullhypotesen: «ingen effekt / ingen sammenheng».<br>
+<b>H₁</b> er alternativhypotesen.<br>
+<b>ISTDP</b> (intensiv dynamisk korttidsterapi) med venteliste, N = 86.<br>
+<b>JASP</b> — statistikkprogrammet vi bruker i emnet (gratis og åpen kildekode).<br>
+<b>Justert R²</b> — R² korrigert for antall prediktorer. Vanlig R² vokser uansett når du legger til variabler, også helt tilfeldige.<br>
+<b>KI</b> — konfidensintervall; her 95 %, beregnet som estimat ± 1,96 · SE.<br>
+<b>Kollinearitet</b> — at prediktorene deler informasjon (høy r₁₂).<br>
+<b>Konfunder</b> — en tredjevariabel som påvirker både prediktor og utfall og dermed skaper en falsk sammenheng.<br>
+<b>M</b> — gjennomsnittet i et utvalg (skrives også x̄).<br>
+<b>MS</b> = SS/df, altså en varians.<br>
+<b>Median</b> = midtverdien når verdiene sorteres.<br>
+<b>Mediator</b> — et mellomledd i årsakskjeden fra prediktor til utfall.<br>
+<b>Modus</b> = den hyppigste verdien.<br>
+<b>RCT</b> — randomisert kontrollert studie. Emnets<br>
 <b>Residual</b> — avviket mellom en observert verdi og modellens predikerte verdi (y − ŷ).<br>
+<b>R²</b> — andelen av variansen i Y som modellen forklarer (0–1).<br>
+<b>SD</b> — standardavvik: typisk avstand fra gjennomsnittet, i variabelens egen enhet. Kvadratet er variansen.<br>
+<b>SE</b> — standardfeil: usikkerheten i et estimat, altså hvor mye estimatet ville sprikt mellom gjentatte utvalg.<br>
+<b>SS</b> — kvadratsum (sum of squares): summen av kvadrerte avvik.<br>
+<b>SSE</b> er kvadratsummen av feilene (residualene).<br>
+<b>SST, SSR og SSE</b> — total, forklart og uforklart kvadratsum. SST = SSR + SSE alltid, og R² = SSR/SST.<br>
+<b>Sentralgrenseteoremet</b> — utvalgsgjennomsnitt blir tilnærmet normalfordelte når n vokser, selv om populasjonen er skjev.<br>
+<b>Spearmans rho</b> gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.<br>
+<b>Statistisk styrke</b> — sannsynligheten for å oppdage en effekt som faktisk finnes (1 − type II-risikoen). Se Sim 20.<br>
+<b>Terapi-RCT-studie</b> sammenligner<br>
+<b>Trimmet gjennomsnitt</b> = regn ut etter å ha kuttet de mest ekstreme prosentene;<br>
+<b>Type I-feil</b> — å finne en effekt som ikke finnes (falsk positiv).<br>
+<b>Type II-feil</b> — å overse en effekt som finnes (falsk negativ).<br>
+<b>Utligger</b> — en observasjon som ligger langt fra resten.<br>
+<b>VIF</b> — variance inflation factor: hvor mye overlappet mellom prediktorene blåser opp variansen til estimatet.<br>
+<b>b</b> — regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren.<br>
+<b>heteroskedastisitet</b> (trakten i residualplottet).<br>
+<b>p-verdi</b> — sannsynligheten for et resultat minst så ekstremt som ditt, <i>gitt at H₀ er sann</i>. Ikke sannsynligheten for at H₀ er sann.<br>
+<b>r</b> — Pearsons korrelasjon: styrken på den <i>lineære</i> sammenhengen mellom to variabler (−1 til +1).<br>
+<b>r₁₂</b> — korrelasjonen mellom de to prediktorene.<br>
+<b>t</b> — testobservator for gjennomsnitt: forskjell delt på standardfeil.<br>
+<b>t-fordelingen</b> er litt tyngre i halene enn normalfordelingen ved lav df.<br>
+<b>winsorisering</b> = erstatt dem med grenseverdien i stedet for å kutte.<br>
+<b>x̄ (x-strek)</b> — gjennomsnittet i utvalget, altså estimatet av μ.<br>
 <b>ŷ (y-hatt)</b> — verdien modellen predikerer for en person, i motsetning til den observerte y.<br>
-<b>b</b> — regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren. <b>β</b> er den standardiserte varianten (i standardavvik).<br>
-<b>r</b> — Pearsons korrelasjon: styrken på den <i>lineære</i> sammenhengen mellom to variabler (−1 til +1). <b>Spearmans rho</b> gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.<br>
-<b>RCT</b> — randomisert kontrollert studie. Emnets <b>Terapi-RCT-studie</b> sammenligner <b>ISTDP</b> (intensiv dynamisk korttidsterapi) med venteliste, N = 86.</p>
-</div>
-</div>
-
-</div>
+<b>β</b> er den standardiserte varianten (i standardavvik).<br>
+<b>β (beta)</b> — standardisert regresjonskoeffisient: endring i Y (i standardavvik) per ett standardavviks endring i prediktoren.<br>
+<b>μ (my)</b> — gjennomsnittet i <i>populasjonen</i>: sannheten vi prøver å treffe, og som forskeren i praksis aldri får se.</p>
+</div></details>
+</div><!-- /wrap -->
 <script>
+
+/* ---------- faner ---------- */
+const FANER=['data','kvadrat','r2','residual'];
+/* Fane 4 «Å kontrollere for» bor igjen i sin egen app (Sim 15). Gamle
+   dyplenker skal ikke havne i ingenmannsland. */
+const FLYTTET={kontroll:'PSY300_Sim_Kontrollmaskinen.html'};
+function visFane(f){
+  if(FANER.indexOf(f)<0) f='data';
+  FANER.forEach(x=>{const e=document.getElementById('fane-'+x); if(e) e.classList.toggle('hide', x!==f);});
+  document.querySelectorAll('.fane').forEach(b=>b.classList.toggle('on', b.dataset.fane===f));
+  window.dispatchEvent(new Event('resize'));
+  if(f==='data'&&window.__rgTegn) window.__rgTegn();
+  if(f==='r2'&&window.__tegnR2) window.__tegnR2();
+  try{ history.replaceState(null,'','#fane='+f); }catch(e){}
+}
+document.querySelectorAll('.fane').forEach(b=>b.addEventListener('click',()=>visFane(b.dataset.fane)));
+(function(){ const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,''));
+  const f=q.get('fane');
+  if(f&&FLYTTET[f]){ location.replace(FLYTTET[f]); return; }
+  if(f&&FANER.indexOf(f)>=0) visFane(f); })();
+
+/* ===== Fane 1: ekte data ================================================
+   Studentene skal kunne kjøre den samme regresjonen her og i JASP og få
+   nøyaktig samme tall. Derfor regnes alt fra rådataene, ikke fra lagrede
+   resultater — og fordelingene (t og F) er skrevet ut for hånd. */
+(function(){
+"use strict";
+const $R=id=>document.getElementById(id);
+const RGDATA={"iq":{"navn":"Skolekarakterer og IQ","kilde":"Simulert, N = 500 · parametrene er kalibrert mot norske registerfunn","n":500,"vars":{"iq":{"lab":"IQ ved 19 år","enhet":"IQ-poeng","v":[108.0,86.0,93.0,121.0,97.0,115.0,110.0,85.0,90.0,98.0,92.0,82.0,99.0,93.0,96.0,72.0,107.0,97.0,109.0,103.0,82.0,103.0,107.0,112.0,92.0,109.0,113.0,114.0,110.0,107.0,114.0,95.0,93.0,92.0,111.0,91.0,126.0,128.0,110.0,88.0,102.0,55.0,104.0,91.0,80.0,129.0,100.0,130.0,125.0,96.0,122.0,111.0,111.0,97.0,86.0,92.0,118.0,96.0,107.0,111.0,88.0,106.0,78.0,118.0,102.0,113.0,107.0,106.0,121.0,74.0,117.0,109.0,82.0,108.0,92.0,102.0,81.0,82.0,114.0,94.0,110.0,96.0,94.0,99.0,89.0,85.0,77.0,97.0,121.0,117.0,100.0,127.0,93.0,99.0,97.0,116.0,85.0,89.0,96.0,98.0,74.0,90.0,95.0,99.0,89.0,110.0,86.0,130.0,94.0,100.0,99.0,82.0,113.0,55.0,94.0,106.0,114.0,90.0,93.0,92.0,108.0,110.0,101.0,111.0,70.0,118.0,100.0,136.0,85.0,101.0,113.0,117.0,102.0,88.0,123.0,98.0,117.0,81.0,83.0,98.0,79.0,100.0,94.0,86.0,116.0,100.0,117.0,102.0,113.0,87.0,109.0,102.0,131.0,95.0,116.0,108.0,82.0,69.0,109.0,106.0,81.0,110.0,87.0,85.0,88.0,95.0,82.0,128.0,108.0,110.0,92.0,90.0,89.0,92.0,90.0,88.0,106.0,75.0,98.0,114.0,92.0,95.0,107.0,89.0,91.0,109.0,96.0,111.0,84.0,108.0,86.0,118.0,108.0,87.0,113.0,117.0,101.0,99.0,105.0,100.0,118.0,102.0,102.0,112.0,104.0,91.0,102.0,104.0,103.0,104.0,104.0,101.0,94.0,104.0,99.0,110.0,89.0,71.0,99.0,102.0,107.0,95.0,106.0,111.0,102.0,135.0,128.0,101.0,89.0,99.0,110.0,96.0,115.0,76.0,102.0,83.0,105.0,111.0,116.0,111.0,79.0,76.0,81.0,115.0,92.0,59.0,105.0,88.0,105.0,111.0,102.0,79.0,88.0,86.0,106.0,118.0,79.0,69.0,99.0,104.0,98.0,77.0,66.0,63.0,123.0,117.0,85.0,92.0,101.0,105.0,119.0,94.0,98.0,107.0,82.0,84.0,102.0,118.0,126.0,112.0,78.0,89.0,76.0,104.0,100.0,83.0,117.0,101.0,92.0,133.0,102.0,93.0,108.0,121.0,94.0,89.0,118.0,96.0,85.0,57.0,81.0,116.0,121.0,122.0,74.0,111.0,103.0,111.0,113.0,119.0,86.0,71.0,90.0,107.0,102.0,74.0,91.0,91.0,100.0,108.0,111.0,99.0,108.0,98.0,135.0,96.0,96.0,114.0,96.0,112.0,98.0,89.0,92.0,92.0,93.0,106.0,125.0,82.0,85.0,67.0,113.0,109.0,105.0,73.0,103.0,100.0,95.0,90.0,83.0,107.0,99.0,88.0,92.0,111.0,110.0,78.0,106.0,73.0,94.0,104.0,108.0,89.0,90.0,113.0,114.0,77.0,95.0,126.0,141.0,107.0,92.0,97.0,91.0,98.0,105.0,110.0,86.0,109.0,112.0,100.0,95.0,108.0,91.0,108.0,70.0,109.0,96.0,105.0,102.0,103.0,83.0,108.0,117.0,126.0,94.0,113.0,126.0,101.0,111.0,61.0,110.0,101.0,67.0,108.0,96.0,97.0,106.0,94.0,88.0,124.0,97.0,118.0,113.0,90.0,123.0,100.0,82.0,100.0,107.0,90.0,130.0,96.0,123.0,111.0,109.0,111.0,114.0,103.0,74.0,102.0,102.0,102.0,81.0,86.0,113.0,123.0,91.0,100.0,93.0,85.0,116.0,98.0,82.0,105.0,109.0,79.0,123.0,72.0,82.0,109.0,110.0,130.0,108.0,87.0,86.0,111.0,98.0,122.0,84.0,92.0,84.0,96.0,115.0,107.0,80.0,92.0,116.0,96.0,114.0,113.0,131.0,126.0,116.0,92.0,95.0,110.0,103.0,127.0,129.0,109.0,110.0,86.0,55.0,72.0,95.0,96.0,112.0,82.0,97.0,104.0,93.0,129.0,112.0,89.0,116.0,85.0,114.0,91.0,116.0,90.0]},"kar":{"lab":"Grunnskolepoeng","enhet":"poeng","v":[52.8,44.8,33.4,45.4,35.1,56.4,47.5,35.8,38.7,40.5,28.4,38.6,46.9,45.8,44.2,30.9,58.1,38.7,49.4,51.0,38.6,45.9,46.0,49.7,37.4,39.4,55.8,45.5,44.4,46.4,49.0,39.0,34.1,53.2,54.3,52.3,54.5,59.4,44.5,22.3,40.3,16.0,39.4,43.7,41.5,44.2,34.9,46.6,52.2,27.1,60.0,47.8,40.1,30.7,37.5,39.5,47.3,40.6,39.5,32.1,37.2,36.4,40.9,53.1,60.0,57.3,44.3,47.1,43.7,27.1,39.8,48.8,28.6,46.3,31.8,36.9,27.2,42.6,37.5,38.8,51.6,44.1,32.7,31.0,40.4,30.0,39.2,39.6,38.2,36.3,46.3,46.0,55.8,39.9,33.6,53.8,26.6,46.9,37.0,36.6,38.1,38.5,42.5,27.6,33.3,40.1,26.9,60.0,50.4,39.5,40.5,35.8,60.0,32.3,40.9,48.1,32.8,37.0,31.1,36.3,46.8,46.3,38.1,54.0,33.6,40.3,37.9,49.5,25.5,42.7,48.7,37.5,39.6,42.9,43.5,37.8,51.3,21.1,32.8,43.4,36.2,33.4,44.0,36.0,52.3,44.7,47.2,33.4,37.7,34.4,52.8,40.5,52.7,47.8,47.8,37.5,18.2,41.1,54.7,46.5,25.2,40.8,39.3,50.8,29.4,29.3,43.4,40.2,53.4,18.8,28.7,35.9,40.6,31.2,37.6,33.9,52.1,29.7,28.6,39.3,26.6,35.7,44.5,46.3,34.4,51.2,49.2,51.9,51.8,42.9,35.6,53.4,50.1,46.3,48.3,60.0,33.6,46.0,42.7,48.2,46.1,43.0,41.9,57.1,41.4,31.5,28.9,50.4,42.8,42.7,42.4,55.6,35.1,41.5,43.4,51.2,43.6,25.8,33.6,33.1,40.0,43.3,41.0,55.4,38.6,51.8,53.5,43.8,41.9,53.2,40.4,45.7,47.3,34.8,42.1,46.1,54.7,48.7,46.1,50.3,31.9,35.0,25.6,54.7,45.6,38.8,45.8,42.6,40.1,49.8,29.1,31.0,38.4,26.2,45.9,51.1,28.4,10.0,38.2,41.5,48.4,28.2,37.5,22.0,50.6,43.1,38.5,28.0,39.2,42.5,46.1,53.5,43.8,25.3,14.9,30.9,43.5,43.3,60.0,48.8,26.0,39.8,24.4,39.2,54.9,45.2,54.7,30.7,46.3,51.2,41.6,29.8,50.6,54.1,46.4,42.6,50.3,36.5,41.1,20.4,42.2,54.5,60.0,52.1,36.3,42.6,28.7,34.2,40.9,45.6,25.7,31.4,38.4,59.9,32.0,22.7,36.1,33.4,33.8,41.3,45.5,47.9,45.6,41.6,48.6,50.8,33.5,60.0,37.5,43.5,38.7,49.6,38.8,29.8,38.5,47.3,56.7,27.4,36.5,31.6,34.6,48.0,49.5,30.6,46.4,39.6,23.4,29.8,33.4,50.1,49.7,53.9,25.1,46.2,40.9,29.5,42.2,35.2,44.8,49.0,55.1,40.1,36.0,40.5,53.8,33.0,39.8,37.7,57.7,54.6,42.7,48.2,47.9,47.1,48.8,55.5,36.2,51.7,54.7,43.7,47.2,39.0,46.6,49.7,26.3,53.9,41.5,49.8,40.9,44.5,32.1,50.8,40.3,50.2,34.3,59.5,47.4,43.9,42.2,26.0,50.1,45.7,39.7,48.4,25.4,35.5,35.7,42.6,31.5,58.3,46.9,42.9,44.6,50.4,56.4,54.8,44.7,29.5,44.0,35.9,60.0,49.6,47.5,39.4,38.7,38.8,52.4,47.5,44.9,34.6,53.3,41.9,34.0,41.0,50.6,48.2,39.7,44.5,38.8,40.9,53.2,44.5,48.5,44.6,54.2,49.3,42.1,34.6,53.6,35.0,36.7,56.3,38.6,33.9,46.4,44.4,43.2,47.8,37.2,50.6,46.5,38.4,36.2,42.0,37.6,43.6,44.9,37.9,47.3,48.7,57.7,50.8,44.5,27.8,33.5,44.4,53.2,54.3,45.5,49.1,46.5,44.2,21.3,33.9,38.4,35.7,38.0,44.3,38.8,45.2,39.3,58.9,41.7,38.8,55.9,31.8,49.1,48.2,34.2,29.3]},"inn":{"lab":"Foreldreinntekt","enhet":"100 000 kr","v":[5.15,7.55,6.06,14.12,13.31,9.86,9.78,6.05,6.03,4.4,1.73,4.22,8.58,5.68,5.8,8.0,6.1,6.78,4.89,8.47,3.59,6.72,6.62,13.5,3.95,6.87,19.71,9.43,8.18,9.21,9.41,9.34,6.94,7.55,9.49,11.04,6.04,6.09,9.41,4.47,10.37,2.64,7.13,13.99,3.71,9.62,6.65,6.98,6.49,6.31,16.26,5.01,3.65,5.72,7.25,5.88,4.52,9.0,4.28,3.39,7.59,3.88,5.42,10.2,8.78,13.45,6.43,6.73,11.46,3.2,7.23,10.92,7.63,3.81,7.34,9.4,7.62,9.21,6.12,3.57,9.08,5.18,8.78,4.75,5.29,8.79,4.95,7.22,9.82,7.59,15.79,6.41,6.76,4.11,4.99,9.32,5.48,11.19,8.13,4.99,7.35,8.91,4.46,4.36,5.93,14.11,3.14,9.01,10.87,11.25,3.99,7.51,4.86,5.44,7.41,8.49,7.77,17.97,5.14,6.25,11.39,4.29,3.58,6.51,6.98,4.91,10.88,13.04,6.12,11.8,9.7,5.69,4.86,7.2,3.33,6.2,4.53,5.12,5.1,4.04,8.46,6.35,3.98,7.66,4.19,6.55,4.87,5.77,6.98,6.25,7.64,3.91,10.69,4.99,12.92,9.83,4.48,5.9,11.75,8.4,6.64,5.79,8.02,9.5,6.11,5.99,12.55,8.94,10.66,5.8,5.24,13.66,3.93,4.9,11.62,8.19,4.91,5.52,3.96,7.26,8.48,3.48,17.57,17.38,4.92,10.41,8.41,6.32,8.76,5.71,4.3,7.54,9.89,4.75,8.63,6.69,4.62,4.97,3.65,6.91,10.13,11.05,10.66,12.81,3.15,4.8,5.33,17.97,4.86,5.98,4.77,12.67,6.74,6.63,9.11,3.67,4.51,4.2,2.68,6.48,7.04,15.24,4.86,6.56,6.17,8.68,4.35,3.92,6.32,8.85,10.74,22.08,22.87,6.02,8.66,7.66,10.47,8.07,5.26,6.57,10.79,4.1,4.18,8.83,4.01,6.85,3.89,4.11,6.39,10.62,6.73,2.44,5.54,5.97,3.76,9.93,5.36,5.77,7.87,4.4,9.0,8.27,7.98,2.98,6.46,3.7,11.78,6.49,5.76,4.73,7.88,3.19,10.12,10.01,5.15,5.93,11.48,9.07,8.42,9.91,6.42,6.58,4.17,7.72,7.55,6.03,13.2,4.75,3.62,7.24,9.05,8.49,9.76,4.98,3.9,11.14,5.17,8.1,5.1,3.05,11.26,8.27,4.75,6.42,7.65,5.09,3.95,9.26,7.73,11.62,3.67,4.42,7.51,5.99,10.46,4.06,4.65,3.7,6.65,6.33,9.6,6.51,8.41,7.59,12.4,8.01,8.02,10.69,4.81,4.1,3.68,8.85,3.24,8.42,3.55,9.65,10.65,6.15,2.9,11.87,3.2,9.43,11.46,2.83,4.04,6.34,5.14,5.68,6.43,7.29,15.15,6.28,8.12,7.06,15.9,4.65,7.8,5.4,9.35,4.1,4.67,8.53,7.23,15.85,14.12,4.4,7.44,6.59,7.03,5.03,2.45,6.11,7.28,4.3,4.81,8.76,4.81,9.73,6.75,8.77,7.91,3.92,12.16,7.05,2.99,7.2,5.39,9.47,6.06,6.19,5.61,5.1,3.81,5.68,6.84,18.01,9.97,3.69,4.38,5.51,10.94,7.74,3.96,12.62,10.2,7.17,7.38,3.55,7.5,5.67,6.52,6.27,11.66,12.49,5.7,10.85,5.3,11.62,5.46,5.42,14.71,8.04,5.31,5.44,4.65,5.57,9.07,5.66,10.75,9.64,9.05,5.02,12.97,8.42,12.25,7.58,8.13,3.66,3.29,16.06,8.49,4.5,5.02,5.71,6.31,9.38,14.34,12.51,11.36,8.23,5.95,7.72,5.23,6.83,12.61,5.45,11.15,8.25,4.95,9.99,10.88,10.85,12.41,5.97,5.97,8.37,6.53,5.14,5.53,9.46,8.48,8.14,6.42,4.84,3.49,16.61,4.06,13.92,8.97,7.42,4.07,4.8,9.72,5.36,12.68,10.76,4.61,6.53,7.84,6.0,10.8,7.55,9.79,3.46,7.13,7.13,5.42,6.9,5.21,1.89]},"np":{"lab":"Nasjonale prøver","enhet":"skalapoeng","v":[63.9,48.5,42.1,58.3,52.0,65.8,53.3,37.7,45.4,57.3,55.1,32.5,45.8,58.3,60.2,41.4,65.0,57.6,45.8,66.3,35.3,53.6,61.1,45.1,36.0,50.8,57.0,54.3,59.9,64.0,62.0,41.4,53.8,59.3,58.1,36.8,54.0,60.0,49.4,27.7,47.2,23.6,50.4,57.8,51.8,62.2,47.0,53.6,58.6,33.6,76.8,64.6,47.4,37.0,45.8,53.9,55.7,54.0,48.9,57.1,51.5,33.7,41.8,70.4,54.7,61.3,45.1,60.1,48.1,41.2,49.0,62.6,46.5,54.6,53.4,50.4,32.6,41.0,57.6,41.9,62.1,44.4,43.3,42.3,42.4,34.5,47.7,48.8,53.5,58.7,51.9,64.4,50.4,64.3,39.4,62.4,34.0,56.5,45.9,42.4,40.6,44.1,36.2,29.4,46.0,52.8,32.1,69.9,64.1,56.8,56.7,32.8,64.2,47.1,43.0,43.3,48.0,42.9,38.3,49.9,41.7,53.5,37.1,65.3,46.9,42.4,60.4,45.5,31.7,38.5,51.8,52.3,52.2,49.8,57.6,60.7,58.6,36.5,29.8,45.8,53.9,40.0,48.0,42.3,57.8,59.4,51.4,55.1,35.7,39.5,61.0,46.7,49.9,55.1,67.0,39.6,28.9,50.6,56.8,43.0,37.9,48.9,38.0,59.4,41.8,45.6,33.4,54.1,63.2,44.6,36.7,44.6,48.0,47.5,49.1,44.4,49.5,28.6,48.3,40.5,48.1,50.9,46.9,53.0,35.0,60.8,40.6,55.2,53.9,54.3,32.8,63.5,73.9,34.5,55.1,68.6,39.4,49.4,52.8,62.4,53.8,49.4,48.7,58.3,49.5,33.2,33.5,57.7,55.8,49.3,56.4,70.8,63.9,45.8,45.9,45.7,57.7,49.4,38.9,58.3,50.0,55.5,58.8,47.6,44.9,61.7,65.0,48.8,47.1,63.3,61.5,56.4,58.2,42.5,61.6,46.3,62.8,51.5,64.4,58.3,29.5,31.8,39.9,67.2,47.0,36.8,54.9,42.8,52.7,62.1,42.1,32.3,38.0,44.9,52.5,69.1,30.4,26.1,49.8,53.4,59.0,32.3,51.8,26.8,55.0,50.9,54.1,32.2,54.0,58.0,56.1,52.4,48.2,35.5,23.0,38.5,40.1,58.7,75.3,63.9,43.5,53.5,32.8,45.9,56.3,51.3,48.7,45.6,40.7,79.0,47.5,47.8,57.9,61.6,58.9,42.5,41.6,42.6,43.8,26.7,36.8,61.3,60.2,53.0,46.8,51.9,44.5,45.0,52.4,49.5,24.8,39.7,51.6,61.0,43.2,49.1,16.4,48.7,37.2,57.5,54.7,50.8,66.9,55.8,59.4,52.5,52.4,69.7,47.0,44.3,61.4,46.3,46.2,36.4,33.4,52.2,77.1,38.9,46.9,42.8,40.9,47.6,52.6,33.5,47.8,51.8,30.7,46.3,43.9,45.6,43.4,58.4,36.5,65.4,45.4,43.7,44.3,48.8,50.4,63.7,57.0,49.0,57.7,53.3,56.3,37.0,46.4,44.1,69.1,60.2,49.1,65.4,53.6,57.8,46.4,60.8,43.0,52.0,53.4,40.7,57.9,54.0,47.5,65.0,37.4,47.9,60.7,41.3,44.9,69.1,40.0,53.8,43.7,56.2,45.0,63.2,67.4,50.0,46.3,43.6,64.2,56.4,45.2,47.8,35.1,42.6,41.0,50.4,48.8,68.0,59.1,46.1,65.1,60.4,65.7,54.9,53.5,39.5,64.0,50.9,62.9,57.2,68.8,50.6,43.1,46.5,59.5,47.9,52.4,39.3,51.0,53.7,50.8,51.7,61.0,56.5,49.6,49.9,51.7,52.5,46.0,49.5,56.1,48.7,51.4,63.6,58.8,37.9,55.1,51.2,40.5,53.0,42.9,54.6,54.1,50.2,59.6,56.0,39.7,55.1,48.5,57.0,44.5,42.4,44.4,46.5,57.7,45.3,64.3,50.6,58.7,54.3,53.6,34.3,31.9,53.3,61.0,49.8,60.5,54.6,43.6,52.0,36.3,37.1,43.2,53.2,56.4,54.8,53.3,62.3,46.5,62.4,40.6,46.1,58.5,38.8,60.7,50.6,50.5,43.0]},"jente":{"lab":"Kjønn (1 = jente)","enhet":"","v":[1.0,0.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,1.0,1.0,0.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0,0.0,0.0,0.0,1.0,0.0,1.0,0.0,1.0,1.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,0.0,1.0,0.0,1.0,0.0,1.0,1.0,0.0,1.0,0.0,0.0,0.0,1.0,1.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,0.0,1.0,1.0,1.0,0.0,1.0,1.0,0.0,0.0,1.0,0.0,1.0,0.0,1.0,1.0,0.0,1.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,1.0,0.0,1.0,0.0,1.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,1.0,1.0,0.0,0.0,1.0,0.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,0.0,1.0,0.0,1.0,1.0,1.0,1.0,0.0,1.0,1.0,1.0,1.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0,1.0,0.0,1.0,1.0,0.0,0.0,1.0,0.0,0.0,1.0,0.0,0.0,0.0,1.0,1.0,0.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,1.0,0.0,1.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,1.0,0.0,0.0,1.0,0.0,1.0,1.0,0.0,1.0,1.0,0.0,1.0,1.0,1.0,1.0,0.0,1.0,1.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0,1.0,0.0,1.0,1.0,1.0,0.0,0.0,1.0,0.0,1.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,0.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,1.0,0.0,0.0,1.0,0.0,1.0,1.0,0.0,1.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0,1.0,0.0,1.0,1.0,1.0,1.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,1.0,0.0,1.0,1.0,1.0,0.0,1.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0,0.0,1.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,1.0,0.0,1.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,1.0,0.0,1.0,1.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0,0.0]}},"std_y":"iq","std_x1":"kar","std_x2":"inn","sporsmal":"Kan vi predikere IQ fra karakterene ved 16 — og betyr foreldrenes inntekt noe i tillegg?"},"terapi":{"navn":"Terapistudien (ISTDP)","kilde":"Ekte data, N = 75 fullførere · Heshmati mfl. (2023)","n":75,"vars":{"dep":{"lab":"Depresjon (baseline)","enhet":"skår","v":[34.0,33.0,29.0,30.0,27.0,28.0,32.0,33.0,35.0,28.0,23.0,21.0,34.0,35.0,35.0,35.0,33.0,20.0,23.0,18.0,31.0,29.0,33.0,27.0,34.0,33.0,35.0,28.0,35.0,29.0,29.0,26.0,33.0,32.0,35.0,35.0,35.0,31.0,33.0,32.0,35.0,34.0,24.0,21.0,29.0,29.0,27.0,33.0,32.0,35.0,27.0,29.0,28.0,31.0,32.0,31.0,34.0,35.0,31.0,31.0,32.0,31.0,24.0,22.0,21.0,35.0,32.0,34.0,33.0,29.0,34.0,31.0,30.0,31.0,30.0]},"forsv":{"lab":"Undertrykkende forsvar (baseline)","enhet":"skår","v":[93.0,90.0,84.0,78.0,87.0,89.0,78.0,83.0,91.0,85.0,86.0,78.0,86.0,94.0,70.0,80.0,87.0,78.0,61.0,59.0,70.0,87.0,71.0,81.0,82.0,85.0,99.0,77.0,92.0,80.0,77.0,66.0,89.0,89.0,86.0,94.0,91.0,77.0,79.0,99.0,89.0,82.0,64.0,67.0,82.0,89.0,89.0,93.0,88.0,103.0,76.0,78.0,71.0,86.0,81.0,79.0,87.0,95.0,88.0,92.0,100.0,94.0,73.0,79.0,74.0,72.0,66.0,63.0,79.0,78.0,83.0,92.0,75.0,69.0,66.0]},"aggr":{"lab":"Aggresjonsundertrykking (baseline)","enhet":"skår","v":[30.0,32.0,29.0,27.0,25.0,37.0,33.0,32.0,28.0,35.0,31.0,30.0,29.0,29.0,30.0,31.0,32.0,33.0,32.0,31.0,29.0,27.0,31.0,31.0,33.0,26.0,24.0,27.0,32.0,27.0,24.0,24.0,25.0,34.0,34.0,34.0,29.0,27.0,22.0,23.0,23.0,23.0,33.0,32.0,30.0,31.0,23.0,32.0,33.0,24.0,34.0,23.0,24.0,25.0,33.0,35.0,25.0,25.0,33.0,34.0,31.0,32.0,34.0,35.0,30.0,27.0,28.0,29.0,31.0,28.0,29.0,30.0,33.0,29.0,31.0]},"alder":{"lab":"Alder","enhet":"år","v":[18.0,27.0,29.0,41.0,60.0,29.0,42.0,52.0,60.0,26.0,34.0,26.0,27.0,34.0,22.0,18.0,33.0,34.0,19.0,59.0,51.0,19.0,52.0,46.0,40.0,55.0,22.0,31.0,34.0,33.0,35.0,19.0,32.0,51.0,52.0,44.0,41.0,31.0,27.0,25.0,23.0,32.0,32.0,19.0,18.0,23.0,60.0,51.0,31.0,23.0,41.0,44.0,46.0,32.0,43.0,51.0,23.0,26.0,51.0,42.0,34.0,32.0,41.0,51.0,42.0,32.0,42.0,42.0,34.0,51.0,60.0,50.0,20.0,32.0,30.0]},"ddep":{"lab":"Δ Depresjon (3 mnd − pre)","enhet":"skår","v":[-13.0,-14.0,-13.0,-8.0,-4.0,-7.0,0.0,-14.0,-18.0,-13.0,-5.0,-10.0,-13.0,-18.0,-17.0,-7.0,-17.0,-3.0,-14.0,-8.0,-10.0,-19.0,-17.0,-11.0,-20.0,-20.0,-19.0,-13.0,-4.0,-9.0,-13.0,-16.0,-21.0,-18.0,-20.0,-20.0,-5.0,0.0,-2.0,-3.0,-4.0,-1.0,-1.0,3.0,-3.0,-1.0,-2.0,-5.0,0.0,0.0,0.0,6.0,-3.0,0.0,-1.0,-4.0,-6.0,0.0,-2.0,2.0,-3.0,-3.0,1.0,-5.0,0.0,-3.0,-2.0,1.0,0.0,-1.0,-2.0,2.0,-5.0,4.0,0.0]},"dforsv":{"lab":"Δ Undertrykkende forsvar","enhet":"skår","v":[-44.0,-35.0,-54.0,-33.0,-45.0,-54.0,-37.0,-38.0,-32.0,-43.0,-45.0,-33.0,-36.0,-41.0,-12.0,-38.0,-44.0,-26.0,-14.0,-20.0,-27.0,-34.0,-31.0,-40.0,-39.0,-26.0,-33.0,-34.0,-30.0,-34.0,-35.0,-16.0,-28.0,-25.0,-35.0,-26.0,-1.0,-3.0,-3.0,-1.0,6.0,-2.0,0.0,-1.0,4.0,-10.0,-11.0,3.0,-8.0,-13.0,0.0,-8.0,-1.0,4.0,0.0,-1.0,-12.0,-2.0,-4.0,1.0,-7.0,0.0,1.0,-10.0,7.0,-10.0,-11.0,0.0,-11.0,-16.0,-6.0,-28.0,-11.0,-24.0,-24.0]},"istdp":{"lab":"Gruppe (1 = ISTDP)","enhet":"","v":[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]}},"std_y":"dep","std_x1":"forsv","std_x2":"aggr","sporsmal":"Henger depresjon sammen med forsvarsmekanismer ved baseline — og kan vi predikere den ene fra den andre?"},"arbeidskrav":{"navn":"Arbeidskravet (statistikkangst)","kilde":"Ekte data, N = 391 studenter","n":391,"vars":{"selvt":{"lab":"Statistikk-selvtillit (pre)","enhet":"1–5","v":[3.7143,3.7857,4.0,3.2857,4.3571,2.9286,2.6429,2.5714,2.4286,3.7857,3.7857,3.9286,3.6429,3.3571,3.5714,3.2857,3.4286,3.2143,4.3571,3.8571,4.0714,2.9286,4.0714,3.5714,3.1429,3.1429,3.7857,3.5,2.2143,2.4286,4.1429,5.0,2.5714,4.1429,3.7857,3.0,3.2143,1.9286,4.0714,3.4286,3.0714,2.7857,2.9286,3.4286,2.1429,2.4615,3.3571,3.3571,2.5,3.1429,4.0,3.9286,3.0714,3.9286,2.1429,3.6429,2.2857,3.2857,2.9286,2.7857,3.3571,3.25,2.5714,2.4286,3.6429,4.6429,3.6429,2.8571,3.2857,3.1429,3.3571,3.2857,2.7857,2.5,3.4286,2.3571,3.0714,4.4286,2.8571,1.3571,2.3636,3.0714,3.9286,1.7143,2.6429,2.3846,3.3571,4.4286,2.5714,2.4286,3.7857,3.1429,2.5,1.5714,4.1429,1.8571,3.5714,2.7143,4.7857,3.0,2.1429,3.5,3.5714,3.7857,3.2857,1.8571,3.0,3.2857,4.0909,1.7143,2.6429,4.2143,2.6429,2.7857,2.6429,4.0,2.5714,3.2857,2.2857,3.7143,4.2857,3.7143,4.2143,2.6429,5.0,3.5714,2.5,3.9286,4.2857,2.3571,2.1429,2.7857,3.9286,3.9286,3.8571,3.8571,3.8571,2.1429,3.2143,3.9231,3.0714,4.5385,2.7143,2.9286,2.7143,3.0714,2.8571,4.2857,3.1538,2.5714,4.2143,1.8571,2.7857,3.0,3.3571,1.4286,3.2857,2.3571,4.0,4.2143,1.7143,2.0714,2.3571,3.2143,3.7143,3.0714,2.3571,3.7143,4.0,2.7143,2.1429,3.5714,2.9286,3.0,2.7143,3.6429,4.0714,3.1429,3.0714,1.6429,4.0714,3.9286,2.1429,3.1429,3.3571,2.7857,2.2857,1.6429,2.2143,2.3571,3.8571,3.9286,4.2857,3.5714,1.9286,3.7857,3.5,3.5714,2.4286,2.9286,2.1429,1.7857,3.0714,4.3571,2.2857,3.7143,4.2857,4.0,2.4286,3.6429,3.2857,1.9286,3.3571,3.4286,4.2857,3.1429,4.0714,4.1429,2.9286,3.5,4.3571,4.2857,2.5714,2.0714,1.7857,2.9286,3.5,4.8571,3.0,3.1429,3.7143,4.8571,3.5714,2.0,2.7857,2.8571,4.2857,2.0,3.1429,1.8571,3.7143,2.5,3.5,3.2143,3.1429,1.9286,4.0714,2.8571,3.7143,4.2143,2.5714,3.5,2.5,3.0714,1.2143,1.4286,1.9286,2.5,3.6429,4.0714,2.8571,4.0,3.4286,2.0,2.5,4.3571,3.0,3.2857,4.2143,3.1429,4.1538,3.2143,3.2857,2.7857,4.5,2.9286,2.8571,2.0714,1.2143,2.7857,4.0714,3.9286,2.3846,2.2857,4.1429,4.1429,1.5714,3.0,3.5,2.7143,4.0,3.5714,3.9286,4.4286,2.7857,3.1429,2.9286,2.9286,3.1429,2.5,4.6429,1.5714,2.9286,3.9286,1.7692,3.4286,2.6154,4.0714,4.5714,4.1429,3.5714,3.1429,2.9286,3.0,3.7143,3.8571,2.3571,3.4286,2.1429,3.9286,4.0,4.0714,3.7857,4.3571,4.0,3.2143,2.5714,4.3571,3.7857,2.8571,3.1429,3.1429,2.5,3.0714,2.9286,2.0,2.9286,2.2143,3.1429,3.1429,2.4286,3.7143,1.7857,3.5,3.1429,2.8571,3.2857,2.8571,3.8571,2.8571,2.5,1.5,2.4286,2.5714,2.2143,3.2857,4.0,1.9286,3.7857,3.0714,4.2857,2.7857,2.3571,3.8462,3.1429,4.5,3.0,3.0714,3.3571,4.4286,3.2143,3.8571,2.6429,3.2857,3.1538,3.6429,3.3571,4.1429,3.6429,3.1429,3.4286,2.9286,4.0,3.0,4.7143,4.1429,4.1429,2.4286,3.5,3.4286,4.2143]},"selvtp":{"lab":"Statistikk-selvtillit (post)","enhet":"1–5","v":[2.0714,4.1429,4.2143,3.7143,4.3571,2.8571,2.9286,3.3571,2.9286,4.0,4.7143,4.6429,4.1429,3.7857,2.7778,3.9286,3.6429,4.2143,4.3571,2.4286,3.5,3.9286,4.0714,4.5714,3.2143,3.5,3.0,3.3571,1.7857,3.1429,4.5,4.9286,3.5,4.5,2.6429,2.9286,3.8571,1.3571,4.5,3.5714,2.7143,2.9286,2.7143,3.3571,1.0714,2.4286,1.3571,3.0714,2.7143,2.7857,3.9286,4.5,2.0714,3.3571,2.5,1.7857,2.4286,2.2857,3.2143,3.0714,3.9286,3.2143,1.7143,1.0,3.0,5.0,2.9286,2.5714,3.0714,4.5714,3.4286,3.2857,2.1429,2.5714,2.0714,2.5714,3.0714,4.5,2.0,3.7857,3.2857,3.1429,5.0,1.7857,2.7143,3.4286,4.5714,4.5,2.8571,2.8571,4.7143,2.7143,3.0714,1.6429,4.1429,1.2143,2.5714,1.7143,3.0,2.6429,2.6429,4.2857,4.2857,3.5,2.9286,2.0714,1.5714,3.2143,4.6667,1.1429,2.4286,4.4286,3.5714,2.9286,2.5714,3.8571,1.8571,4.2857,1.5714,3.3846,4.0714,4.8571,3.3571,2.5,5.0,3.4286,3.9286,4.2143,2.7857,1.5,1.2143,1.8571,4.2857,3.0,4.2143,2.5714,4.0,2.2857,3.2857,4.3571,3.1429,4.7692,1.9286,2.3571,2.3571,3.0,3.0,4.4286,2.6429,2.4286,3.7143,1.4286,3.6429,3.5,4.2857,1.0714,2.7143,2.0,4.2143,3.0714,1.4286,1.2857,2.1429,2.4286,4.0714,3.6429,2.3571,2.7857,4.0714,4.0714,2.5714,4.1429,4.2143,3.2857,3.6429,3.7857,2.9286,2.5,3.5,3.9286,4.3571,2.2857,1.2857,2.9286,2.6429,2.8571,3.3571,1.6429,2.1429,2.8571,3.6429,3.2143,4.3571,4.2857,1.6429,3.8571,2.5714,2.7857,3.2143,2.9286,3.8571,2.2143,2.9286,4.1429,2.2857,3.7143,1.9286,4.2857,2.0,4.0714,3.7143,2.7857,4.0,1.5714,2.2857,3.1429,2.5714,4.3571,2.6429,3.8571,4.7143,4.1429,3.7857,2.2143,1.2857,1.0,2.9286,4.8571,2.2857,2.7857,2.25,4.7857,2.5,2.0714,3.2143,2.0,1.5714,2.1538,2.6429,1.8571,3.3571,1.7143,3.6429,3.5,3.5714,2.0,4.2143,2.7857,3.2857,4.2143,3.2857,4.2857,2.5,1.5,1.7143,1.0,1.4286,1.0,4.5714,4.2857,3.7857,3.1429,2.9286,2.8571,1.5,4.8333,2.7143,3.1429,4.3571,3.5714,4.5714,3.0714,3.7143,3.0,4.8571,3.8571,2.9286,2.2143,1.2857,2.3571,3.7857,2.9286,3.1429,2.5714,4.6429,4.0,1.1429,2.8571,4.2857,2.0714,2.7857,3.7857,4.5714,3.0,3.3571,2.7857,2.8571,3.4286,3.0714,1.8571,4.7143,2.5,3.7143,4.4286,1.5,3.1429,3.5714,3.7857,4.7143,4.1429,4.7143,3.5714,2.5,3.2857,3.8571,3.0714,2.9286,3.5,1.7143,3.8571,3.0,3.7857,4.0714,3.7143,4.0714,3.8571,3.7143,4.0,4.1429,1.8571,3.1429,2.8571,3.7143,3.2857,1.2857,1.3571,2.7143,4.0714,2.5714,2.6429,3.0,4.0714,1.9286,3.2143,2.4286,2.4286,3.2857,4.2857,3.0,4.5714,3.0,1.6429,3.0714,2.6429,2.1429,2.4286,3.7857,1.0,4.0714,3.6429,3.0,2.1429,2.7857,3.0,2.4286,4.6429,3.0,4.0,3.6429,4.7143,3.0714,3.5714,1.7143,2.7143,3.4286,4.1429,3.6429,4.0,2.5,3.2143,2.7857,4.0714,3.5,4.0,4.3077,3.8571,4.4286,2.2143,4.3571,4.2143,4.6429]},"selvk":{"lab":"Selvkritisk perfeksjonisme","enhet":"1–5","v":[2.167,2.389,2.722,2.778,1.556,3.778,4.0,3.056,3.722,2.389,3.111,1.833,2.833,2.889,3.294,3.778,3.0,3.222,2.0,2.444,3.278,2.722,3.556,3.111,2.333,3.556,3.444,2.722,3.5,3.278,2.389,1.944,3.778,1.944,2.722,3.167,3.118,3.889,2.778,3.667,2.778,3.056,3.056,2.0,4.444,4.533,4.056,3.056,3.278,3.833,1.333,1.833,3.278,2.222,4.833,3.889,3.889,3.111,3.722,2.111,3.056,3.056,3.556,3.778,2.667,3.0,3.111,4.059,3.278,2.889,2.278,2.667,3.0,3.0,3.056,4.5,2.667,2.556,3.111,4.167,3.562,2.056,2.333,4.111,4.0,3.778,4.056,2.444,1.889,2.722,2.778,3.5,3.111,4.667,2.278,4.278,3.611,3.667,3.278,4.0,2.389,1.444,2.889,3.278,1.944,3.611,3.833,1.944,2.5,3.889,3.444,1.833,4.056,3.765,3.778,1.944,3.25,3.333,3.529,2.882,2.333,3.389,2.5,3.556,1.444,2.389,3.722,2.0,2.778,3.722,3.5,3.833,1.833,2.556,1.056,2.833,2.5,3.722,1.611,2.833,3.333,3.167,2.944,4.611,3.5,2.889,2.167,1.944,3.588,3.778,1.611,4.389,3.333,3.111,3.222,3.333,2.111,3.444,2.875,1.944,4.944,4.111,3.389,3.722,2.556,2.278,4.389,3.833,3.389,3.667,3.889,2.556,3.5,4.5,2.778,2.222,2.938,3.5,3.056,2.9,3.167,3.611,3.778,3.944,3.111,3.667,3.333,4.222,4.111,4.278,3.056,1.944,1.556,2.833,3.944,2.667,2.5,2.722,3.5,2.444,4.611,4.833,4.778,2.167,4.6,1.444,2.389,3.222,3.2,2.0,2.706,3.611,1.611,3.556,3.167,4.278,1.778,1.611,3.389,2.778,1.389,1.333,2.111,3.944,4.222,2.444,3.5,2.0,4.75,3.0,2.167,1.111,2.278,3.889,3.833,2.611,2.833,2.833,3.5,4.444,2.667,4.353,2.667,2.611,2.833,4.222,2.556,3.278,2.444,1.556,4.056,2.167,3.333,3.278,4.222,4.444,3.667,3.667,2.833,3.389,3.111,1.667,4.0,3.611,4.0,2.056,3.556,2.222,1.444,2.722,2.889,3.278,3.5,3.222,3.611,2.722,3.389,2.444,3.833,3.643,1.833,3.056,3.222,4.056,3.444,1.722,4.5,3.667,3.167,3.444,1.833,2.667,2.722,1.944,3.222,2.667,3.611,3.167,3.167,4.111,2.944,3.8,3.444,2.056,4.111,3.5,4.333,3.722,1.667,2.556,1.778,2.222,2.833,3.556,1.056,3.389,4.875,2.778,4.727,2.778,2.222,3.167,2.5,1.944,3.056,2.5,3.111,1.647,2.389,2.889,3.056,3.167,4.5,3.667,3.167,3.667,3.778,3.111,3.889,4.389,4.611,1.889,3.556,3.056,3.667,4.333,3.778,3.111,4.056,2.833,3.778,4.875,3.667,3.0,4.111,3.611,2.529,4.667,2.667,2.944,2.722,2.222,4.333,2.0,3.333,1.111,3.556,3.778,2.389,1.0,2.5,3.556,4.056,3.667,2.882,2.444,1.111,2.611,3.778,3.278,3.111,2.167,1.944,2.056,1.889,2.722,2.5,4.222,3.444,3.833,1.889]},"angst":{"lab":"Angstsensitivitet","enhet":"0–4","v":[0.826,0.625,0.542,1.875,1.042,2.417,1.667,1.0,1.783,0.917,0.542,1.75,0.208,0.708,2.364,1.458,0.417,1.292,1.042,1.25,0.542,0.333,1.208,0.458,0.958,1.667,1.583,1.333,2.208,1.208,0.375,0.542,2.458,1.208,1.042,1.083,1.167,2.75,1.5,0.833,1.667,1.542,0.833,1.125,3.167,1.167,0.833,1.458,0.958,3.208,0.417,1.042,0.958,1.042,3.375,3.583,3.208,1.625,1.833,1.792,1.458,1.333,1.875,2.292,1.833,1.292,0.667,3.25,1.625,2.042,0.583,3.375,1.25,1.542,1.667,3.0,2.875,1.208,1.583,1.875,1.875,0.375,0.583,2.25,2.591,1.917,3.375,3.292,2.625,1.583,1.458,2.833,1.417,2.727,3.042,3.167,1.75,1.583,1.5,1.75,0.958,1.542,1.833,1.958,1.208,2.167,4.0,1.917,0.833,2.708,1.478,1.417,2.583,3.043,2.125,1.292,1.826,2.167,1.619,2.167,1.957,0.875,1.708,2.333,0.417,0.75,1.5,0.333,1.625,1.708,2.667,2.208,1.917,1.375,0.542,1.708,0.667,1.083,2.5,1.667,1.167,1.25,0.958,3.375,1.958,1.25,1.625,0.458,1.042,2.375,1.5,2.333,2.391,2.083,0.542,2.0,1.0,1.0,1.333,1.0,1.458,3.083,2.333,1.292,0.625,2.208,2.25,2.542,1.75,1.417,2.905,1.208,0.417,1.25,2.208,0.458,1.957,3.0,1.75,1.826,1.125,1.208,1.174,2.75,1.708,0.833,1.875,2.708,2.13,1.042,2.833,0.833,0.375,1.042,3.25,0.708,1.826,0.958,1.958,1.833,2.5,1.0,1.75,0.833,2.864,2.0,2.167,1.458,2.0,1.083,1.167,1.875,1.417,0.542,1.87,2.87,1.208,1.458,1.417,1.0,0.208,0.208,0.375,1.458,2.056,1.826,1.409,1.875,1.913,0.684,2.208,0.292,1.208,2.583,2.875,0.75,3.417,2.208,1.0,2.833,1.542,1.625,1.167,0.292,1.417,2.625,0.458,0.958,2.083,1.333,1.458,0.957,1.167,2.125,2.625,2.625,2.667,0.75,1.542,1.042,1.917,2.167,0.667,1.583,3.167,0.625,0.625,0.261,0.458,1.625,0.208,2.333,0.625,2.208,2.667,2.208,2.25,2.739,3.042,1.375,0.875,1.783,1.7,1.792,1.167,2.208,3.417,1.042,1.75,2.542,0.292,1.458,2.875,0.208,0.875,2.208,2.542,3.167,3.667,3.25,0.875,3.2,3.25,0.333,2.75,2.25,2.667,2.087,0.167,1.833,1.417,2.0,1.792,1.958,2.217,2.375,2.609,0.417,1.583,1.25,1.125,2.875,0.792,1.292,3.042,0.75,0.333,0.667,1.417,1.958,2.083,1.125,2.625,0.583,2.417,2.583,1.375,2.875,1.417,2.13,2.25,2.348,2.208,1.958,1.583,1.458,2.75,1.5,1.667,2.042,1.333,3.562,1.792,2.522,3.292,2.619,1.2,3.375,1.917,2.762,1.042,1.0,2.333,1.583,2.583,0.208,1.083,2.208,0.261,0.75,2.125,1.292,1.875,0.958,1.136,0.696,0.292,1.125,1.25,1.917,1.583,1.083,2.292,0.792,0.833,1.583,1.333,2.583,2.417,1.375,0.792]},"tanker":{"lab":"Perfeksjonistiske tanker (pre)","enhet":"skår","v":[2.6,1.2,1.4,2.0,0.8,2.4,2.0,0.4,1.8,1.6,2.4,1.4,1.4,2.8,2.6,2.6,1.8,1.8,0.8,0.0,2.2,1.4,2.4,1.2,1.4,3.0,2.2,2.4,2.2,3.6,0.6,0.6,2.4,0.8,1.8,1.4,2.6,3.4,1.0,2.0,0.6,1.4,0.6,1.6,3.6,2.0,2.8,2.4,1.6,1.4,0.2,1.0,1.6,0.6,3.6,2.8,1.8,2.4,3.4,1.2,2.4,0.4,3.0,2.8,2.2,0.6,2.6,2.4,2.4,2.2,1.4,3.0,2.4,2.6,2.2,3.0,2.2,0.0,2.6,2.6,2.0,2.8,1.0,3.2,2.6,2.4,2.6,1.8,1.8,2.6,0.6,1.75,1.6,3.2,1.0,2.6,2.2,2.2,2.6,3.2,1.2,1.4,2.4,2.6,1.2,2.2,3.2,0.0,1.25,2.0,3.0,1.0,1.8,2.4,3.6,1.0,3.2,2.6,2.2,1.4,1.0,0.4,2.0,2.8,0.4,1.8,2.0,1.2,2.4,1.8,2.4,2.8,1.2,2.2,1.6,2.0,1.6,2.4,0.6,0.8,2.4,2.0,2.2,3.6,2.8,1.2,2.8,2.0,2.4,3.2,1.0,3.6,2.6,2.8,2.0,2.4,2.8,3.0,1.8,2.8,3.6,2.8,1.6,2.4,1.0,2.0,3.4,2.6,2.4,3.2,3.2,2.4,2.6,4.0,1.6,2.4,2.6,3.2,1.8,0.6,0.8,4.0,2.4,2.6,1.6,2.4,2.0,2.0,3.2,3.4,1.8,2.2,0.6,2.2,2.8,0.8,2.4,1.6,2.6,2.2,3.0,2.8,2.8,0.8,2.6,4.0,0.4,1.6,2.0,0.8,0.0,3.0,1.4,2.4,2.8,3.2,1.4,1.8,1.8,1.6,0.4,0.0,1.2,0.8,3.2,2.4,1.6,1.2,2.4,2.4,1.8,1.0,1.8,3.8,2.8,1.8,3.4,1.6,1.0,4.0,2.4,2.4,3.0,2.2,1.0,2.8,0.8,1.8,2.6,1.2,1.8,2.2,2.8,2.4,3.4,3.0,3.0,2.8,1.8,1.4,2.6,1.8,2.6,1.4,3.6,1.2,2.6,1.8,1.0,2.4,0.4,2.4,1.8,2.2,0.6,2.6,2.4,2.0,3.6,3.4,1.0,2.4,1.0,3.8,0.8,1.6,3.2,2.2,1.8,1.8,1.0,1.6,0.8,1.0,2.8,2.4,3.0,3.4,2.2,3.4,2.0,3.0,2.0,2.0,3.0,2.2,2.8,3.0,0.0,2.6,1.0,2.0,3.2,4.0,0.8,1.6,3.4,1.8,3.0,0.8,0.8,2.6,1.0,1.8,1.8,1.8,0.6,2.2,1.2,3.0,2.2,2.8,3.0,1.4,2.2,2.6,3.0,1.8,3.4,3.6,3.8,0.4,2.8,2.8,3.25,2.2,3.0,3.4,2.8,1.6,2.0,3.6,2.6,1.8,3.0,3.6,0.0,3.8,3.0,1.6,1.2,2.4,2.8,1.8,2.6,0.0,3.2,1.4,3.0,0.0,0.6,1.0,2.6,2.2,1.2,0.8,0.0,1.0,2.8,1.6,1.0,1.2,1.0,2.2,2.0,1.4,1.0,2.6,2.0,2.2,0.4]},"quiz":{"lab":"Quiz-resultat","enhet":"poeng","v":[1.0,5.0,4.0,5.0,1.0,0.0,4.0,3.0,5.0,1.0,5.0,5.0,1.0,2.0,0.0,5.0,1.0,5.0,5.0,1.0,0.0,5.0,0.0,5.0,1.0,4.0,2.0,3.0,1.0,3.0,5.0,4.0,4.0,1.0,1.0,4.0,4.0,1.0,5.0,5.0,1.0,1.0,1.0,4.0,0.0,3.0,0.0,1.0,4.0,5.0,1.0,2.0,1.0,0.0,5.0,1.0,1.0,2.0,1.0,0.0,3.0,3.0,1.0,0.0,2.0,5.0,1.0,1.0,4.0,4.0,5.0,5.0,0.0,2.0,0.0,5.0,1.0,5.0,1.0,5.0,1.0,4.0,5.0,4.0,3.0,5.0,5.0,5.0,0.0,0.0,5.0,0.0,1.0,5.0,0.0,1.0,1.0,1.0,2.0,1.0,2.0,4.0,5.0,1.0,1.0,4.0,2.0,4.0,1.0,1.0,4.0,3.0,5.0,1.0,5.0,0.0,0.0,5.0,0.0,1.0,2.0,5.0,0.0,4.0,1.0,1.0,5.0,1.0,2.0,0.0,0.0,2.0,3.0,0.0,5.0,0.0,3.0,4.0,0.0,4.0,0.0,5.0,2.0,3.0,0.0,2.0,2.0,5.0,3.0,0.0,1.0,1.0,4.0,5.0,5.0,0.0,0.0,2.0,4.0,0.0,1.0,0.0,0.0,2.0,5.0,4.0,1.0,0.0,5.0,5.0,3.0,4.0,5.0,5.0,5.0,1.0,3.0,3.0,5.0,1.0,4.0,3.0,0.0,1.0,0.0,3.0,5.0,1.0,3.0,1.0,4.0,2.0,2.0,4.0,1.0,0.0,2.0,0.0,4.0,4.0,5.0,0.0,3.0,0.0,3.0,5.0,0.0,4.0,0.0,4.0,0.0,5.0,3.0,1.0,1.0,4.0,1.0,0.0,0.0,4.0,5.0,5.0,0.0,3.0,1.0,0.0,0.0,5.0,3.0,4.0,0.0,5.0,0.0,1.0,4.0,0.0,2.0,1.0,2.0,3.0,2.0,0.0,4.0,5.0,4.0,2.0,1.0,1.0,1.0,3.0,5.0,1.0,2.0,0.0,0.0,0.0,0.0,1.0,5.0,0.0,5.0,1.0,0.0,3.0,0.0,4.0,1.0,4.0,2.0,5.0,0.0,5.0,5.0,0.0,5.0,5.0,0.0,4.0,2.0,1.0,4.0,1.0,5.0,3.0,4.0,2.0,1.0,0.0,5.0,2.0,0.0,1.0,4.0,1.0,0.0,0.0,1.0,4.0,1.0,0.0,4.0,1.0,4.0,5.0,4.0,2.0,4.0,5.0,4.0,5.0,5.0,4.0,2.0,4.0,5.0,1.0,4.0,2.0,0.0,3.0,0.0,4.0,4.0,2.0,3.0,5.0,1.0,1.0,1.0,3.0,0.0,1.0,4.0,5.0,0.0,0.0,5.0,4.0,4.0,3.0,1.0,0.0,2.0,2.0,2.0,4.0,2.0,4.0,0.0,5.0,4.0,4.0,5.0,0.0,3.0,0.0,0.0,0.0,5.0,5.0,1.0,2.0,5.0,2.0,0.0,5.0,4.0,5.0,4.0,4.0,1.0,4.0,1.0,2.0,3.0,0.0,5.0,2.0,2.0,3.0,1.0,5.0,1.0,5.0,2.0,3.0,5.0,1.0,4.0,5.0,4.0]}},"std_y":"selvt","std_x1":"selvk","std_x2":"angst","sporsmal":"Henger statistikk-selvtillit sammen med perfeksjonisme og angstsensitivitet?"},"iq_null":{"navn":"Skolekarakterer og IQ — NULL-versjon","kilde":"Samme 500 elevene, men IQ-kolonnen er stokket om: alle fordelinger uendret, sammenhengen fjernet","n":500,"vars":{"iq":{"lab":"IQ ved 19 år","enhet":"IQ-poeng","v":[73.0,96.0,123.0,92.0,114.0,114.0,88.0,109.0,96.0,90.0,107.0,108.0,122.0,102.0,74.0,128.0,109.0,110.0,93.0,104.0,108.0,113.0,126.0,100.0,118.0,95.0,110.0,107.0,104.0,90.0,84.0,107.0,92.0,89.0,114.0,113.0,106.0,92.0,101.0,98.0,93.0,95.0,99.0,114.0,127.0,101.0,117.0,98.0,118.0,69.0,130.0,122.0,102.0,112.0,98.0,126.0,97.0,98.0,82.0,93.0,107.0,117.0,111.0,93.0,85.0,96.0,102.0,110.0,94.0,125.0,88.0,100.0,90.0,121.0,114.0,126.0,92.0,111.0,116.0,81.0,55.0,83.0,114.0,98.0,102.0,91.0,74.0,96.0,82.0,94.0,101.0,82.0,90.0,136.0,102.0,104.0,90.0,70.0,77.0,63.0,76.0,113.0,114.0,110.0,57.0,89.0,106.0,81.0,107.0,96.0,95.0,105.0,101.0,96.0,116.0,108.0,91.0,111.0,91.0,112.0,108.0,110.0,118.0,92.0,98.0,94.0,102.0,111.0,82.0,102.0,116.0,104.0,108.0,86.0,111.0,111.0,109.0,106.0,82.0,92.0,92.0,102.0,111.0,128.0,104.0,86.0,66.0,101.0,126.0,77.0,113.0,129.0,94.0,123.0,101.0,106.0,103.0,113.0,82.0,108.0,102.0,82.0,107.0,61.0,91.0,99.0,101.0,130.0,135.0,90.0,88.0,79.0,97.0,89.0,95.0,67.0,107.0,100.0,98.0,99.0,115.0,98.0,113.0,117.0,83.0,109.0,101.0,99.0,103.0,98.0,109.0,118.0,78.0,107.0,108.0,94.0,92.0,126.0,92.0,108.0,90.0,102.0,94.0,111.0,117.0,121.0,79.0,105.0,91.0,119.0,112.0,94.0,103.0,102.0,128.0,85.0,131.0,100.0,115.0,77.0,117.0,81.0,69.0,91.0,118.0,122.0,84.0,121.0,108.0,82.0,105.0,88.0,74.0,114.0,116.0,107.0,113.0,81.0,130.0,110.0,105.0,114.0,123.0,86.0,93.0,92.0,74.0,95.0,83.0,125.0,100.0,86.0,98.0,82.0,126.0,100.0,89.0,104.0,110.0,88.0,70.0,117.0,99.0,55.0,78.0,79.0,123.0,102.0,91.0,119.0,82.0,121.0,111.0,102.0,96.0,106.0,111.0,102.0,90.0,83.0,113.0,74.0,89.0,99.0,91.0,111.0,113.0,86.0,109.0,102.0,88.0,96.0,85.0,59.0,88.0,113.0,95.0,117.0,112.0,94.0,87.0,72.0,100.0,130.0,85.0,92.0,99.0,97.0,99.0,85.0,76.0,103.0,99.0,97.0,108.0,118.0,87.0,110.0,85.0,102.0,110.0,94.0,86.0,129.0,83.0,102.0,84.0,95.0,95.0,99.0,112.0,103.0,111.0,113.0,111.0,97.0,116.0,96.0,103.0,113.0,124.0,92.0,110.0,116.0,102.0,115.0,116.0,116.0,86.0,85.0,87.0,111.0,96.0,99.0,109.0,107.0,107.0,86.0,87.0,92.0,90.0,96.0,121.0,111.0,109.0,108.0,110.0,93.0,85.0,67.0,112.0,96.0,90.0,116.0,100.0,96.0,92.0,107.0,84.0,94.0,82.0,99.0,109.0,108.0,86.0,100.0,108.0,115.0,118.0,98.0,81.0,106.0,118.0,111.0,72.0,123.0,100.0,112.0,89.0,106.0,109.0,105.0,97.0,100.0,102.0,89.0,117.0,75.0,80.0,90.0,111.0,108.0,96.0,107.0,110.0,95.0,109.0,97.0,111.0,78.0,109.0,105.0,109.0,141.0,95.0,89.0,100.0,92.0,133.0,79.0,100.0,113.0,92.0,55.0,106.0,73.0,104.0,103.0,89.0,110.0,116.0,96.0,108.0,93.0,88.0,103.0,114.0,93.0,91.0,108.0,123.0,88.0,92.0,104.0,85.0,118.0,76.0,93.0,110.0,104.0,105.0,71.0,104.0,86.0,96.0,85.0,102.0,100.0,79.0,81.0,110.0,89.0,131.0,89.0,92.0,72.0,97.0,127.0,135.0,92.0,106.0,71.0,105.0,82.0,95.0,97.0,117.0,94.0,89.0,101.0,91.0,82.0,96.0,98.0,86.0,106.0,110.0,105.0,80.0,129.0]},"kar":{"lab":"Grunnskolepoeng","enhet":"poeng","v":[52.8,44.8,33.4,45.4,35.1,56.4,47.5,35.8,38.7,40.5,28.4,38.6,46.9,45.8,44.2,30.9,58.1,38.7,49.4,51.0,38.6,45.9,46.0,49.7,37.4,39.4,55.8,45.5,44.4,46.4,49.0,39.0,34.1,53.2,54.3,52.3,54.5,59.4,44.5,22.3,40.3,16.0,39.4,43.7,41.5,44.2,34.9,46.6,52.2,27.1,60.0,47.8,40.1,30.7,37.5,39.5,47.3,40.6,39.5,32.1,37.2,36.4,40.9,53.1,60.0,57.3,44.3,47.1,43.7,27.1,39.8,48.8,28.6,46.3,31.8,36.9,27.2,42.6,37.5,38.8,51.6,44.1,32.7,31.0,40.4,30.0,39.2,39.6,38.2,36.3,46.3,46.0,55.8,39.9,33.6,53.8,26.6,46.9,37.0,36.6,38.1,38.5,42.5,27.6,33.3,40.1,26.9,60.0,50.4,39.5,40.5,35.8,60.0,32.3,40.9,48.1,32.8,37.0,31.1,36.3,46.8,46.3,38.1,54.0,33.6,40.3,37.9,49.5,25.5,42.7,48.7,37.5,39.6,42.9,43.5,37.8,51.3,21.1,32.8,43.4,36.2,33.4,44.0,36.0,52.3,44.7,47.2,33.4,37.7,34.4,52.8,40.5,52.7,47.8,47.8,37.5,18.2,41.1,54.7,46.5,25.2,40.8,39.3,50.8,29.4,29.3,43.4,40.2,53.4,18.8,28.7,35.9,40.6,31.2,37.6,33.9,52.1,29.7,28.6,39.3,26.6,35.7,44.5,46.3,34.4,51.2,49.2,51.9,51.8,42.9,35.6,53.4,50.1,46.3,48.3,60.0,33.6,46.0,42.7,48.2,46.1,43.0,41.9,57.1,41.4,31.5,28.9,50.4,42.8,42.7,42.4,55.6,35.1,41.5,43.4,51.2,43.6,25.8,33.6,33.1,40.0,43.3,41.0,55.4,38.6,51.8,53.5,43.8,41.9,53.2,40.4,45.7,47.3,34.8,42.1,46.1,54.7,48.7,46.1,50.3,31.9,35.0,25.6,54.7,45.6,38.8,45.8,42.6,40.1,49.8,29.1,31.0,38.4,26.2,45.9,51.1,28.4,10.0,38.2,41.5,48.4,28.2,37.5,22.0,50.6,43.1,38.5,28.0,39.2,42.5,46.1,53.5,43.8,25.3,14.9,30.9,43.5,43.3,60.0,48.8,26.0,39.8,24.4,39.2,54.9,45.2,54.7,30.7,46.3,51.2,41.6,29.8,50.6,54.1,46.4,42.6,50.3,36.5,41.1,20.4,42.2,54.5,60.0,52.1,36.3,42.6,28.7,34.2,40.9,45.6,25.7,31.4,38.4,59.9,32.0,22.7,36.1,33.4,33.8,41.3,45.5,47.9,45.6,41.6,48.6,50.8,33.5,60.0,37.5,43.5,38.7,49.6,38.8,29.8,38.5,47.3,56.7,27.4,36.5,31.6,34.6,48.0,49.5,30.6,46.4,39.6,23.4,29.8,33.4,50.1,49.7,53.9,25.1,46.2,40.9,29.5,42.2,35.2,44.8,49.0,55.1,40.1,36.0,40.5,53.8,33.0,39.8,37.7,57.7,54.6,42.7,48.2,47.9,47.1,48.8,55.5,36.2,51.7,54.7,43.7,47.2,39.0,46.6,49.7,26.3,53.9,41.5,49.8,40.9,44.5,32.1,50.8,40.3,50.2,34.3,59.5,47.4,43.9,42.2,26.0,50.1,45.7,39.7,48.4,25.4,35.5,35.7,42.6,31.5,58.3,46.9,42.9,44.6,50.4,56.4,54.8,44.7,29.5,44.0,35.9,60.0,49.6,47.5,39.4,38.7,38.8,52.4,47.5,44.9,34.6,53.3,41.9,34.0,41.0,50.6,48.2,39.7,44.5,38.8,40.9,53.2,44.5,48.5,44.6,54.2,49.3,42.1,34.6,53.6,35.0,36.7,56.3,38.6,33.9,46.4,44.4,43.2,47.8,37.2,50.6,46.5,38.4,36.2,42.0,37.6,43.6,44.9,37.9,47.3,48.7,57.7,50.8,44.5,27.8,33.5,44.4,53.2,54.3,45.5,49.1,46.5,44.2,21.3,33.9,38.4,35.7,38.0,44.3,38.8,45.2,39.3,58.9,41.7,38.8,55.9,31.8,49.1,48.2,34.2,29.3]},"inn":{"lab":"Foreldreinntekt","enhet":"100 000 kr","v":[5.15,7.55,6.06,14.12,13.31,9.86,9.78,6.05,6.03,4.4,1.73,4.22,8.58,5.68,5.8,8.0,6.1,6.78,4.89,8.47,3.59,6.72,6.62,13.5,3.95,6.87,19.71,9.43,8.18,9.21,9.41,9.34,6.94,7.55,9.49,11.04,6.04,6.09,9.41,4.47,10.37,2.64,7.13,13.99,3.71,9.62,6.65,6.98,6.49,6.31,16.26,5.01,3.65,5.72,7.25,5.88,4.52,9.0,4.28,3.39,7.59,3.88,5.42,10.2,8.78,13.45,6.43,6.73,11.46,3.2,7.23,10.92,7.63,3.81,7.34,9.4,7.62,9.21,6.12,3.57,9.08,5.18,8.78,4.75,5.29,8.79,4.95,7.22,9.82,7.59,15.79,6.41,6.76,4.11,4.99,9.32,5.48,11.19,8.13,4.99,7.35,8.91,4.46,4.36,5.93,14.11,3.14,9.01,10.87,11.25,3.99,7.51,4.86,5.44,7.41,8.49,7.77,17.97,5.14,6.25,11.39,4.29,3.58,6.51,6.98,4.91,10.88,13.04,6.12,11.8,9.7,5.69,4.86,7.2,3.33,6.2,4.53,5.12,5.1,4.04,8.46,6.35,3.98,7.66,4.19,6.55,4.87,5.77,6.98,6.25,7.64,3.91,10.69,4.99,12.92,9.83,4.48,5.9,11.75,8.4,6.64,5.79,8.02,9.5,6.11,5.99,12.55,8.94,10.66,5.8,5.24,13.66,3.93,4.9,11.62,8.19,4.91,5.52,3.96,7.26,8.48,3.48,17.57,17.38,4.92,10.41,8.41,6.32,8.76,5.71,4.3,7.54,9.89,4.75,8.63,6.69,4.62,4.97,3.65,6.91,10.13,11.05,10.66,12.81,3.15,4.8,5.33,17.97,4.86,5.98,4.77,12.67,6.74,6.63,9.11,3.67,4.51,4.2,2.68,6.48,7.04,15.24,4.86,6.56,6.17,8.68,4.35,3.92,6.32,8.85,10.74,22.08,22.87,6.02,8.66,7.66,10.47,8.07,5.26,6.57,10.79,4.1,4.18,8.83,4.01,6.85,3.89,4.11,6.39,10.62,6.73,2.44,5.54,5.97,3.76,9.93,5.36,5.77,7.87,4.4,9.0,8.27,7.98,2.98,6.46,3.7,11.78,6.49,5.76,4.73,7.88,3.19,10.12,10.01,5.15,5.93,11.48,9.07,8.42,9.91,6.42,6.58,4.17,7.72,7.55,6.03,13.2,4.75,3.62,7.24,9.05,8.49,9.76,4.98,3.9,11.14,5.17,8.1,5.1,3.05,11.26,8.27,4.75,6.42,7.65,5.09,3.95,9.26,7.73,11.62,3.67,4.42,7.51,5.99,10.46,4.06,4.65,3.7,6.65,6.33,9.6,6.51,8.41,7.59,12.4,8.01,8.02,10.69,4.81,4.1,3.68,8.85,3.24,8.42,3.55,9.65,10.65,6.15,2.9,11.87,3.2,9.43,11.46,2.83,4.04,6.34,5.14,5.68,6.43,7.29,15.15,6.28,8.12,7.06,15.9,4.65,7.8,5.4,9.35,4.1,4.67,8.53,7.23,15.85,14.12,4.4,7.44,6.59,7.03,5.03,2.45,6.11,7.28,4.3,4.81,8.76,4.81,9.73,6.75,8.77,7.91,3.92,12.16,7.05,2.99,7.2,5.39,9.47,6.06,6.19,5.61,5.1,3.81,5.68,6.84,18.01,9.97,3.69,4.38,5.51,10.94,7.74,3.96,12.62,10.2,7.17,7.38,3.55,7.5,5.67,6.52,6.27,11.66,12.49,5.7,10.85,5.3,11.62,5.46,5.42,14.71,8.04,5.31,5.44,4.65,5.57,9.07,5.66,10.75,9.64,9.05,5.02,12.97,8.42,12.25,7.58,8.13,3.66,3.29,16.06,8.49,4.5,5.02,5.71,6.31,9.38,14.34,12.51,11.36,8.23,5.95,7.72,5.23,6.83,12.61,5.45,11.15,8.25,4.95,9.99,10.88,10.85,12.41,5.97,5.97,8.37,6.53,5.14,5.53,9.46,8.48,8.14,6.42,4.84,3.49,16.61,4.06,13.92,8.97,7.42,4.07,4.8,9.72,5.36,12.68,10.76,4.61,6.53,7.84,6.0,10.8,7.55,9.79,3.46,7.13,7.13,5.42,6.9,5.21,1.89]},"np":{"lab":"Nasjonale prøver","enhet":"skalapoeng","v":[63.9,48.5,42.1,58.3,52.0,65.8,53.3,37.7,45.4,57.3,55.1,32.5,45.8,58.3,60.2,41.4,65.0,57.6,45.8,66.3,35.3,53.6,61.1,45.1,36.0,50.8,57.0,54.3,59.9,64.0,62.0,41.4,53.8,59.3,58.1,36.8,54.0,60.0,49.4,27.7,47.2,23.6,50.4,57.8,51.8,62.2,47.0,53.6,58.6,33.6,76.8,64.6,47.4,37.0,45.8,53.9,55.7,54.0,48.9,57.1,51.5,33.7,41.8,70.4,54.7,61.3,45.1,60.1,48.1,41.2,49.0,62.6,46.5,54.6,53.4,50.4,32.6,41.0,57.6,41.9,62.1,44.4,43.3,42.3,42.4,34.5,47.7,48.8,53.5,58.7,51.9,64.4,50.4,64.3,39.4,62.4,34.0,56.5,45.9,42.4,40.6,44.1,36.2,29.4,46.0,52.8,32.1,69.9,64.1,56.8,56.7,32.8,64.2,47.1,43.0,43.3,48.0,42.9,38.3,49.9,41.7,53.5,37.1,65.3,46.9,42.4,60.4,45.5,31.7,38.5,51.8,52.3,52.2,49.8,57.6,60.7,58.6,36.5,29.8,45.8,53.9,40.0,48.0,42.3,57.8,59.4,51.4,55.1,35.7,39.5,61.0,46.7,49.9,55.1,67.0,39.6,28.9,50.6,56.8,43.0,37.9,48.9,38.0,59.4,41.8,45.6,33.4,54.1,63.2,44.6,36.7,44.6,48.0,47.5,49.1,44.4,49.5,28.6,48.3,40.5,48.1,50.9,46.9,53.0,35.0,60.8,40.6,55.2,53.9,54.3,32.8,63.5,73.9,34.5,55.1,68.6,39.4,49.4,52.8,62.4,53.8,49.4,48.7,58.3,49.5,33.2,33.5,57.7,55.8,49.3,56.4,70.8,63.9,45.8,45.9,45.7,57.7,49.4,38.9,58.3,50.0,55.5,58.8,47.6,44.9,61.7,65.0,48.8,47.1,63.3,61.5,56.4,58.2,42.5,61.6,46.3,62.8,51.5,64.4,58.3,29.5,31.8,39.9,67.2,47.0,36.8,54.9,42.8,52.7,62.1,42.1,32.3,38.0,44.9,52.5,69.1,30.4,26.1,49.8,53.4,59.0,32.3,51.8,26.8,55.0,50.9,54.1,32.2,54.0,58.0,56.1,52.4,48.2,35.5,23.0,38.5,40.1,58.7,75.3,63.9,43.5,53.5,32.8,45.9,56.3,51.3,48.7,45.6,40.7,79.0,47.5,47.8,57.9,61.6,58.9,42.5,41.6,42.6,43.8,26.7,36.8,61.3,60.2,53.0,46.8,51.9,44.5,45.0,52.4,49.5,24.8,39.7,51.6,61.0,43.2,49.1,16.4,48.7,37.2,57.5,54.7,50.8,66.9,55.8,59.4,52.5,52.4,69.7,47.0,44.3,61.4,46.3,46.2,36.4,33.4,52.2,77.1,38.9,46.9,42.8,40.9,47.6,52.6,33.5,47.8,51.8,30.7,46.3,43.9,45.6,43.4,58.4,36.5,65.4,45.4,43.7,44.3,48.8,50.4,63.7,57.0,49.0,57.7,53.3,56.3,37.0,46.4,44.1,69.1,60.2,49.1,65.4,53.6,57.8,46.4,60.8,43.0,52.0,53.4,40.7,57.9,54.0,47.5,65.0,37.4,47.9,60.7,41.3,44.9,69.1,40.0,53.8,43.7,56.2,45.0,63.2,67.4,50.0,46.3,43.6,64.2,56.4,45.2,47.8,35.1,42.6,41.0,50.4,48.8,68.0,59.1,46.1,65.1,60.4,65.7,54.9,53.5,39.5,64.0,50.9,62.9,57.2,68.8,50.6,43.1,46.5,59.5,47.9,52.4,39.3,51.0,53.7,50.8,51.7,61.0,56.5,49.6,49.9,51.7,52.5,46.0,49.5,56.1,48.7,51.4,63.6,58.8,37.9,55.1,51.2,40.5,53.0,42.9,54.6,54.1,50.2,59.6,56.0,39.7,55.1,48.5,57.0,44.5,42.4,44.4,46.5,57.7,45.3,64.3,50.6,58.7,54.3,53.6,34.3,31.9,53.3,61.0,49.8,60.5,54.6,43.6,52.0,36.3,37.1,43.2,53.2,56.4,54.8,53.3,62.3,46.5,62.4,40.6,46.1,58.5,38.8,60.7,50.6,50.5,43.0]},"jente":{"lab":"Kjønn (1 = jente)","enhet":"","v":[1.0,0.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,1.0,1.0,0.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0,0.0,0.0,0.0,1.0,0.0,1.0,0.0,1.0,1.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,0.0,1.0,0.0,1.0,0.0,1.0,1.0,0.0,1.0,0.0,0.0,0.0,1.0,1.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,0.0,1.0,1.0,1.0,0.0,1.0,1.0,0.0,0.0,1.0,0.0,1.0,0.0,1.0,1.0,0.0,1.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,1.0,0.0,1.0,0.0,1.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,1.0,1.0,0.0,0.0,1.0,0.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,0.0,1.0,0.0,1.0,1.0,1.0,1.0,0.0,1.0,1.0,1.0,1.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0,1.0,0.0,1.0,1.0,0.0,0.0,1.0,0.0,0.0,1.0,0.0,0.0,0.0,1.0,1.0,0.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,1.0,0.0,1.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,1.0,0.0,0.0,1.0,0.0,1.0,1.0,0.0,1.0,1.0,0.0,1.0,1.0,1.0,1.0,0.0,1.0,1.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0,1.0,0.0,1.0,1.0,1.0,0.0,0.0,1.0,0.0,1.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,0.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,1.0,0.0,0.0,1.0,0.0,1.0,1.0,0.0,1.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0,1.0,0.0,1.0,1.0,1.0,1.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,1.0,0.0,1.0,1.0,1.0,0.0,1.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0,0.0,1.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,1.0,0.0,1.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,1.0,0.0,1.0,1.0,0.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0,0.0]}},"std_y":"iq","std_x1":"kar","std_x2":"inn","sporsmal":"Her finnes det INGEN sammenheng. Hvor stor r klarer tilfeldighetene likevel å lage — og hvordan ser en modell ut når den ikke har noe å modellere?"}};
+
+/* ---------- fordelinger ---------- */
+function lgam(z){
+  var g=[676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,
+         12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(z<0.5) return Math.log(Math.PI/Math.sin(Math.PI*z))-lgam(1-z);
+  z-=1; var a=0.99999999999980993, t=z+7.5;
+  for(var i=0;i<8;i++) a+=g[i]/(z+i+1);
+  return 0.5*Math.log(2*Math.PI)+(z+0.5)*Math.log(t)-t+Math.log(a);
+}
+function betacf(a,b,xx){
+  var MAX=200, EPS=3e-14, FPMIN=1e-300;
+  var qab=a+b, qap=a+1, qam=a-1, c=1, d=1-qab*xx/qap;
+  if(Math.abs(d)<FPMIN) d=FPMIN;
+  d=1/d; var h=d;
+  for(var m=1;m<=MAX;m++){
+    var m2=2*m, aa=m*(b-m)*xx/((qam+m2)*(a+m2));
+    d=1+aa*d; if(Math.abs(d)<FPMIN) d=FPMIN;
+    c=1+aa/c; if(Math.abs(c)<FPMIN) c=FPMIN;
+    d=1/d; h*=d*c;
+    aa=-(a+m)*(qab+m)*xx/((a+m2)*(qap+m2));
+    d=1+aa*d; if(Math.abs(d)<FPMIN) d=FPMIN;
+    c=1+aa/c; if(Math.abs(c)<FPMIN) c=FPMIN;
+    d=1/d; var del=d*c; h*=del;
+    if(Math.abs(del-1)<EPS) break;
+  }
+  return h;
+}
+function ibeta(a,b,xx){
+  if(xx<=0) return 0; if(xx>=1) return 1;
+  var bt=Math.exp(lgam(a+b)-lgam(a)-lgam(b)+a*Math.log(xx)+b*Math.log(1-xx));
+  return (xx < (a+1)/(a+b+2)) ? bt*betacf(a,b,xx)/a : 1-bt*betacf(b,a,1-xx)/b;
+}
+/* tosidig p for t med v frihetsgrader */
+function pT(t,v){ if(!isFinite(t)||v<=0) return NaN; return ibeta(v/2,0.5,v/(v+t*t)); }
+/* p for F(v1,v2) */
+function pF(F,v1,v2){ if(!isFinite(F)||F<=0) return 1; return ibeta(v2/2,v1/2,v2/(v2+v1*F)); }
+/* kritisk t for tosidig alfa — bisekt på pT */
+function tKrit(v,alfa){
+  var lo=0, hi=200, mid;
+  for(var i=0;i<200;i++){ mid=(lo+hi)/2; if(pT(mid,v)>alfa) lo=mid; else hi=mid; }
+  return (lo+hi)/2;
+}
+/* Acklam: invers normalfordeling, til Q–Q-plottet */
+function qnorm(p){
+  var a=[-3.969683028665376e+01,2.209460984245205e+02,-2.759285104469687e+02,
+          1.383577518672690e+02,-3.066479806614716e+01,2.506628277459239e+00],
+      b=[-5.447609879822406e+01,1.615858368580409e+02,-1.556989798598866e+02,
+          6.680131188771972e+01,-1.328068155288572e+01],
+      c=[-7.784894002430293e-03,-3.223964580411365e-01,-2.400758277161838e+00,
+         -2.549732539343734e+00,4.374664141464968e+00,2.938163982698783e+00],
+      dd=[7.784695709041462e-03,3.224671290700398e-01,2.445134137142996e+00,
+          3.754408661907416e+00];
+  var pl=0.02425, q, r;
+  if(p<pl){ q=Math.sqrt(-2*Math.log(p));
+    return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((dd[0]*q+dd[1])*q+dd[2])*q+dd[3])*q+1); }
+  if(p>1-pl){ q=Math.sqrt(-2*Math.log(1-p));
+    return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((dd[0]*q+dd[1])*q+dd[2])*q+dd[3])*q+1); }
+  q=p-0.5; r=q*q;
+  return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);
+}
+
+/* ---------- lineær algebra: normallikningene ---------- */
+function losGauss(A, v){
+  var n=A.length, M=A.map((r,i)=>r.slice().concat([v[i]]));
+  for(var k=0;k<n;k++){
+    var p=k;
+    for(var i=k+1;i<n;i++) if(Math.abs(M[i][k])>Math.abs(M[p][k])) p=i;
+    var tmp=M[k]; M[k]=M[p]; M[p]=tmp;
+    if(Math.abs(M[k][k])<1e-12) return null;
+    for(var i2=0;i2<n;i2++){
+      if(i2===k) continue;
+      var f=M[i2][k]/M[k][k];
+      for(var j=k;j<=n;j++) M[i2][j]-=f*M[k][j];
+    }
+  }
+  return M.map((r,i)=>r[n]/r[i]);   /* raden er redusert til kun diagonalen */
+}
+function invers(A){
+  var n=A.length, M=A.map((r,i)=>r.slice().concat(Array.from({length:n},(_,j)=>i===j?1:0)));
+  for(var k=0;k<n;k++){
+    var p=k;
+    for(var i=k+1;i<n;i++) if(Math.abs(M[i][k])>Math.abs(M[p][k])) p=i;
+    var tmp=M[k]; M[k]=M[p]; M[p]=tmp;
+    if(Math.abs(M[k][k])<1e-12) return null;
+    var d=M[k][k];
+    for(var j=0;j<2*n;j++) M[k][j]/=d;
+    for(var i3=0;i3<n;i3++){
+      if(i3===k) continue;
+      var f=M[i3][k];
+      for(var j2=0;j2<2*n;j2++) M[i3][j2]-=f*M[k][j2];
+    }
+  }
+  return M.map(r=>r.slice(n));
+}
+
+/* ---------- selve regresjonen ---------- */
+function regresjon(y, Xs){
+  var n=y.length, k=Xs.length, p=k+1;
+  var X=[]; for(var i=0;i<n;i++){ var r=[1]; for(var j=0;j<k;j++) r.push(Xs[j][i]); X.push(r); }
+  var XtX=[], Xty=[];
+  for(var a=0;a<p;a++){
+    XtX.push([]); var s=0;
+    for(var b2=0;b2<p;b2++){ var t=0; for(var i2=0;i2<n;i2++) t+=X[i2][a]*X[i2][b2]; XtX[a].push(t); }
+    for(var i3=0;i3<n;i3++) s+=X[i3][a]*y[i3];
+    Xty.push(s);
+  }
+  var koef=losGauss(XtX.map(r=>r.slice()), Xty.slice());
+  if(!koef) return null;
+  var fit=[], res=[], my=0, i4;
+  for(i4=0;i4<n;i4++) my+=y[i4]; my/=n;
+  var sse=0, sst=0;
+  for(i4=0;i4<n;i4++){
+    var f=0; for(var j3=0;j3<p;j3++) f+=koef[j3]*X[i4][j3];
+    fit.push(f); res.push(y[i4]-f);
+    sse+=(y[i4]-f)*(y[i4]-f); sst+=(y[i4]-my)*(y[i4]-my);
+  }
+  var df=n-p, s2=sse/df, inv=invers(XtX);
+  var se=[], t=[], pv=[];
+  for(var j4=0;j4<p;j4++){
+    var sej=Math.sqrt(Math.max(0,s2*inv[j4][j4]));
+    se.push(sej); t.push(koef[j4]/sej); pv.push(pT(koef[j4]/sej, df));
+  }
+  var R2=1-sse/sst, justR2=1-(1-R2)*(n-1)/df;
+  var F=(R2/k)/((1-R2)/df);
+  function sd(v){ var m=0,i; for(i=0;i<v.length;i++) m+=v[i]; m/=v.length;
+    var s=0; for(i=0;i<v.length;i++) s+=(v[i]-m)*(v[i]-m); return Math.sqrt(s/(v.length-1)); }
+  var sy=sd(y), beta=[];
+  for(var j5=0;j5<k;j5++) beta.push(koef[j5+1]*sd(Xs[j5])/sy);
+  return {n:n,k:k,df:df,koef:koef,se:se,t:t,p:pv,R2:R2,justR2:justR2,F:F,
+          pF:pF(F,k,df),sse:sse,sst:sst,sdRes:Math.sqrt(s2),sdY:sy,
+          fit:fit,res:res,inv:inv,s2:s2,my:my,X:X,beta:beta};
+}
+
+/* ---------- oppsett og tilstand ---------- */
+var RG={sett:'iq', y:'', x1:'', x2:'', M:null, M1:null};
+const fR=(v,d)=>(v==null||!isFinite(v))?'–':v.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+function pTekst(p){
+  if(!isFinite(p)) return '–';
+  if(p<0.001) return '&lt; ,001';
+  return (','+Math.round(p*1000).toString().padStart(3,'0'));
+}
+function fyllVelger(sel, sett, valgt, medIngen){
+  var d=RGDATA[sett], h='';
+  if(medIngen) h+='<option value="">— ingen —</option>';
+  for(var k in d.vars) h+='<option value="'+k+'"'+(k===valgt?' selected':'')+'>'+d.vars[k].lab+'</option>';
+  sel.innerHTML=h;
+}
+function kolonne(k){ return RGDATA[RG.sett].vars[k].v; }
+function etikett(k){ return k? RGDATA[RG.sett].vars[k].lab : ''; }
+function enhet(k){ var e=RGDATA[RG.sett].vars[k].enhet; return e? ' '+e : ''; }
+
+function byggSett(){
+  var d=RGDATA[RG.sett];
+  RG.y=d.std_y; RG.x1=d.std_x1; RG.x2=d.std_x2;
+  fyllVelger($R('rgY'), RG.sett, RG.y, false);
+  fyllVelger($R('rgX1'), RG.sett, RG.x1, false);
+  fyllVelger($R('rgX2'), RG.sett, RG.x2, true);
+  $R('rgKilde').textContent=d.kilde;
+  $R('rgSpm').innerHTML='<b>Spørsmålet:</b> '+d.sporsmal;
+}
+
+/* ---------- figurene ---------- */
+function lerret(cv){
+  var r=window.devicePixelRatio||1, w=cv.clientWidth||600,
+      h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r; cv.height=h*r; cv.style.height=h+'px';
+  var c=cv.getContext('2d'); c.setTransform(r,0,0,r,0,0); c.clearRect(0,0,w,h);
+  return [c,w,h];
+}
+function grense(v){
+  var lo=Math.min.apply(null,v), hi=Math.max.apply(null,v), pad=(hi-lo)*0.06||1;
+  return [lo-pad, hi+pad];
+}
+function akse(c,L,T,W,H,xlo,xhi,ylo,yhi,xlab,ylab){
+  c.strokeStyle='#e6eaf2'; c.lineWidth=1;
+  for(var i=0;i<=4;i++){
+    var yy=T+H*i/4; c.beginPath(); c.moveTo(L,yy); c.lineTo(L+W,yy); c.stroke();
+    var xx=L+W*i/4; c.beginPath(); c.moveTo(xx,T); c.lineTo(xx,T+H); c.stroke();
+  }
+  c.strokeStyle='#c9d0dd'; c.strokeRect(L,T,W,H);
+  c.fillStyle='#62708a'; c.font='12px system-ui,sans-serif'; c.textAlign='center';
+  for(var j=0;j<=4;j++){
+    c.fillText(fR(xlo+(xhi-xlo)*j/4,1), L+W*j/4, T+H+15);
+    c.textAlign='right'; c.fillText(fR(yhi-(yhi-ylo)*j/4,1), L-6, T+H*j/4+4); c.textAlign='center';
+  }
+  c.fillText(xlab, L+W/2, T+H+31);
+  c.save(); c.translate(12, T+H/2); c.rotate(-Math.PI/2); c.fillText(ylab,0,0); c.restore();
+}
+
+function tegnHoved(){
+  var cv=$R('cvRg'); if(!cv) return;
+  var r=lerret(cv), c=r[0], W=r[1], H=r[2];
+  var M=RG.M; if(!M) return;
+  var L=56,R=16,T=14,B=40, pw=W-L-R, ph=H-T-B;
+  var xs=kolonne(RG.x1), ys=kolonne(RG.y);
+  var gx=grense(xs), gy=grense(ys);
+  var X=v=>L+(v-gx[0])/(gx[1]-gx[0])*pw, Y=v=>T+ph-(v-gy[0])/(gy[1]-gy[0])*ph;
+  akse(c,L,T,pw,ph,gx[0],gx[1],gy[0],gy[1],etikett(RG.x1),etikett(RG.y));
+
+  /* linja: X₂ holdt på gjennomsnittet */
+  var x2m=0;
+  if(RG.x2){ var v2=kolonne(RG.x2); for(var i=0;i<v2.length;i++) x2m+=v2[i]; x2m/=v2.length; }
+  var tk=tKrit(M.df,0.05);
+  function pred(xv){
+    var rad=[1,xv]; if(RG.x2) rad.push(x2m);
+    var f=0,i2; for(i2=0;i2<rad.length;i2++) f+=M.koef[i2]*rad[i2];
+    /* var(ŷ) = s² · x'(X'X)⁻¹x */
+    var q=0;
+    for(var a=0;a<rad.length;a++) for(var b=0;b<rad.length;b++) q+=rad[a]*M.inv[a][b]*rad[b];
+    var seLinje=Math.sqrt(Math.max(0,M.s2*q));
+    return [f, seLinje, Math.sqrt(Math.max(0,M.s2*(1+q)))];
+  }
+  var visPI=!!($R('rgVisPI')&&$R('rgVisPI').checked);
+  var visKI=!!($R('rgVisKI')&&$R('rgVisKI').checked);
+  var K=60, ov=[], nd=[], ov2=[], nd2=[], px=[];
+  for(var i3=0;i3<=K;i3++){
+    var xv=gx[0]+(gx[1]-gx[0])*i3/K, pr=pred(xv);
+    px.push(X(xv)); ov.push(Y(pr[0]+tk*pr[2])); nd.push(Y(pr[0]-tk*pr[2]));
+    ov2.push(Y(pr[0]+tk*pr[1])); nd2.push(Y(pr[0]-tk*pr[1]));
+  }
+  function band(o,n,farge){
+    c.beginPath(); c.moveTo(px[0],o[0]);
+    for(var i=1;i<=K;i++) c.lineTo(px[i],o[i]);
+    for(var j=K;j>=0;j--) c.lineTo(px[j],n[j]);
+    c.closePath(); c.fillStyle=farge; c.fill();
+  }
+  c.save(); c.beginPath(); c.rect(L,T,pw,ph); c.clip();
+  if(visPI) band(ov,nd,'rgba(192,57,43,0.10)');
+  if(visKI) band(ov2,nd2,'rgba(192,57,43,0.22)');
+  c.fillStyle='rgba(46,84,150,0.55)';
+  for(var i4=0;i4<xs.length;i4++){
+    c.beginPath(); c.arc(X(xs[i4]),Y(ys[i4]),3.2,0,6.2832); c.fill();
+  }
+  c.strokeStyle='#C0392B'; c.lineWidth=2.6; c.beginPath();
+  for(var i5=0;i5<=K;i5++){
+    var xv2=gx[0]+(gx[1]-gx[0])*i5/K, yy=Y(pred(xv2)[0]);
+    if(i5===0) c.moveTo(px[i5],yy); else c.lineTo(px[i5],yy);
+  }
+  c.stroke(); c.restore();
+}
+
+function tegnDiag(){
+  var M=RG.M; if(!M) return;
+  var r=lerret($R('cvRgRes')), c=r[0], W=r[1], H=r[2];
+  var L=52,R=14,T=12,B=36, pw=W-L-R, ph=H-T-B;
+  var gx=grense(M.fit), gy=grense(M.res);
+  var X=v=>L+(v-gx[0])/(gx[1]-gx[0])*pw, Y=v=>T+ph-(v-gy[0])/(gy[1]-gy[0])*ph;
+  akse(c,L,T,pw,ph,gx[0],gx[1],gy[0],gy[1],'predikert verdi','residual');
+  c.strokeStyle='#C0392B'; c.lineWidth=1.6; c.setLineDash([5,4]);
+  c.beginPath(); c.moveTo(L,Y(0)); c.lineTo(L+pw,Y(0)); c.stroke(); c.setLineDash([]);
+  c.fillStyle='rgba(46,84,150,0.55)';
+  for(var i=0;i<M.fit.length;i++){ c.beginPath(); c.arc(X(M.fit[i]),Y(M.res[i]),3,0,6.2832); c.fill(); }
+
+  var r2=lerret($R('cvRgQQ')); c=r2[0]; W=r2[1]; H=r2[2];
+  pw=W-L-R; ph=H-T-B;
+  var srt=M.res.slice().sort(function(a,b){return a-b;}), n=srt.length, teo=[];
+  for(var j=0;j<n;j++) teo.push(qnorm((j+1-0.375)/(n+0.25)));
+  var gq=grense(teo), gr=grense(srt);
+  var XQ=v=>L+(v-gq[0])/(gq[1]-gq[0])*pw, YQ=v=>T+ph-(v-gr[0])/(gr[1]-gr[0])*ph;
+  akse(c,L,T,pw,ph,gq[0],gq[1],gr[0],gr[1],'teoretisk kvantil','observert residual');
+  c.strokeStyle='#C0392B'; c.lineWidth=2;
+  c.beginPath(); c.moveTo(XQ(gq[0]),YQ(gq[0]*M.sdRes)); c.lineTo(XQ(gq[1]),YQ(gq[1]*M.sdRes)); c.stroke();
+  c.fillStyle='rgba(46,84,150,0.55)';
+  for(var k2=0;k2<n;k2++){ c.beginPath(); c.arc(XQ(teo[k2]),YQ(srt[k2]),3,0,6.2832); c.fill(); }
+}
+
+/* ---------- tabellene og teksten ---------- */
+function skrivKoef(){
+  var M=RG.M, navn=['(konstant)', etikett(RG.x1)]; if(RG.x2) navn.push(etikett(RG.x2));
+  var tk=tKrit(M.df,0.05);
+  var h='<table class="rgtab"><tr><th>prediktor</th><th>b</th><th>SE</th>'
+       +'<th>95 % KI</th><th>t('+M.df+')</th><th>p</th><th>&beta;</th></tr>';
+  for(var i=0;i<M.koef.length;i++){
+    var sig=isFinite(M.p[i])&&M.p[i]<0.05 && i>0;
+    h+='<tr'+(sig?' class="sig"':'')+'><td>'+navn[i]+'</td>'
+      +'<td class="b">'+fR(M.koef[i],3)+'</td><td>'+fR(M.se[i],3)+'</td>'
+      +'<td>['+fR(M.koef[i]-tk*M.se[i],2)+', '+fR(M.koef[i]+tk*M.se[i],2)+']</td>'
+      +'<td>'+fR(M.t[i],2)+'</td><td>'+pTekst(M.p[i])+'</td>'
+      +'<td>'+(i===0?'–':fR(M.beta[i-1],3))+'</td></tr>';
+  }
+  h+='</table>';
+  $R('rgKoef').innerHTML=h;
+}
+function skrivTall(){
+  var M=RG.M;
+  var lign='ŷ = '+fR(M.koef[0],2)+' + '+fR(M.koef[1],3)+' · '+etikett(RG.x1);
+  if(RG.x2) lign+=' + '+fR(M.koef[2],3)+' · '+etikett(RG.x2);
+  $R('rgTall').innerHTML='<span class="stat">'+lign+'</span>'
+    +'<span class="stat">R² = '+fR(M.R2,3)+'</span>'
+    +'<span class="stat">justert R² = '+fR(M.justR2,3)+'</span>'
+    +'<span class="stat">F('+M.k+', '+M.df+') = '+fR(M.F,2)+', p '+
+      (M.pF<0.001?'&lt; ,001':'= '+pTekst(M.pF))+'</span>'
+    +'<span class="stat">n = '+M.n+'</span>'
+    +'<span class="stat">SD(Y) '+fR(M.sdY,2)+' → SD(residual) '+fR(M.sdRes,2)+'</span>';
+}
+function skrivModeller(){
+  var M1=RG.M1, M=RG.M;
+  if(!RG.x2){
+    $R('rgModell').innerHTML='<p class="muted">Velg en prediktor X₂ for å se hva den legger til.</p>';
+    $R('rgDelta').innerHTML='Med bare én prediktor er &beta; = r, og R² = r². Prøv å legge til X₂.';
+    return;
+  }
+  var h='<table class="rgtab"><tr><th>&nbsp;</th><th>Modell 1<br>bare X₁</th>'
+       +'<th>Modell 2<br>bare X₂</th><th>Modell 3<br>begge</th></tr>';
+  var M2=regresjon(kolonne(RG.y), [kolonne(RG.x2)]);
+  h+='<tr><td>b for '+etikett(RG.x1)+'</td><td class="b">'+fR(M1.koef[1],3)+'</td><td>—</td>'
+    +'<td class="b">'+fR(M.koef[1],3)+'</td></tr>';
+  h+='<tr><td>b for '+etikett(RG.x2)+'</td><td>—</td><td class="b">'+fR(M2.koef[1],3)+'</td>'
+    +'<td class="b">'+fR(M.koef[2],3)+'</td></tr>';
+  h+='<tr><td>p for '+etikett(RG.x2)+'</td><td>—</td><td>'+pTekst(M2.p[1])+'</td>'
+    +'<td>'+pTekst(M.p[2])+'</td></tr>';
+  h+='<tr><td>R²</td><td>'+fR(M1.R2,3)+'</td><td>'+fR(M2.R2,3)+'</td><td>'+fR(M.R2,3)+'</td></tr>';
+  h+='</table>';
+  $R('rgModell').innerHTML=h;
+
+  var dR2=M.R2-M1.R2, dR2b=M.R2-M2.R2;
+  var t='<b>X₂ sitt unike bidrag:</b> ΔR² = '+fR(dR2,4)+' — altså '+fR(dR2*100,2)
+       +' % av variasjonen i '+etikett(RG.y)+' som X₁ ikke allerede fanget. ';
+  if(Math.abs(dR2)<0.01 && M.p[2]>=0.05){
+    t+='<b>Nesten ingenting.</b> Det betyr ikke at '+etikett(RG.x2)+' er uten betydning — '
+      +'det betyr at det den hadde å si, allerede lå i '+etikett(RG.x1)+'.';
+  } else if(M.p[2]<0.05){
+    t+='Den bidrar altså med noe eget. Legg likevel merke til at begge koeffisientene er mindre '
+      +'enn de var alene: prediktorene deler informasjon.';
+  } else {
+    t+='Bidraget er ikke signifikant med denne utvalgsstørrelsen.';
+  }
+  t+='<div style="margin-top:6px" class="muted">X₁ sitt unike bidrag, til sammenligning: ΔR² = '
+    +fR(dR2b,4)+'.</div>';
+  $R('rgDelta').innerHTML=t;
+}
+function skrivDiag(){
+  var M=RG.M, n=M.n;
+  /* enkel heteroskedastisitetsindikator: korrelasjon mellom |residual| og predikert */
+  var af=[], ar=[];
+  for(var i=0;i<n;i++){ af.push(M.fit[i]); ar.push(Math.abs(M.res[i])); }
+  function korr(a,b){
+    var m1=0,m2=0,j; for(j=0;j<a.length;j++){m1+=a[j];m2+=b[j];} m1/=a.length; m2/=b.length;
+    var s=0,s1=0,s2=0;
+    for(j=0;j<a.length;j++){ s+=(a[j]-m1)*(b[j]-m2); s1+=(a[j]-m1)*(a[j]-m1); s2+=(b[j]-m2)*(b[j]-m2); }
+    return s/Math.sqrt(s1*s2);
+  }
+  var rHet=korr(af,ar);
+  /* skjevhet og kurtose i residualene */
+  var m=0,j2; for(j2=0;j2<n;j2++) m+=M.res[j2]; m/=n;
+  var s2=0,s3=0,s4=0;
+  for(j2=0;j2<n;j2++){ var dv=M.res[j2]-m; s2+=dv*dv; s3+=dv*dv*dv; s4+=dv*dv*dv*dv; }
+  var sd=Math.sqrt(s2/n), skjev=(s3/n)/Math.pow(sd,3), kurt=(s4/n)/Math.pow(sd,4)-3;
+  function dom(ok,txt){ return '<span class="stat" style="background:'+(ok?'#e8f3ec':'#fdecea')
+    +';color:'+(ok?'#2E7D32':'#C0392B')+'">'+txt+'</span>'; }
+  $R('rgDiag').innerHTML =
+     dom(Math.abs(rHet)<0.25,'trakt: r(|residual|, predikert) = '+fR(rHet,2))
+    +dom(Math.abs(skjev)<1,'skjevhet i residualene = '+fR(skjev,2))
+    +dom(Math.abs(kurt)<2,'kurtose = '+fR(kurt,2))
+    +'<div class="muted" style="font-size:14.5px;margin-top:6px">Tommelfingerregler, ikke tester: '
+    +'|r| under ,25 og skjevhet under 1 pleier å bety at plottene ser greie ut. '
+    +'Se alltid på figurene selv — det er dem JASP viser deg, og det er dem du skal beskrive.</div>';
+}
+function skrivApa(){
+  var M=RG.M, M1=RG.M1;
+  var yl=etikett(RG.y).toLowerCase(), x1l=etikett(RG.x1).toLowerCase();
+  var sig1=M.p[1]<0.05;
+  var t='<b>Metodevalget.</b> Vi bruker <b>lineær regresjon</b> fordi utfallet ('+yl+') er '
+    +'kontinuerlig og vi vil vite hvor mye det endrer seg per enhet på en kontinuerlig prediktor. '
+    +(RG.x2? 'Med to prediktorer får vi i tillegg vite hva hver av dem bidrar med når den andre holdes konstant. '
+           : 'Med én prediktor er dette den samme sammenhengen som Pearsons r, bare uttrykt i variabelens egne enheter. ')
+    +'α = ,05 (tosidig).';
+  t+='<div style="margin-top:8px"><b>Resultatsetningen.</b> ';
+  if(RG.x2){
+    t+=etikett(RG.x1)+' predikerte '+yl+', b = '+fR(M.koef[1],3)+' (SE = '+fR(M.se[1],3)+'), '
+      +'t('+M.df+') = '+fR(M.t[1],2)+', p '+(M.p[1]<0.001?'&lt; ,001':'= '+pTekst(M.p[1]))
+      +', &beta; = '+fR(M.beta[0],2)+', mens '+etikett(RG.x2).toLowerCase()+' '
+      +(M.p[2]<0.05?'også gjorde det':'ikke gjorde det')+', b = '+fR(M.koef[2],3)
+      +', t('+M.df+') = '+fR(M.t[2],2)+', p '+(M.p[2]<0.001?'&lt; ,001':'= '+pTekst(M.p[2]))
+      +'. Modellen forklarte '+fR(M.R2*100,1)+' % av variasjonen, R² = '+fR(M.R2,3)
+      +', F('+M.k+', '+M.df+') = '+fR(M.F,2)+', p '+(M.pF<0.001?'&lt; ,001':'= '+pTekst(M.pF))+'.';
+  } else {
+    t+=etikett(RG.x1)+' predikerte '+yl+', b = '+fR(M.koef[1],3)+' (SE = '+fR(M.se[1],3)+'), '
+      +'t('+M.df+') = '+fR(M.t[1],2)+', p '+(M.p[1]<0.001?'&lt; ,001':'= '+pTekst(M.p[1]))
+      +', R² = '+fR(M.R2,3)+'.';
+  }
+  t+='</div>';
+  t+='<div style="margin-top:8px"><b>Til diskusjonen.</b> ';
+  t+='Modellen fanget '+fR(M.R2*100,1)+' % av variasjonen; '+fR((1-M.R2)*100,1)+' % ligger et annet sted. '
+    +'Uten modellen bommet vi typisk med '+fR(M.sdY,2)+' enheter, med den '+fR(M.sdRes,2)+' — en reduksjon på '
+    +fR((1-M.sdRes/M.sdY)*100,0)+' %. ';
+  if(RG.x2 && M.p[2]>=0.05 && M1.p[1]<0.05){
+    t+='At '+etikett(RG.x2).toLowerCase()+' mistet betydningen da '+x1l+' kom inn, er et resultat om '
+      +'<i>prediksjon</i>, ikke om <i>årsak</i>: den kan godt virke gjennom '+x1l+'. ';
+  }
+  t+='Dataene er målt samtidig, så retningen på sammenhengen er ikke etablert her.';
+  t+='</div>';
+  $R('rgApa').innerHTML=t;
+}
+function skrivPred(){
+  var M=RG.M;
+  var v1=parseFloat($R('rgInn1').value), v2=parseFloat($R('rgInn2').value);
+  if(!isFinite(v1)){ $R('rgPredUt').innerHTML='Skriv inn en verdi for X₁.'; return; }
+  var rad=[1,v1];
+  if(RG.x2){ if(!isFinite(v2)){ $R('rgPredUt').innerHTML='Skriv inn en verdi for X₂ også.'; return; } rad.push(v2); }
+  var f=0,i; for(i=0;i<rad.length;i++) f+=M.koef[i]*rad[i];
+  var q=0;
+  for(var a=0;a<rad.length;a++) for(var b=0;b<rad.length;b++) q+=rad[a]*M.inv[a][b]*rad[b];
+  var seL=Math.sqrt(Math.max(0,M.s2*q)), seP=Math.sqrt(Math.max(0,M.s2*(1+q)));
+  var tk=tKrit(M.df,0.05);
+  var xs=kolonne(RG.x1), lo=Math.min.apply(null,xs), hi=Math.max.apply(null,xs);
+  var utenfor = v1<lo || v1>hi;
+  $R('rgPredUt').innerHTML =
+     '<span class="stat">ŷ = '+fR(f,2)+'</span>'
+    +'<span class="stat">95 % KI for linja: '+fR(f-tk*seL,2)+' – '+fR(f+tk*seL,2)+'</span>'
+    +'<span class="stat" style="background:#fdecea;color:#C0392B">95 % prediksjonsintervall for personen: '
+      +fR(f-tk*seP,2)+' – '+fR(f+tk*seP,2)+'</span>'
+    +'<div style="margin-top:6px">Konfidensintervallet gjelder <b>gjennomsnittet</b> for alle med denne verdien. '
+    +'Prediksjonsintervallet gjelder <b>ett menneske</b> — og det er '+fR(2*tk*seP,1)+' enheter bredt.</div>'
+    +(utenfor? '<div style="margin-top:6px;color:#C0392B"><b>Advarsel:</b> '+fR(v1,1)+' ligger utenfor dataenes '
+       +'rekkevidde ('+fR(lo,1)+' til '+fR(hi,1)+'). Utenfor der er linja ren fantasi.</div>' : '');
+}
+
+/* ---------- oppdatering ---------- */
+function rgAlt(){
+  var y=kolonne(RG.y), Xs=[kolonne(RG.x1)];
+  if(RG.x2 && RG.x2!==RG.x1) Xs.push(kolonne(RG.x2)); else RG.x2 = (RG.x2===RG.x1)? '' : RG.x2;
+  RG.M=regresjon(y,Xs);
+  RG.M1=regresjon(y,[kolonne(RG.x1)]);
+  if(!RG.M){ $R('rgTall').innerHTML='<span class="stat">Modellen lot seg ikke regne ut.</span>'; return; }
+  $R('rgLab1').innerHTML='X₁: '+etikett(RG.x1)+enhet(RG.x1)+' <input type="number" id="rgInn1" step="any">';
+  $R('rgLab2').innerHTML= RG.x2 ? ('X₂: '+etikett(RG.x2)+enhet(RG.x2)+' <input type="number" id="rgInn2" step="any">') : '';
+  var xs=kolonne(RG.x1), m1=0; xs.forEach(function(v){m1+=v;}); m1/=xs.length;
+  $R('rgInn1').value=Math.round(m1*10)/10;
+  if(RG.x2){ var x2v=kolonne(RG.x2), m2=0; x2v.forEach(function(v){m2+=v;}); m2/=x2v.length;
+    $R('rgInn2').value=Math.round(m2*10)/10; }
+  $R('rgInn1').onchange=skrivPred; if(RG.x2) $R('rgInn2').onchange=skrivPred;
+  tegnHoved(); tegnDiag(); skrivTall(); skrivKoef(); skrivModeller(); skrivDiag(); skrivApa(); skrivPred();
+}
+
+/* ---------- kobling ---------- */
+(function init(){
+  var h='';
+  for(var k in RGDATA) h+='<option value="'+k+'">'+RGDATA[k].navn+'</option>';
+  $R('rgSett').innerHTML=h;
+  byggSett();
+  $R('rgVisPI').onchange=function(){ tegnHoved(); };
+  $R('rgVisKI').onchange=function(){ tegnHoved(); };
+  $R('rgSett').onchange=function(){ RG.sett=this.value; byggSett(); rgAlt(); };
+  $R('rgY').onchange=function(){ RG.y=this.value; rgAlt(); };
+  $R('rgX1').onchange=function(){ RG.x1=this.value; rgAlt(); };
+  $R('rgX2').onchange=function(){ RG.x2=this.value; rgAlt(); };
+  $R('rgBytt').onclick=function(){
+    if(!RG.x2) return;
+    var t=RG.x1; RG.x1=RG.x2; RG.x2=t;
+    $R('rgX1').value=RG.x1; $R('rgX2').value=RG.x2; rgAlt();
+  };
+  $R('rgPred').onclick=skrivPred;
+  window.addEventListener('resize', function(){ try{ tegnHoved(); tegnDiag(); }catch(e){} });
+  window.__rgTegn=function(){ try{ tegnHoved(); tegnDiag(); }catch(e){} };
+  window.__rgTest={RG:RG, RGDATA:RGDATA, regresjon:regresjon, pT:pT, pF:pF, tKrit:tKrit,
+                   qnorm:qnorm, rgAlt:rgAlt, invers:invers, byggSett:byggSett, skrivPred:skrivPred};
+  rgAlt();
+})();
+})();
+
+/* ===== Fane 2: minste kvadrater — fra Sim 5. Egen lukking fordi appene deler navn. */
+(function(){
 "use strict";
 const $=id=>document.getElementById(id);
 const fmt=(x,d=2)=>x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -127,21 +821,6 @@ const R75_ENC="kJjGfAgudDeFiujzlHeB9C7ukClKlmlwjD6u9d4bhmfDjndxkyjBlPetlIfwftcij
 const POP_ENC="gGkBfGfmfilrkylFlxlAcokJewetewdFgvjQktlFeyghgyjyfgjFkncClJd4iMcwhvlCeBkNiI8sizbxipbhjdjviIlyevlRkslwkDfGjvkHkMccgm8qhylPexcCeFkwevfyhAcwjijyfq8oeCgKbrlRlEkzlEhBbufBfwgGlIitinaxfMeqbnlGfI9hcCfDeolDlPejfjevfwlBjS9ycwjBlpfoiobxbnjKlHbDeBhfkMjrlDfziEhFkubtkMbxcrhmlMhNlPcAkwdChJjllOjlbfaelrhvcseDeHgDlBcvlygrjAlAgojOgtjIbrjMivhLkT7LgueplCgHhjlGlqhNhBgugBhIbrfBdtlCfDcziFgxgygMeEeojyjvebgi7blGhqaGjKeq94evhCabduaobqfChygzfGggkBlDkududngyfmkTgzezkolGhSgxlTbilTlClPgLdsgsfrkAkEjIfmlEfxcvdmahhsirfleIdrjAiQlDiulHfxkFimexlEewdtgBhAbsbqjBeActlBhIgPlPgqhxggcjiqipgjcohCkueJlHkwcD7sjAlKjobklqeyeKfyfxgkaraAiHcxaIlTjkhEjtcsfwkDlBkMdwgFeqgngvkGhckPhCiB8Bdh8HgvlxlCiCiylDjDejcxhnhDfzdBfj7EfDhAkNevlNhGhweohefxjvfHdvdDeCjvdDlTathrlngjbilveylueDlycyivfGilgAcz4ait9seufpeBjMlClQjDlFhFdHlCfpalaldylQexfIhIkJlKitlNlBcHlFfK9bembjdAjslQapavjplKjKbAlulAjwgriFfzdsfxhuixhMhDlJjRd8aDamhMdKkEhtbvlPkzeulJkMhrlEbyeReelyiAjvbrfmez8wkulKhwgzjEiIlsfkfvctcAislFly9BhmlxhuepiJeAfxizlJcpeTgkhBjvgujBjGeIiFfvhEdEgref9shtlyiP8dhJjNaofDkueAlHgChPlMgvhEjCdpgAgJfEhwdzjDiOhBdEcmdHjrgLerlQjFctgNlLlRgCligHbokJfJlofFfD9G8jlTg1jJdidBeplFkChEjD7eeldrlCkOdRcDhxjEfigrjRfClBjukJciimgPkKgEcJfyhGithKatlzlxgBcteBhkhxgtffgOivepdrfDjBgrhpeDlzbF9uiGbQdFjJlCdC7BetdkdslBgCdzlslTiKlTksfyjrevbliTgFeshzfqgcko9natlAlTgAgqbriTlzjIguekkElHgCfadJkBfmgthzgojIexcyfDccgmiBgslOiybrjBbhkGhzhLktfpiIltakcIezdygvgulGjtcjixlBdIhGbndGeIlBctdogJhq9vgvlSaylMcHjwcuiRlz7DbucAgJhohKczdpiTimjilKiIkIcxanaoemhNexjxiChClEiuiAlybtjBktktixlwdnfvgPhBgEdyaqiujpdClKhGgulAfzdrcybnevawdpjQazgLfBeDjvlElDlQfr82cmkAeOlOhCdsgjhBkKlFgqfphkavlBlIlQfzhGjIluiwjukJdAb5czkvitfqdydueCeSfskIiulDlTjCiv9obulNdEfkbplIhrdlkAlzhtlCaubshLfglPhmiAkqkzkMdLjfkOhFbllvjzlKiFlwcKlhlzfelHdgkseCfDlBlTjGiygnkNfAbBlIlPexlOiwfDjTgEkTjufFdEejlKjxlwfOdtcxlK9DdFiEgtgsfl6GlKdFhgiCfsgEfEgAauis8seDgCexiDeH9iau8AiNlxdCbHfAlTjmhxfolT9yiKjxcohyjBiFiSeMfwhlktlIbuesaAlNfFgsjlcClThplTgIizkBcvhskyilkogHjxfFccjtgAiHkFhIeJgpbjeyjDlJcygheFgGlDdifoewdpgpcGfikBgqjJfFet9pfrlKfC8yeqcqhxhvlzhElwlGepkLayiQciktfGlmlJ7hkG8jfykGinfpdzfgjGiDeNhycRfikDfDfs9wbu9zgB9pgnhF9veBlHhvkvdBllcuaIjvguiqkThubpkucJgwfwahlolTdncxcpjAcvlTgCetkBlKlEhwlxgnfHhklFlvipfAaulAdtixhEexcwlylyiyjsfpivfwlEfEbviHgCgBlTdzlFlvhMhngvkPiKhHlPgGbAcDiOdofvlIkugxlTlNfBjn7phCholLkLgs5yjDgvfi8qlPgkeC8sdljQgvfylTehlEit6ajDlFeBlJdLepfFhIgjeviFhHlKafhEiwkvdIlKfElOahjGgxaqeylMjhlQeyiCaklIkpcGfzed8mamjxky7matgveKdlixgsfCgEjs6hdFjma7dxjykAewjz8yhrhshsgt6okzheeFhwetcdixjIlBknbxjBepltlElyltdqahfkdejmftgJfr7hlBlEcBdjhSdmaBkzgheGgDlDhmlKlnhtcwfqlwjAlqgBixgGbofEhQapjulIkAgRefdKkEiighiIlTlugphElEdxgAgIhGjBdBbt9A9qeteqlOlJimdqisivlGhqiHdHhsfrerlHkFdvkHdRfKihcnlxlOhskR7ehCexftaslwezlRfAjufEgBlMbylTlqiChChxfrhBlIfpckbIhm7fjrcsdJfHdnagjCiHgyfz6ciyjtlTiviw8lhybwiEgzdAfqilgzfshwjxlLkt9pitlIgGlTekhAdf7wgBgzixiKlAfwlzlDeQfdgvlSjHjGadbmhzdGixlCgJikfolJevjB9s7qhMaviKhF6naKlzfliBkxhwaqkzflgwjAlKdfiAlGbzbweoftdphMlxgueolKfnlTewlmkzlsbqlvlRlAkxjujPgDfPdtlGhGbygohufplHlMealJhoarfBcAhHlEbzlFlHlMezlFeplFevdKfElGdodqeGbxcfhIlHcqcrauktcrjuhsiylKeAgCgOgxhtgvlCdSiDgBeBkJiBcvgmjpixiFjNeHeAbyeDcsjDhBczgBlufDgmivkwcwjBfsdClzjHjEeFew9Mlnjy9thuhnhAcEhvizjHiRcuiKkzkElFlNdulTfzgqesaqfqhuiBjIjScF5tfNex8zeA5nhy9Ebuckhibbbkfy7ckFhIlvarhJ7rcDivdL9ilwkubnjI7kfAlueolMlHcEfycEbv7mgCdzirlSfEfviBenlJgvlHjLeAgtirlKlHkJ9xkwlHfwgufIgOgJlQgTlJhyfwiwbKlKgxbzgsjDguevfAkqfJjwbFhtiujEfkhqlIfzbyhohnlNlygsiKjGkEiwdFikjDjygIcGjEdr8qaHlwlTbsbelFgvjrhzfzeygpltakdtchdtlxiylTg0iygtlLlKlBkTlDfEdLeGkPhAlFlShEgAfFjOktdCiulxeGdrbgkQfFgylKlNlDcxbwkMlJhLiLjBesgCjjhFlQdDeyfSiogycplEhweqfzaFfylRlwlGlzktjyjDhzgwjBdu9fjEbweKkBfwffjHgJgylJfz9m8lfpgS8qcEdzdIlLgIefjNkxfTeacylwfBhxeh9yedlMkzhxbxepeA8mcriLhJftdBlzdGhyevizfDlDlvjvlNfnfrfliBlGbraohoftgzhBfrlTb6jojacedvgJfBiSlSdojzaFdmjoalfHetdAgPhAcElEfyfEfxddlO7rjAfDhAlM8wlGhCfrfE9flwfuhAjulD9tazekaugxanew9xcrfTevgxdChLkBlTfLfudr9ujMhukTjkdGhz9neBgDkvkEfBfxiOjsdueviHfLfwbzaklSjPhxlufxcqiEhxizgwaqesfkdudzfTiDhzbodldBjtjRgtlHdzbnlTjJhmfxfvfmdgbplHjBcmhyhykPfcejislGiDfthDatkrkzgriIfKitlTlvitcEfCdoirkCdkiBlTerhkejlJdB9kgNlGkSdncodAlxbBdklD8pjTjKlKlHejlF8vhAiMlMgEhibxihisiAcGhuizlNiGgrlGjjbfenfzlQgqlOeycrgtcC7qackLjCeEltiqlyimlBbulxlzdwfvkGlGcneAbufAhBcwduiDjIiKitcolLlDewlSltgqdplIfHlCjwfDdslTjzlFfzkMfFdqbvhHlulT9xfmimcAcHbylIfvjlfrcvlJlLlNlB8ohDgHjOgqiudfkv9maCjrfxlNgvlBfChxfxlIlRlMhTfncxlEhDhChvgyfzeskSgzfvfxiHljhvaslqlTlDhKjKeslIaghjkJkElKfEb7jGdrcpgpfyiD9AgohqkvbhhzbBceltlucGctkziylDiF9qjNjvitlElnaglGiplKdGlOlFlK9BlPlKfBbthLlDlEdzdzlMlKlolNjpcEfdhLengBcBikhnebktiBfvbzlqlTeziCbGlCcdhmhHjShtfplAbCfNgzlJcCif9sfjlslLcvkq7wdnixeThjjslRgChw9qkplvcmiAkLhElTgHctfGbmlGkIdufliEfwdC8efrkTiJcGiNdzftdtdAbBdmhncnifljgictitln9MdBlTfsiBlNiDedhjexaijLbukPhndjiqgpiu92jddnfxawiLjD9venfpagfrisaqlAlGkCcncrgqjzfCdklAlvjAiFdrlEfGeuhJiMiBiycllJ8c8genkCcClpjEdzjNgtfrlIculJfojBlblzkSgJhCkIgAlNfviFcH9yeEev7clAlCgqjAlPiulJlCktlxdqiDiHgvgxlOkt6wlzhvkAlPirlsfqkrlTdqdF8ElzfIlrlGjtekefazjPjSlFfKiweCiSiBjlgqkPfolx9vhtltavcvjBgwlDlGkEdBbilK9p9wlMhwbrlCcxcz6ekChDgqgvlpfClCat8A8yjBksip8kewhDimlKfMiHjzevhBhxjEkAjsjwalhrkylAhAazfzemeFltjugDliltcCfFeBdnkHlq62kv3xemdldxlzeqdrircAiDjteGlPgogDlQgxdqdhiCjNducekAeudFkIhEjJfu9HcrlMhpcAcAbrlPgibFducyfwfsgwkQdweGiseofJlRkylyfIcwiT8wkOkLjIfvgDipjxcxhEkpcJlBgGfthGfPdslylqdrfJgHcegvkvgHlBgohBchbtlOdBlGlteHeGfelLhAfllzlTakdmeq9cazjAiPjwgulNcqlAfHdghtlSkCfljsjDcAlzhpgulEiygGjviFb8kIcnhqlxfAcFfsbkdGgDcolvffeTdgcDgokrfrcAgxfvevfphHlLktgqlteIkRgwdEfGlIkzlDlPfqcMeofFbh9ElR5nlxjElv5cfplHlvlGiihzfNcmaljJiTaofyjAguiscweDjulElLap6xgviOgvbAcnjIlGfKjyczhqfxcraialiAiFkFemgsfDcv8ihvbney5j9rgvgtdleCdn9tdE9khAhngqjLcvkpapjslNjNkE9fgEikkNlKlOgCcpiNhtiFlBhDhTjxesiDfEewgv8pcscqkrcrlGeHkolFdujDeolTeAfxlsbieIeukAbuhxlLimlxjLlQdydmeuhylGlRfyjzlxcFlIewhyeziqgx8sjIjzkLeBiDajkzdzlRccamgse8jFbzgqfpgvljcr9ikzcu6zeIfslrdvfqgKlfhEgI8BiFdykAemlIbrjJfElyeHcrlKdjiDhDcBiFeNgKlKcAeklJfsfDiohTcgctckkmfGjMivarbflxiFhJln3h6glLlxhvgziThAlIlKisiEdzcufpfnlDfAenlJfqbvbtcyaq8qlLjtdujzgufsdylEez4ljFlDlNlAhwlzfs9cjvjAdofrlnhqkzfihBbslMkOhuftkviolIivgOkslTlplShFgh8clLdDeq8niJfskzgmjMlAjqhshGlCavjniFjIiBeugkiweslDjrdslJfE9ykHgteolleBeDkycQdzdEfpgJ9whEjHlPfAiLijcogAiIcH5nlDlskyiBlQlGdAixjAdviRlEiAlzayfmdm9ukT7vfCeJgtdxjzdzftdp8talbpfwiDjO9kiqeGaBkNlJlNdtktkQgvihizgugAlEjElF80lLlujwgefqgwkBhpluhgeJlEixgPlL4ffBixdo9olp8heJeBguhqgBgBaD8djAlweJanjCdteggIgvguingulNjscC9ciqbwdghLivlwlBcrlLkChvhziHgEbsloduiAdIkGlualkyiPiDgDfueqlAfrckhvcwcseteq9thwcwhhdwlElLeAlugrbthzlmgnlJgwkhlTlHkFcjggdElwbmkDfHgEgMadlHgHiHdwgtkNg9gqfyfvbxhIhJiFjLgllEgqjqislplTivdffDlqeskteBlBctkLfykHkIcAahiraiiFhpjllFhBjzlDeylBlNlEgEiHjL9maBlLjDdggufv9jcfiGivlChIknisgDfzlzacdDhEithBjdhseAfxasgwkOfA9feCiKgAadc9gDlEeHfrgAfoewgDlBkofClreFaudyepkKgPlHgFcghR8FdCgtiOejlxepixjHgzfrlFlEiniEezgydqepfIaBjnkLkBlClKjAjqfAit8wisdwhBlGjDgm6rcLaxinbrkifAgrdGatcBgwjJakbllLhJetjGewcAfBjJhpgseDhGfslTfvkNiAcziHgulOlQjDjKeKlCeAeylThCiF9oiwipgmaBkxhflHeAgFeBlGdqitar9tiilDlHdkerfGeoaqhulJlpfNiuajkxailSdCaolHevcxlScteplObylIcBeLdjbxetekdBiBajcokddujylCcihCfqgngukrcyaDluhDdDfEjE8olHbzhnfkhzerhFlBaAfvcAfmjyailDfojKhz9mc8bqfKeAfxbHgBlKlJchbqcllrlHgycecA9BitkK8giHhylGkAlu9jdziqlFhRhyfPlTe7lDjAiRfDiI8miTbngvch9n8pdplNhwjzesgAfEhJdtlO58fwfkfBgGiGlClKiqgIlGcl8vaQethwgLiBescvklgCdthtfClzeEkHkLgocAjFkLgwkDdpgJkyjzjMfyhGiugpkvekkHjwlDjFdoeElzirgwhCcFgBezcnlxdrhIcudFhqexeygvhPlLjIdsixhGfo8neofIizkFaFfyjFdSiGdzcpaugFhDiBgCfrhOlMlJdtfFfiaCgtivftlKfpb6eJcsjlgufrfDlDeIfNcoiDhSevdsdskflHivjTajdoguiwlHkKlCbogGlxdBdgcolIgodLiMjmaEgneLlLfmftfzkOex8rcvhAcB8bjzcz8tdvlriwimcAhi8scBd7fxiGhybqkLhHlRjylIjNdpdGiyfDgEhPdEgElRjEffdrhrlEfnhDkmhijTjPbhixdjfplMlCfllKfxhwkFgllueygpiNfmlFlJdCjufpejjzlthyda7kctfweFjq9bgpdrlqlxiLfJjqhGlCfs8vfyhkgC9c9mkIjjgIkwhQlzlwjr6vhKjBdulCdFlxdqfAeqfTkFcweshGfJewcvgzgJiEcvirgxkheijKcwlCfGlTcv6pkt6nblatcAeGiyjyfHalgiesgAchlybycnlTlJlplvlDjE8BeobbgKcofwfTjs9l5mlKfBjJkfitdvcllAfneoaodecBhxeHaugElgeEiy5miDiFjQhzeKlPfylPbkesehaulI9qfseybqfEdnenhvdogKjLfHetjMhvdnbjkEgzeultlGfteulhjgis8ohkiEiygNlAlJlHlSlJirbq7xgAhmirlsirkz6wgAjskKjHjJlNfzagfygEhElpdBdylTiogzizdkgtjKkmlKjJlSgDlO9gjzcBjv9rdscDfmlCfDiGiAadfHezirlQah6tlqeqbnaygFeDlrcshBevaf9rbsfFfolukSjyeDiygoeoehjygngugwgHbvgC9ccHlybsgkkJdklTkIbrgpishDbtiJgTeAiylHlN9abyaDlBgEfGlDlvhGhufzkCjuelhyiTesgqdqiDccirejgHlpdNdzevfwhFfseqlrdlfFjvlzhLjMbrkJlJlOirjEgH9qeGlNlHdicseHlpjCdigChDgvbylH9nhwlpalaKcuekjtlMargtgBfgeubriHevfp5mfygCbqckfxhhhte9dLlvgwivly9e7khFftjtlChDgr7ulrlKkHgwlwfogFdtgvdBfvlChHhIlSgrlNjvet9wkCcKapdCgieKkziAfJholOiFjDcpiuaxiBdt8hdHgtgteAabbqjBhL8AgsgBgxjteCcpetlBjAjBbmlElzbylLbzgGlMasakiFgxlG7jdAgwaljElKdphzjJitikiNeneB9CbEfmfiezkI9hlTlTjNgEfqlAfnlqer7qgua0lElOeufnlTjI8ffthElSiId9lTcDjslAjslEcqdK9slFesiE9vhshslOktlBjIlBethJjqhDdfivlH4f9bhhhtgHdmarfmdsfBfranfjlGlyajjFlzizdzjQcnatiuiElAfK6ahJdzexdpdKlxanhyiEey7khHfCgwaMkLayfGhzdJdEeAfpieiHeJdlbmasgNlJ9xijeClHfrjBfygolTlIhskDlE9BlIcgcxcwlGkRlKakgNjr9fgvgsdl8flGivdCjxdBdydAjukTjz6slOlMjK8kjqdAgueHlxftbfgm8pjEkFcocu6seBeD8elLfvgEfwfAgicGeThJlGdelJlJiAhFcCbwiGhthDfwhHhxiA8kcyglfGlzfHimkBfAjTlyjAhAgTixlJdmhrjsiDftdyimlKgEhviwlycqdrlGgldChyftinlAeqeAgGfwlFjvlqcwdlhxbBcsezgnbvcEhJeNlEbwhpcvkDkEdklweiarezhIcuiwjzlxlGdCiAbogtfekscAhqdnaslTlTfukfeEfqitfidqeqezdyddgEaGakjFctdhlFhigwiwjuj5ajjEjqcKgulLlTfLlMbLfsetfHfyitcolBcjlx8jbwfGkBetiplq8eblbrgogshAhIgxkJjwhAhxiwbshr6wiDiDcwfDjpkqaCeOfvlvfmcgfSczeybMlPfslllFiylLfqgofwkxcAcrisgs9xgHjEivfndniJhOlCfQltiPiGlThogJdjhAgxfvjTkseveAlFeDhxlxfy7vlxhslxjwhHgNlAiJ9jgtbybqkGgAeCgBctjQlMlpdriwgD8siNkLjxbu77kwjKivfIfsdjgDcIiFfwa9hEhklDlJblhBhkdychlDehlJizivdthElAholLcRjDgDbudiislIdte5fFhzjygzivaefDiwdRaNgtjCjyehbugDjTcqceapbjjyfqfygketlIcmbwavaAlHhFfrlAiLlujE8flHlllxfmlHbEiphylwfIjxkplzimcucydyjAeBkukNlziCdBerjJkvdkiwhKdGfpiubsjogA9rlxevjDdClTlwlvgv8rhv6mfGezkQlHfuhr9bdulCgvkFlIlzeDlzlDhFjMhEcmlCkDhoeEakhz8ziMhoddajhB8vdpevjFlyeA77fAgucqezkNlMhJgBhihtlD9ujxjilEbfbsiMcogveidnjJcrfAiCgniBfdbBlElBlydIeu7l9plDlylLlCfGeFiGkHkRgBgfiuiydAcxaMekjt7Ad8lNfq8rlTlGizlzgp8kfOdKinlCevlAkzjEgparct9ihEkLdCdOlKczeAeklHfyhDls8riyejcthAiBgtkseC9ucJ4dlGefhmlqctiEiwlQlGgNgujHavfxcyhCiAeujydEfEeplHftgzgqbdhxexewepeAjEdykxiDfAgEgjhEdtjulukCdBeJlxduemel9kgweBeFeDlylvfgiNiReklziDkIlQhD9EbshziOfzjCctjSlAgDiBej8wiG6BczcabwhMdGkElJakiuhoivhHfrdFbBdpemhqlQdFkKhFiMhHfxdvipfAcIlHgjascpiAlNdKlEbqcrjvfkcvfC8ofAlzcClDlOiygr8LjngrbqfcgriNiAiAglhseigoinlNdHiKlG9odseBjAlJjClwlyfDizjIlOlCgwlRjMdseyevaukBlycrkL9tcHfjfElNlxkDekhjctlTkwlygAiLhsfqbtfkfJlCduiFitfvhqjrfifFfybihKfLeDhzfneAjtfElsfs78bljufw9v7u9glHfybddvfE8oiygnlrlEhPgFbycmkAlChTlhhsdvkLcIfFhhkJhAltlTjChzbnlzawkrhygFlIlziEhM9zdwlLdwgCcphjbvcpcAiNcEhj7hjOerdLcCgE9kcwiplshwkTaghvhBezjDlHlQfnhx8zgs9llzdzdukCbieqgxgylMlRklkklBlNhnlAfxgBgBlDlHcvlzjAflgwiGcBaqlPlvlKhDhK8hlJjrfDakkv7bksdogAlzbhehlQerjNgGiPenbzcxjxhGgHkHlLgL92guiGlQlxiKlpjpeAipeucljLexlzgIeLdLaygrlDc5lT88evdFltlTgvkClKd79CglkPelizbyhylzjHbvfHcqgrkplEkPbIgLcjcalKfGlBbGcCjMhEhFiulQfshtcvhslNeLiQkyfofrkTisbmdzdFdyawfvhmlvcmlTlLlziDekhtbwbIfGeziKfedCdIlMlOhwfJlTjMlLirgahwdBlIhDcdlPdulwhugElrbF8ygPcufveoluizfGlKhDkwjmeDkGiiepfgkzgFdCczhvlqhzjBlEhHgBkt7wfAgpkDhPgKioeMhueqcjgClfiHjFkHcFjtkslviGgHhwkRfDgAlSjqfzergGgwlwhAcreHkAcihvcKgjlGirlslwkrlCdDjGiwgClMgzhxeKlyfmiBjGlTgElNeHkNlycneGlogm0BbnhpgraDkBlEdBlIevbujrknhEfKhH7bcqewlGlKal67fIdrjzfDlRjtjwlTlQhpkxckhFfmlMfqacfvlw9DgodolybngBbpjJdlgs8BdCdzdiildyboiqhflTfplL7ngqfocseBcxlJguizlSfvahav9ClzhyhFcgamkzlHlsjwhkdkfwgElveweuhugMbjdvdyhFkPlHcmlycheHlMkuezlzlufF7giBgD9dfIfwlxlMgDiTiweykLkAkJlTdqlQeobrfCjDhylDcmgzanlmivfIcpfslDlwlIhphEcscRhHenewgCehbplsemkElKlHasjueyfGhsggfyivlTcv9vlBkSjvhulvjlgF7slEcsiK9glzipgBlSe7iEiwlM7tgkdudwkNdtkyc9hClOlzdAfslwiPcvlrdvgkey8kcuhChDhHerfilBlFgAkEgDhRcugzebgliFisfweygwjzlRislxfrhylIa4eJdflBhDkEgCjzgMlElLdm9ufxgshEjEjsjk6p85alfnjKehlhjiiElSluiRlJiTfCkThIlThHcujzlziK8slHaGbsfpaIgwjEfjkBiIctlEdylChBlGlLksgKlEdglukCiwin4kiyeFevfxkyfzizjFez9mkCfthbfolwjybseffeixdzdfiBc9hTcbkHjGjAhtcBiyiqdm3faxckiqejiCereMbucs8uiCdrlthplQbdaqafgEajlz9ClJimhKjEfvlHbuaqfqiAeylNjIjrdviveHlIkF9jdzhqjTjthPipiDiOipeKincKjPgFiDiuhyhoezez9lcAavdmkEfzgBjFlGfFercrlBkzhBbvgvgflIlThEly5jcyctkEdmiIlHhp6hb8eDjzaAfxdzfLlGamlJcljLlziv7ueolMhwjveFlGhDlTdylyfmgygDctfIgslDdtlCcfiBjHjyardylChweu7rcwenjD6yeCfCfpcp9y9plK8haqfvbjjEis7clw8fahlvc9ktdBlLhvkwdflClChEfzjpfzlFlHhHcreyfyjQjLhq8phnlIfBiEdmcKgBjmcckH8mjrfkiCdhkGfBdueulwkTlTdulMlBlTfBfNdHiIgxccflltgGlLlFlTlNgweMgAfyiAkzenhwiF7CjAfwjMfBb7lBfteEhmjxiKbFctgzlFctcolylTbChwlKjEjugpdrbxlokrly7AbzeegtlClNlHeDaslFcn9tbtixiDlwfBfEgDgFgBbnjDaykhaChglEkGcFlrkzfviAiJjtjzdpfFbOeqcjjwhzeBhGlTgDgMeieDgGeBlTbFjEiwlObEgyjJlKckftftafkAhicublcDlufjkTlx7qeGfEjxjqiAkBdhgEjokRiI7DcubzhzkMizlMgrgAiyhIayboeflAgJlGcsdilLcjeyanamhzlJcClJgDftjyivlmiFfCjqbjesay9wiAlTgCfmlHdylOhHlT9jhHfzeGgKbjjEhpao8ceCgslsgpahdLgv8rgBjsiMkG9vhshxf9ft9AlxlDawhGjwkwlKgydl9EkLlQhsgy9CbhlF4iltcrh4cvgxeKgohEfwetcqjqkBgLgzlBlGhEccgwkAekbzcAhBit8skqiufthzlChocmjAiKjs7qeqgzeDduevgQdnfqeEgldxhwgnhGhneFjFgjjAjqiskycpcwlTcLcLjxlygHeHdMlQdwcsdpfs9AcpgwdelTcHhNclijhrdGexfulEeplO9igAfwlmiJiOlplIlTfkgHcp54lRfpdogulKlzcOeyhxhwlvevkEdsiFlHewjOhLbvfDdhlKjyhIhxfsjyjT9liTcwgbjMjebokEckgAcChIexiBiIbBjBlKdsjsiBeJbuhBlLiqkvdvgxa6lNeHgBaskFfylSbzeqcsjrkEdmbAlTiueIgwfphJlLjxgElCfnehlPlGjClxbsctlCcukChSekjThKlCdtlBjEgIdBiuhxjDlzlvhydvfmlylHjk6lhpeniDlAfFlMlGazkMdAgykAlCfAcBczdsdvlJjybojGhxlGgofpeD7sewcyfuhdjKfzfxhmcAghcveAhE9liNhrlDhAePhre38vkHeniyin9mexgvdwlMlIlAjzhylClIiPlOlrgGepcAiF6sfKlqhElvbrdCcAkHgmjofnhefGjNlwgthtlmlElwlulH9nchfxdyfdfteyemiFiFfqhygKfFaolLlS7mavlCkGdwlIfAkMiKdHcxgscufublcpgulIlkjFhRlClMezkEkzlobDlSdzgxeyjElGcgcjevlv4ugFkMgtesfFlF9bhBd2lAfweBhxlC8lfxanlBjmdKkwlGfvcDaxfwbykGcglK8pfTkDdr9wkE7jft8vflfwiEctfmlEkIjugOalcjlC9p9riIdyewlzfgjNgDhwlMcygzksgJexdvatio7ClLftgFiOjMgtkrfljNbAfxlKdxjDemckepjvlOgJltds5hkFdClRgM71esjOiPjAeCfLiOewfCltbElujBeFcqhzhkcqgIdklqgwcxkIlKlJlDlzhq8ulPhxfGgDlCbrlTfz8IhueAhAlHlIhtbB8AhIdndkfKfPkfcqexlPeulAhFgxbEjoeykFeDjukwemlCiEgGbsdthIfHlygncgdklTiAfDlGcscjfmaulxfwfAlHjlkBgvhGlLejdN6y9GiwfDdtkGh7gFcyhHdFlR9ylFlwhDlTfrlRivhFirlDlsctlFlBegjCexapdohCdwcidt5w9ehGeojJehiohxcuiDgudhbp6nfGfAlwlTgrlFjFlJfkfGltlEhmesdpgpgyeychduaGdmkAfqlTisftbFajgEiChHiqdxeKgniD6ifJcolRdygAcv7uhllGbekBeydHbkancnhrlsgxdFdriybtiBcqfIhCkDjRlIbpeqiqbrckkMeAakhmiGhwlnlOdChFiBbvgAdwlJio52ikaniIcngw5paq8titlFbvgzcqhBeplElF3pbEipbHgslygBfolN6DdDlIcjfxgpdcjEfIdHbvcjeFlHjueofChpbtbkixfDcwlKdrjrlxjMgalshub9exisdlltclltfojGemcydHlClOgvhzgwfwlLlLaifCcxltcsjDfCizlPgGfqfjgylKlIepdnbBlohLetgphEiLdJlliLhilHjPeDkTlqddhO3qiMhvgLdqdtlDlElMlCcEhSepcvaDfoeBjteAlHbvbDgplylGbGewjEgAiEhGkFlxlRgylIgBaCcsfnfBeDlPhulzkDdFaclKhE8OcukIgDiC6jkBhtczewfthJiMhFfreqdAhsdElFlDaAfwjMcphJkwfugjfeftfojsgFgMctfq66lTfClyjK9tjIjJgpevlucva6iDltjtgJjthxivbplSeIlCcrhugsiJ6pahhAetlGgBhF8eisdvepcwjKlLkA8rgzfMlNcCgwiqjCfneG8o7gipgJevhtjH8mlJkHhBlvlJlAcPjuhkfzlzlzjslDcwlIhoeGgJkElHiIdEbugAlQeFfDjwlvlOlDcudyivhslPfKkwhGkFlElvdvjueChf6jiEdvhCinlIluiNkAeCgHatlqhMevgzgGlqfqaGgjhwlAeulxgzcBdghFluhNgJiqekhFlLjTbpgmfhgDfueCfuekiAjGlAhBkFhtgybucFgqeFcqjDgLlIbsjwcxij5okFgE9hdoevdpkBkylOlH9pgE8pgGlEcpahgplxkMgudflBcvaqlIlTbAfwjBjtdxfCfzfqbihQgKgTcs9xfDjpepeNjylzjk9C6ijohDhlkCfhlFhEgq9waqlHjJgyjNgnjwabeslHfrlGeC9gbziz9vckfviqexbvfpiHjylQizasaCcwfmlAfwcm7rfGhxafgqcvhDdmireLkFatepbmiEgulCfxdwdfjrlqlHgBdpeneigEfx9maokslGlGjEisbocniKgngEcCjCdlbAdqfxeDikirbodulIcglwhblIeBfvlHkCkxfElxhQgtcpkkjolwlPdv8pfybC8AiDdEkMdkjR8Dluiz8tjziogwcDlydzgElvlucziBdufrdwfAlFeDjHdilT9ggnjzizckfucmdzaClJjvlzfEiCdClydrjLlzixipimfnfe9kdMawlIgHhB8plJ8mlTekfDjCbLgmjJexkvlTgoarbCbkdphfkjfAjLjGdvcwateBlDlClTfLlIiGeDinhmhFfvhGlTgrhDgKdDdkdjkAgzjnlCdDgofvlLjIiGlLhfdCdegHhBcvlDeqhwgFcgeteBhhgQdvjMgocjjDgRbfhAjtjGfCcmjylJhHcrkseverdLbegqjHhIgliKeEiulPkllOltlu8AiJ7olPgpgrdvgsiFdikwithsdojFkBkwjxbwhMlKjHlBcrjIfthskHfkirdvcwdHcplTlDiqlKerdglTfBew6nbhhwlGiFjHdniohElIhDit8pkBkLiufqjscyjvfkbJdKhilLiEaxlNlLkD9klPfthDhnirbDlTlDdAbghHkJhBa4hMapiocydnlD5miwlujvfxhNlBiufme2gykHiDkNkTcphwdvkqdrfoiGlSislEczjrflgClTjAjRhDgDhAjxlLdDeAhAgIjolDdocnjB8NcqhBlDlTkujBhH9BerjylrkxkrhFglkIhoiplHgqgyhvlPgveLfxivlAhGlHhp7nhshDeGawlCdk8dlC9EcKfiiJfjjzdukthtisfEbydskHlyiKjAene8lHlKaGgyitkGjylQkTiMfLcpawdBeelRdhirdpfFdAkOgAcAirgAlDewixlSgulNaTjvlzeukugA7ocieteFiFltdxlHgzfjjLgQiplAey9mdwizageoeNgAcFhwlzdrilfQcpgtbwgxgD7flHfDhubqfFftdKjFbyhyjQgscrefiHjzdHcxgqlHinkCiPlzkCjIeyixit9xiEfqhAhJ6JftlJezcylyjzfvlLfGghgHlxhpiviPkAesgsdndufMhvirgudqbveviGjHfpfjhq7OlPgAlNitlElJiNfzitkFiRkOgxdDbhdzjPdEddeqbpfxksgDexbnhzfkcphzhtdvdCdjfwfveFhEjBiAlygyaogwgzjScBhtcrglhhcCbEkudubqlBcmlIe6lKeijqgDgzcqhE9vluiOgDjA8vlujtfteEdqgHiDelgAgriFkHfCf8lCdEesexkPgvlylIisfyfucvdldihDgheAhwbqkTfgeCaqgnlzhvfBlH6giufrlPlH8slOkMivbwfKjqdjgIjseniFlCjDerlvaclE8j9H8mgAfydteFlwehlMewbu9hlCbliJiTerchjOiJdyftlTlLlCdbdmlDlDgBlRiPhKcNhFb9gKaljvljdnjHfylGgCiqddhBjBaxeKcdkxhGfBkLhAhzdeheeIcihtlzlpeCdoiCltkEfmdGkRlpjxgnhplBlCgLichMgFlsfthDetaz8diAiGkqjAgqkDkRaneqlR8neilJ8x8oiGdxiLfkjKipjDlEdpfFakcfjBamiylTiIiw9GgCfEbpiokugreu9sjCaolMey7GgCewgh3hlxadltdHlwlLlCfFdjdx7zdqjybw8sgobndcereClveqiBgsjxfEdoiLijet9BlE9olGczbljEdDktdFcedFlHdueljAhoevlLbnlTfrgrcAfs8Dfremfylsa28tfIhNfAkLelaHiCbnixgyfqcteHkRlKiEbF5kerlEiRgplPex9ilJbDfxitgrfAdGjMcukTeskukDdyftgKixdeiEkMfzjOkucge6dFlT7tlEiOhEbkeiatkElCjBjOeshyglgvcKgilxbqfhlEkuetbfcidrfDfqcebahHlOlShAfsclfvkJfqlTgIjtlIeyekcogBlzfqgMlLhLcwjKgifulChBeyiqlAgDjwkxeweudxbcemeqeoltiQgvfpivdJlxfAardCdvco67jJlTlBgyktbpeEfoeibmjpdekHddiAaw8jfolDfCjQanlslDilhnjskLfCdBesb7lGcp8rkHjMitesjHhzlkgFawfudCgGbocrlHbIblcChydD6tfpkBfvfTfwhkfw6lficJfw9if9cIdmlCbxfHgzhzgJgtfwlyjLdxkuiGgveBfuhxardBc2dxfygAiSfybmfGlJfCiwlT7IlPkB8fewhnkvlFlLjJgziieoholsiClIgGcyfBhLaHlMeBfskRdefxcxjojNeEdwdsewgvgugEiEeqkAcjeCiyhCkQgjlOjFfscAhthwlHgzgr9wkMhFhvdwbEkslIfkiqfxdEiAjFeKgvdwhrlKcdlGenhMeTlTlSjJgMjwimfyfzlFcj9mbpfycalwethCcnlvjmgyhDeueohIdDlmdAlHgtjOkweBhsgSijcyiHlrlufjhslmjCjPfwiLlyetcdkBlCdBbpdsgDddkBlPenlylz9siK9nhvfBaqfqlIbLlBjqgylPlLhxiBfBcDaulqlyelhycllwhsjyeCfBjzlKkKctgfdkbCbtdClEcslFiBgrjCfuhqktfkfrexgvfgjzhNjEitbDlzhBlwamlrftkrfLlMlGgxcAhFjvjElylTeqdsbClAaxdzgnfulmgFkvcyeo9HkrlQkTcydIdpfGfkkH7bkDlz9liHhujxlLhKlMiygOgrhtkBlF9ilrgAbhlJeslziIlrem9DkJhpckiHlFjHdyiMdtlCcEdylJkphGgOgBlHjOlJlKcuhkafbulFlTerlDfhiGcsfxgtgHghgmepksjElKkNfk7tlBlTlEbvdIdshPkAkBgyblfydtlMhthAbm9lfr5rhGdChOghkSitdxdlenhniqdigzgwgzlTkxdvlEezlBks9vhpkFhshscygubCgF8lhwbdjTjrepdsjvftkKer6sdudwlE9njylKgrdadc9GaqdseHct8EeqeAlFeGdkcokDiBkwgtctlCdFiqdMgKfleDkCdmdpeslGgpiA9AgzhKiheKlPlTcmlvhyaqlCepgIcNfNgElylThsgklMcMgqlTjAdxky7fgtkShFlferlTerjxcykFkrbAiAdulJdKiaeygLimlulzfqjQeLivaajBiwbrjzlJhtfN8nlK8ydy6DgFgugolMcmfHgIhpjHlDjBlxdxcBcAdLlyjJhukDlvlHhBepfleh7edpcodq9xfjlAfoiAlJgJgvbmhAbqkKlD6mfjkoiAfxhAjslIlCezlLiSgwlTfCftaAjAiElv9njLdFcqjllDlFeGgIlTlJiBjwgykCaAahkLgFgCcrdrfvixiIiolTaoiAgmgseAbplyjDjEcMjzfsjChEdGhyhJjGbFjA7rctighDkxlEiAlTesgxepfFfxeqlDhwgriBcuhPgO8oeplRlTlPkvfsfhdgkojwewgAlJhCfogmlNgnhCdlb7gqcEfs8nhyazdnlHjJlGjyeEdofEcDhweyltdvlPhAlJbBcxhPiBlEg9kwexlIcuiJiylngFlKfvlGlIjFer9xeIlJcqfHhGlwemgedFeMhqlLaweA8vkIkugCiAeCiteykJlmjCjAjAijbnlJephTiD75hzdtdMiJfzctgClJfydHfKlBfohRlNajewfDgwlTkTkEiufJlDhBgvgGkAjEgvgGhngHfxlRhwgzcshBetfxdtikekjFeocsgEfvlIlDlPfxaglIlLlEiCdseqiE9tiClQjzgNiBeteAdIjFlPhJfkfpcDlvlxjIbMkugdaigvlvftbylMdzcEdshAlTavgshDhFaucvlylrgJkrlycsbslLfydFfygxkIcvlzjJesgwlQfnfthzkBegfv9sbpdtfBiufncsjmbshxfslPjDbFbxcwenfCktkolTakfgfvbjdoeJjGewlNaplSa7flgreyeohJlFgzdkhxjohvaoerdz9zjukJlNhCamhAfxgIlQhpkFhDfoeAkolHhLggfsiFcpexbw59dablephrhHizdrgmhxjGhBdtdnhohulyhxbvbKcLizfmiIbCetjAezhFlqieiycA58hvgtfxdsiBlPdBlTlDeshyex9w4alPiwgqiwlxfDkrhElOeDbnlC9ceolKkyftcmjTfzln9sfFkJgedtciaIhKfEeyeElPkKlRiqdokChw7u9jkFgxjJgzbFexlIlBlR9biBeubberiLjyafepjGhvhpeplQallEiwhAerlI9qkMeFgt8CiyexcleHaG95e7jtgHfDeyjFhliAcvlzlCehaLiHeChxdzemlyiykOcuevjIbEgqlTbqlAbAlQbBfygk18dv7uluklgAcvbwgIewkxlJlFbwdBhndGgwbkjvlveverjHlujEhMjDiDeBlTesanlLiDhFhG8rlGiKgEkGfsbkcfeklDlEgwjEfGgGeefCcflEgrdtlMhBclblasbglDgxgneffHiJlEkkexgQgykzeAgscmjKdwkSftiqhzhBgscbhKhvlKhHco9qddhBlSlJczcnfjjsfykEgEiziBhpbyfRizgGlThzlKazkKlResfDjkkIduhFfrlGeEdDlylChEbAhDlJkH8ekElHlBkxbhiylHaBaxlCgDayjPfukKaniElPaFcnlvdubtcrisetcmlAfNaijBlH9i7ggDdF8bgJlIezcqeFiNgviqewlyaeeqlB9ejFbEkKjDjBlNgFlThPkBgqePlIjmkklTgBcAaDdnhla5hKlIankRkFhDiJgqjOlGlDhkiElPfugB8ueDjGhHlvkvlJlykTlTbofxiylvlnlCbwgvkrdBfvlRkJlHbvatlKkBhEfAiugpblfolOgElshRdwbyjHgElzewbElA8paBhBiGlDiPeElNfLcvkAlN9l9mggdAfGfxlHlJfwloku87eu61jglMfrlAdleJetfFkyiNaulAfojybtbwlFjChoglgRcfjyfw";   // populasjonen N = 10 000
 function decodePairs(s){const dep=[],def=[];for(let i=0;i<s.length;i+=2){dep.push(14+A62.indexOf(s[i]));def.push(48+A62.indexOf(s[i+1]));}return {dep:dep,def:def};}
 const R75=decodePairs(R75_ENC), POP=decodePairs(POP_ENC);
-// ---------- variabelvelger: samme datagrunnlag som Sim 3 ----------
-const VARS4={"dep":{"lab":"Depresjon (pre)","kilde":"Terapi-RCT-populasjonen, N = 10 000","freq":{"30":910,"34":591,"29":930,"35":1778,"26":617,"28":812,"27":704,"33":736,"32":811,"31":852,"22":151,"25":403,"24":330,"23":206,"21":80,"18":9,"20":49,"19":23,"17":6,"14":1,"15":1},"lo":14,"hi":35,"step":1,"mu":30.05,"sigma":3.79},"undf":{"lab":"Undertrykkende forsvar (pre)","kilde":"Terapi-RCT-populasjonen, N = 10 000","freq":{"90":281,"85":380,"70":204,"66":100,"75":304,"82":411,"89":307,"81":348,"84":379,"72":228,"93":225,"80":384,"77":383,"79":417,"100":69,"65":105,"64":71,"71":212,"86":335,"52":6,"96":145,"97":127,"92":228,"76":339,"83":393,"73":275,"61":43,"101":75,"87":368,"91":282,"60":36,"74":293,"99":105,"94":213,"88":359,"78":337,"67":124,"102":60,"63":79,"69":146,"98":96,"62":56,"95":181,"103":206,"59":28,"68":162,"58":20,"56":13,"49":3,"50":9,"53":8,"55":17,"48":3,"54":7,"57":14,"51":1},"lo":48,"hi":103,"step":1,"mu":81.96,"sigma":9.92},"agg":{"lab":"Aggresjonsundertrykking (pre)","kilde":"Terapi-RCT-populasjonen, N = 10 000","freq":{"25":502,"35":363,"37":152,"26":656,"33":718,"27":803,"31":1012,"29":1106,"28":977,"23":231,"30":1013,"34":521,"32":841,"20":43,"39":47,"36":252,"38":85,"24":382,"22":140,"21":83,"40":16,"19":26,"18":8,"15":1,"41":8,"17":4,"16":3,"42":4,"43":3},"lo":15,"hi":43,"step":1,"mu":29.55,"sigma":3.76},"selvt":{"lab":"Statistikk-selvtillit (pre)","kilde":"Simulert populasjon, N = 10 000 (bygget fra arbeidskravdataene, N = 391)","freq":{"4.4":403,"1.8":279,"3.0":951,"4.0":862,"3.4":825,"3.6":781,"3.8":778,"4.8":99,"2.6":668,"2.8":785,"2.4":646,"2.2":424,"1.6":150,"4.2":625,"3.2":1035,"2.0":341,"1.2":48,"4.6":144,"1.4":91,"1.0":11,"5.0":54},"lo":1.0,"hi":5.0,"step":0.2,"mu":3.2,"sigma":0.78},"selvk":{"lab":"Selvkritisk perfeksjonisme (trekk)","kilde":"Simulert populasjon, N = 10 000 (bygget fra arbeidskravdataene, N = 391)","freq":{"2.0":485,"3.2":867,"3.6":934,"1.8":430,"1.6":238,"3.4":797,"3.8":831,"2.4":577,"2.2":476,"2.8":795,"3.0":858,"4.0":563,"1.0":78,"4.4":268,"1.2":93,"2.6":770,"5.0":47,"4.8":155,"4.2":402,"4.6":214,"1.4":122},"lo":1.0,"hi":5.0,"step":0.2,"mu":3.08,"sigma":0.84},"angst":{"lab":"Angstsensitivitet (trekk)","kilde":"Simulert populasjon, N = 10 000 (bygget fra arbeidskravdataene, N = 391)","freq":{"0.2":294,"0.6":492,"1.0":804,"0.8":627,"1.8":875,"1.2":889,"1.6":884,"2.2":686,"2.4":526,"2.8":451,"3.0":263,"3.2":293,"4.0":16,"0.4":423,"2.6":485,"3.4":233,"1.4":876,"2.0":688,"0.0":71,"3.8":31,"3.6":93},"lo":0.0,"hi":4.0,"step":0.2,"mu":1.68,"sigma":0.85}};
-let CUR4=null,POPV=[];
-function buildPopV(fr){const a=[];for(const q in fr){const v=+q;for(let i=0;i<fr[q];i++)a.push(v);}return a;}
-function fix75(pop){const s2=pop.slice().sort((a,b)=>a-b),o=[];for(let i=0;i<75;i++)o.push(s2[Math.round((i+0.5)/75*(s2.length-1))]);return o;}
-function setVarA(k){CUR4=VARS4[k];POPV=buildPopV(CUR4.freq);
-  DECA=CUR4.step<1?1:0;
-  const pad=DECA?0.2:1;A_LO=CUR4.lo-pad;A_HI=CUR4.hi+pad;
-  TICKA=DECA?0.5:((A_HI-A_LO)>30?5:2);
-  const el=$('popInfoA');if(el)el.textContent=CUR4.kilde+' · μ = '+fmt(CUR4.mu);
-  const rct=CUR4.kilde.indexOf('RCT')===0;
-  $('newA').textContent='Trekk 75 nye fra '+(rct?'populasjonen (N = 10 000)':'den simulerte arbeidskrav-populasjonen (N = 10 000)');
-  const f=(k==='dep')?R75.dep.slice():(k==='undf'?R75.def.slice():fix75(POPV));
-  setDataA(f);
-}
 function draw75(){
   const N=POP.dep.length,seen={},dep=[],def=[];
   while(dep.length<75){
@@ -151,116 +830,6 @@ function draw75(){
   }
   return {dep:dep,def:def};
 }
-
-// =================== Del A ===================
-let dataA=[],cand=22;
-let A_LO=13,A_HI=36,TICKA=2,DECA=0;const GRID=200;
-let exploredA=[],revealA=false;
-const meanA=()=>dataA.reduce((a,b)=>a+b,0)/dataA.length;
-const sseA=c=>dataA.reduce((t,v)=>t+(v-c)*(v-c),0);
-function setDataA(arr){dataA=arr;cand=(A_LO+A_HI)/2;exploredA=new Array(GRID+1).fill(null);revealA=false;drawA();}
-function drawA(){
-  // registrer utforsket posisjon
-  const bin=Math.round((cand-A_LO)/(A_HI-A_LO)*GRID);
-  if(bin>=0&&bin<=GRID)exploredA[bin]=sseA(A_LO+(A_HI-A_LO)*bin/GRID);
-  const [c,w,h]=ctx2d($('cvA'));
-  c.clearRect(0,0,w,h);
-  const y0=h-40;
-  const X=v=>(v-A_LO)/(A_HI-A_LO)*(w-40)+20;
-  c.strokeStyle='#b9c3d6';c.lineWidth=1.5;
-  c.beginPath();c.moveTo(20,y0);c.lineTo(w-20,y0);c.stroke();
-  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';
-  for(let v=Math.ceil((A_LO+0.001)/TICKA)*TICKA;v<=A_HI+1e-9;v+=TICKA)c.fillText(DECA?fmt(v,1):Math.round(v),X(v),y0+16);
-  // stable prikkposisjoner
-  const counts={},pre={},pos=[];let maxSt=1;
-  for(const v of dataA){pre[v]=(pre[v]||0)+1;if(pre[v]>maxSt)maxSt=pre[v];}
-  const sp=Math.min(8,(y0-40)/maxSt);
-  for(const v of dataA){counts[v]=(counts[v]||0)+1;pos.push([v,y0-8-(counts[v]-1)*sp]);}
-  // tynne røde avvikslinjer fra hver pasient til modellen
-  c.strokeStyle='rgba(192,57,43,0.45)';c.lineWidth=1;
-  for(const [v,py] of pos){
-    c.beginPath();c.moveTo(X(v),py);c.lineTo(X(cand),py);c.stroke();
-  }
-  // datapunkter
-  c.fillStyle='#1F3864';
-  for(const [v,py] of pos){c.beginPath();c.arc(X(v),py,3.5,0,7);c.fill();}
-  // kandidatlinje
-  c.strokeStyle='#2E5496';c.lineWidth=3.5;
-  c.beginPath();c.moveTo(X(cand),14);c.lineTo(X(cand),y0);c.stroke();
-  c.fillStyle='#2E5496';c.font='bold 17px sans-serif';c.textAlign='center';
-  c.fillText('modell = '+fmt(cand,1),X(cand),11);
-  const m=meanA(),atMin=Math.abs(cand-m)<(A_HI-A_LO)/160;
-  const best=Math.min(...exploredA.filter(v=>v!==null));
-  const nExp=exploredA.filter(v=>v!==null).length;
-  $('statsA').innerHTML='<span class="stat">n = '+dataA.length+'</span>'+
-    '<span class="stat">SSE = '+fmt(sseA(cand),1)+'</span>'+
-    '<span class="stat">beste hittil = '+fmt(best,1)+'</span>'+
-    '<span class="stat">utforsket '+Math.round(100*nExp/(GRID+1))+' % av kurven</span>'+
-    (revealA?'<span class="stat">gjennomsnitt = '+fmt(m)+'</span>':'')+
-    (atMin?'<span class="stat green">du står (nesten) på gjennomsnittet: minimum!</span>':'');
-  drawA2();
-}
-function drawA2(){
-  const [c,w,h]=ctx2d($('cvA2'));
-  c.clearRect(0,0,w,h);
-  const y0=h-22,ph=y0-14;
-  const X=v=>(v-A_LO)/(A_HI-A_LO)*(w-40)+20;
-  let maxS=0,minS=Infinity;const vals=[];
-  for(let i=0;i<=GRID;i++){const v=A_LO+(A_HI-A_LO)*i/GRID;const s=sseA(v);vals.push([v,s]);if(s>maxS)maxS=s;if(s<minS)minS=s;}
-  // zoom inn mot bunnen: vis bare de nederste 25 % av SSE-spennet — kurven blir bratt og minimum tydelig
-  const cap=minS+(maxS-minS)*0.25;
-  const Yv=s=>y0-Math.min(1,(Math.min(s,cap)-minS)/(cap-minS))*ph;
-  if(revealA){
-    c.strokeStyle='#2E5496';c.lineWidth=2;c.beginPath();
-    vals.forEach(([v,s],i)=>{const x=X(v),y=Yv(s);if(i===0)c.moveTo(x,y);else c.lineTo(x,y);});
-    c.stroke();
-    const m=meanA();
-    c.strokeStyle='#2E7D32';c.setLineDash([5,4]);c.lineWidth=1.5;
-    c.beginPath();c.moveTo(X(m),8);c.lineTo(X(m),y0);c.stroke();c.setLineDash([]);
-    c.fillStyle='#2E7D32';c.font='bold 16px sans-serif';c.textAlign='center';c.fillText('x̄',X(m),y0+14);
-  } else {
-    // males fram bare der markøren har vært
-    c.fillStyle='#2E5496';c.strokeStyle='#2E5496';c.lineWidth=2;
-    for(let i=0;i<=GRID;i++){
-      if(exploredA[i]===null)continue;
-      const x=X(A_LO+(A_HI-A_LO)*i/GRID),y=Yv(exploredA[i]);
-      if(i>0&&exploredA[i-1]!==null){
-        const x2=X(A_LO+(A_HI-A_LO)*(i-1)/GRID),y2=Yv(exploredA[i-1]);
-        c.beginPath();c.moveTo(x2,y2);c.lineTo(x,y);c.stroke();
-      } else {c.beginPath();c.arc(x,y,1.6,0,7);c.fill();}
-    }
-    // beste utforskede punkt
-    let bi=-1,bs=Infinity;
-    for(let i=0;i<=GRID;i++)if(exploredA[i]!==null&&exploredA[i]<bs){bs=exploredA[i];bi=i;}
-    if(bi>=0){
-      c.strokeStyle='#2E7D32';c.lineWidth=2;
-      c.beginPath();c.arc(X(A_LO+(A_HI-A_LO)*bi/GRID),Yv(bs),6,0,7);c.stroke();
-    }
-  }
-  // nåværende posisjon
-  c.fillStyle='#C0392B';
-  c.beginPath();c.arc(X(cand),Yv(sseA(cand)),5,0,7);c.fill();
-  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';
-  const T2=2*TICKA;for(let v=Math.ceil((A_LO+0.001)/T2)*T2;v<=A_HI+1e-9;v+=T2)c.fillText(DECA?fmt(v,1):Math.round(v),X(v),y0+14);
-}
-(function(){
-  const cv=$('cvA');let drag=false;
-  const setFromEvent=e=>{
-    const x=pointerX(cv,e),w=cv.clientWidth;
-    cand=Math.max(A_LO,Math.min(A_HI,A_LO+(x-20)/(w-40)*(A_HI-A_LO)));
-    drawA();
-  };
-  cv.addEventListener('mousedown',e=>{drag=true;setFromEvent(e);});
-  window.addEventListener('mousemove',e=>{if(drag)setFromEvent(e);});
-  window.addEventListener('mouseup',()=>drag=false);
-  cv.addEventListener('touchstart',e=>{drag=true;setFromEvent(e);e.preventDefault();});
-  cv.addEventListener('touchmove',e=>{if(drag){setFromEvent(e);e.preventDefault();}});
-  cv.addEventListener('touchend',()=>drag=false);
-})();
-$('toMean').onclick=()=>{revealA=true;cand=meanA();drawA();};
-$('fullA').onclick=()=>{revealA=true;drawA();};
-$('newA').onclick=()=>{const a=[];for(let i=0;i<75;i++)a.push(POPV[(Math.random()*POPV.length)|0]);setDataA(a);};
-$('vselA').onchange=()=>setVarA($('vselA').value);
 
 // =================== Del B ===================
 let xsB=[],ysB=[],xsD=[],ysD=[],yL=18,yR=30,dragH=null,bestB=null,lastH='R';
@@ -391,10 +960,7 @@ function drawB2(){
 $('showOLS').onclick=()=>{drawB.showOLS=true;drawB();};
 $('newB').onclick=()=>{const d=draw75();setDataB(d.def,d.dep);};
 
-// tabs
-$('tabA').onclick=()=>{$('tabA').classList.add('on');$('tabB').classList.remove('on');$('modeA').classList.remove('hide');$('modeB').classList.add('hide');drawA();};
-$('tabB').onclick=()=>{$('tabB').classList.add('on');$('tabA').classList.remove('on');$('modeB').classList.remove('hide');$('modeA').classList.add('hide');drawB();};
-const __fsRedraw=()=>{if($('modeA').classList.contains('hide'))drawB();else drawA();};
+const __fsRedraw=()=>{drawB();};
 (function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
 const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
 window.addEventListener('resize',kick);
@@ -404,8 +970,251 @@ setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
  document.querySelectorAll('canvas').forEach(c=>{if(c.clientWidth>0&&c.width>0&&Math.abs(c.width-Math.round(c.clientWidth*r))>2)bad=true;});
  __mis=bad?__mis+1:0;
  if(__mis>=2){__mis=0;safe();}},700);})();
-setVarA('dep');setDataB(R75.def.slice(),R75.dep.slice());
+setDataB(R75.def.slice(),R75.dep.slice());
+})();
 
+/* ===== Fane 2: R² — ny. Egen lukking fordi appene deler navn. */
+(function(){
+/* ---------- R² som forklart varians ------------------------------------
+   Identiteten SST = SSR + SSE er hele historien: den variasjonen du ikke
+   klarte å forklare, pluss den du klarte, er all variasjonen du hadde. */
+const $R=id=>document.getElementById(id);
+const fR=(v,d)=>(v==null||!isFinite(v))?'–':v.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+let R2D=[];
+function r2Normal(){ let u=0,v=0; while(!u)u=Math.random(); while(!v)v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+function r2Trekk(){
+  const rho=(+$R('r2R').value)/100, n=30;
+  R2D=[];
+  for(let i=0;i<n;i++){
+    const z1=r2Normal(), z2=r2Normal();
+    R2D.push({x:50+12*z1, y:50+12*(rho*z1+Math.sqrt(Math.max(0,1-rho*rho))*z2)});
+  }
+}
+function r2Modell(){
+  const n=R2D.length;
+  const mx=R2D.reduce((s,p)=>s+p.x,0)/n, my=R2D.reduce((s,p)=>s+p.y,0)/n;
+  let sxy=0,sxx=0;
+  R2D.forEach(p=>{ sxy+=(p.x-mx)*(p.y-my); sxx+=(p.x-mx)*(p.x-mx); });
+  const b1=sxy/sxx, b0=my-b1*mx;
+  let sst=0, sse=0, ssr=0;
+  R2D.forEach(p=>{ const yh=b0+b1*p.x;
+    sst+=(p.y-my)*(p.y-my); sse+=(p.y-yh)*(p.y-yh); ssr+=(yh-my)*(yh-my); });
+  return {n:n, mx:mx, my:my, b0:b0, b1:b1, sst:sst, sse:sse, ssr:ssr, R2:ssr/sst, r:sxy/Math.sqrt(sxx*sst)};
+}
+function r2Tegn(){
+  const cv=$R('cvR2'); if(!cv) return;
+  const dpr=window.devicePixelRatio||1, w=cv.clientWidth||900,
+        h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*dpr; cv.height=h*dpr; cv.style.height=h+'px';
+  const c=cv.getContext('2d'); c.setTransform(dpr,0,0,dpr,0,0); c.clearRect(0,0,w,h);
+  const M=r2Modell(), vis=$R('r2Vis').value;
+  const modus = vis==='alle' ? ['sst','ssr','sse'] : [vis];
+  const bredde = w/modus.length;
+  modus.forEach((m,k)=>{
+    const x0=k*bredde+44, y0=h-30, pw=bredde-58, ph=y0-26;
+    const xs=R2D.map(p=>p.x), ys=R2D.map(p=>p.y);
+    const pad=a=>{const lo=Math.min.apply(null,a),hi=Math.max.apply(null,a),d=(hi-lo)*0.12||1;return [lo-d,hi+d];};
+    const [xlo,xhi]=pad(xs), [ylo,yhi]=pad(ys);
+    const X=v=>x0+(v-xlo)/(xhi-xlo)*pw, Y=v=>y0-(v-ylo)/(yhi-ylo)*ph;
+    c.strokeStyle='#c8cfdb'; c.lineWidth=1;
+    c.beginPath(); c.moveTo(x0,y0); c.lineTo(x0+pw,y0); c.moveTo(x0,y0); c.lineTo(x0,y0-ph); c.stroke();
+    /* referanse: ȳ eller linja */
+    if(m==='sst'){
+      c.strokeStyle='#8a93a6'; c.setLineDash([5,4]); c.lineWidth=1.6;
+      c.beginPath(); c.moveTo(x0,Y(M.my)); c.lineTo(x0+pw,Y(M.my)); c.stroke(); c.setLineDash([]);
+    } else {
+      c.strokeStyle='#2E5496'; c.lineWidth=2.2;
+      c.beginPath(); c.moveTo(X(xlo),Y(M.b0+M.b1*xlo)); c.lineTo(X(xhi),Y(M.b0+M.b1*xhi)); c.stroke();
+      if(m==='ssr'){ c.strokeStyle='#8a93a6'; c.setLineDash([5,4]); c.lineWidth=1.4;
+        c.beginPath(); c.moveTo(x0,Y(M.my)); c.lineTo(x0+pw,Y(M.my)); c.stroke(); c.setLineDash([]); }
+    }
+    /* avvikene */
+    const farge = m==='sst' ? '#B26A00' : (m==='sse' ? '#C0392B' : '#2E7D32');
+    c.strokeStyle=farge; c.lineWidth=1.6; c.globalAlpha=.75;
+    R2D.forEach(p=>{
+      const yh=M.b0+M.b1*p.x;
+      let a,b;
+      if(m==='sst'){ a=p.y; b=M.my; }
+      else if(m==='sse'){ a=p.y; b=yh; }
+      else { a=yh; b=M.my; }
+      c.beginPath(); c.moveTo(X(p.x),Y(a)); c.lineTo(X(p.x),Y(b)); c.stroke();
+    });
+    c.globalAlpha=1;
+    R2D.forEach(p=>{ c.beginPath(); c.arc(X(p.x),Y(p.y),3.4,0,6.284);
+      c.fillStyle='#22314f'; c.fill(); });
+    const navn={sst:'SST — fra ȳ', sse:'SSE — fra linja', ssr:'SSR — linja mot ȳ'};
+    const tall={sst:M.sst, sse:M.sse, ssr:M.ssr};
+    c.fillStyle=farge; c.font='bold 13px system-ui';
+    c.fillText(navn[m]+'  =  '+fR(tall[m],0), x0, 16);
+  });
+}
+function r2Tabell(){
+  const M=r2Modell();
+  $R('r2Tab').innerHTML=
+   '<table><tr><th>Kvadratsum</th><th class="r">Verdi</th><th>Hva den er</th></tr>'
+   +'<tr><td><b>SST</b> (total)</td><td class="r">'+fR(M.sst,1)+'</td>'
+   +'<td class="muted">Σ(y − ȳ)² — all variasjon i y, før modellen</td></tr>'
+   +'<tr><td><b>SSR</b> (forklart)</td><td class="r">'+fR(M.ssr,1)+'</td>'
+   +'<td class="muted">Σ(ŷ − ȳ)² — det linja gjør rede for</td></tr>'
+   +'<tr><td><b>SSE</b> (uforklart)</td><td class="r">'+fR(M.sse,1)+'</td>'
+   +'<td class="muted">Σ(y − ŷ)² — det som blir liggende igjen</td></tr>'
+   +'<tr><td><b>SSR + SSE</b></td><td class="r"><b>'+fR(M.ssr+M.sse,1)+'</b></td>'
+   +'<td class="muted">alltid nøyaktig lik SST</td></tr></table>';
+  $R('r2Note').innerHTML=
+   '<b>R² = SSR / SST = '+fR(M.ssr,1)+' / '+fR(M.sst,1)+' = '+fR(M.R2,3)+'</b><br>'
+   +'Korrelasjonen i disse dataene er r = '+fR(M.r,3)+', og r² = '+fR(M.r*M.r,3)+' — samme tall. '
+   +'Med én prediktor <i>er</i> R² kvadratet av korrelasjonen. '
+   +'Modellen er ŷ = '+fR(M.b0,2)+' + '+fR(M.b1,3)+' · x, og den fjerner '+fR(M.R2*100,1)+' % av kvadratsummen. '
+   +'De resterende '+fR((1-M.R2)*100,1)+' % er det linja ikke ser.';
+}
+function r2Alt(){ $R('r2ROut').textContent=fR((+$R('r2R').value)/100,2); r2Tegn(); r2Tabell(); }
+$R('r2Ny').onclick=()=>{ r2Trekk(); r2Alt(); };
+$R('r2R').oninput=()=>{ r2Trekk(); r2Alt(); };
+$R('r2Vis').onchange=r2Tegn;
+window.addEventListener('resize', r2Tegn);
+window.__tegnR2=r2Alt;
+r2Trekk(); r2Alt();
+})();
+
+/* ===== Fane 4: residualantakelsene — fra Sim 14. Egen lukking fordi appene deler navn. */
+(function(){
+const $=id=>document.getElementById(id);
+function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function lgamma(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];let y=x,tmp=x+5.5;tmp-=(x+0.5)*Math.log(tmp);let ser=1.000000000190015;for(let j=0;j<6;j++)ser+=c[j]/++y;return -tmp+Math.log(2.5066282746310005*ser/x);}
+function betacf(a,b,x){const MAXIT=200,EPS=3e-12,FPMIN=1e-30;const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<FPMIN)d=FPMIN;d=1/d;let h=d;for(let m=1;m<=MAXIT;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;h*=d*c;aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<EPS)break;}return h;}
+function ibeta(a,b,x){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+function pT(t,df){return ibeta(df/2,0.5,df/(df+t*t));}
+function fmt(x,d=1){return x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function fit(cv){const r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);c.clearRect(0,0,w,h);return [c,w,h];}
+function drawErr(t){
+  if(t==='norm')return rnorm();
+  if(t==='skew')return (-Math.log(1-Math.random())-1);
+  const z=rnorm(); const w=(rnorm()**2+rnorm()**2+rnorm()**2)/3; return z/Math.sqrt(w);
+}
+function drawX(t){
+  if(t==='unif')return Math.random()*2;
+  let x=-Math.log(1-Math.random())/2; return Math.min(x,2);
+}
+function makeSample(n,err,xdist,het){
+  const xs=new Array(n),ys=new Array(n);
+  for(let i=0;i<n;i++){
+    const x=drawX(xdist);
+    const sd=0.4*(1+het*x/2*3/2); // skala: het-slider 0-3 -> sd 0.4..(0.4*(1+3x/... )) forenkles under
+    xs[i]=x;
+    ys[i]=drawErr(err)*0.4*(1+het*x);
+  }
+  return [xs,ys];
+}
+function regress(xs,ys){
+  const n=xs.length,mx=xs.reduce((a,b)=>a+b,0)/n,my=ys.reduce((a,b)=>a+b,0)/n;
+  let sxx=0,sxy=0;for(let i=0;i<n;i++){sxx+=(xs[i]-mx)**2;sxy+=(xs[i]-mx)*(ys[i]-my);}
+  const b=sxy/sxx,a=my-b*mx;
+  let sse=0;for(let i=0;i<n;i++)sse+=(ys[i]-a-b*xs[i])**2;
+  const se=Math.sqrt(sse/(n-2)/sxx);
+  return {a,b,p:pT(b/se,n-2)};
+}
+let last=null, hist=[];
+function one(){
+  const n=+$('nRA').value,err=$('err').value,xdist=$('xdist').value,het=+$('het').value;
+  const [xs,ys]=makeSample(n,err,xdist,het);
+  const R=regress(xs,ys);
+  last={xs,ys,R};
+  drawDiag();
+  $('out').innerHTML='<span class="stat">dette utvalget: b = '+fmt(R.b,2)+', p = '+fmt(R.p,3)+(R.p<0.05?' <span style="color:#C0392B">«signifikant»: falsk positiv!</span>':'')+'</span>';
+}
+function drawDiag(){
+  if(!last){one();return;}
+  const {xs,ys,R}=last;
+  const ylim=Math.max(1.2,...ys.map(v=>Math.abs(v)))*1.1;
+  // scatter
+  let [c,w,h]=fit($('cvS'));
+  const X=v=>35+v/2*(w-55), Y=v=>h/2-(v/ylim)*(h/2-20);
+  c.strokeStyle='#d9dee8';c.strokeRect(35,10,w-55,h-35);
+  for(let i=0;i<xs.length;i++){c.fillStyle='rgba(46,84,150,.5)';c.beginPath();c.arc(X(xs[i]),Y(ys[i]),3.2,0,7);c.fill();}
+  c.strokeStyle='#1a2233';c.lineWidth=2.4;
+  c.beginPath();c.moveTo(X(0),Y(R.a));c.lineTo(X(2),Y(R.a+2*R.b));c.stroke();
+  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';c.fillText('x',w/2,h-6);
+  // residualplott
+  ;[c,w,h]=fit($('cvR'));
+  const res=xs.map((x,i)=>ys[i]-R.a-R.b*x);
+  const rlim=Math.max(1.2,...res.map(v=>Math.abs(v)))*1.1;
+  const Y2=v=>h/2-(v/rlim)*(h/2-20);
+  c.strokeStyle='#d9dee8';c.strokeRect(35,10,w-55,h-35);
+  c.setLineDash([5,4]);c.strokeStyle='#8894ad';c.beginPath();c.moveTo(35,Y2(0));c.lineTo(w-20,Y2(0));c.stroke();c.setLineDash([]);
+  for(let i=0;i<xs.length;i++){c.fillStyle='rgba(192,57,43,.55)';c.beginPath();c.arc(X(xs[i]),Y2(res[i]),3.2,0,7);c.fill();}
+  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';c.fillText('x (residual mot prediktor): se etter trakt',w/2,h-6);
+  // histogram
+  ;[c,w,h]=fit($('cvH'));
+  const bins=new Array(24).fill(0);
+  res.forEach(v=>{const b=Math.floor((v/rlim+1)/2*24);if(b>=0&&b<24)bins[b]++;});
+  const mx=Math.max(...bins,1);
+  bins.forEach((b,i)=>{
+    c.fillStyle='#2E5496';
+    const bh=b/mx*(h-45);
+    c.fillRect(35+i/24*(w-55),h-25-bh,(w-55)/24-2,bh);
+  });
+  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';c.fillText('residualenes fordeling: se etter skjevhet/tunge haler',w/2,h-6);
+}
+function many(){
+  const n=+$('nRA').value,err=$('err').value,xdist=$('xdist').value,het=+$('het').value;
+  const K=5000;let sig=0,bs=0;
+  for(let k=0;k<K;k++){
+    const [xs,ys]=makeSample(n,err,xdist,het);
+    const R=regress(xs,ys);
+    if(R.p<0.05)sig++;
+    bs+=R.b;
+  }
+  const rate=sig/K;
+  const en={norm:'normal',skew:'skjev',heavy:'tunghalede'}[err];
+  hist.push({label:'feil: '+en+' · het '+fmt(het)+' · x '+(xdist==='unif'?'jevn':'skjev')+' · n '+n,rate});
+  if(hist.length>6)hist.shift();
+  $('out').innerHTML='<span class="stat '+(Math.abs(rate-0.05)<0.013?'green':'red')+'">faktisk type I-rate: '+fmt(100*rate)+' %</span>'+
+   '<span class="stat green">gj.sn. b̂ = '+fmt(bs/K,3)+' (sann b = 0, estimatet er forventningsriktig)</span>';
+  drawRates();
+  const v=$('verdict');
+  if(rate>0.10)v.innerHTML='<b>Testen lyver grovt</b> ('+fmt(100*rate)+' % falske positiver): de få observasjonene med høye x-verdier har både mest innflytelse på linjen OG mest støy — standardfeilen undervurderes kraftig. Legg merke til at b̂ likevel er forventningsriktig: skaden sitter i p-verdiene og KI-ene, ikke i estimatet. Dette er kombinasjonen residualplottet (trakten!) skal redde deg fra.';
+  else if(rate>0.065)v.innerHTML='<b>Testen er blitt liberal</b> ('+fmt(100*rate)+' %): trakten i residualplottet betyr at én felles standardfeil er feil for alle — moderat kostnad med jevn x-fordeling, men prøv «den farlige kombinasjonen».';
+  else v.innerHTML='<b>Testen holder ≈ 5 %</b> ('+fmt(100*rate)+' %). '+(err!=='norm'?'Merk: residualhistogrammet ser ikke normalt ut, men testen av stigningstallet overlever likevel — sentralgrenseteoremet beskytter b̂ ved rimelige n. Kostnaden ved tunge haler er heller tapt styrke og sårbare enkeltutvalg (jf. Sim 8).':'Et jevnt bånd i residualplottet = antakelsene ser greie ut.');
+}
+function drawRates(){
+  const [c,w,h]=fit($('cvRate'));
+  const x0=Math.min(330,w*0.42),bw=w-x0-70,maxRate=0.30;
+  const gx=x0+bw*(0.05/maxRate);
+  c.strokeStyle='#2E7D32';c.setLineDash([5,4]);c.beginPath();c.moveTo(gx,6);c.lineTo(gx,h-22);c.stroke();c.setLineDash([]);
+  c.fillStyle='#2E7D32';c.font='bold 16px sans-serif';c.textAlign='center';c.fillText('5 %',gx,h-6);
+  if(!hist.length){c.fillStyle='#9aa5bb';c.font='bold 18px sans-serif';c.textAlign='center';c.fillText('(kjør en simulering)',w/2,h/2);return;}
+  const bh=Math.min(26,(h-34)/hist.length-7);
+  hist.forEach((d,i)=>{
+    const y=10+i*(bh+8);
+    c.fillStyle='#eef1f7';c.fillRect(x0,y,bw,bh);
+    c.fillStyle=Math.abs(d.rate-0.05)<0.013?'#2E7D32':'#C0392B';
+    c.fillRect(x0,y,bw*Math.min(d.rate,maxRate)/maxRate,bh);
+    c.fillStyle='#1a2233';c.font='bold 16px sans-serif';c.textAlign='right';c.fillText(d.label,x0-6,y+bh-7);
+    c.textAlign='left';c.font='bold 16px sans-serif';
+    c.fillText(fmt(100*d.rate)+' %',x0+bw*Math.min(d.rate,maxRate)/maxRate+5,y+bh-7);
+  });
+}
+$('nRA').oninput=()=>$('nOut').textContent=$('nRA').value;
+$('het').oninput=()=>$('hetOut').textContent=fmt(+$('het').value);
+$('one').onclick=one;
+$('many').onclick=many;
+$('danger').onclick=()=>{$('het').value=3;$('hetOut').textContent='3,0';$('xdist').value='skew';$('err').value='norm';one();};
+const __fsRedraw=()=>{drawDiag();drawRates();};
+(function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
+const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
+window.addEventListener('resize',kick);
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{kick();setTimeout(safe,600);}));
+let __mis=0;
+setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
+ document.querySelectorAll('canvas').forEach(c=>{if(c.clientWidth>0&&c.width>0&&Math.abs(c.width-Math.round(c.clientWidth*r))>2)bad=true;});
+ __mis=bad?__mis+1:0;
+ if(__mis>=2){__mis=0;safe();}},700);})();
+one();
+})();
+
+</script>
+<script>
 /* ===== PSY300 anonym bruksstatistikk =====================================
    Sender to signaler til det samme Apps Script-endepunktet som MCQ-appen:
    ett når appen åpnes, ett når fanen lukkes (med antall sekunder aktiv og

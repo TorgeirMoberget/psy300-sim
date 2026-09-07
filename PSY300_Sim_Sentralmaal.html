@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PSY300 &middot; Sim 32 &mdash; Deskriptiv statistikk: sentraltendens og variasjon</title>
+<title>PSY300 · Sim 32 — Å beskrive tall</title>
 <style>
 
 :root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--orange:#B26A00;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
@@ -94,15 +94,82 @@ body.pres .keybox{font-size:18px}
 .maal .gronn .verdi{color:#2E7D32}
 td.regn{font-variant-numeric:tabular-nums}
 .defboks{background:#f4f7fb;border:1px solid #dbe3ee;border-left:4px solid var(--navy);border-radius:9px;padding:9px 13px;margin:6px 0 9px;font-size:15px;line-height:1.5}
+
+/* ===== Fordypning: hovedpoenget står framme, detaljene ligger bak et klikk ===== */
+details.mer{margin:8px 0 0;border-top:1px solid rgba(0,0,0,.10);padding-top:7px}
+details.mer>summary{cursor:pointer;font-size:14.5px;font-weight:700;color:#1C7293;list-style:none;
+  display:inline-flex;align-items:center;gap:6px;padding:2px 0}
+details.mer>summary::-webkit-details-marker{display:none}
+details.mer>summary::before{content:"▸";font-size:12px;transition:transform .15s}
+details.mer[open]>summary::before{transform:rotate(90deg)}
+details.mer>summary:hover{text-decoration:underline}
+details.mer>*:not(summary){margin-top:8px}
+details.ordbok{border:1px solid var(--line,#d9dee8);border-radius:12px;background:#fff;padding:12px 16px;margin:14px 0}
+details.ordbok>summary{cursor:pointer;font-size:18px;font-weight:700;color:#1F3864;list-style:none}
+details.ordbok>summary::-webkit-details-marker{display:none}
+details.ordbok>summary::before{content:"▸ ";font-size:14px;color:#1C7293}
+details.ordbok[open]>summary::before{content:"▾ "}
 </style></head><body>
-<header><h1>Sim 32 &middot; Deskriptiv statistikk &mdash; sentraltendens og variasjon</h1>
-<p>PSY300 &middot; Forelesning 1 &middot; Ti tall du kan telle p&aring; fingrene &mdash; og alle m&aring;lene regnet ut for hånd, s&aring; du ser hvor de kommer fra</p></header>
+<header><h1>Sim 32 · Å beskrive tall</h1>
+<p>PSY300 · Forelesning 1–2 · Seks faner: hva slags tall du har, hva som er et ærlig sammendrag av dem, hvorfor gjennomsnittet er det beste ene tallet — hvor mye én ekstremverdi får lov til å bestemme — hvordan histogram, tetthetsplott, boksplott, Q-Q og P-P er de samme tallene sett fra fem kanter — og hvor skjevhet og kurtose faktisk kommer fra.</p></header>
 <div class="wrap">
 <div class="rad" style="gap:6px;margin:2px 0 6px">
-<button class="fane on" data-fane="maal">1 · Sentraltendens og variasjon</button>
-<button class="fane" data-fane="robust">2 · Hvor robuste er m&aring;lene?</button>
+<button class="fane on" data-fane="maalenivaa">1 · Målenivå</button>
+<button class="fane" data-fane="maal">2 · Sentraltendens og variasjon</button>
+<button class="fane" data-fane="gjett">3 · Hvorfor gjennomsnittet?</button>
+<button class="fane" data-fane="robust">4 · Hvor robuste er målene?</button>
+<button class="fane" data-fane="fordeling">5 · Fra rådata til figur</button>
+<button class="fane" data-fane="form">6 · Skjevhet og kurtose</button>
 </div>
-<div id="fane-maal">
+<div id="fane-maalenivaa">
+<div class="card">
+<h2>Velg en variabel <span id="lvl" class="lvl skjult"></span></h2>
+<select id="vselMN">
+<optgroup label="— Konstruerte/simulerte eksempler —">
+<option value="diag" selected>Diagnosegruppe ved en poliklinikk</option>
+<option value="holdning">Holdning til polariserende sak, 1–7 (bimodal)</option>
+<option value="iq">IQ-skår (normalfordelt referanse)</option>
+<option value="inntekt">Brutto årsinntekt i kroner (høyreskjev)</option>
+<option value="alkohol">Alkoholenheter siste uke (nullinflatert)</option>
+<option value="rt">Reaksjonstid i millisekunder (høyreskjev)</option>
+</optgroup>
+<optgroup label="— Terapi-RCT, alle variabler (N = 86) —"><option value="r_gruppe">Gruppe (behandling)</option><option value="r_kjonn">Kjønn</option><option value="r_med">Medisinbruk</option><option value="r_full">Fullført studien</option><option value="r_tidl">Tidligere behandlingsforsøk</option><option value="r_alder">Alder</option><option value="r_Depresjon_pre">Depresjon (pre)</option><option value="r_Depresjon_post">Depresjon (post)</option><option value="r_Depresjon_3mnd">Depresjon (3 mnd)</option><option value="r_Undertrykkende_forsvar_pre">Undertrykkende forsvar (pre)</option><option value="r_Undertrykkende_forsvar_post">Undertrykkende forsvar (post)</option><option value="r_Undertrykkende_forsvar_3mnd">Undertrykkende forsvar (3 mnd)</option><option value="r_Aggresjonsundertrykking_pre">Aggresjonsundertrykking (pre)</option><option value="r_Aggresjonsundertrykking_post">Aggresjonsundertrykking (post)</option><option value="r_Aggresjonsundertrykking_3mnd">Aggresjonsundertrykking (3 mnd)</option></optgroup><optgroup label="— Arbeidskravet, alle variabler (N = 391) —"><option value="a_kjonn">Kjønn</option><option value="a_alder">Alder</option><option value="a_stem">STEM-fag</option><option value="a_fag">Fagfelt</option><option value="a_nasj">Nasjonsgruppe</option><option value="a_karstat">Statistikkarakter (1–5)</option><option value="a_kargen">Karakterer generelt (1–5)</option><option value="a_bet">Betingelse (lett/vanskelig)</option><option value="a_quiz">Prøveskår (0–5)</option><option value="a_Perfeksjonistiske_tanker_pre">Perfeksjonistiske tanker (pre)</option><option value="a_Perfeksjonistiske_tanker_post">Perfeksjonistiske tanker (post)</option><option value="a_Selvtillit_pre">Statistikk-selvtillit (pre)</option><option value="a_Selvtillit_post">Statistikk-selvtillit (post)</option><option value="a_Selvkritisk_perfeksjonisme_trait">Selvkritisk perfeksjonisme (trekk)</option><option value="a_Rigid_perfeksjonisme">Rigid perfeksjonisme (trekk)</option><option value="a_Angstsensitivitet">Angstsensitivitet (trekk)</option><option value="a_studaar">Studieår (1–5)</option></optgroup></select>
+<div id="gjettKort" style="background:#eef3fb;border:1px solid #c7d6ec;border-radius:10px;padding:12px 14px;margin:10px 0">
+<h2 style="margin-top:0">Hva er målenivået?</h2>
+<p class="muted">Svar før du blar videre. Figuren under hjelper deg. Kan verdiene rangeres? Er avstanden fra 1 til 2 like stor som fra 8 til 9? Finnes det et ekte nullpunkt som betyr «ingenting av dette»?</p>
+<div>
+<button class="btn2 gjett" data-l="NOMINAL">Nominal</button><button class="btn2 gjett" data-l="ORDINAL">Ordinal</button><button class="btn2 gjett" data-l="INTERVALL">Intervall</button><button class="btn2 gjett" data-l="FORHOLD">Ratio (forholdstall)</button>
+<button class="btn2" id="visSvar" style="margin-left:14px">Vis svaret</button>
+</div>
+<div class="note" id="gjettSvar" style="display:none"></div>
+</div>
+
+<div style="margin:6px 0">
+<span id="dispNum"><label class="leg" style="margin-right:14px"><input type="checkbox" id="zmode"> <b>z-skårer (standardisert)</b></label><label class="leg"><input type="radio" name="dispn" value="dots"> Alle datapunkter</label> <label class="leg" style="margin-left:12px"><input type="radio" name="dispn" value="hist" checked> Histogram/søyler</label> <label class="leg" style="margin-left:12px"><input type="radio" name="dispn" value="rain"> Raincloud</label></span>
+<span id="dispCat" style="display:none"><label class="leg"><input type="radio" name="dispc" value="bar" checked> Stolpediagram</label> <label class="leg" style="margin-left:12px"><input type="radio" name="dispc" value="pie"> Pai-diagram</label> <label class="leg" style="margin-left:12px"><input type="radio" name="dispc" value="prop"> Andelsstolpe (100 %)</label></span>
+</div>
+<div id="statTogg" style="margin:8px 0 4px">
+<button class="togg on" data-v="M">Gjennomsnitt</button><button class="togg on" data-v="med">Median</button><button class="togg on" data-v="modus">Modus</button><button class="togg on" data-v="q">Boks (kvartiler)</button><button class="togg on" data-v="hale">Værhår</button><button class="togg" data-v="sd">Standardavvik</button><button class="togg" data-v="rng">Spennvidde</button>
+</div>
+<canvas id="cv" height="320"></canvas>
+<div id="statLine" style="margin-top:6px"></div>
+<div class="leg">Markører der de gir mening: <b style="color:#B26A00">oransje søyle = modus</b> · <b style="color:#2E7D32">grønn heltrukket = median</b> · <b style="color:#1F3864">blå stiplet = Q1 og Q3</b> · <b style="color:#C0392B">rød = gjennomsnitt</b><br>Kvartilstrekene står på nøyaktig samme sted i histogrammet og i raincloud-plottet: bytt mellom visningene og se at de to stiplede strekene ikke flytter seg, men legger seg rett oppå kantene av boksen. <b>Boksen er kvartilene</b> — den er ikke noe boksplottet finner på i tillegg til rådataene.</div>
+<div class="note" id="zExpl" style="display:none"><b>Hva z-skårer gjør</b>: hver verdi er byttet ut med <b>z = (x − M)/SD</b>: «hvor mange standardavvik fra gjennomsnittet ligger denne personen?» Etter standardisering har fordelingen alltid M = 0 og SD = 1, uansett hvilken variabel eller måleenhet du startet med. Legg merke til to ting: <b>formen endrer seg ikke</b>, en skjev fordeling forblir like skjev, standardisering er bare en ny linjal, ikke en normalisering, og <b>tallene blir sammenlignbare</b> på tvers av variabler: z = 1,5 betyr det samme enten det gjelder depresjonsskår eller reaksjonstid. Tommelfingerregel for tilnærmet normalfordelte data: ca. 68 % av verdiene ligger mellom z = ±1 og ca. 95 % mellom z = ±2, så en z over 3 er sjelden nok til å være verdt et blikk (se Sim 8 og Sim 2 om utliggere).</div>
+<div class="note" id="rainExpl" style="display:none"><b>Slik leser du raincloud-plottet</b>: tre lag av de samme dataene: <b>Skyen</b> (øverst) er en tetthetskurve, en glattet versjon av histogrammet som viser hvor verdiene tetner seg. <b>Boksen</b> (midten) er et boksplott: den grønne streken er medianen, boksen dekker de midterste 50 % av observasjonene (IQR), og strekene ut til sidene er <b>værhårene</b>. De rekker til den ytterste observasjonen som fortsatt ligger innenfor <b>1,5 × IQR</b> fra boksen, altså halvannen boksbredde ut på hver side. Alt som ligger lenger ute, tegnes som <b style="color:#B26A00">oransje punkter</b> og regnes som mulige uteliggere. Værhårene er altså ikke minimum og maksimum: de viser hvor langt dataene rekker <i>før</i> de begynner å bli mistenkelige. Vil du se hele spennet, slår du på «Spennvidde». Knappene over figuren lar deg fjerne boksen, værhårene og medianen hver for seg, så du kan bygge boksplottet opp bit for bit. De <b style="color:#1F3864">blå stiplede strekene</b> er Q1 og Q3 regnet direkte ut av rådataene, og de er tegnet på samme måte i histogrammet: veksler du mellom «Histogram/søyler» og «Raincloud», står de på nøyaktig samme sted på x-aksen — og i raincloud-plottet lander de rett på kantene av boksen. Det er hele poenget: boksen <i>er</i> de to kvartilene. <b>Regnet</b> (nederst) er rådataene: hver dråpe er én person. Den røde linjen er gjennomsnittet: sammenlign den med medianen for å se skjevheten. JASP lager samme plott under Descriptives → Basic plots → Raincloud.</div>
+</div>
+
+<div class="card" id="vurderingKort" style="display:none">
+<h2>Hvor godt beskriver målene disse dataene?</h2>
+<p class="muted">Grønn = meningsfullt og godt · oransje = mulig, men med forbehold · rød (gjennomstreket) = meningsløst på dette målenivået.</p>
+<div><b style="color:var(--navy)">Sentraltendens:</b> <span id="ct"></span></div>
+<div style="margin-top:6px"><b style="color:var(--navy)">Variasjon:</b> <span id="vr"></span></div>
+<div class="note" id="verdict"></div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>Målenivået bestemmer hva du har lov til å regne ut. Gjennomsnitt av en nominal variabel er meningsløst uansett hvor pent tallet ser ut, og ved skjeve fordelinger beskriver medianen «det typiske» bedre enn gjennomsnittet.</b></div></div>
+</div><!-- /fane-maalenivaa -->
+
+<div id="fane-maal" class="hide">
 
 <div class="card">
 <h2>1. Trekk noen f&aring; tall</h2>
@@ -166,6 +233,60 @@ og det er nettopp derfor den ikke rikker seg n&aring;r &eacute;n verdi er ekstre
 
 </div><!-- /fane-maal -->
 
+<div id="fane-gjett" class="hide">
+<div class="card">
+<h2>1. Alt vi vet p&aring; forh&aring;nd</h2>
+<p class="muted">IQ-skalaen er konstruert slik at befolkningen har gjennomsnitt <b>100</b> og standardavvik <b>15</b>. Det er hele kunnskapen vi har f&oslash;r vi m&oslash;ter noen som helst.</p>
+<canvas id="cvPop" height="290"></canvas>
+<div class="legend" id="legPop"></div>
+<div class="teori" style="margin-top:10px">
+<span class="lbl">Dette er en statistisk modell</span>
+<div class="pastand">Du skal gjette IQ-en til tilfeldige personer uten &aring; f&aring; vite noe om dem. Svaret er &aring; si <b>100</b> hver gang &mdash; toppen av kurven. Og det er verdt &aring; stoppe ved hva du da faktisk gj&oslash;r: du har satt opp en <b>modell</b>.</div>
+<div class="formel">observert verdi = modell + feil</div>
+<span class="les">Her: IQ = 100 + avvik. Hele modellen er <b>ett eneste tall</b>.</span>
+<ul>
+<li>En statistisk modell er en <b>regel for hva du forventer</b>. Denne regelen er den enklest tenkelige: forvent gjennomsnittet, samme hvem det gjelder.</li>
+<li>Alt annet i emnet er samme sak med flere ledd. En regresjonslinje sier &laquo;forvent 100 pluss noe som avhenger av skolekarakteren&raquo;. En t-test sier &laquo;forvent &eacute;n verdi for gruppe A og en annen for gruppe B&raquo;.</li>
+<li>Ingen modell treffer blink. Forskjellen mellom det modellen sa og det som faktisk skjedde, kalles <b>feilen</b> &mdash; eller residualet.</li>
+<li><b>En modell vurderes p&aring; hvor sm&aring; feilene er.</b> Det er derfor det neste panelet handler om &aring; m&aring;le dem.</li>
+</ul>
+<div class="tall"><b>Sp&oslash;rsm&aring;let vi skal svare p&aring;:</b> hvor feil tar &laquo;alle er 100&raquo;? Du bommer p&aring; hver eneste person &mdash; men hvor mye, i snitt? Svaret viser seg &aring; ha et navn du allerede har h&oslash;rt.</div>
+</div>
+</div>
+
+<div class="card">
+<h2>2. Bygg opp m&aring;let, ett steg om gangen</h2>
+<p class="muted">Modellen din sier <b>100</b> for alle. Trykk deg gjennom de fire knappene under &mdash; hver av dem legger til &eacute;n kolonne eller &eacute;n linje i regnskapet over hvor feil modellen tar, og forklarer hva m&aring;let er godt for.</p>
+<div class="person">
+<div class="nr" id="personNr">Ingen trukket enn&aring;</div>
+<div class="ikon">&#128100;</div>
+<div class="ingen">Du vet ingenting om denne personen. Modellen din sier <b>100</b>.</div>
+<div class="fasit" id="fasit">&nbsp;</div>
+</div>
+<div class="rad" style="margin-top:10px">
+<button class="btn" id="tipp">Tipp ny deltaker</button>
+<button class="btn2" id="tipp100" disabled>Tipp 100 deltakere</button>
+<button class="btn2" id="tipp1000" disabled>Tipp 1000 deltakere</button>
+<button class="btn2" id="btnKvadrat" disabled>Kvadreringstrikset</button>
+<button class="btn2" id="btnVarians" disabled>Varians</button>
+<button class="btn2" id="btnSD" disabled>Standardavvik</button>
+<button class="btn2" id="nullstill">Nullstill</button>
+<span class="muted" id="stegHint"></span>
+</div>
+<div id="tabellBoks" style="margin-top:10px"></div>
+<div id="stegTekst"></div>
+
+</div>
+
+<div class="card">
+<div class="keybox">
+<span class="lbl">Hovedpoenget</span>
+<b>Standardavviket er ikke et abstrakt m&aring;l p&aring; spredning &mdash; det er hvor feil du tar n&aring;r du gjetter gjennomsnittet.</b>
+Uten opplysninger om personen er 100 det beste gjettet du kan gj&oslash;re. Du bommer likevel p&aring; alle: i snitt med rundt 15 poeng. Det tallet <i>er</i> standardavviket. Derfor er gjennomsnittet og standardavviket et par: det f&oslash;rste er modellen, det andre er hvor d&aring;rlig modellen passer. Og derfor kvadrerer vi avvikene f&oslash;rst &mdash; summen av dem er null, uansett hvor spredt gruppa er. Resten av emnet handler om &eacute;n ting: &aring; finne opplysninger som gj&oslash;r gjetningen bedre enn 100, og m&aring;le hvor mye bedre.
+</div>
+</div>
+</div><!-- /fane-gjett -->
+
 <div id="fane-robust" class="hide">
 <div class="card">
 <h2>Gjennomsnitt, median og modus møter en ekstremverdi</h2>
@@ -186,48 +307,258 @@ og det er nettopp derfor den ikke rikker seg n&aring;r &eacute;n verdi er ekstre
 <div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
 <b>Robusthet handler om hvor mye &eacute;n enkelt verdi f&aring;r lov til &aring; bestemme.</b>
 Gjennomsnittet lar hvert tall trekke etter vektarmen sin, s&aring; &eacute;n ekstremverdi kan flytte det langt.
-Medianen teller bare hvor mange som ligger over og under, s&aring; den rikker seg knapt.
-Ingen av dem er &laquo;riktigst&raquo; &mdash; de svarer p&aring; litt ulike sp&oslash;rsm&aring;l, og valget avhenger av om
+Medianen teller bare hvor mange som ligger over og under, s&aring; den rikker seg knapt.<details class="mer"><summary>Mer om dette</summary><div>Ingen av dem er &laquo;riktigst&raquo; &mdash; de svarer p&aring; litt ulike sp&oslash;rsm&aring;l, og valget avhenger av om
 ytterverdiene er ekte informasjon eller st&oslash;y.
 <div style="margin-top:8px">Er dataene skjeve eller har utliggere, har du to veier videre her: bruke
 <b>robuste m&aring;l</b> (median og kvartilbredde), eller <b>trimme</b> og <b>winsorisere</b> gjennomsnittet.
 Det finnes en tredje &mdash; &aring; transformere selve variabelen &mdash; men den h&oslash;rer hjemme senere i emnet,
-n&aring;r antakelsene bak testene er innf&oslash;rt.</div></div></div>
+n&aring;r antakelsene bak testene er innf&oslash;rt.</div></div></details></div></div>
 
 </div><!-- /fane-robust -->
+
+<div id="fane-fordeling" class="hide">
+<div class="card">
+<h2>Fra rådata til figur</h2>
+<p class="muted">Alle figurene JASP lager, er den <b>samme lista med tall</b> ordnet på ulike måter. Til venstre ligger rådataene som de er — én prikk per person. Til høyre velger du hva de skal bli om til. <b>Hold musa over en prikk</b>, så lyser den samme personen opp i begge figurene, og du får se hva figuren gjorde med henne. Verdiaksen er <b>den samme i begge paneler</b>, så en prikk står alltid rett over eller under seg selv — bortsett fra i P-P-plottet, der begge akser er andeler.</p>
+
+<div class="rad" style="gap:10px;flex-wrap:wrap;margin:6px 0 8px">
+<label class="chk" style="margin-left:0">Figur:
+<select id="foPlot" style="padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:16px;font-family:inherit">
+<option value="hist" selected>Histogram</option>
+<option value="tetthet">Tetthetsplott</option>
+<option value="boks">Boksplott</option>
+<option value="sky">Raincloud (sky, boks og regn)</option>
+<option value="qq">Q-Q-plott</option>
+<option value="pp">P-P-plott</option>
+</select></label>
+<label class="chk">Fordeling:
+<select id="foVar" style="padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:16px;font-family:inherit">
+<optgroup label="— Simulerte former —">
+<option value="normal" selected>Normalfordelt</option>
+<option value="skjev">Høyreskjev</option>
+<option value="tung">Tunge haler</option>
+<option value="gulv">Gulveffekt</option>
+<option value="bimodal">Bimodal (to grupper)</option>
+</optgroup>
+<optgroup label="— Ekte variabler —">
+<option value="ak_selvt">Statistikk-selvtillit · arbeidskravet</option>
+<option value="ak_alder">Alder · arbeidskravet</option>
+<option value="ak_kar">Statistikkarakter 1–5 · arbeidskravet</option>
+<option value="rct_dep">Depresjon før behandling · terapi-RCT</option>
+</optgroup>
+</select></label>
+<label class="chk">n = <output id="foNOut" style="font-variant-numeric:tabular-nums">40</output>
+<input type="range" id="foN" min="15" max="120" value="40" style="width:130px;vertical-align:middle"></label>
+<button class="btn2" id="foNy">Trekk nytt utvalg</button>
+<label class="chk"><input type="checkbox" id="foUtl"> gi meg en uteligger å dra</label>
+</div>
+
+<div>
+<div class="muted" style="font-weight:700;color:var(--navy);margin-bottom:2px">Rådata — én prikk per person</div>
+<canvas id="foHist" height="210"></canvas>
+<div class="muted" style="font-weight:700;color:var(--navy);margin:10px 0 2px" id="foTittel">Histogram</div>
+<canvas id="foQQ" height="300"></canvas>
+</div>
+
+<details class="mer" id="foBredde" style="margin-top:8px"><summary>For viderekomne: still inn søylebredden selv</summary><div>
+<p class="muted" style="margin:2px 0 8px">Verken histogrammet eller tetthetsplottet har én riktig innstilling. Programmet gjetter for deg — og gjetningen former svaret. Dra i den, og se hvor mye av «formen på fordelingen» som egentlig var ditt eget valg.</p>
+<div class="rad" style="gap:10px;flex-wrap:wrap;align-items:center">
+<label class="chk" style="margin-left:0"><span id="foBreddeNavn">Søylebredde</span>:
+<input type="range" id="foBreddeSl" min="0" max="100" value="50" style="width:190px;vertical-align:middle"></label>
+<output id="foBreddeUt" class="stat" style="font-variant-numeric:tabular-nums">automatisk</output>
+<button class="btn2" id="foBreddeAuto">Tilbake til automatisk</button>
+</div>
+<div class="note" id="foBreddeNote" style="margin-top:8px"></div>
+</div></details>
+
+<div id="foLes" class="note"><b>Pek på en prikk.</b> Da får du se nøyaktig hva figuren til høyre gjorde med akkurat den personen.</div>
+
+<div class="rad" style="gap:8px;flex-wrap:wrap;margin-top:10px">
+<button class="btn" id="foSteg">Vis oppbyggingen steg for steg</button>
+<button class="btn2" id="foStegNeste" disabled>Neste steg</button>
+<span id="foStegNr" class="stat">av</span>
+</div>
+<div id="foStegTekst" class="note" style="display:none"></div>
+
+<div id="foStat" style="margin-top:10px"></div>
+<div id="foHva" class="note" style="background:#f4f7ff"></div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>Ingen av figurene tilfører noe nytt — de kaster bare bort ulike deler av rådataene for å gjøre resten synlig.</b>
+Histogrammet glemmer hvor i søyla du lå. Boksplottet glemmer alt annet enn fem tall. Q-Q-plottet
+beholder hver enkelt verdi, men bytter ut den vannrette aksen. Å vite hva som ble kastet, er å vite
+hva figuren kan og ikke kan fortelle deg.
+<details class="mer"><summary>Mer om dette: hvilken figur svarer på hvilket spørsmål?</summary><div>
+<b>Histogram</b> &mdash; «hvordan ser formen ut?» Rask og intuitiv, men svaret avhenger av hvor brede
+søylene er. Samme data kan se både glatt og hakkete ut.
+<div style="margin-top:6px"><b>Tetthetsplott</b> &mdash; samme spørsmål, men uten søylegrenser: hver
+person legger igjen en liten haug, og kurven er summen av alle haugene. Glattere, men båndbredden
+gjør samme jobb som søylebredden, og kan lyve på samme måte.</div>
+<div style="margin-top:6px"><b>Boksplott</b> &mdash; «hvor ligger midten, hvor bredt er det, og hvem
+faller utenfor?» Fem tall og ingenting mer, så to helt ulike fordelinger kan gi identiske bokser.
+Bra til &aring; sammenligne grupper, d&aring;rlig til &aring; se form.</div>
+<div style="margin-top:6px"><b>Q-Q-plott</b> &mdash; «er dette normalfordelt, og hvor svikter det?»
+Mest følsomt i <i>halene</i>, som er der det pleier å gå galt.</div>
+<div style="margin-top:6px"><b>P-P-plott</b> &mdash; samme spørsmål, men følsomt på <i>midten</i>
+i stedet. Derfor ser et P-P-plott ofte penere ut enn Q-Q-plottet for de samme dataene: uteliggere
+klemmes sammen mot 0 og 1. Q-Q er standardvalget i praksis nettopp derfor.</div>
+</div></details></div></div>
+
+</div><!-- /fane-fordeling -->
+
+<div id="fane-form" class="hide">
+<div class="card">
+<h2>Skjevhet og kurtose — hvor tallene kommer fra</h2>
+<p class="muted">JASP gir deg to tall for formen på fordelingen, og de fleste leser dem som magi. Det er de ikke: begge er <b>gjennomsnitt av z-skårer opphøyd i en potens</b>. Her ser du hva hver enkelt person bidrar med — og hvorfor én person langt ute kan bestemme nesten hele tallet.</p>
+
+<div class="rad" style="gap:10px;flex-wrap:wrap;margin:6px 0 8px">
+<label class="chk" style="margin-left:0">Mål:
+<select id="skMaal" style="padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:16px;font-family:inherit">
+<option value="skjev" selected>Skjevhet (z³)</option>
+<option value="kurt">Kurtose (z⁴)</option>
+</select></label>
+<label class="chk">Fordeling:
+<select id="skVar" style="padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:16px;font-family:inherit">
+<optgroup label="— Simulerte former —">
+<option value="normal" selected>Normalfordelt</option>
+<option value="hoyre">Høyreskjev</option>
+<option value="venstre">Venstreskjev</option>
+<option value="tung">Tunge haler</option>
+<option value="lett">Lette haler (nesten rektangulær)</option>
+<option value="bimodal">Bimodal (to grupper)</option>
+</optgroup>
+<optgroup label="— Ekte variabler —">
+<option value="ak_selvt">Statistikk-selvtillit · arbeidskravet</option>
+<option value="ak_alder">Alder · arbeidskravet</option>
+<option value="rct_dep">Depresjon før behandling · terapi-RCT</option>
+</optgroup>
+</select></label>
+<label class="chk">n = <output id="skNOut" style="font-variant-numeric:tabular-nums">60</output>
+<input type="range" id="skN" min="20" max="200" value="60" style="width:130px;vertical-align:middle"></label>
+<button class="btn2" id="skNy">Trekk nytt utvalg</button>
+<label class="chk"><input type="checkbox" id="skUtl"> gi meg en uteligger å dra</label>
+</div>
+
+<div>
+<div class="muted" style="font-weight:700;color:var(--navy);margin-bottom:2px">Fordelingen — én prikk per person</div>
+<canvas id="skRaa" height="200"></canvas>
+<div class="muted" style="font-weight:700;color:var(--navy);margin:10px 0 2px" id="skBidragTit">Hver persons bidrag: z³</div>
+<canvas id="skBidrag" height="230"></canvas>
+</div>
+
+<div id="skLes" class="note"></div>
+<div id="skStat" style="margin-top:8px"></div>
+
+<div class="note" id="skTolk" style="background:#f4f7ff"></div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>Skjevhet og kurtose er gjennomsnitt av z-skårer opphøyd i tredje og fjerde potens. Potensen er hele saken: den gjør at personer langt ute teller mange ganger mer enn alle de andre til sammen.</b>
+<details class="mer"><summary>Mer om dette: hvorfor tredje og fjerde potens — og hvorfor minus 3</summary><div>
+<b>Hvorfor z-skårer først?</b> Fordi formen ikke skal avhenge av måleenheten. Gjør du om alder fra
+år til måneder, endrer gjennomsnitt og standardavvik seg &mdash; men skjevheten skal være den samme.
+Derfor regnes alt om til «hvor mange standardavvik fra gjennomsnittet».
+<div style="margin-top:8px"><b>Hvorfor tredje potens for skjevhet?</b> Fordi den <i>beholder fortegnet</i>.
+En person to standardavvik over gjennomsnittet gir +8; en person to under gir &minus;8. I en
+symmetrisk fordeling kansellerer de hverandre, og skjevheten blir null. Hadde vi brukt andre
+potens, ville begge blitt +4, og vi hadde målt spredning i stedet for skjevhet.</div>
+<div style="margin-top:8px"><b>Hvorfor fjerde potens for kurtose?</b> Fordi den <i>ikke</i> bryr seg om
+fortegn, men straffer avstand enda hardere: z = 3 gir 81, mens z = 1 gir 1. Kurtose handler derfor
+nesten utelukkende om hvor mye masse som ligger langt ute i halene.</div>
+<div style="margin-top:8px"><b>Hvorfor &minus; 3?</b> Fordi gjennomsnittet av z⁴ er nøyaktig 3 for en
+perfekt normalfordeling. Ved å trekke fra 3 får normalfordelingen kurtose 0, og tallet leses som
+«tyngre (+) eller lettere (&minus;) haler enn normalt». Det er dette JASP viser, og det kalles
+<i>eksess</i>-kurtose.</div>
+<div style="margin-top:8px"><b>Den vanligste misforståelsen:</b> kurtose er ikke «hvor spiss toppen er».
+En fordeling kan ha en flat topp og likevel høy kurtose, hvis den har noen få ekstreme verdier.
+Sett målet til kurtose og velg «Tunge haler» &mdash; toppen ser nesten normal ut, men bidragssøylene
+ute i kantene avslører hva som driver tallet.</div>
+<div style="margin-top:8px"><b>Tommelfingerregler:</b> begge mål mellom &minus;1 og 1 regnes som
+udramatisk. Men de er svært ustabile i små utvalg &mdash; sett n = 20 og trekk noen nye utvalg, så
+ser du hvor mye tallene spretter uten at noe har endret seg.</div>
+</div></details></div></div>
+
+</div><!-- /fane-form -->
+
 
 <div class="card">
 <div class="keybox">
 <span class="lbl">Hovedpoenget</span>
 <b>Et sentralm&aring;l svarer p&aring; &laquo;hvor?&raquo;, et spredningsm&aring;l p&aring; &laquo;hvor mye varierer det?&raquo; &mdash; og du trenger alltid ett av hver.</b>
-Et gjennomsnitt alene forteller like lite som en adresse uten husnummer. Hvilket par du velger, avhenger av
+Et gjennomsnitt alene forteller like lite som en adresse uten husnummer.<details class="mer"><summary>Mer om dette</summary><div>Hvilket par du velger, avhenger av
 formen p&aring; dataene: er de noenlunde symmetriske, er gjennomsnitt og standardavvik det mest presise valget,
 fordi de bruker <i>alle</i> tallene. Er de skjeve eller har utliggere, er median og kvartilbredde tryggere,
 fordi de bare bryr seg om <i>rekkef&oslash;lgen</i> og ikke om hvor ekstreme ytterpunktene er.
-Bytt til <b>inntekt</b> og se hvor langt gjennomsnittet flytter seg fra medianen &mdash; og hvor lite kvartilbredden bryr seg.
-</div>
+Bytt til <b>inntekt</b> og se hvor langt gjennomsnittet flytter seg fra medianen &mdash; og hvor lite kvartilbredden bryr seg.</div></details></div>
 </div>
 
-<div class="card docs" id="ordforklaringer">
-<h2>Ordforklaringer</h2>
-<p class="gloss">
-<b>Sentraltendens</b> &mdash; hvor tyngdepunktet i en samling tall ligger. Gjennomsnitt, median og modus er tre ulike svar p&aring; det.<br>
+
+
+<details class="ordbok" id="ordforklaringer"><summary>Ordforklaringer</summary>
+<div class="gloss">
+<p><b>Eksesskurtose</b> &mdash; kurtose m&aring;lt slik at normalfordelingen gir 0. Positivt tall betyr tyngre haler enn normalt, negativt betyr lettere. Det er denne JASP viser.<br>
+<b>z-sk&aring;r</b> &mdash; hvor mange standardavvik en verdi ligger fra gjennomsnittet. Skjevhet er gjennomsnittet av z³, kurtose gjennomsnittet av z⁴ minus 3.<br>
+<b>Tetthetsplott</b> &mdash; en glatt kurve som viser hvor tett observasjonene ligger. Hver person bidrar med en liten haug, og kurven er summen. Arealet under den er 1.<br>
+<b>B&aring;ndbredde</b> &mdash; hvor brede de sm&aring; haugene er i et tetthetsplott. Gj&oslash;r samme jobb som s&oslash;ylebredden i et histogram: for smal gir hakkete kurve, for bred visker ut formen.<br>
+<b>Boksplott</b> &mdash; fem tall tegnet: minste, Q1, median, Q3 og st&oslash;rste. Boksen er de midterste 50 %, v&aelig;rh&aring;rene n&aring;r s&aring; langt som 1,5 kvartilbredder rekker, og resten tegnes som uteliggere.<br>
+<b>P-P-plott</b> &mdash; «andel mot andel»: observert andel under hver verdi mot andelen normalfordelingen forutsier. F&oslash;lsomt p&aring; midten, mens Q-Q-plottet er f&oslash;lsomt i halene.<br>
+<b>Kvantil</b> &mdash; verdien som deler fordelingen ved en gitt andel. Medianen er 50 %-kvantilen; kvartilene er 25 og 75 %.<br>
+<b>Q-Q-plott</b> &mdash; &laquo;kvantil mot kvantil&raquo;: hver observasjon plottes mot verdien den ville hatt p&aring; sin plass i en normalfordeling. Ligger punktene p&aring; linja, er normalfordeling en grei antakelse.<br>
+<b>Skjevhet</b> &mdash; om fordelingen har en lang hale til h&oslash;yre (positiv) eller venstre (negativ). Mellom &minus;1 og 1 regnes som udramatisk.<br>
+<b>Kurtose</b> &mdash; om halene er tyngre (positiv) eller lettere (negativ) enn i normalfordelingen. Tunge haler betyr flere ekstremverdier enn ventet.<br>
+<b>&divide; n eller &divide; (n &minus; 1)?</b> &mdash; her deler vi p&aring;<br>
+<b>&mu; (my)</b> &mdash; gjennomsnittet i befolkningen. Her 100, og kjent p&aring; forh&aring;nd fordi IQ-skalaen er laget slik.<br>
+<b>&sigma; (sigma)</b> &mdash; standardavviket i befolkningen. Her 15.<br>
+<b>Avvik</b> &mdash; faktisk verdi minus gjetningen. Positivt n&aring;r personen ligger over 100, negativt n&aring;r hun ligger under.<br>
 <b>Gjennomsnitt (x&#772;)</b> &mdash; summen delt p&aring; antallet. Bruker alle tallene, og trekkes derfor mot ekstreme verdier.<br>
+<b>Gjennomsnittlig absoluttavvik</b> &mdash; snittet av avstandene til gjennomsnittet, uten fortegn. Lett &aring; forst&aring;, men vanskelig &aring; regne videre p&aring;.<br>
+<b>Hvorfor summen av avvikene er null</b> &mdash; fordi like mye ligger over som under gjennomsnittet. Derfor kan man ikke bare ta snittet av avvikene; man m&aring; f&oslash;rst fjerne fortegnet.<br>
+<b>Høyreskjev</b> = lang hale mot høye verdier (gjennomsnittet ligger over medianen),<br>
+<b>IQR</b> — kvartilbredde (interkvartilområde): avstanden fra 25.- til 75.-persentilen, altså bredden på de midterste 50 % av observasjonene.<br>
+<b>ISTDP</b> (intensiv dynamisk korttidsterapi) med venteliste, N = 86.<br>
+<b>JASP</b> — statistikkprogrammet vi bruker i emnet (gratis og åpen kildekode).<br>
+<b>Kvadratsum (SS)</b> &mdash; summen av de kvadrerte avvikene. Grunnsteinen i nesten alt vi gj&oslash;r senere i emnet.<br>
+<b>Kvadrert avvik</b> &mdash; avviket ganget med seg selv. Fjerner fortegnet, og straffer store bommer hardere enn sm&aring;.<br>
+<b>Kvartilbredde (IQR)</b> &mdash; Q3 &minus; Q1, alts&aring; bredden p&aring; den midterste halvparten. Robust mot utliggere.<br>
+<b>Kvartiler</b> — Q1 er verdien 25 % av observasjonene ligger under, Q3 verdien 75 % ligger under. Medianen er Q2.<br>
+<b>Kvartiler (Q1, Q2, Q3)</b> &mdash; verdiene som deler det sorterte materialet i fire like store deler. Q2 er medianen.<br>
+<b>Kvartilmetode</b> &mdash; det finnes flere. Appen bruker samme metode som JASP og R (lineær interpolasjon, «type 7»), s&aring; tallene her stemmer med det du f&aring;r i JASP.<br>
+<b>M</b> — gjennomsnittet i et utvalg (skrives også x̄).<br>
 <b>Median</b> &mdash; midtverdien n&aring;r tallene sorteres. Ved et partall antall: snittet av de to midterste. Bryr seg bare om rekkef&oslash;lge.<br>
 <b>Modus</b> &mdash; den hyppigste verdien. Det eneste sentralm&aring;let som kan brukes p&aring; kategorier, og det eneste som kan v&aelig;re flere.<br>
-<b>Variasjonsbredde</b> &mdash; st&oslash;rste minus minste verdi. Enkel, men bygger p&aring; kun to tall og vokser med utvalgsst&oslash;rrelsen.<br>
-<b>Kvartiler (Q1, Q2, Q3)</b> &mdash; verdiene som deler det sorterte materialet i fire like store deler. Q2 er medianen.<br>
-<b>Kvartilbredde (IQR)</b> &mdash; Q3 &minus; Q1, alts&aring; bredden p&aring; den midterste halvparten. Robust mot utliggere.<br>
-<b>Gjennomsnittlig absoluttavvik</b> &mdash; snittet av avstandene til gjennomsnittet, uten fortegn. Lett &aring; forst&aring;, men vanskelig &aring; regne videre p&aring;.<br>
-<b>Varians (s&sup2;)</b> &mdash; snittet av de <i>kvadrerte</i> avvikene, med n &minus; 1 i nevneren. Grunnsteinen i ANOVA, regresjon og t-tester.<br>
-<b>Standardavvik (s)</b> &mdash; kvadratroten av variansen, tilbake i variabelens egen enhet. Det vanligste spredningsm&aring;let.<br>
+<b>Målenivå</b> — hva tallene faktisk betyr:<br>
+<b>Normalfordeling</b> &mdash; den symmetriske klokkeformen. For IQ ligger omtrent 68 % innenfor &plusmn;1 SD (85&ndash;115) og 95 % innenfor &plusmn;2 SD (70&ndash;130).<br>
+<b>RCT</b> — randomisert kontrollert studie. Emnets<br>
+<b>Raincloud-plott</b> — kombinasjon av tetthetskurve («skyen»), boksplott og enkeltpunkter («regnet») i samme figur.<br>
 <b>Robust m&aring;l</b> &mdash; et m&aring;l som ikke rikker seg s&aelig;rlig av noen f&aring; ekstreme verdier. Median og kvartilbredde er robuste; gjennomsnitt og standardavvik er det ikke.<br>
+<b>SD</b> — standardavvik: typisk avstand fra gjennomsnittet, i variabelens egen enhet. Kvadratet er variansen.<br>
+<b>Sentraltendens</b> &mdash; hvor tyngdepunktet i en samling tall ligger. Gjennomsnitt, median og modus er tre ulike svar p&aring; det.<br>
+<b>Skjevhet</b> — asymmetri i fordelingen.<br>
+<b>Spearmans rho</b> gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.<br>
+<b>Spennvidde (range)</b> — avstanden fra minste til største verdi. Følsom for én enkelt ekstremverdi, siden den bare bruker to av observasjonene.<br>
+<b>Standardavvik (SD)</b> &mdash; kvadratroten av variansen. Tilbake i IQ-poeng, s&aring; tallet er til &aring; forst&aring;.<br>
+<b>Standardavvik (s)</b> &mdash; kvadratroten av variansen, tilbake i variabelens egen enhet. Det vanligste spredningsm&aring;let.<br>
+<b>Terapi-RCT-studie</b> sammenligner<br>
+<b>Tetthetskurve</b> — en glattet versjon av histogrammet; arealet under kurven er 1.<br>
 <b>Trimmet gjennomsnitt</b> &mdash; gjennomsnittet etter at en fast andel av de laveste og h&oslash;yeste verdiene er fjernet. Et kompromiss mellom gjennomsnitt og median.<br>
+<b>Utligger</b> — en observasjon som ligger langt fra resten.<br>
+<b>Varians</b> &mdash; kvadratsummen delt p&aring; antall personer. Gjennomsnittlig kvadrert avvik.<br>
+<b>Varians (s&sup2;)</b> &mdash; snittet av de <i>kvadrerte</i> avvikene, med n &minus; 1 i nevneren. Grunnsteinen i ANOVA, regresjon og t-tester.<br>
+<b>Variasjonsbredde</b> &mdash; st&oslash;rste minus minste verdi. Enkel, men bygger p&aring; kun to tall og vokser med utvalgsst&oslash;rrelsen.<br>
+<b>Værhår (whiskers)</b> — strekene ut fra boksen i et boksplott. De går til den ytterste observasjonen innenfor 1,5 × IQR fra boksen, ikke til minimum og maksimum. Punkter utenfor markeres som mulige uteliggere.<br>
 <b>Winsorisert gjennomsnitt</b> &mdash; som over, men ytterverdiene <i>erstattes</i> med grenseverdiene i stedet for &aring; fjernes.<br>
-<b>Kvartilmetode</b> &mdash; det finnes flere. Appen bruker samme metode som JASP og R (lineær interpolasjon, «type 7»), s&aring; tallene her stemmer med det du f&aring;r i JASP.
-</p>
-</div>
-
+<b>b</b> — regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren.<br>
+<b>ratio (forholdstall)</b> (ekte nullpunkt).<br>
+<b>intervall</b> (like avstander, vilkårlig nullpunkt) og<br>
+<b>n</b>, fordi vi kjenner gjennomsnittet p&aring; forh&aring;nd og ikke har brukt dataene til &aring; finne det. M&aring; du f&oslash;rst regne ut gjennomsnittet av dine egne tall, deler du p&aring; n &minus; 1 i stedet. Se Sim 4.<br>
+<b>nominalt</b> (kategorier uten rekkefølge),<br>
+<b>ordinalt</b> (rekkefølge, ukjente avstander),<br>
+<b>r</b> — Pearsons korrelasjon: styrken på den <i>lineære</i> sammenhengen mellom to variabler (−1 til +1).<br>
+<b>venstreskjev</b> = motsatt.<br>
+<b>winsorisering</b> = erstatt dem med grenseverdien i stedet for å kutte.<br>
+<b>β</b> er den standardiserte varianten (i standardavvik).</p>
+</div></details>
 </div><!-- /wrap -->
 <script>
 "use strict";
@@ -542,13 +873,15 @@ window.addEventListener('resize', ()=>{ tegnLinje(); tegnVekt(); });
 velgVar($('vsel').value); trekkUtvalg(); alt();
 
 /* ---------- faner ---------- */
-const FANER=['maal','robust'];
+const FANER=['maalenivaa','maal','gjett','robust','fordeling','form'];
 function visFane(f){
   if(FANER.indexOf(f)<0) f='maal';
   FANER.forEach(x=>$('fane-'+x).classList.toggle('hide', x!==f));
   document.querySelectorAll('.fane').forEach(b=>b.classList.toggle('on', b.dataset.fane===f));
   /* lerret som var skjult har bredde 0 og må tegnes på nytt når fanen åpnes */
   window.dispatchEvent(new Event('resize'));
+  if(f==='fordeling' && window.__foTegn) window.__foTegn();
+  if(f==='form' && window.__skTegn) window.__skTegn();
 }
 document.querySelectorAll('.fane').forEach(b=>b.onclick=()=>visFane(b.dataset.fane));
 { const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'')).get('fane');
@@ -751,6 +1084,757 @@ setVar10('iq');
 </script>
 <script>
 
+
+/* ===== Fane 1: målenivå — fra den tidligere Sim 1 (Datatypelaben). Egen
+   lukking fordi appene deler navn som $, fmt og DATA. */
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const fmt=(x,d=1)=>x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function fit(cv){const r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);c.clearRect(0,0,w,h);return [c,w,h];}
+// ---------- ekte data ----------
+const DIAG={'Angstlidelse':34,'Depresjon':41,'PTSD':12,'Spiseforstyrrelse':8,'ADHD':19};
+let RT=[]; function newRT(){RT=[];for(let i=0;i<300;i++)RT.push(Math.round(Math.exp(6.2+0.45*rnorm())));}
+newRT();
+const INNTEKT=[379000, 416000, 765000, 521000, 631000, 350000, 417000, 460000, 362000, 620000, 636000, 661000, 1047000, 833000, 313000, 515000, 567000, 275000, 403000, 1201000, 193000, 359000, 489000, 763000, 1039000, 706000, 302000, 303000, 266000, 1006000, 523000, 240000, 1114000, 614000, 998000, 428000, 300000, 634000, 500000, 684000, 830000, 357000, 647000, 418000, 270000, 791000, 717000, 770000, 385000, 567000, 525000, 281000, 290000, 784000, 622000, 506000, 723000, 515000, 400000, 586000, 867000, 619000, 787000, 763000, 1054000, 383000, 587000, 665000, 717000, 351000, 773000, 511000, 356000, 427000, 788000, 671000, 345000, 502000, 1003000, 504000, 528000, 540000, 636000, 591000, 577000, 575000, 555000, 364000, 396000, 717000, 361000, 588000, 301000, 485000, 455000, 838000, 610000, 657000, 433000, 726000, 433000, 830000, 426000, 310000, 539000, 538000, 574000, 664000, 649000, 245000, 691000, 1048000, 781000, 331000, 367000, 445000, 407000, 417000, 358000, 865000, 521000, 1337000, 478000, 623000, 401000, 421000, 327000, 675000, 569000, 673000, 337000, 227000, 612000, 578000, 598000, 595000, 908000, 624000, 371000, 510000, 386000, 714000, 362000, 948000, 713000, 664000, 425000, 546000, 403000, 584000, 487000, 435000, 555000, 645000, 850000, 672000, 622000, 1128000, 482000, 520000, 297000, 1387000, 654000, 208000, 591000, 615000, 811000, 834000, 594000, 456000, 798000, 668000, 479000, 783000, 200000, 874000, 536000, 1032000, 617000, 858000, 460000, 528000, 939000, 419000, 207000, 324000, 458000, 455000, 444000, 668000, 1333000, 486000, 446000, 239000, 440000, 523000, 1097000, 474000, 962000, 366000, 329000, 726000, 1153000, 987000, 612000, 404000, 406000, 433000, 320000, 736000, 445000, 811000, 1157000, 362000, 609000, 230000, 486000, 909000, 237000, 274000, 1015000, 617000, 382000, 340000, 300000, 569000, 584000, 336000, 449000, 365000, 850000, 383000, 679000, 397000, 742000, 382000, 1088000, 431000, 739000, 714000, 403000, 622000, 498000, 596000, 661000, 506000, 863000, 331000, 472000, 730000, 650000, 358000, 691000, 746000, 516000, 517000, 435000, 434000, 255000, 422000, 570000, 382000, 606000, 345000, 339000, 708000, 373000, 747000, 1044000, 398000, 482000, 601000, 521000, 470000, 304000, 426000, 957000, 408000, 586000, 311000, 333000, 597000, 564000, 509000, 472000, 399000, 333000, 625000, 607000, 604000, 261000, 214000, 657000, 647000, 342000, 449000, 680000, 2850000, 3400000, 4100000];
+const HOLDNING=[96, 88, 34, 18, 30, 62, 72];   // 1..7, polarisert bimodal (N = 400)
+const ALKOHOL=[0, 3, 0, 0, 0, 18, 5, 23, 13, 3, 6, 9, 9, 0, 1, 1, 3, 2, 5, 3, 0, 4, 2, 0, 0, 0, 5, 0, 2, 13, 9, 1, 8, 0, 13, 4, 2, 0, 26, 1, 0, 1, 0, 0, 1, 0, 0, 3, 9, 5, 0, 8, 1, 4, 1, 4, 0, 6, 0, 9, 6, 1, 0, 3, 7, 1, 0, 3, 0, 3, 0, 12, 0, 0, 2, 14, 3, 0, 0, 0, 0, 3, 3, 8, 0, 7, 8, 0, 13, 4, 0, 0, 6, 2, 0, 14, 1, 0, 2, 1, 5, 10, 6, 6, 0, 0, 1, 0, 0, 1, 5, 6, 14, 1, 0, 0, 4, 1, 0, 11, 1, 9, 0, 9, 6, 0, 0, 0, 0, 0, 4, 0, 1, 0, 0, 10, 13, 11, 1, 3, 3, 0, 11, 4, 1, 2, 5, 9, 0, 4, 8, 4, 0, 4, 3, 0, 6, 8, 1, 0, 0, 0, 0, 5, 6, 1, 4, 0, 0, 11, 5, 5, 3, 6, 0, 1, 7, 19, 3, 6, 6, 0, 11, 0, 1, 3, 5, 0, 7, 0, 8, 5, 1, 4, 1, 6, 0, 12, 16, 7, 6, 3, 0, 0, 0, 2, 5, 4, 6, 1, 5, 6, 2, 10, 2, 10, 6, 23, 0, 0, 19, 1, 12, 1, 6, 7, 8, 2, 0, 22, 0, 0, 5, 1, 0, 1, 1, 3, 0, 2, 2, 0, 14, 0, 0, 0, 8, 1, 3, 18, 2, 0, 0, 5, 7, 0, 4, 0, 1, 0, 3, 9, 1, 2, 1, 0, 0, 23, 28, 0, 0, 5, 4, 10, 28, 5, 11, 0, 1, 3, 0, 13, 6, 0, 11, 3, 8, 13, 1, 2, 2, 1, 7, 0, 3, 11, 0, 0, 6, 0];
+const IQ=[105, 83, 101, 121, 81, 112, 98, 93, 115, 109, 119, 116, 144, 113, 105, 88, 74, 86, 109, 103, 101, 127, 95, 108, 88, 132, 93, 108, 116, 103, 91, 95, 120, 104, 78, 107, 104, 102, 114, 74, 94, 106, 115, 99, 91, 110, 80, 113, 123, 69, 108, 93, 97, 116, 99, 96, 111, 107, 102, 108, 105, 105, 113, 124, 130, 111, 89, 117, 128, 109, 90, 91, 120, 98, 77, 116, 92, 111, 113, 88, 109, 95, 78, 109, 99, 124, 74, 102, 111, 78, 105, 97, 128, 130, 105, 87, 108, 105, 94, 92, 56, 109, 97, 111, 84, 117, 90, 106, 106, 118, 110, 91, 102, 126, 99, 98, 87, 111, 98, 95, 100, 106, 95, 125, 94, 105, 78, 100, 126, 99, 75, 90, 95, 78, 101, 129, 84, 119, 98, 93, 106, 104, 83, 86, 81, 104, 87, 78, 97, 97, 102, 90, 85, 103, 83, 94, 67, 106, 106, 66, 111, 100, 107, 104, 115, 94, 102, 117, 94, 118, 97, 91, 81, 78, 126, 65, 89, 82, 84, 131, 109, 100, 94, 68, 88, 106, 115, 100, 111, 101, 117, 100, 86, 113, 81, 99, 105, 96, 88, 108, 98, 81, 93, 72, 76, 121, 100, 104, 109, 84, 101, 134, 109, 84, 127, 83, 99, 103, 82, 112, 95, 127, 123, 96, 85, 115, 103, 106, 115, 97, 104, 90, 106, 107, 109, 90, 82, 68, 94, 74, 98, 101, 125, 102, 91, 126, 64, 97, 116, 85, 90, 119, 123, 96, 121, 111, 133, 81, 76, 110, 103, 84, 88, 96, 109, 118, 122, 72, 79, 89, 105, 88, 120, 83, 102, 117, 104, 87, 117, 119, 84, 105, 63, 85, 143, 114, 104, 105, 116, 105, 93, 84, 101, 72, 94, 78, 106, 81, 98, 103];
+// ---------- statistikk ----------
+const mean=a=>a.reduce((s,v)=>s+v,0)/a.length;
+function median(a){const s=[...a].sort((x,y)=>x-y),n=s.length;return n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2;}
+function sd(a){const m=mean(a);return Math.sqrt(a.reduce((t,x)=>t+(x-m)**2,0)/(a.length-1));}
+function iqr(a){const s=[...a].sort((x,y)=>x-y),q=p=>s[Math.floor(p*(s.length-1))];return [q(0.25),q(0.75)];}
+function chip(txt,st){return '<span class="stat '+st+'">'+txt+'</span>';}
+const DATA={"r_gruppe": {"lab": "Gruppe (behandling)", "src": "Terapi-RCT (N = 86)", "lvl": "nominal", "cats": {"ISTDP": 43, "Venteliste": 43}}, "r_kjonn": {"lab": "Kjønn", "src": "Terapi-RCT (N = 86)", "lvl": "nominal", "cats": {"Kvinne": 53, "Mann": 33}}, "r_med": {"lab": "Medisinbruk", "src": "Terapi-RCT (N = 86)", "lvl": "nominal", "cats": {"Ja": 68, "Nei": 18}}, "r_full": {"lab": "Fullført studien", "src": "Terapi-RCT (N = 86)", "lvl": "nominal", "cats": {"Ja": 75, "Nei": 11}}, "r_tidl": {"lab": "Tidligere behandlingsforsøk", "src": "Terapi-RCT (N = 86)", "lvl": "ordinal", "vals": [3.0, 3.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 1.0, 2.0, 1.0, 1.0, 3.0, 3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0, 3.0, 1.0, 3.0, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 1.0, 3.0, 1.0, 1.0, 2.0, 3.0, 3.0, 1.0, 1.0, 2.0, 2.0, 1.0, 2.0, 2.0, 3.0, 1.0, 1.0, 2.0, 3.0, 1.0, 1.0, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 3.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 1.0, 1.0, 2.0, 2.0, 3.0, 2.0, 2.0, 2.0, 2.0, 2.0, 1.0]}, "r_alder": {"lab": "Alder", "src": "Terapi-RCT (N = 86)", "lvl": "scale", "vals": [18.0, 27.0, 29.0, 41.0, 60.0, 29.0, 42.0, 52.0, 60.0, 26.0, 34.0, 26.0, 27.0, 34.0, 22.0, 18.0, 33.0, 34.0, 19.0, 59.0, 51.0, 19.0, 52.0, 46.0, 40.0, 55.0, 22.0, 31.0, 34.0, 33.0, 35.0, 19.0, 32.0, 51.0, 52.0, 44.0, 41.0, 31.0, 27.0, 25.0, 23.0, 32.0, 32.0, 19.0, 18.0, 23.0, 60.0, 51.0, 31.0, 23.0, 41.0, 44.0, 46.0, 32.0, 43.0, 51.0, 23.0, 26.0, 51.0, 42.0, 34.0, 32.0, 41.0, 51.0, 42.0, 32.0, 42.0, 42.0, 34.0, 51.0, 60.0, 50.0, 20.0, 32.0, 30.0, 44.0, 35.0, 36.0, 27.0, 42.0, 51.0, 30.0, 47.0, 33.0, 53.0, 41.0]}, "r_Depresjon_pre": {"lab": "Depresjon (pre)", "src": "Terapi-RCT (N = 86)", "lvl": "scale", "vals": [34.0, 33.0, 29.0, 30.0, 27.0, 28.0, 32.0, 33.0, 35.0, 28.0, 23.0, 21.0, 34.0, 35.0, 35.0, 35.0, 33.0, 20.0, 23.0, 18.0, 31.0, 29.0, 33.0, 27.0, 34.0, 33.0, 35.0, 28.0, 35.0, 29.0, 29.0, 26.0, 33.0, 32.0, 35.0, 35.0, 35.0, 31.0, 33.0, 32.0, 35.0, 34.0, 24.0, 21.0, 29.0, 29.0, 27.0, 33.0, 32.0, 35.0, 27.0, 29.0, 28.0, 31.0, 32.0, 31.0, 34.0, 35.0, 31.0, 31.0, 32.0, 31.0, 24.0, 22.0, 21.0, 35.0, 32.0, 34.0, 33.0, 29.0, 34.0, 31.0, 30.0, 31.0, 30.0, 23.0, 24.0, 29.0, 31.0, 33.0, 32.0, 31.0, 30.0, 31.0, 32.0, 26.0]}, "r_Depresjon_post": {"lab": "Depresjon (post)", "src": "Terapi-RCT (N = 86)", "lvl": "scale", "vals": [25.0, 24.0, 20.0, 21.0, 26.0, 22.0, 31.0, 32.0, 25.0, 20.0, 22.0, 16.0, 20.0, 22.0, 21.0, 32.0, 34.0, 21.0, 13.0, 10.0, 22.0, 15.0, 23.0, 20.0, 20.0, 24.0, 20.0, 22.0, 29.0, 20.0, 21.0, 17.0, 20.0, 21.0, 16.0, 18.0, 34.0, 30.0, 32.0, 31.0, 30.0, 33.0, 21.0, 22.0, 26.0, 29.0, 26.0, 29.0, 31.0, 32.0, 29.0, 32.0, 28.0, 30.0, 31.0, 26.0, 30.0, 33.0, 32.0, 31.0, 30.0, 26.0, 23.0, 22.0, 20.0, 33.0, 30.0, 35.0, 33.0, 29.0, 33.0, 31.0, 29.0, 32.0, 30.0]}, "r_Depresjon_3mnd": {"lab": "Depresjon (3 mnd)", "src": "Terapi-RCT (N = 86)", "lvl": "scale", "vals": [21.0, 19.0, 16.0, 22.0, 23.0, 21.0, 32.0, 19.0, 17.0, 15.0, 18.0, 11.0, 21.0, 17.0, 18.0, 28.0, 16.0, 17.0, 9.0, 10.0, 21.0, 10.0, 16.0, 16.0, 14.0, 13.0, 16.0, 15.0, 31.0, 20.0, 16.0, 10.0, 12.0, 14.0, 15.0, 15.0, 30.0, 31.0, 31.0, 29.0, 31.0, 33.0, 23.0, 24.0, 26.0, 28.0, 25.0, 28.0, 32.0, 35.0, 27.0, 35.0, 25.0, 31.0, 31.0, 27.0, 28.0, 35.0, 29.0, 33.0, 29.0, 28.0, 25.0, 17.0, 21.0, 32.0, 30.0, 35.0, 33.0, 28.0, 32.0, 33.0, 25.0, 35.0, 30.0]}, "r_Undertrykkende_forsvar_pre": {"lab": "Undertrykkende forsvar (pre)", "src": "Terapi-RCT (N = 86)", "lvl": "scale", "vals": [93.0, 90.0, 84.0, 78.0, 87.0, 89.0, 78.0, 83.0, 91.0, 85.0, 86.0, 78.0, 86.0, 94.0, 70.0, 80.0, 87.0, 78.0, 61.0, 59.0, 70.0, 87.0, 71.0, 81.0, 82.0, 85.0, 99.0, 77.0, 92.0, 80.0, 77.0, 66.0, 89.0, 89.0, 86.0, 94.0, 91.0, 77.0, 79.0, 99.0, 89.0, 82.0, 64.0, 67.0, 82.0, 89.0, 89.0, 93.0, 88.0, 103.0, 76.0, 78.0, 71.0, 86.0, 81.0, 79.0, 87.0, 95.0, 88.0, 92.0, 100.0, 94.0, 73.0, 79.0, 74.0, 72.0, 66.0, 63.0, 79.0, 78.0, 83.0, 92.0, 75.0, 69.0, 66.0, 79.0, 77.0, 61.0, 99.0, 96.0, 62.0, 103.0, 72.0, 91.0, 88.0, 55.0]}, "r_Undertrykkende_forsvar_post": {"lab": "Undertrykkende forsvar (post)", "src": "Terapi-RCT (N = 86)", "lvl": "scale", "vals": [55.0, 59.0, 36.0, 58.0, 56.0, 53.0, 56.0, 55.0, 64.0, 48.0, 56.0, 54.0, 56.0, 60.0, 57.0, 50.0, 57.0, 60.0, 42.0, 42.0, 48.0, 63.0, 46.0, 60.0, 63.0, 69.0, 72.0, 55.0, 69.0, 53.0, 53.0, 66.0, 68.0, 74.0, 55.0, 77.0, 90.0, 76.0, 78.0, 100.0, 88.0, 80.0, 66.0, 68.0, 80.0, 86.0, 85.0, 90.0, 83.0, 103.0, 73.0, 70.0, 69.0, 88.0, 83.0, 78.0, 85.0, 92.0, 84.0, 90.0, 95.0, 93.0, 77.0, 68.0, 80.0, 59.0, 67.0, 70.0, 69.0, 69.0, 72.0, 74.0, 57.0, 39.0, 41.0]}, "r_Undertrykkende_forsvar_3mnd": {"lab": "Undertrykkende forsvar (3 mnd)", "src": "Terapi-RCT (N = 86)", "lvl": "scale", "vals": [49.0, 55.0, 30.0, 45.0, 42.0, 35.0, 41.0, 45.0, 59.0, 42.0, 41.0, 45.0, 50.0, 53.0, 58.0, 42.0, 43.0, 52.0, 47.0, 39.0, 43.0, 53.0, 40.0, 41.0, 43.0, 59.0, 66.0, 43.0, 62.0, 46.0, 42.0, 50.0, 61.0, 64.0, 51.0, 68.0, 90.0, 74.0, 76.0, 98.0, 95.0, 80.0, 64.0, 66.0, 86.0, 79.0, 78.0, 96.0, 80.0, 90.0, 76.0, 70.0, 70.0, 90.0, 81.0, 78.0, 75.0, 93.0, 84.0, 93.0, 93.0, 94.0, 74.0, 69.0, 81.0, 62.0, 55.0, 63.0, 68.0, 62.0, 77.0, 64.0, 64.0, 45.0, 42.0]}, "r_Aggresjonsundertrykking_pre": {"lab": "Aggresjonsundertrykking (pre)", "src": "Terapi-RCT (N = 86)", "lvl": "scale", "vals": [30.0, 32.0, 29.0, 27.0, 25.0, 37.0, 33.0, 32.0, 28.0, 35.0, 31.0, 30.0, 29.0, 29.0, 30.0, 31.0, 32.0, 33.0, 32.0, 31.0, 29.0, 27.0, 31.0, 31.0, 33.0, 26.0, 24.0, 27.0, 32.0, 27.0, 24.0, 24.0, 25.0, 34.0, 34.0, 34.0, 29.0, 27.0, 22.0, 23.0, 23.0, 23.0, 33.0, 32.0, 30.0, 31.0, 23.0, 32.0, 33.0, 24.0, 34.0, 23.0, 24.0, 25.0, 33.0, 35.0, 25.0, 25.0, 33.0, 34.0, 31.0, 32.0, 34.0, 35.0, 30.0, 27.0, 28.0, 29.0, 31.0, 28.0, 29.0, 30.0, 33.0, 29.0, 31.0, 22.0, 24.0, 29.0, 35.0, 31.0, 26.0, 34.0, 27.0, 29.0, 32.0, 34.0]}, "r_Aggresjonsundertrykking_post": {"lab": "Aggresjonsundertrykking (post)", "src": "Terapi-RCT (N = 86)", "lvl": "scale", "vals": [22.0, 25.0, 16.0, 25.0, 20.0, 24.0, 26.0, 22.0, 19.0, 22.0, 20.0, 19.0, 26.0, 19.0, 20.0, 21.0, 23.0, 23.0, 26.0, 19.0, 21.0, 22.0, 15.0, 18.0, 23.0, 23.0, 13.0, 21.0, 22.0, 23.0, 21.0, 14.0, 22.0, 21.0, 22.0, 23.0, 28.0, 27.0, 22.0, 24.0, 25.0, 24.0, 21.0, 20.0, 31.0, 32.0, 33.0, 34.0, 29.0, 23.0, 35.0, 34.0, 24.0, 25.0, 32.0, 23.0, 25.0, 25.0, 33.0, 35.0, 32.0, 33.0, 32.0, 32.0, 30.0, 27.0, 27.0, 29.0, 30.0, 27.0, 45.0, 28.0, 27.0, 28.0, 31.0]}, "r_Aggresjonsundertrykking_3mnd": {"lab": "Aggresjonsundertrykking (3 mnd)", "src": "Terapi-RCT (N = 86)", "lvl": "scale", "vals": [20.0, 20.0, 13.0, 16.0, 15.0, 17.0, 18.0, 16.0, 13.0, 19.0, 15.0, 16.0, 20.0, 17.0, 15.0, 16.0, 20.0, 20.0, 15.0, 15.0, 16.0, 14.0, 13.0, 17.0, 20.0, 18.0, 10.0, 17.0, 23.0, 18.0, 17.0, 11.0, 17.0, 16.0, 20.0, 23.0, 27.0, 28.0, 20.0, 23.0, 25.0, 24.0, 22.0, 20.0, 31.0, 31.0, 33.0, 35.0, 30.0, 24.0, 36.0, 34.0, 23.0, 25.0, 33.0, 24.0, 26.0, 26.0, 40.0, 37.0, 32.0, 30.0, 35.0, 34.0, 32.0, 26.0, 23.0, 27.0, 34.0, 27.0, 43.0, 28.0, 27.0, 26.0, 30.0]}, "a_kjonn": {"lab": "Kjønn", "src": "Arbeidskrav (N = 391)", "lvl": "nominal", "cats": {"Mann": 143, "Kvinne": 248}}, "a_alder": {"lab": "Alder", "src": "Arbeidskrav (N = 391)", "lvl": "scale", "vals": [25.0, 23.0, 22.0, 28.0, 23.0, 38.0, 28.0, 21.0, 24.0, 29.0, 23.0, 22.0, 30.0, 26.0, 22.0, 23.0, 21.0, 23.0, 21.0, 21.0, 23.0, 23.0, 28.0, 23.0, 41.0, 26.0, 21.0, 23.0, 22.0, 25.0, 22.0, 20.0, 22.0, 20.0, 22.0, 21.0, 22.0, 23.0, 25.0, 20.0, 22.0, 23.0, 25.0, 22.0, 26.0, 19.0, 23.0, 20.0, 24.0, 24.0, 26.0, 22.0, 32.0, 20.0, 20.0, 26.0, 20.0, 20.0, 21.0, 23.0, 27.0, 19.0, 21.0, 23.0, 24.0, 19.0, 24.0, 21.0, 19.0, 22.0, 23.0, 24.0, 20.0, 23.0, 22.0, 24.0, 23.0, 21.0, 19.0, 20.0, 24.0, 19.0, 22.0, 22.0, 20.0, 26.0, 23.0, 22.0, 21.0, 23.0, 21.0, 23.0, 24.0, 24.0, 27.0, 22.0, 27.0, 23.0, 20.0, 21.0, 22.0, 25.0, 36.0, 30.0, 27.0, 26.0, 26.0, 30.0, 21.0, 21.0, 34.0, 26.0, 29.0, 24.0, 22.0, 24.0, 25.0, 25.0, 20.0, 22.0, 21.0, 24.0, 22.0, 20.0, 29.0, 25.0, 23.0, 20.0, 21.0, 21.0, 30.0, 24.0, 24.0, 20.0, 23.0, 21.0, 21.0, 28.0, 21.0, 24.0, 21.0, 24.0, 23.0, 21.0, 25.0, 23.0, 22.0, 21.0, 23.0, 25.0, 22.0, 25.0, 22.0, 19.0, 18.0, 21.0, 28.0, 20.0, 27.0, 22.0, 21.0, 20.0, 20.0, 31.0, 23.0, 23.0, 20.0, 27.0, 21.0, 19.0, 21.0, 21.0, 28.0, 24.0, 21.0, 24.0, 21.0, 27.0, 23.0, 22.0, 21.0, 22.0, 23.0, 19.0, 23.0, 24.0, 20.0, 24.0, 19.0, 21.0, 26.0, 22.0, 27.0, 22.0, 23.0, 20.0, 22.0, 27.0, 23.0, 19.0, 22.0, 24.0, 20.0, 21.0, 20.0, 26.0, 21.0, 21.0, 19.0, 20.0, 21.0, 23.0, 19.0, 23.0, 21.0, 22.0, 29.0, 20.0, 21.0, 21.0, 23.0, 24.0, 25.0, 22.0, 19.0, 21.0, 23.0, 21.0, 20.0, 19.0, 24.0, 26.0, 22.0, 22.0, 19.0, 20.0, 25.0, 25.0, 20.0, 21.0, 28.0, 25.0, 21.0, 22.0, 30.0, 22.0, 23.0, 21.0, 21.0, 21.0, 32.0, 38.0, 23.0, 23.0, 20.0, 21.0, 22.0, 27.0, 18.0, 20.0, 26.0, 26.0, 21.0, 30.0, 21.0, 20.0, 21.0, 29.0, 20.0, 25.0, 33.0, 22.0, 27.0, 25.0, 28.0, 23.0, 22.0, 23.0, 25.0, 24.0, 22.0, 22.0, 23.0, 22.0, 21.0, 21.0, 23.0, 29.0, 20.0, 22.0, 27.0, 21.0, 23.0, 27.0, 23.0, 24.0, 21.0, 23.0, 27.0, 22.0, 31.0, 25.0, 27.0, 27.0, 20.0, 25.0, 23.0, 19.0, 22.0, 29.0, 19.0, 33.0, 21.0, 23.0, 20.0, 23.0, 19.0, 28.0, 20.0, 19.0, 20.0, 19.0, 30.0, 21.0, 28.0, 20.0, 22.0, 24.0, 23.0, 20.0, 24.0, 20.0, 19.0, 22.0, 23.0, 25.0, 19.0, 21.0, 23.0, 21.0, 18.0, 23.0, 20.0, 30.0, 29.0, 18.0, 21.0, 24.0, 22.0, 22.0, 26.0, 21.0, 21.0, 21.0, 26.0, 21.0, 29.0, 19.0, 28.0, 23.0, 28.0, 25.0, 21.0, 46.0, 20.0, 64.0, 23.0, 21.0, 18.0, 27.0, 20.0, 24.0, 25.0, 21.0, 24.0, 21.0, 22.0, 19.0, 18.0, 23.0, 19.0, 23.0, 21.0, 20.0, 27.0, 22.0, 27.0, 22.0, 22.0, 21.0, 28.0]}, "a_stem": {"lab": "STEM-fag", "src": "Arbeidskrav (N = 391)", "lvl": "nominal", "cats": {"Ikke-STEM": 261, "STEM": 130}}, "a_fag": {"lab": "Fagfelt", "src": "Arbeidskrav (N = 391)", "lvl": "nominal", "cats": {"Øk./jus/adm.": 114, "Naturvit./teknologi": 121, "Samf./psykologi": 70, "Helse/medisin": 70, "Humaniora/kunst": 16}}, "a_nasj": {"lab": "Nasjonsgruppe", "src": "Arbeidskrav (N = 391)", "lvl": "nominal", "cats": {"Andre": 28, "Europa": 104, "Mexico": 136, "Sør-Afrika": 118}}, "a_karstat": {"lab": "Statistikkarakter (1–5)", "src": "Arbeidskrav (N = 391)", "lvl": "ordinal", "vals": [3.0, 2.0, 3.0, 2.0, 3.0, 5.0, 5.0, 3.0, 3.0, 2.0, 4.0, 4.0, 3.0, 3.0, 4.0, 4.0, 3.0, 3.0, 4.0, 4.0, 3.0, 4.0, 5.0, 3.0, 2.0, 2.0, 4.0, 4.0, 3.0, 3.0, 4.0, 3.0, 3.0, 3.0, 2.0, 4.0, 2.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 4.0, 3.0, 3.0, 3.0, 3.0, 1.0, 4.0, 3.0, 4.0, 3.0, 3.0, 3.0, 3.0, 4.0, 3.0, 4.0, 4.0, 5.0, 4.0, 2.0, 2.0, 4.0, 5.0, 3.0, 4.0, 3.0, 2.0, 2.0, 3.0, 3.0, 2.0, 2.0, 4.0, 4.0, 4.0, 5.0, 2.0, 5.0, 3.0, 3.0, 5.0, 3.0, 4.0, 3.0, 4.0, 3.0, 2.0, 3.0, 3.0, 4.0, 3.0, 3.0, 3.0, 4.0, 3.0, 4.0, 3.0, 2.0, 4.0, 3.0, 3.0, 4.0, 3.0, 4.0, 3.0, 3.0, 3.0, 3.0, 4.0, 3.0, 2.0, 3.0, 4.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 4.0, 2.0, 3.0, 4.0, 4.0, 2.0, 5.0, 2.0, 3.0, 3.0, 4.0, 3.0, 4.0, 4.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0, 4.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0, 4.0, 3.0, 2.0, 2.0, 2.0, 2.0, 4.0, 3.0, 5.0, 3.0, 3.0, 3.0, 3.0, 4.0, 2.0, 3.0, 4.0, 2.0, 3.0, 3.0, 4.0, 4.0, 3.0, 4.0, 3.0, 3.0, 5.0, 2.0, 3.0, 3.0, 3.0, 3.0, 2.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 5.0, 4.0, 2.0, 4.0, 4.0, 2.0, 4.0, 4.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 4.0, 4.0, 3.0, 4.0, 3.0, 2.0, 4.0, 3.0, 4.0, 4.0, 4.0, 4.0, 5.0, 3.0, 4.0, 3.0, 3.0, 3.0, 3.0, 4.0, 3.0, 5.0, 5.0, 1.0, 3.0, 3.0, 3.0, 3.0, 4.0, 2.0, 3.0, 3.0, 3.0, 3.0, 4.0, 3.0, 3.0, 3.0, 4.0, 2.0, 3.0, 3.0, 4.0, 4.0, 5.0, 4.0, 2.0, 1.0, 4.0, 3.0, 1.0, 5.0, 4.0, 4.0, 3.0, 4.0, 4.0, 4.0, 1.0, 4.0, 3.0, 3.0, 3.0, 4.0, 3.0, 3.0, 4.0, 3.0, 3.0, 2.0, 2.0, 3.0, 3.0, 3.0, 4.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 4.0, 4.0, 3.0, 4.0, 5.0, 3.0, 4.0, 3.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0, 4.0, 3.0, 1.0, 4.0, 3.0, 5.0, 1.0, 3.0, 4.0, 4.0, 4.0, 3.0, 5.0, 4.0, 2.0, 2.0, 2.0, 3.0, 4.0, 5.0, 3.0, 3.0, 3.0, 3.0, 3.0, 4.0, 5.0, 4.0, 2.0, 4.0, 3.0, 3.0, 4.0, 3.0, 3.0, 3.0, 4.0, 3.0, 5.0, 3.0, 3.0, 4.0, 5.0, 1.0, 4.0, 3.0, 4.0, 5.0, 4.0, 3.0, 4.0, 3.0, 2.0, 3.0, 3.0, 3.0, 3.0, 5.0, 3.0, 3.0, 3.0, 3.0, 4.0, 3.0, 4.0, 4.0, 4.0, 3.0, 3.0, 4.0, 5.0, 5.0, 3.0, 4.0, 2.0, 2.0, 4.0, 2.0, 4.0, 4.0, 3.0, 4.0, 3.0, 4.0, 4.0, 3.0, 3.0, 4.0, 2.0]}, "a_kargen": {"lab": "Karakterer generelt (1–5)", "src": "Arbeidskrav (N = 391)", "lvl": "ordinal", "vals": [3.0, 3.0, 3.0, 3.0, 4.0, 3.0, 4.0, 4.0, 3.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0, 4.0, 3.0, 4.0, 5.0, 4.0, 4.0, 4.0, 4.0, 4.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0, 3.0, 5.0, 3.0, 4.0, 4.0, 3.0, 3.0, 4.0, 2.0, 3.0, 3.0, 3.0, 3.0, 3.0, 4.0, 3.0, 3.0, 3.0, 3.0, 4.0, 3.0, 3.0, 3.0, 3.0, 4.0, 3.0, 4.0, 4.0, 4.0, 3.0, 4.0, 3.0, 1.0, 4.0, 4.0, 4.0, 5.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 2.0, 4.0, 4.0, 4.0, 3.0, 3.0, 4.0, 5.0, 4.0, 4.0, 3.0, 3.0, 4.0, 5.0, 4.0, 4.0, 4.0, 3.0, 3.0, 2.0, 3.0, 2.0, 4.0, 2.0, 4.0, 3.0, 4.0, 4.0, 3.0, 3.0, 4.0, 4.0, 4.0, 3.0, 3.0, 4.0, 4.0, 4.0, 3.0, 4.0, 4.0, 5.0, 4.0, 2.0, 5.0, 4.0, 3.0, 3.0, 4.0, 3.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 3.0, 3.0, 5.0, 5.0, 4.0, 4.0, 4.0, 4.0, 3.0, 5.0, 3.0, 5.0, 4.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0, 1.0, 4.0, 4.0, 3.0, 3.0, 3.0, 3.0, 3.0, 2.0, 5.0, 5.0, 4.0, 4.0, 4.0, 4.0, 3.0, 4.0, 3.0, 2.0, 4.0, 4.0, 4.0, 4.0, 3.0, 3.0, 4.0, 3.0, 5.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0, 4.0, 3.0, 3.0, 4.0, 4.0, 4.0, 3.0, 4.0, 4.0, 5.0, 3.0, 2.0, 4.0, 3.0, 3.0, 2.0, 4.0, 4.0, 4.0, 5.0, 4.0, 4.0, 3.0, 4.0, 3.0, 3.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 3.0, 3.0, 5.0, 4.0, 3.0, 4.0, 4.0, 3.0, 2.0, 5.0, 3.0, 4.0, 5.0, 3.0, 4.0, 4.0, 4.0, 3.0, 4.0, 3.0, 5.0, 4.0, 3.0, 3.0, 4.0, 3.0, 3.0, 3.0, 4.0, 3.0, 3.0, 4.0, 4.0, 3.0, 3.0, 4.0, 4.0, 2.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 5.0, 5.0, 4.0, 4.0, 2.0, 3.0, 3.0, 5.0, 4.0, 3.0, 3.0, 3.0, 4.0, 4.0, 3.0, 4.0, 3.0, 4.0, 2.0, 2.0, 4.0, 4.0, 4.0, 3.0, 4.0, 3.0, 3.0, 4.0, 3.0, 3.0, 4.0, 3.0, 4.0, 5.0, 3.0, 4.0, 4.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0, 3.0, 3.0, 4.0, 3.0, 5.0, 3.0, 5.0, 5.0, 4.0, 4.0, 4.0, 5.0, 4.0, 4.0, 3.0, 3.0, 4.0, 4.0, 5.0, 4.0, 3.0, 3.0, 3.0, 4.0, 4.0, 5.0, 4.0, 4.0, 4.0, 4.0, 3.0, 3.0, 3.0, 4.0, 3.0, 2.0, 4.0, 4.0, 3.0, 3.0, 4.0, 4.0, 3.0, 4.0, 4.0, 4.0, 4.0, 3.0, 3.0, 4.0, 4.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 3.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0, 5.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0, 3.0, 3.0, 2.0]}, "a_bet": {"lab": "Betingelse (lett/vanskelig)", "src": "Arbeidskrav (N = 391)", "lvl": "nominal", "cats": {"Vanskelig": 199, "Lett": 192}}, "a_quiz": {"lab": "Prøveskår (0–5)", "src": "Arbeidskrav (N = 391)", "lvl": "ordinal", "vals": [1.0, 5.0, 4.0, 5.0, 1.0, 0.0, 4.0, 3.0, 5.0, 1.0, 5.0, 5.0, 1.0, 2.0, 0.0, 5.0, 1.0, 5.0, 5.0, 1.0, 0.0, 5.0, 0.0, 5.0, 1.0, 4.0, 2.0, 3.0, 1.0, 3.0, 5.0, 4.0, 4.0, 1.0, 1.0, 4.0, 4.0, 1.0, 5.0, 5.0, 1.0, 1.0, 1.0, 4.0, 0.0, 3.0, 0.0, 1.0, 4.0, 5.0, 1.0, 2.0, 1.0, 0.0, 5.0, 1.0, 1.0, 2.0, 1.0, 0.0, 3.0, 3.0, 1.0, 0.0, 2.0, 5.0, 1.0, 1.0, 4.0, 4.0, 5.0, 5.0, 0.0, 2.0, 0.0, 5.0, 1.0, 5.0, 1.0, 5.0, 1.0, 4.0, 5.0, 4.0, 3.0, 5.0, 5.0, 5.0, 0.0, 0.0, 5.0, 0.0, 1.0, 5.0, 0.0, 1.0, 1.0, 1.0, 2.0, 1.0, 2.0, 4.0, 5.0, 1.0, 1.0, 4.0, 2.0, 4.0, 1.0, 1.0, 4.0, 3.0, 5.0, 1.0, 5.0, 0.0, 0.0, 5.0, 0.0, 1.0, 2.0, 5.0, 0.0, 4.0, 1.0, 1.0, 5.0, 1.0, 2.0, 0.0, 0.0, 2.0, 3.0, 0.0, 5.0, 0.0, 3.0, 4.0, 0.0, 4.0, 0.0, 5.0, 2.0, 3.0, 0.0, 2.0, 2.0, 5.0, 3.0, 0.0, 1.0, 1.0, 4.0, 5.0, 5.0, 0.0, 0.0, 2.0, 4.0, 0.0, 1.0, 0.0, 0.0, 2.0, 5.0, 4.0, 1.0, 0.0, 5.0, 5.0, 3.0, 4.0, 5.0, 5.0, 5.0, 1.0, 3.0, 3.0, 5.0, 1.0, 4.0, 3.0, 0.0, 1.0, 0.0, 3.0, 5.0, 1.0, 3.0, 1.0, 4.0, 2.0, 2.0, 4.0, 1.0, 0.0, 2.0, 0.0, 4.0, 4.0, 5.0, 0.0, 3.0, 0.0, 3.0, 5.0, 0.0, 4.0, 0.0, 4.0, 0.0, 5.0, 3.0, 1.0, 1.0, 4.0, 1.0, 0.0, 0.0, 4.0, 5.0, 5.0, 0.0, 3.0, 1.0, 0.0, 0.0, 5.0, 3.0, 4.0, 0.0, 5.0, 0.0, 1.0, 4.0, 0.0, 2.0, 1.0, 2.0, 3.0, 2.0, 0.0, 4.0, 5.0, 4.0, 2.0, 1.0, 1.0, 1.0, 3.0, 5.0, 1.0, 2.0, 0.0, 0.0, 0.0, 0.0, 1.0, 5.0, 0.0, 5.0, 1.0, 0.0, 3.0, 0.0, 4.0, 1.0, 4.0, 2.0, 5.0, 0.0, 5.0, 5.0, 0.0, 5.0, 5.0, 0.0, 4.0, 2.0, 1.0, 4.0, 1.0, 5.0, 3.0, 4.0, 2.0, 1.0, 0.0, 5.0, 2.0, 0.0, 1.0, 4.0, 1.0, 0.0, 0.0, 1.0, 4.0, 1.0, 0.0, 4.0, 1.0, 4.0, 5.0, 4.0, 2.0, 4.0, 5.0, 4.0, 5.0, 5.0, 4.0, 2.0, 4.0, 5.0, 1.0, 4.0, 2.0, 0.0, 3.0, 0.0, 4.0, 4.0, 2.0, 3.0, 5.0, 1.0, 1.0, 1.0, 3.0, 0.0, 1.0, 4.0, 5.0, 0.0, 0.0, 5.0, 4.0, 4.0, 3.0, 1.0, 0.0, 2.0, 2.0, 2.0, 4.0, 2.0, 4.0, 0.0, 5.0, 4.0, 4.0, 5.0, 0.0, 3.0, 0.0, 0.0, 0.0, 5.0, 5.0, 1.0, 2.0, 5.0, 2.0, 0.0, 5.0, 4.0, 5.0, 4.0, 4.0, 1.0, 4.0, 1.0, 2.0, 3.0, 0.0, 5.0, 2.0, 2.0, 3.0, 1.0, 5.0, 1.0, 5.0, 2.0, 3.0, 5.0, 1.0, 4.0, 5.0, 4.0]}, "a_Perfeksjonistiske_tanker_pre": {"lab": "Perfeksjonistiske tanker (pre)", "src": "Arbeidskrav (N = 391)", "lvl": "scale", "vals": [2.6, 1.2, 1.4, 2.0, 0.8, 2.4, 2.0, 0.4, 1.8, 1.6, 2.4, 1.4, 1.4, 2.8, 2.6, 2.6, 1.8, 1.8, 0.8, 0.0, 2.2, 1.4, 2.4, 1.2, 1.4, 3.0, 2.2, 2.4, 2.2, 3.6, 0.6, 0.6, 2.4, 0.8, 1.8, 1.4, 2.6, 3.4, 1.0, 2.0, 0.6, 1.4, 0.6, 1.6, 3.6, 2.0, 2.8, 2.4, 1.6, 1.4, 0.2, 1.0, 1.6, 0.6, 3.6, 2.8, 1.8, 2.4, 3.4, 1.2, 2.4, 0.4, 3.0, 2.8, 2.2, 0.6, 2.6, 2.4, 2.4, 2.2, 1.4, 3.0, 2.4, 2.6, 2.2, 3.0, 2.2, 0.0, 2.6, 2.6, 2.0, 2.8, 1.0, 3.2, 2.6, 2.4, 2.6, 1.8, 1.8, 2.6, 0.6, 1.75, 1.6, 3.2, 1.0, 2.6, 2.2, 2.2, 2.6, 3.2, 1.2, 1.4, 2.4, 2.6, 1.2, 2.2, 3.2, 0.0, 1.25, 2.0, 3.0, 1.0, 1.8, 2.4, 3.6, 1.0, 3.2, 2.6, 2.2, 1.4, 1.0, 0.4, 2.0, 2.8, 0.4, 1.8, 2.0, 1.2, 2.4, 1.8, 2.4, 2.8, 1.2, 2.2, 1.6, 2.0, 1.6, 2.4, 0.6, 0.8, 2.4, 2.0, 2.2, 3.6, 2.8, 1.2, 2.8, 2.0, 2.4, 3.2, 1.0, 3.6, 2.6, 2.8, 2.0, 2.4, 2.8, 3.0, 1.8, 2.8, 3.6, 2.8, 1.6, 2.4, 1.0, 2.0, 3.4, 2.6, 2.4, 3.2, 3.2, 2.4, 2.6, 4.0, 1.6, 2.4, 2.6, 3.2, 1.8, 0.6, 0.8, 4.0, 2.4, 2.6, 1.6, 2.4, 2.0, 2.0, 3.2, 3.4, 1.8, 2.2, 0.6, 2.2, 2.8, 0.8, 2.4, 1.6, 2.6, 2.2, 3.0, 2.8, 2.8, 0.8, 2.6, 4.0, 0.4, 1.6, 2.0, 0.8, 0.0, 3.0, 1.4, 2.4, 2.8, 3.2, 1.4, 1.8, 1.8, 1.6, 0.4, 0.0, 1.2, 0.8, 3.2, 2.4, 1.6, 1.2, 2.4, 2.4, 1.8, 1.0, 1.8, 3.8, 2.8, 1.8, 3.4, 1.6, 1.0, 4.0, 2.4, 2.4, 3.0, 2.2, 1.0, 2.8, 0.8, 1.8, 2.6, 1.2, 1.8, 2.2, 2.8, 2.4, 3.4, 3.0, 3.0, 2.8, 1.8, 1.4, 2.6, 1.8, 2.6, 1.4, 3.6, 1.2, 2.6, 1.8, 1.0, 2.4, 0.4, 2.4, 1.8, 2.2, 0.6, 2.6, 2.4, 2.0, 3.6, 3.4, 1.0, 2.4, 1.0, 3.8, 0.8, 1.6, 3.2, 2.2, 1.8, 1.8, 1.0, 1.6, 0.8, 1.0, 2.8, 2.4, 3.0, 3.4, 2.2, 3.4, 2.0, 3.0, 2.0, 2.0, 3.0, 2.2, 2.8, 3.0, 0.0, 2.6, 1.0, 2.0, 3.2, 4.0, 0.8, 1.6, 3.4, 1.8, 3.0, 0.8, 0.8, 2.6, 1.0, 1.8, 1.8, 1.8, 0.6, 2.2, 1.2, 3.0, 2.2, 2.8, 3.0, 1.4, 2.2, 2.6, 3.0, 1.8, 3.4, 3.6, 3.8, 0.4, 2.8, 2.8, 3.25, 2.2, 3.0, 3.4, 2.8, 1.6, 2.0, 3.6, 2.6, 1.8, 3.0, 3.6, 0.0, 3.8, 3.0, 1.6, 1.2, 2.4, 2.8, 1.8, 2.6, 0.0, 3.2, 1.4, 3.0, 0.0, 0.6, 1.0, 2.6, 2.2, 1.2, 0.8, 0.0, 1.0, 2.8, 1.6, 1.0, 1.2, 1.0, 2.2, 2.0, 1.4, 1.0, 2.6, 2.0, 2.2, 0.4]}, "a_Perfeksjonistiske_tanker_post": {"lab": "Perfeksjonistiske tanker (post)", "src": "Arbeidskrav (N = 391)", "lvl": "scale", "vals": [3.2, 0.8, 1.6, 1.6, 0.2, 2.0, 1.6, 0.2, 2.8, 1.6, 2.0, 1.4, 1.2, 2.2, 4.0, 2.8, 1.2, 2.2, 1.2, 0.0, 2.6, 1.2, 1.8, 0.8, 2.0, 3.0, 3.2, 2.2, 2.2, 3.0, 0.2, 0.2, 2.6, 1.6, 1.6, 1.2, 2.4, 3.0, 0.8, 2.0, 0.6, 1.2, 1.0, 1.6, 3.8, 2.2, 4.0, 1.6, 1.4, 1.2, 0.0, 0.2, 1.4, 0.4, 3.8, 2.4, 3.0, 3.2, 3.6, 2.0, 2.6, 0.0, 1.8, 2.8, 3.0, 0.4, 2.4, 2.4, 2.4, 0.4, 1.6, 3.0, 2.8, 2.0, 3.0, 3.6, 2.2, 0.0, 3.4, 3.0, 2.2, 2.8, 1.2, 3.2, 2.2, 2.2, 2.4, 1.0, 2.0, 2.2, 0.0, 2.2, 1.0, 2.8, 1.4, 3.0, 2.2, 4.0, 1.8, 3.4, 1.4, 1.0, 3.0, 3.0, 1.0, 2.8, 3.0, 0.2, 0.8, 2.6, 3.0, 0.8, 1.6, 1.8, 3.8, 1.8, 3.4, 1.8, 2.4, 0.8, 1.2, 0.2, 2.0, 2.2, 0.2, 1.8, 2.2, 1.2, 2.4, 2.6, 3.0, 3.2, 0.8, 2.4, 1.4, 2.8, 0.8, 3.2, 0.2, 0.6, 2.2, 2.0, 2.8, 3.6, 2.4, 1.4, 2.0, 0.6, 3.0, 3.2, 0.6, 3.6, 2.2, 2.6, 1.6, 3.6, 3.2, 4.0, 1.4, 2.8, 4.0, 2.6, 1.4, 2.6, 0.8, 2.2, 4.0, 3.0, 2.4, 3.4, 2.8, 1.6, 1.2, 3.8, 1.6, 0.4, 1.6, 3.0, 1.8, 0.2, 0.2, 3.0, 2.4, 2.8, 2.2, 2.4, 1.4, 2.0, 3.2, 3.8, 2.6, 1.6, 0.6, 1.8, 2.2, 1.4, 2.6, 1.2, 1.8, 1.2, 1.8, 4.0, 3.6, 0.8, 2.8, 4.0, 1.8, 1.6, 1.8, 0.6, 0.0, 3.0, 1.2, 0.0, 2.6, 1.8, 2.4, 1.8, 2.4, 0.4, 0.2, 0.0, 0.6, 0.6, 3.8, 1.0, 2.2, 1.2, 3.6, 1.6, 0.0, 0.6, 0.8, 3.6, 2.8, 1.4, 3.4, 1.2, 1.2, 4.0, 2.8, 3.0, 3.4, 1.6, 2.0, 3.0, 0.8, 1.8, 2.6, 0.0, 1.8, 1.2, 2.8, 3.0, 3.6, 3.4, 3.2, 3.6, 0.8, 1.6, 2.8, 1.6, 2.2, 1.4, 3.8, 0.75, 2.6, 2.0, 0.8, 1.6, 0.4, 1.4, 1.6, 2.0, 1.0, 1.6, 1.8, 2.2, 3.6, 3.0, 1.2, 1.6, 1.4, 4.0, 1.2, 1.8, 3.4, 2.4, 1.0, 3.0, 1.0, 0.8, 0.8, 2.2, 1.4, 3.2, 2.8, 3.4, 2.4, 3.0, 1.8, 3.6, 2.0, 2.2, 3.0, 2.0, 2.8, 3.0, 0.0, 2.0, 0.4, 2.2, 2.6, 4.0, 0.8, 1.2, 2.8, 2.2, 4.0, 0.4, 0.2, 2.6, 1.0, 0.8, 2.2, 2.2, 0.2, 2.4, 1.2, 2.6, 2.2, 3.0, 3.0, 1.4, 2.0, 3.0, 3.2, 1.4, 3.4, 3.6, 4.0, 1.2, 3.6, 3.0, 3.8, 2.6, 3.4, 2.6, 2.8, 1.2, 2.4, 3.6, 2.2, 1.8, 3.0, 3.8, 0.0, 4.0, 2.6, 2.0, 1.8, 2.8, 2.8, 0.8, 2.8, 0.0, 3.4, 1.4, 2.6, 0.2, 0.8, 1.6, 2.4, 2.8, 1.6, 0.4, 0.2, 1.0, 2.4, 2.2, 1.0, 1.0, 0.8, 1.6, 2.0, 0.6, 0.2, 3.0, 1.6, 2.4, 0.8]}, "a_Selvtillit_pre": {"lab": "Statistikk-selvtillit (pre)", "src": "Arbeidskrav (N = 391)", "lvl": "scale", "vals": [3.71, 3.79, 4.0, 3.29, 4.36, 2.93, 2.64, 2.57, 2.43, 3.79, 3.79, 3.93, 3.64, 3.36, 3.57, 3.29, 3.43, 3.21, 4.36, 3.86, 4.07, 2.93, 4.07, 3.57, 3.14, 3.14, 3.79, 3.5, 2.21, 2.43, 4.14, 5.0, 2.57, 4.14, 3.79, 3.0, 3.21, 1.93, 4.07, 3.43, 3.07, 2.79, 2.93, 3.43, 2.14, 2.46, 3.36, 3.36, 2.5, 3.14, 4.0, 3.93, 3.07, 3.93, 2.14, 3.64, 2.29, 3.29, 2.93, 2.79, 3.36, 3.25, 2.57, 2.43, 3.64, 4.64, 3.64, 2.86, 3.29, 3.14, 3.36, 3.29, 2.79, 2.5, 3.43, 2.36, 3.07, 4.43, 2.86, 1.36, 2.36, 3.07, 3.93, 1.71, 2.64, 2.38, 3.36, 4.43, 2.57, 2.43, 3.79, 3.14, 2.5, 1.57, 4.14, 1.86, 3.57, 2.71, 4.79, 3.0, 2.14, 3.5, 3.57, 3.79, 3.29, 1.86, 3.0, 3.29, 4.09, 1.71, 2.64, 4.21, 2.64, 2.79, 2.64, 4.0, 2.57, 3.29, 2.29, 3.71, 4.29, 3.71, 4.21, 2.64, 5.0, 3.57, 2.5, 3.93, 4.29, 2.36, 2.14, 2.79, 3.93, 3.93, 3.86, 3.86, 3.86, 2.14, 3.21, 3.92, 3.07, 4.54, 2.71, 2.93, 2.71, 3.07, 2.86, 4.29, 3.15, 2.57, 4.21, 1.86, 2.79, 3.0, 3.36, 1.43, 3.29, 2.36, 4.0, 4.21, 1.71, 2.07, 2.36, 3.21, 3.71, 3.07, 2.36, 3.71, 4.0, 2.71, 2.14, 3.57, 2.93, 3.0, 2.71, 3.64, 4.07, 3.14, 3.07, 1.64, 4.07, 3.93, 2.14, 3.14, 3.36, 2.79, 2.29, 1.64, 2.21, 2.36, 3.86, 3.93, 4.29, 3.57, 1.93, 3.79, 3.5, 3.57, 2.43, 2.93, 2.14, 1.79, 3.07, 4.36, 2.29, 3.71, 4.29, 4.0, 2.43, 3.64, 3.29, 1.93, 3.36, 3.43, 4.29, 3.14, 4.07, 4.14, 2.93, 3.5, 4.36, 4.29, 2.57, 2.07, 1.79, 2.93, 3.5, 4.86, 3.0, 3.14, 3.71, 4.86, 3.57, 2.0, 2.79, 2.86, 4.29, 2.0, 3.14, 1.86, 3.71, 2.5, 3.5, 3.21, 3.14, 1.93, 4.07, 2.86, 3.71, 4.21, 2.57, 3.5, 2.5, 3.07, 1.21, 1.43, 1.93, 2.5, 3.64, 4.07, 2.86, 4.0, 3.43, 2.0, 2.5, 4.36, 3.0, 3.29, 4.21, 3.14, 4.15, 3.21, 3.29, 2.79, 4.5, 2.93, 2.86, 2.07, 1.21, 2.79, 4.07, 3.93, 2.38, 2.29, 4.14, 4.14, 1.57, 3.0, 3.5, 2.71, 4.0, 3.57, 3.93, 4.43, 2.79, 3.14, 2.93, 2.93, 3.14, 2.5, 4.64, 1.57, 2.93, 3.93, 1.77, 3.43, 2.62, 4.07, 4.57, 4.14, 3.57, 3.14, 2.93, 3.0, 3.71, 3.86, 2.36, 3.43, 2.14, 3.93, 4.0, 4.07, 3.79, 4.36, 4.0, 3.21, 2.57, 4.36, 3.79, 2.86, 3.14, 3.14, 2.5, 3.07, 2.93, 2.0, 2.93, 2.21, 3.14, 3.14, 2.43, 3.71, 1.79, 3.5, 3.14, 2.86, 3.29, 2.86, 3.86, 2.86, 2.5, 1.5, 2.43, 2.57, 2.21, 3.29, 4.0, 1.93, 3.79, 3.07, 4.29, 2.79, 2.36, 3.85, 3.14, 4.5, 3.0, 3.07, 3.36, 4.43, 3.21, 3.86, 2.64, 3.29, 3.15, 3.64, 3.36, 4.14, 3.64, 3.14, 3.43, 2.93, 4.0, 3.0, 4.71, 4.14, 4.14, 2.43, 3.5, 3.43, 4.21]}, "a_Selvtillit_post": {"lab": "Statistikk-selvtillit (post)", "src": "Arbeidskrav (N = 391)", "lvl": "scale", "vals": [2.07, 4.14, 4.21, 3.71, 4.36, 2.86, 2.93, 3.36, 2.93, 4.0, 4.71, 4.64, 4.14, 3.79, 2.78, 3.93, 3.64, 4.21, 4.36, 2.43, 3.5, 3.93, 4.07, 4.57, 3.21, 3.5, 3.0, 3.36, 1.79, 3.14, 4.5, 4.93, 3.5, 4.5, 2.64, 2.93, 3.86, 1.36, 4.5, 3.57, 2.71, 2.93, 2.71, 3.36, 1.07, 2.43, 1.36, 3.07, 2.71, 2.79, 3.93, 4.5, 2.07, 3.36, 2.5, 1.79, 2.43, 2.29, 3.21, 3.07, 3.93, 3.21, 1.71, 1.0, 3.0, 5.0, 2.93, 2.57, 3.07, 4.57, 3.43, 3.29, 2.14, 2.57, 2.07, 2.57, 3.07, 4.5, 2.0, 3.79, 3.29, 3.14, 5.0, 1.79, 2.71, 3.43, 4.57, 4.5, 2.86, 2.86, 4.71, 2.71, 3.07, 1.64, 4.14, 1.21, 2.57, 1.71, 3.0, 2.64, 2.64, 4.29, 4.29, 3.5, 2.93, 2.07, 1.57, 3.21, 4.67, 1.14, 2.43, 4.43, 3.57, 2.93, 2.57, 3.86, 1.86, 4.29, 1.57, 3.38, 4.07, 4.86, 3.36, 2.5, 5.0, 3.43, 3.93, 4.21, 2.79, 1.5, 1.21, 1.86, 4.29, 3.0, 4.21, 2.57, 4.0, 2.29, 3.29, 4.36, 3.14, 4.77, 1.93, 2.36, 2.36, 3.0, 3.0, 4.43, 2.64, 2.43, 3.71, 1.43, 3.64, 3.5, 4.29, 1.07, 2.71, 2.0, 4.21, 3.07, 1.43, 1.29, 2.14, 2.43, 4.07, 3.64, 2.36, 2.79, 4.07, 4.07, 2.57, 4.14, 4.21, 3.29, 3.64, 3.79, 2.93, 2.5, 3.5, 3.93, 4.36, 2.29, 1.29, 2.93, 2.64, 2.86, 3.36, 1.64, 2.14, 2.86, 3.64, 3.21, 4.36, 4.29, 1.64, 3.86, 2.57, 2.79, 3.21, 2.93, 3.86, 2.21, 2.93, 4.14, 2.29, 3.71, 1.93, 4.29, 2.0, 4.07, 3.71, 2.79, 4.0, 1.57, 2.29, 3.14, 2.57, 4.36, 2.64, 3.86, 4.71, 4.14, 3.79, 2.21, 1.29, 1.0, 2.93, 4.86, 2.29, 2.79, 2.25, 4.79, 2.5, 2.07, 3.21, 2.0, 1.57, 2.15, 2.64, 1.86, 3.36, 1.71, 3.64, 3.5, 3.57, 2.0, 4.21, 2.79, 3.29, 4.21, 3.29, 4.29, 2.5, 1.5, 1.71, 1.0, 1.43, 1.0, 4.57, 4.29, 3.79, 3.14, 2.93, 2.86, 1.5, 4.83, 2.71, 3.14, 4.36, 3.57, 4.57, 3.07, 3.71, 3.0, 4.86, 3.86, 2.93, 2.21, 1.29, 2.36, 3.79, 2.93, 3.14, 2.57, 4.64, 4.0, 1.14, 2.86, 4.29, 2.07, 2.79, 3.79, 4.57, 3.0, 3.36, 2.79, 2.86, 3.43, 3.07, 1.86, 4.71, 2.5, 3.71, 4.43, 1.5, 3.14, 3.57, 3.79, 4.71, 4.14, 4.71, 3.57, 2.5, 3.29, 3.86, 3.07, 2.93, 3.5, 1.71, 3.86, 3.0, 3.79, 4.07, 3.71, 4.07, 3.86, 3.71, 4.0, 4.14, 1.86, 3.14, 2.86, 3.71, 3.29, 1.29, 1.36, 2.71, 4.07, 2.57, 2.64, 3.0, 4.07, 1.93, 3.21, 2.43, 2.43, 3.29, 4.29, 3.0, 4.57, 3.0, 1.64, 3.07, 2.64, 2.14, 2.43, 3.79, 1.0, 4.07, 3.64, 3.0, 2.14, 2.79, 3.0, 2.43, 4.64, 3.0, 4.0, 3.64, 4.71, 3.07, 3.57, 1.71, 2.71, 3.43, 4.14, 3.64, 4.0, 2.5, 3.21, 2.79, 4.07, 3.5, 4.0, 4.31, 3.86, 4.43, 2.21, 4.36, 4.21, 4.64]}, "a_Selvkritisk_perfeksjonisme_trait": {"lab": "Selvkritisk perfeksjonisme (trekk)", "src": "Arbeidskrav (N = 391)", "lvl": "scale", "vals": [2.17, 2.39, 2.72, 2.78, 1.56, 3.78, 4.0, 3.06, 3.72, 2.39, 3.11, 1.83, 2.83, 2.89, 3.29, 3.78, 3.0, 3.22, 2.0, 2.44, 3.28, 2.72, 3.56, 3.11, 2.33, 3.56, 3.44, 2.72, 3.5, 3.28, 2.39, 1.94, 3.78, 1.94, 2.72, 3.17, 3.12, 3.89, 2.78, 3.67, 2.78, 3.06, 3.06, 2.0, 4.44, 4.53, 4.06, 3.06, 3.28, 3.83, 1.33, 1.83, 3.28, 2.22, 4.83, 3.89, 3.89, 3.11, 3.72, 2.11, 3.06, 3.06, 3.56, 3.78, 2.67, 3.0, 3.11, 4.06, 3.28, 2.89, 2.28, 2.67, 3.0, 3.0, 3.06, 4.5, 2.67, 2.56, 3.11, 4.17, 3.56, 2.06, 2.33, 4.11, 4.0, 3.78, 4.06, 2.44, 1.89, 2.72, 2.78, 3.5, 3.11, 4.67, 2.28, 4.28, 3.61, 3.67, 3.28, 4.0, 2.39, 1.44, 2.89, 3.28, 1.94, 3.61, 3.83, 1.94, 2.5, 3.89, 3.44, 1.83, 4.06, 3.77, 3.78, 1.94, 3.25, 3.33, 3.53, 2.88, 2.33, 3.39, 2.5, 3.56, 1.44, 2.39, 3.72, 2.0, 2.78, 3.72, 3.5, 3.83, 1.83, 2.56, 1.06, 2.83, 2.5, 3.72, 1.61, 2.83, 3.33, 3.17, 2.94, 4.61, 3.5, 2.89, 2.17, 1.94, 3.59, 3.78, 1.61, 4.39, 3.33, 3.11, 3.22, 3.33, 2.11, 3.44, 2.88, 1.94, 4.94, 4.11, 3.39, 3.72, 2.56, 2.28, 4.39, 3.83, 3.39, 3.67, 3.89, 2.56, 3.5, 4.5, 2.78, 2.22, 2.94, 3.5, 3.06, 2.9, 3.17, 3.61, 3.78, 3.94, 3.11, 3.67, 3.33, 4.22, 4.11, 4.28, 3.06, 1.94, 1.56, 2.83, 3.94, 2.67, 2.5, 2.72, 3.5, 2.44, 4.61, 4.83, 4.78, 2.17, 4.6, 1.44, 2.39, 3.22, 3.2, 2.0, 2.71, 3.61, 1.61, 3.56, 3.17, 4.28, 1.78, 1.61, 3.39, 2.78, 1.39, 1.33, 2.11, 3.94, 4.22, 2.44, 3.5, 2.0, 4.75, 3.0, 2.17, 1.11, 2.28, 3.89, 3.83, 2.61, 2.83, 2.83, 3.5, 4.44, 2.67, 4.35, 2.67, 2.61, 2.83, 4.22, 2.56, 3.28, 2.44, 1.56, 4.06, 2.17, 3.33, 3.28, 4.22, 4.44, 3.67, 3.67, 2.83, 3.39, 3.11, 1.67, 4.0, 3.61, 4.0, 2.06, 3.56, 2.22, 1.44, 2.72, 2.89, 3.28, 3.5, 3.22, 3.61, 2.72, 3.39, 2.44, 3.83, 3.64, 1.83, 3.06, 3.22, 4.06, 3.44, 1.72, 4.5, 3.67, 3.17, 3.44, 1.83, 2.67, 2.72, 1.94, 3.22, 2.67, 3.61, 3.17, 3.17, 4.11, 2.94, 3.8, 3.44, 2.06, 4.11, 3.5, 4.33, 3.72, 1.67, 2.56, 1.78, 2.22, 2.83, 3.56, 1.06, 3.39, 4.88, 2.78, 4.73, 2.78, 2.22, 3.17, 2.5, 1.94, 3.06, 2.5, 3.11, 1.65, 2.39, 2.89, 3.06, 3.17, 4.5, 3.67, 3.17, 3.67, 3.78, 3.11, 3.89, 4.39, 4.61, 1.89, 3.56, 3.06, 3.67, 4.33, 3.78, 3.11, 4.06, 2.83, 3.78, 4.88, 3.67, 3.0, 4.11, 3.61, 2.53, 4.67, 2.67, 2.94, 2.72, 2.22, 4.33, 2.0, 3.33, 1.11, 3.56, 3.78, 2.39, 1.0, 2.5, 3.56, 4.06, 3.67, 2.88, 2.44, 1.11, 2.61, 3.78, 3.28, 3.11, 2.17, 1.94, 2.06, 1.89, 2.72, 2.5, 4.22, 3.44, 3.83, 1.89]}, "a_Rigid_perfeksjonisme": {"lab": "Rigid perfeksjonisme (trekk)", "src": "Arbeidskrav (N = 391)", "lvl": "scale", "vals": [2.3, 2.6, 1.9, 2.9, 3.4, 3.4, 3.8, 3.4, 2.8, 2.7, 4.4, 4.1, 2.5, 2.0, 3.67, 3.8, 3.1, 3.2, 3.1, 2.2, 3.6, 1.9, 2.6, 3.1, 2.5, 2.2, 4.0, 2.2, 2.6, 3.4, 1.6, 3.5, 3.0, 2.9, 3.8, 2.2, 2.7, 4.1, 2.5, 3.6, 3.0, 2.0, 1.7, 1.8, 4.7, 2.9, 3.7, 1.9, 3.6, 4.2, 1.6, 1.6, 2.0, 2.1, 4.7, 5.0, 3.8, 4.0, 3.9, 2.9, 3.8, 2.0, 1.9, 3.4, 3.1, 2.1, 3.0, 4.2, 3.0, 2.4, 2.1, 3.4, 3.2, 3.0, 3.4, 3.8, 3.3, 3.4, 4.1, 2.5, 3.4, 2.9, 2.7, 3.8, 2.89, 3.9, 4.1, 3.3, 3.3, 3.6, 2.7, 3.7, 2.3, 3.6, 3.0, 3.2, 2.9, 3.8, 3.9, 3.8, 2.6, 2.3, 4.5, 3.0, 2.8, 4.3, 4.9, 2.6, 1.8, 4.2, 3.9, 1.2, 3.7, 3.7, 2.8, 2.5, 4.0, 3.3, 2.9, 1.7, 2.4, 3.6, 1.7, 3.5, 1.2, 2.5, 3.7, 2.6, 3.5, 3.4, 3.2, 3.3, 2.7, 3.0, 1.9, 2.9, 3.3, 2.7, 1.3, 2.6, 2.3, 3.3, 2.0, 4.3, 3.6, 2.9, 1.9, 3.2, 3.11, 3.9, 1.0, 4.0, 2.6, 3.8, 2.4, 2.0, 2.7, 4.1, 3.8, 3.3, 4.5, 4.4, 2.7, 3.1, 2.5, 2.0, 4.0, 3.6, 3.8, 4.2, 3.6, 3.0, 3.2, 3.6, 2.9, 2.5, 3.8, 3.6, 2.9, 1.0, 1.8, 3.5, 4.8, 4.22, 3.6, 3.3, 3.5, 2.3, 3.9, 4.6, 3.7, 2.7, 2.4, 2.5, 3.9, 3.4, 3.0, 1.9, 3.3, 2.7, 3.5, 3.1, 4.8, 3.0, 2.3, 3.3, 2.0, 3.5, 2.4, 2.7, 3.5, 3.7, 2.4, 3.4, 4.2, 4.7, 2.8, 3.6, 3.2, 2.0, 1.3, 1.4, 1.4, 3.0, 4.8, 3.6, 4.1, 1.8, 5.0, 3.2, 1.9, 1.8, 3.2, 3.6, 3.7, 3.4, 5.0, 3.0, 2.4, 3.7, 4.0, 4.4, 2.6, 3.6, 2.8, 3.7, 1.5, 2.6, 4.3, 1.2, 3.4, 2.9, 2.6, 2.1, 4.3, 3.2, 4.5, 3.4, 3.5, 3.5, 2.4, 2.8, 2.5, 3.1, 3.6, 3.4, 4.4, 2.0, 1.3, 2.5, 3.2, 2.9, 4.1, 3.0, 3.8, 3.7, 2.9, 1.3, 3.9, 4.33, 2.1, 2.5, 2.9, 4.0, 3.3, 2.5, 3.9, 2.0, 3.2, 3.1, 1.4, 3.5, 2.5, 3.2, 3.8, 3.4, 3.7, 4.5, 3.2, 5.0, 3.2, 2.6, 2.2, 4.1, 3.2, 3.9, 3.1, 3.8, 2.5, 4.1, 3.2, 4.1, 2.7, 5.0, 1.3, 3.2, 3.3, 2.7, 2.5, 2.2, 4.1, 2.2, 2.8, 4.5, 2.3, 2.0, 3.2, 2.5, 3.0, 2.4, 4.1, 4.0, 2.9, 2.6, 4.1, 3.7, 2.7, 3.8, 4.2, 4.5, 2.8, 3.6, 3.7, 4.2, 4.8, 4.0, 3.9, 4.2, 2.5, 2.9, 4.5, 2.5, 2.8, 3.5, 4.2, 2.8, 4.2, 4.5, 3.78, 2.6, 3.5, 3.4, 2.6, 3.4, 1.1, 4.1, 3.3, 3.1, 2.3, 2.4, 2.0, 2.8, 4.2, 3.22, 2.3, 1.0, 1.5, 3.9, 2.0, 2.5, 1.7, 3.2, 1.6, 3.2, 2.4, 3.1, 4.0, 3.7, 3.5, 2.7]}, "a_Angstsensitivitet": {"lab": "Angstsensitivitet (trekk)", "src": "Arbeidskrav (N = 391)", "lvl": "scale", "vals": [0.83, 0.62, 0.54, 1.88, 1.04, 2.42, 1.67, 1.0, 1.78, 0.92, 0.54, 1.75, 0.21, 0.71, 2.36, 1.46, 0.42, 1.29, 1.04, 1.25, 0.54, 0.33, 1.21, 0.46, 0.96, 1.67, 1.58, 1.33, 2.21, 1.21, 0.38, 0.54, 2.46, 1.21, 1.04, 1.08, 1.17, 2.75, 1.5, 0.83, 1.67, 1.54, 0.83, 1.12, 3.17, 1.17, 0.83, 1.46, 0.96, 3.21, 0.42, 1.04, 0.96, 1.04, 3.38, 3.58, 3.21, 1.62, 1.83, 1.79, 1.46, 1.33, 1.88, 2.29, 1.83, 1.29, 0.67, 3.25, 1.62, 2.04, 0.58, 3.38, 1.25, 1.54, 1.67, 3.0, 2.88, 1.21, 1.58, 1.88, 1.88, 0.38, 0.58, 2.25, 2.59, 1.92, 3.38, 3.29, 2.62, 1.58, 1.46, 2.83, 1.42, 2.73, 3.04, 3.17, 1.75, 1.58, 1.5, 1.75, 0.96, 1.54, 1.83, 1.96, 1.21, 2.17, 4.0, 1.92, 0.83, 2.71, 1.48, 1.42, 2.58, 3.04, 2.12, 1.29, 1.83, 2.17, 1.62, 2.17, 1.96, 0.88, 1.71, 2.33, 0.42, 0.75, 1.5, 0.33, 1.62, 1.71, 2.67, 2.21, 1.92, 1.38, 0.54, 1.71, 0.67, 1.08, 2.5, 1.67, 1.17, 1.25, 0.96, 3.38, 1.96, 1.25, 1.62, 0.46, 1.04, 2.38, 1.5, 2.33, 2.39, 2.08, 0.54, 2.0, 1.0, 1.0, 1.33, 1.0, 1.46, 3.08, 2.33, 1.29, 0.62, 2.21, 2.25, 2.54, 1.75, 1.42, 2.9, 1.21, 0.42, 1.25, 2.21, 0.46, 1.96, 3.0, 1.75, 1.83, 1.12, 1.21, 1.17, 2.75, 1.71, 0.83, 1.88, 2.71, 2.13, 1.04, 2.83, 0.83, 0.38, 1.04, 3.25, 0.71, 1.83, 0.96, 1.96, 1.83, 2.5, 1.0, 1.75, 0.83, 2.86, 2.0, 2.17, 1.46, 2.0, 1.08, 1.17, 1.88, 1.42, 0.54, 1.87, 2.87, 1.21, 1.46, 1.42, 1.0, 0.21, 0.21, 0.38, 1.46, 2.06, 1.83, 1.41, 1.88, 1.91, 0.68, 2.21, 0.29, 1.21, 2.58, 2.88, 0.75, 3.42, 2.21, 1.0, 2.83, 1.54, 1.62, 1.17, 0.29, 1.42, 2.62, 0.46, 0.96, 2.08, 1.33, 1.46, 0.96, 1.17, 2.12, 2.62, 2.62, 2.67, 0.75, 1.54, 1.04, 1.92, 2.17, 0.67, 1.58, 3.17, 0.62, 0.62, 0.26, 0.46, 1.62, 0.21, 2.33, 0.62, 2.21, 2.67, 2.21, 2.25, 2.74, 3.04, 1.38, 0.88, 1.78, 1.7, 1.79, 1.17, 2.21, 3.42, 1.04, 1.75, 2.54, 0.29, 1.46, 2.88, 0.21, 0.88, 2.21, 2.54, 3.17, 3.67, 3.25, 0.88, 3.2, 3.25, 0.33, 2.75, 2.25, 2.67, 2.09, 0.17, 1.83, 1.42, 2.0, 1.79, 1.96, 2.22, 2.38, 2.61, 0.42, 1.58, 1.25, 1.12, 2.88, 0.79, 1.29, 3.04, 0.75, 0.33, 0.67, 1.42, 1.96, 2.08, 1.12, 2.62, 0.58, 2.42, 2.58, 1.38, 2.88, 1.42, 2.13, 2.25, 2.35, 2.21, 1.96, 1.58, 1.46, 2.75, 1.5, 1.67, 2.04, 1.33, 3.56, 1.79, 2.52, 3.29, 2.62, 1.2, 3.38, 1.92, 2.76, 1.04, 1.0, 2.33, 1.58, 2.58, 0.21, 1.08, 2.21, 0.26, 0.75, 2.12, 1.29, 1.88, 0.96, 1.14, 0.7, 0.29, 1.12, 1.25, 1.92, 1.58, 1.08, 2.29, 0.79, 0.83, 1.58, 1.33, 2.58, 2.42, 1.38, 0.79]}, "a_studaar": {"lab": "Studieår (1–5)", "src": "Arbeidskrav (N = 391)", "lvl": "ordinal", "vals": [5.0, 4.0, 5.0, 5.0, 5.0, 2.0, 3.0, 2.0, 5.0, 4.0, 3.0, 2.0, 5.0, 3.0, 4.0, 4.0, 2.0, 3.0, 1.0, 3.0, 5.0, 5.0, 5.0, 4.0, 4.0, 5.0, 5.0, 5.0, 3.0, 4.0, 3.0, 1.0, 3.0, 3.0, 4.0, 4.0, 4.0, 2.0, 3.0, 3.0, 4.0, 2.0, 4.0, 4.0, 2.0, 5.0, 2.0, 3.0, 5.0, 3.0, 5.0, 2.0, 3.0, 2.0, 4.0, 2.0, 5.0, 1.0, 2.0, 2.0, 3.0, 2.0, 3.0, 1.0, 5.0, 2.0, 2.0, 3.0, 5.0, 4.0, 3.0, 2.0, 4.0, 3.0, 5.0, 3.0, 2.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 5.0, 5.0, 2.0, 5.0, 4.0, 5.0, 4.0, 3.0, 2.0, 4.0, 5.0, 4.0, 3.0, 3.0, 4.0, 3.0, 5.0, 4.0, 4.0, 2.0, 5.0, 3.0, 4.0, 5.0, 5.0, 5.0, 3.0, 4.0, 5.0, 5.0, 5.0, 3.0, 3.0, 2.0, 4.0, 3.0, 3.0, 4.0, 1.0, 2.0, 3.0, 2.0, 4.0, 3.0, 2.0, 2.0, 2.0, 1.0, 5.0, 4.0, 5.0, 5.0, 4.0, 2.0, 5.0, 4.0, 3.0, 5.0, 5.0, 4.0, 3.0, 5.0, 4.0, 5.0, 5.0, 5.0, 2.0, 1.0, 3.0, 2.0, 3.0, 4.0, 2.0, 3.0, 2.0, 4.0, 4.0, 2.0, 3.0, 5.0, 3.0, 2.0, 1.0, 5.0, 2.0, 5.0, 3.0, 5.0, 3.0, 5.0, 4.0, 4.0, 3.0, 3.0, 4.0, 4.0, 5.0, 4.0, 3.0, 1.0, 5.0, 2.0, 5.0, 2.0, 2.0, 5.0, 3.0, 4.0, 5.0, 3.0, 1.0, 4.0, 4.0, 3.0, 2.0, 3.0, 5.0, 3.0, 5.0, 1.0, 3.0, 2.0, 3.0, 4.0, 4.0, 3.0, 4.0, 3.0, 3.0, 3.0, 4.0, 5.0, 5.0, 4.0, 5.0, 2.0, 4.0, 2.0, 5.0, 4.0, 3.0, 5.0, 1.0, 4.0, 3.0, 2.0, 2.0, 3.0, 4.0, 2.0, 2.0, 5.0, 5.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 2.0, 5.0, 3.0, 1.0, 3.0, 3.0, 1.0, 2.0, 3.0, 5.0, 2.0, 3.0, 5.0, 5.0, 2.0, 3.0, 4.0, 3.0, 5.0, 4.0, 2.0, 3.0, 3.0, 3.0, 4.0, 4.0, 3.0, 4.0, 3.0, 4.0, 5.0, 4.0, 3.0, 5.0, 3.0, 1.0, 4.0, 5.0, 4.0, 4.0, 3.0, 3.0, 5.0, 4.0, 4.0, 3.0, 3.0, 3.0, 5.0, 4.0, 5.0, 3.0, 5.0, 4.0, 2.0, 4.0, 4.0, 2.0, 5.0, 3.0, 2.0, 3.0, 2.0, 5.0, 2.0, 2.0, 3.0, 2.0, 5.0, 3.0, 1.0, 3.0, 5.0, 4.0, 3.0, 2.0, 2.0, 2.0, 4.0, 2.0, 5.0, 2.0, 3.0, 3.0, 4.0, 2.0, 3.0, 3.0, 4.0, 2.0, 1.0, 3.0, 4.0, 5.0, 4.0, 2.0, 4.0, 3.0, 3.0, 4.0, 4.0, 3.0, 2.0, 5.0, 3.0, 1.0, 4.0, 4.0, 3.0, 4.0, 4.0, 4.0, 3.0, 4.0, 2.0, 4.0, 1.0, 4.0, 3.0, 3.0, 5.0, 1.0, 1.0, 2.0, 2.0, 4.0, 3.0, 3.0, 1.0, 3.0, 2.0, 4.0, 4.0, 1.0, 5.0]}};
+
+function skewness(a){const m=mean(a),n=a.length;let m2=0,m3=0;a.forEach(v=>{m2+=(v-m)**2;m3+=(v-m)**3;});m2/=n;m3/=n;return m3/Math.pow(m2,1.5);}
+function autoCfg(key){
+  const d=DATA[key];
+  if(d.cats){
+    const labels=Object.keys(d.cats),counts=labels.map(k=>d.cats[k]);
+    const mi=counts.indexOf(Math.max(...counts));
+    const tot=counts.reduce((a,b)=>a+b,0);
+    return {lvl:'NOMINAL · '+d.src,cat:d.cats,
+      ct:[['Modus: '+labels[mi]+' ('+counts[mi]+' av '+tot+')','ok'],['Median','bad'],['Gjennomsnitt','bad']],
+      vr:[['Frekvenstabell / andeler','ok'],['IQR','bad'],['SD','bad']],
+      txt:'Nominalnivå ('+d.lab+', '+d.src+'): kun modus og andeler gir mening. Rapporter antall og prosent.'};
+  }
+  const v=d.vals, M=mean(v), md=median(v), s_=sd(v), [q1,q3]=iqr(v), sk=skewness(v);
+  const skewed=Math.abs(sk)>0.5;
+  const skTxt=sk>0.5?'høyreskjev (M > median, dras mot den lange halen)':sk<-0.5?'venstreskjev (M < median, dras mot den lange halen)':'tilnærmet symmetrisk (M og median nesten like)';
+  if(d.lvl==='ordinal'){
+    const uniq=[...new Set(v)].sort((a,b)=>a-b);
+    const counts=uniq.map(u=>v.filter(x=>x===u).length);
+    const bars={labels:uniq.map(String),counts:counts};
+    return {lvl:'ORDINAL · '+d.src,bars:bars,ordvals:v,
+      ct:[['Modus: '+uniq[counts.indexOf(Math.max(...counts))],'ok'],['Median: '+fmt(md,1),'ok'],['Gjennomsnitt: '+fmt(M)+' (vanlig praksis, men avstandene er strengt tatt ukjente)','warn']],
+      vr:[['Variasjonsbredde','ok'],['IQR: '+fmt(q1,0)+'–'+fmt(q3,0),'ok'],['SD: '+fmt(s_)+' (samme forbehold)','warn']],
+      txt:'Ordinalnivå ('+d.lab+', '+d.src+'): rekkefølgen er ekte, avstandene ukjente. Median og IQR er de trygge valgene. Fordelingen er '+skTxt+'.'};
+  }
+  return {lvl:(d.lab.includes('Alder')?'FORHOLD':'INTERVALL/FORHOLD')+' · '+d.src,hist:v,
+    ct:[['Modus (lite informativ for kontinuerlige data)','warn'],['Median: '+fmt(md),'ok'],['Gjennomsnitt: '+fmt(M),skewed?'warn':'ok']],
+    vr:[['Variasjonsbredde','warn'],['IQR: '+fmt(q1)+'–'+fmt(q3),'ok'],['SD: '+fmt(s_),skewed?'warn':'ok']],
+    txt:'Skalanivå ('+d.lab+', '+d.src+'): fordelingen er '+skTxt+' (skjevhet = '+fmt(sk)+'). '+(skewed?'Median (+ IQR) beskriver det typiske bedre enn M (+ SD). Rapporter gjerne begge, og vis fordelingen.':'Gjennomsnitt + SD er utmerkede beskrivelser her, og at M ≈ median er selve signaturen på symmetri.')};
+}
+// KDE + raincloud
+function kde(data,lo,hi,pts){
+  const n=data.length, s_=sd(data)||1;
+  let bw=1.06*s_*Math.pow(n,-0.2); bw=Math.max(bw,(hi-lo)/60);
+  const out=[];
+  for(let i=0;i<=pts;i++){
+    const x=lo+(hi-lo)*i/pts; let y=0;
+    for(const v of data){const z=(x-v)/bw; y+=Math.exp(-0.5*z*z);}
+    out.push([x,y/(n*bw*2.5066)]);
+  }
+  return out;
+}
+function drawRaincloud(cv,data){
+  const [c,w,h]=fit(cv);
+  const lo=Math.min(...data),hi=Math.max(...data),pad=(hi-lo)*0.06||1;
+  const L=lo-pad,H=hi+pad;
+  const x0=44,pw=w-64;
+  const X=v=>x0+(v-L)/(H-L)*pw;
+  const cy=h*0.52, cloudH=h*0.30, boxH=26, rainY0=cy+boxH/2+14, rainH=h-rainY0-40;
+  const topY=cy-boxH/2-6-cloudH, botY=rainY0+rainH;
+  const sdt=[...data].sort((a,b)=>a-b);
+  const q=p=>sdt[Math.floor(p*(sdt.length-1))];
+  const q1=q(0.25),q3=q(0.75),md=median(data),M=mean(data),S=sd(data);
+  const dens=kde(data,L,H,120), dmax=Math.max(...dens.map(d=>d[1]));
+
+  // ---- bånd tegnes først, halvgjennomsiktige ----
+  if(VIS.sd&&S>0){
+    c.fillStyle='rgba(192,57,43,.12)';c.fillRect(X(M-S),topY,X(M+S)-X(M-S),botY-topY);
+    c.strokeStyle='rgba(192,57,43,.6)';c.lineWidth=1.5;c.setLineDash([3,3]);
+    [M-2*S,M+2*S].forEach(function(v){if(v>=L&&v<=H){c.beginPath();c.moveTo(X(v),topY);c.lineTo(X(v),botY);c.stroke();}});
+    c.setLineDash([]);
+    c.fillStyle='#C0392B';c.font='bold 14px sans-serif';c.textAlign='center';
+    c.fillText('M ± 1 SD',X(M),topY+13);
+  }
+  if(VIS.q&&q3>q1) kvartilBand(c,X,q1,q3,topY,botY,.10);
+
+  // ---- sky (tetthet) ----
+  c.beginPath(); c.moveTo(X(dens[0][0]),cy-boxH/2-4);
+  dens.forEach(([x,y])=>c.lineTo(X(x),cy-boxH/2-4-y/dmax*cloudH));
+  c.lineTo(X(dens[dens.length-1][0]),cy-boxH/2-4); c.closePath();
+  c.fillStyle='rgba(46,84,150,0.35)'; c.fill();
+  c.strokeStyle='rgba(46,84,150,0.8)'; c.lineWidth=2; c.stroke();
+
+  // ---- modus: toppen av tetthetskurven ----
+  if(VIS.modus){
+    const topp=dens.reduce((a,b)=>b[1]>a[1]?b:a,dens[0]);
+    const tx=X(topp[0]), ty=cy-boxH/2-4-cloudH;
+    c.fillStyle='#B26A00';
+    c.beginPath();c.moveTo(tx,ty+2);c.lineTo(tx-7,ty-10);c.lineTo(tx+7,ty-10);c.closePath();c.fill();
+    c.font='bold 14px sans-serif';c.textAlign='center';
+    c.fillText('modus ≈ '+fmt(topp[0],(H-L)>20?0:1),tx,ty-14);
+  }
+
+  // ---- værhår og uteliggere ----
+  const iqrv=q3-q1;
+  const wlo=q1-1.5*iqrv, whi=q3+1.5*iqrv;
+  const inne=sdt.filter(v=>v>=wlo&&v<=whi);
+  const loW=inne.length?Math.min(...inne):q1, hiW=inne.length?Math.max(...inne):q3;
+  const ute=sdt.filter(v=>v<wlo||v>whi);
+  if(VIS.hale){
+    c.strokeStyle='#1F3864'; c.lineWidth=2;
+    c.beginPath();c.moveTo(X(loW),cy);c.lineTo(X(q1),cy);c.moveTo(X(q3),cy);c.lineTo(X(hiW),cy);c.stroke();
+    // endestreker
+    [loW,hiW].forEach(function(v){c.beginPath();c.moveTo(X(v),cy-9);c.lineTo(X(v),cy+9);c.stroke();});
+    c.fillStyle='#1F3864';c.font='bold 13.5px sans-serif';c.textAlign='center';
+    c.fillText('værhår: 1,5 × IQR',(X(loW)+X(q1))/2,cy-14);
+    c.fillText('værhår: 1,5 × IQR',(X(q3)+X(hiW))/2,cy-14);
+    // uteliggere: punkter utenfor værhårene
+    if(ute.length){
+      c.fillStyle='#B26A00';
+      ute.forEach(function(v){c.beginPath();c.arc(X(v),cy,4,0,7);c.fill();});
+      c.font='bold 13.5px sans-serif';c.textAlign='center';
+      c.fillText(ute.length+' utenfor',X(ute[ute.length-1]),cy-14);
+    }
+  }
+  // ---- boksen (kvartilene) ----
+  if(VIS.q){
+    c.strokeStyle='#1F3864'; c.lineWidth=2;
+    c.fillStyle='#DCE6F1'; c.fillRect(X(q1),cy-boxH/2,X(q3)-X(q1),boxH);
+    c.strokeRect(X(q1),cy-boxH/2,X(q3)-X(q1),boxH);
+    // samme stiplede strek som i histogrammet, tegnet oppå boksen: kanten og
+    // streken skal falle sammen på pikselen
+    kvartilStrek(c,X,q1,q3,topY,botY,false);
+    c.fillStyle=QFARGE;c.font='bold 14px sans-serif';
+    c.textAlign='right';c.fillText('Q1 = '+fmt(q1),X(q1)-6,cy+boxH/2+16);
+    c.textAlign='left';c.fillText('Q3 = '+fmt(q3),X(q3)+6,cy+boxH/2+16);
+  }
+
+  // ---- regn (rådata) ----
+  c.fillStyle='rgba(31,56,100,0.45)';
+  data.forEach(v=>{
+    const jx=(Math.random()-0.5)*((H-L)/80);
+    c.beginPath();c.arc(X(v+jx),rainY0+Math.random()*rainH,2.6,0,7);c.fill();
+  });
+
+  // ---- median og gjennomsnitt ----
+  if(VIS.med){
+    c.strokeStyle='#2E7D32'; c.lineWidth=3.5;
+    c.beginPath();c.moveTo(X(md),cy-boxH/2-(VIS.q?0:4));c.lineTo(X(md),cy+boxH/2+(VIS.q?0:4));c.stroke();
+    c.fillStyle='#2E7D32'; c.font='bold 15px sans-serif'; c.textAlign='center';
+    c.fillText('median = '+fmt(md),X(md),32);
+  }
+  if(VIS.M){
+    c.strokeStyle='#C0392B'; c.lineWidth=3;
+    c.beginPath();c.moveTo(X(M),topY);c.lineTo(X(M),botY);c.stroke();
+    c.fillStyle='#C0392B'; c.font='bold 15px sans-serif'; c.textAlign='center';
+    c.fillText('M = '+fmt(M),X(M),16);
+  }
+
+  // ---- spennvidde ----
+  if(VIS.rng&&hi>lo){
+    const yr=botY+9;
+    c.strokeStyle='#1F3864';c.lineWidth=2.4;
+    c.beginPath();c.moveTo(X(lo),yr);c.lineTo(X(hi),yr);c.stroke();
+    [lo,hi].forEach(function(v){c.beginPath();c.moveTo(X(v),yr-6);c.lineTo(X(v),yr+6);c.stroke();});
+    c.fillStyle='#1F3864';c.font='bold 14px sans-serif';c.textAlign='center';
+    c.fillText('spennvidde = '+fmt(hi-lo),(X(lo)+X(hi))/2,yr-10);
+  }
+
+  // ---- akse ----
+  c.fillStyle='#62708a'; c.font='bold 15px sans-serif'; c.textAlign='center';
+  for(let i=0;i<=4;i++){const v=L+(H-L)*i/4;c.fillText(fmt(v,(H-L)>20?0:1),x0+pw*i/4,h-6);}
+  statChips(data);
+}
+
+// ---------- variabel-konfigurasjon ----------
+const V={
+ diag:{lvl:'NOMINAL',cat:DIAG,
+  ct:[['Modus: Depresjon (41)','ok'],['Median','bad'],['Gjennomsnitt','bad']],
+  vr:[['Frekvenstabell / andeler','ok'],['IQR','bad'],['SD','bad']],
+  txt:'Flere kategorier endrer ingenting: fortsatt nominalnivå, fortsatt bare modus og andeler. Legg merke til at «variasjonen» her best beskrives ved hvor jevnt/skjevt pasientene fordeler seg på kategoriene.'},
+ holdning:{lvl:'ORDINAL',bars:{labels:['1','2','3','4','5','6','7'],counts:HOLDNING},ordvals:HOLDNING.flatMap((c,i)=>Array(c).fill(i+1)),
+  ct:[['Modus: 1, men 6–7-enden er nesten like stor','warn'],['Median: 3 — ligger i dalen','warn'],['Gjennomsnitt: 3,7 — beskriver nesten INGEN','warn']],
+  vr:[['Variasjonsbredde (1–7)','ok'],['IQR: enorm — et hint!','ok'],['SD: kjempestor — også et hint','ok']],
+  txt:'<b>Bimodal fordeling</b> — klassisk for polariserende temaer: de fleste er sterkt FOR eller sterkt IMOT, få er nøytrale. Både gjennomsnittet (3,7) og medianen (3) lander i dalen der nesten ingen befinner seg. Når fordelingen har to topper er løsningen ikke et bedre sentralmål, men å beskrive de to gruppene hver for seg. Moralen: SE fordelingen før du oppsummerer den. (Arbeidskravets prøveskår i lista under er et annet bimodalt eksempel — der er «gruppene» lett og vanskelig prøve.)'},
+ iq:{lvl:'INTERVALL',hist:IQ,
+  ct:[['Modus (lite informativ for kontinuerlige data)','warn'],['Median: ≈ 100','ok'],['Gjennomsnitt: ≈ 100 — sammenfaller med medianen','ok']],
+  vr:[['Variasjonsbredde','warn'],['IQR','ok'],['SD: ≈ 15 — sier nesten alt','ok']],
+  txt:'Normalfordelingen i sin reneste form — IQ er per definisjon skalert til M = 100 og SD = 15. Symmetrisk og énmodal: gjennomsnitt og median faller sammen, og <b>gjennomsnitt + SD</b> er en nesten fullstendig beskrivelse. Bruk denne som referansepunkt når du ser på de skjeve og bimodale fordelingene i lista.'},
+ inntekt:{lvl:'FORHOLD',hist:INNTEKT,
+  ct:[['Modus (lite informativ)','warn'],['Median: ≈ 538 000 — standardvalget for inntekt (SSB rapporterer median!)','ok'],['Gjennomsnitt: ≈ 598 000 — dras opp av noen få topplønninger','warn']],
+  vr:[['Variasjonsbredde (følsom for den ene toppinntekten)','warn'],['IQR','ok'],['SD: blåses opp av halen','warn']],
+  txt:'Inntekt er selve lærebokeksemplet på <b>høyreskjevhet</b>: hard nedre grense, lang hale av høye inntekter. Gjennomsnittet dras kraftig opp av noen få topplønninger og ligger godt over medianen — derfor rapporterer SSB <b>medianinntekt</b>. Samme form som reaksjonstid, helt annen skala: skjevhet er et fenomen, ikke en måleenhet.'},
+ alkohol:{lvl:'FORHOLD (diskret)',hist:ALKOHOL,
+  ct:[['Modus: 0 — her faktisk informativ (den vanligste ukemengden ER null)','ok'],['Median: 2','ok'],['Gjennomsnitt: 4,1 — beskriver verken avholdsgruppen eller stordrikkerne','warn']],
+  vr:[['Andel med null (≈ 33 %) — rapportér denne!','ok'],['IQR','ok'],['SD: blåses opp av halen','warn']],
+  txt:'<b>Nullinflatert OG høyreskjev</b> — svært vanlig i helsepsykologi (alkohol, sigaretter, symptomtellinger): en stor gruppe med null, og en lang hale blant dem som drikker. Gjennomsnittet lander mellom to virkeligheter. God praksis er å rapportere <b>andelen med null</b> og beskrive resten separat — og slike data krever ofte egne analysemodeller.'},
+ rt:{lvl:'FORHOLD',histf:()=>RT,extra:'<button class="stat" id="newRT" style="cursor:pointer;border:1px solid var(--line)">Nye reaksjonstider</button>',
+  ct:[['Modus (toppunktet)','warn'],['Median — standardvalget for RT','ok'],['Gjennomsnitt: dras kraftig av halen','warn']],
+  vr:[['Variasjonsbredde','warn'],['IQR','ok'],['SD: blåses opp av halen','warn']],
+  txt:'Reaksjonstider er alltid høyreskjeve: en hard nedre grense (ingen svarer på 0 ms) og en lang hale av trege svar. Gjennomsnittet ligger godt til høyre for medianen — signaturen på høyreskjevhet. Derfor rapporterer RT-forskning median (eller trimmet gjennomsnitt), eller log-transformerer før analyse (se Sim 2, Robusthetslaben).'}
+};
+function drawBars(c,w,h,labels,counts,extraMark){
+  const y0=h-46,ph=y0-24,x0=44,pw=w-64;
+  const mx=Math.max(...counts);
+  const bw=pw/labels.length;
+  const mi=counts.indexOf(mx);
+  labels.forEach((lab,i)=>{
+    const bh=counts[i]/mx*ph;
+    c.fillStyle= (i===mi&&VIS.modus) ? '#B26A00' : 'rgba(46,84,150,0.7)';
+    c.fillRect(x0+i*bw+bw*0.12,y0-bh,bw*0.76,bh);
+    c.fillStyle='#1a2233';c.font='bold 16px sans-serif';c.textAlign='center';
+    c.fillText(lab,x0+i*bw+bw/2,y0+22);
+    c.fillStyle='#62708a';c.font='bold 14px sans-serif';
+    c.fillText(counts[i],x0+i*bw+bw/2,y0-bh-6);
+  });
+  if(extraMark)extraMark(x0,bw,y0,ph);
+}
+function isCatKey(key){const cfg=V[key]||autoCfg(key);return !!cfg.cat;}
+function dispMode(key){
+  const q=isCatKey(key)?'input[name=dispc]:checked':'input[name=dispn]:checked';
+  const r=document.querySelector(q);
+  return r?r.value:(isCatKey(key)?'bar':'hist');
+}
+const PIECOLS=['#2E5496','#B26A00','#2E7D32','#C0392B','#7A5CA8','#5A6B7B'];
+function axisRange(data){const lo0=Math.min(...data),hi0=Math.max(...data),pad=(hi0-lo0)*0.06||1;return [lo0-pad,hi0+pad];}
+function numAxis(c,w,h,L,H,y0){
+  const x0=44,pw=w-64;
+  c.fillStyle='#62708a';c.font='bold 15px sans-serif';c.textAlign='center';
+  for(let i=0;i<=4;i++){const v=L+(H-L)*i/4;c.fillText(fmt(v,(H-L)>20?0:1),x0+pw*i/4,y0+22);}
+  return v=>x0+(v-L)/(H-L)*pw;
+}
+/* Kvartilstrekene tegnes i identisk format i begge plottene, slik at studenten
+   kan se at Q1 og Q3 regnet ut av rådataene lander nøyaktig på kantene av boksen
+   i raincloud-plottet: boksen ER de to kvartilene, ikke en egen konstruksjon.
+   Begge plottene bruker samme kvantildefinisjon (iqr()), ellers ville de bomme
+   med en observasjon og hele poenget falle. */
+const QFARGE='#1F3864';   // samme blå som boksens kant, så streken og kanten hører sammen
+function kvartilBand(c,X,q1,q3,yTop,y0,alpha){
+  c.fillStyle='rgba(31,56,100,'+(alpha==null?0.10:alpha)+')';
+  c.fillRect(X(q1),yTop,X(q3)-X(q1),y0-yTop);
+}
+function kvartilStrek(c,X,q1,q3,yTop,y0,etikett){
+  c.strokeStyle=QFARGE; c.lineWidth=2.5; c.setLineDash([6,5]);
+  [q1,q3].forEach(function(v){c.beginPath();c.moveTo(X(v),yTop);c.lineTo(X(v),y0);c.stroke();});
+  c.setLineDash([]);
+  if(etikett!==false){
+    c.fillStyle=QFARGE; c.font='bold 14px sans-serif';
+    c.textAlign='right'; c.fillText('Q1 = '+fmt(q1), X(q1)-6, y0-8);
+    c.textAlign='left';  c.fillText('Q3 = '+fmt(q3), X(q3)+6, y0-8);
+  }
+}
+const VIS={M:true,med:true,modus:true,q:true,hale:true,sd:false,rng:false};
+function mmMarkers(c,X,data,yTop,y0){
+  const M=mean(data),md=median(data),S=sd(data),QQ=iqr(data),q1=QQ[0],q3=QQ[1];
+  const mn=Math.min.apply(null,data),mx=Math.max.apply(null,data);
+  // bånd tegnes først, halvgjennomsiktige, så søylene fortsatt synes
+  if(VIS.sd&&S>0){
+    c.fillStyle='rgba(192,57,43,.12)';c.fillRect(X(M-S),yTop,X(M+S)-X(M-S),y0-yTop);
+    c.strokeStyle='rgba(192,57,43,.6)';c.lineWidth=1.5;c.setLineDash([3,3]);
+    [M-2*S,M+2*S].forEach(function(v){c.beginPath();c.moveTo(X(v),yTop);c.lineTo(X(v),y0);c.stroke();});
+    c.setLineDash([]);
+    c.fillStyle='#C0392B';c.font='bold 14px sans-serif';c.textAlign='center';
+    c.fillText('M ± 1 SD',X(M),yTop+15);
+    c.fillText('±2 SD',X(M+2*S),yTop+15);
+  }
+  if(VIS.q&&q3>q1){
+    kvartilBand(c,X,q1,q3,yTop,y0,.10);
+    kvartilStrek(c,X,q1,q3,yTop,y0);
+    c.fillStyle=QFARGE;c.font='bold 14px sans-serif';
+    c.textAlign='center';c.fillText('midterste 50 %',(X(q1)+X(q3))/2,y0-26);
+  }
+  if(VIS.rng&&mx>mn){
+    const yr=y0-2;
+    c.strokeStyle='#1F3864';c.lineWidth=2.4;
+    c.beginPath();c.moveTo(X(mn),yr);c.lineTo(X(mx),yr);c.stroke();
+    [mn,mx].forEach(function(v){c.beginPath();c.moveTo(X(v),yr-8);c.lineTo(X(v),yr+6);c.stroke();});
+    c.fillStyle='#1F3864';c.font='bold 14px sans-serif';c.textAlign='center';
+    c.fillText('spennvidde = '+fmt(mx-mn),(X(mn)+X(mx))/2,yr-13);
+  }
+  if(VIS.med){
+    c.strokeStyle='#2E7D32';c.lineWidth=3.5;
+    c.beginPath();c.moveTo(X(md),yTop);c.lineTo(X(md),y0);c.stroke();
+    c.fillStyle='#2E7D32';c.font='bold 15px sans-serif';c.textAlign='center';
+    c.fillText('median = '+fmt(md),X(md),34);
+  }
+  if(VIS.M){
+    c.strokeStyle='#C0392B';c.lineWidth=3;
+    c.beginPath();c.moveTo(X(M),yTop);c.lineTo(X(M),y0);c.stroke();
+    c.fillStyle='#C0392B';c.font='bold 15px sans-serif';c.textAlign='center';
+    c.fillText('M = '+fmt(M),X(M),16);
+  }
+}
+function statChips(data){
+  const el=document.getElementById('statLine'); if(!el)return;
+  const M=mean(data),md=median(data),S=sd(data),QQ=iqr(data);
+  const mn=Math.min.apply(null,data),mx=Math.max.apply(null,data);
+  const c=function(på,txt,kl){return på?'<span class="stat '+kl+'">'+txt+'</span>':'';};
+  el.innerHTML=
+    c(VIS.M,'M = '+fmt(M),'red')+
+    c(VIS.med,'median = '+fmt(md),'green')+
+    c(VIS.sd,'SD = '+fmt(S),'red')+
+    c(VIS.q,'Q1 = '+fmt(QQ[0])+' · Q3 = '+fmt(QQ[1])+' · IQR = '+fmt(QQ[1]-QQ[0]),'green')+
+    c(VIS.rng,'min = '+fmt(mn)+' · maks = '+fmt(mx)+' · spennvidde = '+fmt(mx-mn),'');
+}
+function zify(a){const n=a.length,m=a.reduce((x,y)=>x+y,0)/n,
+  sd=Math.sqrt(a.reduce((t,v)=>t+(v-m)*(v-m),0)/(n-1));
+  return sd>0?a.map(v=>(v-m)/sd):a.map(()=>0);}
+const zOn=()=>{const b=document.getElementById('zmode');return !!(b&&b.checked);};
+function drawNumeric(cfg){
+  let data=cfg.hist||(cfg.histf?cfg.histf():cfg.ordvals);
+  if(zOn())data=zify(data);
+  const mode=dispMode($('vselMN').value);
+  if(mode==='rain'){drawRaincloud($('cv'),data);return;}
+  const [c,w,h]=fit($('cv'));
+  const [L,H]=axisRange(data);
+  const y0=h-46,ph=y0-40;
+  const X=numAxis(c,w,h,L,H,y0);
+  const uniq=[...new Set(data)].sort((a,b)=>a-b);
+  const discrete=uniq.length<=12;
+  if(mode==='hist'){
+    if(discrete){
+      const counts=uniq.map(u=>data.filter(x=>x===u).length);
+      const gap=uniq.length>1?Math.min(...uniq.slice(1).map((u,i)=>u-uniq[i])):1;
+      const bw=(X(L+gap)-X(L))*0.72;
+      const mx=Math.max(...counts), mi=counts.indexOf(mx);
+      uniq.forEach((u,i)=>{
+        c.fillStyle= i===mi ? '#B26A00' : 'rgba(46,84,150,0.7)';
+        const bh=counts[i]/mx*ph;
+        c.fillRect(X(u)-bw/2,y0-bh,bw,bh);
+        c.fillStyle='#62708a';c.font='bold 14px sans-serif';c.textAlign='center';
+        c.fillText(counts[i],X(u),y0-bh-6);
+      });
+    } else {
+      const nb=22,bins=new Array(nb).fill(0);
+      data.forEach(v=>{let b=Math.floor((v-L)/(H-L+1e-9)*nb);if(b>=nb)b=nb-1;bins[b]++;});
+      const mx=Math.max(...bins), mi=bins.indexOf(mx);
+      for(let b=0;b<nb;b++){
+        c.fillStyle= (b===mi&&VIS.modus) ? '#B26A00' : 'rgba(46,84,150,0.7)';
+        const bh=bins[b]/mx*ph;
+        c.fillRect(X(L)+(X(H)-X(L))*b/nb,y0-bh,(X(H)-X(L))/nb-1.5,bh);
+      }
+    }
+  } else {
+    if(discrete){
+      const counts={};
+      const maxc=Math.max(...uniq.map(u=>data.filter(x=>x===u).length));
+      const rr=Math.max(2.2,Math.min(5.5,ph/(maxc*2.3)));
+      data.forEach(v=>{
+        counts[v]=(counts[v]||0)+1;
+        c.fillStyle='rgba(31,56,100,0.6)';
+        c.beginPath();c.arc(X(v),y0-6-(counts[v]-1)*rr*2.1,rr,0,7);c.fill();
+      });
+    } else {
+      c.fillStyle='rgba(31,56,100,0.45)';
+      data.forEach(v=>{
+        c.beginPath();c.arc(X(v),y0-8-Math.random()*(ph-16),3,0,7);c.fill();
+      });
+    }
+  }
+  mmMarkers(c,X,data,40,y0);
+  statChips(data);
+}
+function drawCat(cfg){
+  const mode=dispMode($('vselMN').value);
+  const labels=Object.keys(cfg.cat),counts=labels.map(k=>cfg.cat[k]);
+  const tot=counts.reduce((a,b)=>a+b,0), mi=counts.indexOf(Math.max(...counts));
+  const [c,w,h]=fit($('cv'));
+  if(mode==='bar'){ drawBars(c,w,h,labels,counts); return; }
+  if(mode==='pie'){
+    const cx=w*0.34, cy=h/2, R=Math.min(w*0.28,h*0.4);
+    let a0=-Math.PI/2;
+    labels.forEach((lab,i)=>{
+      const a1=a0+counts[i]/tot*2*Math.PI;
+      c.beginPath();c.moveTo(cx,cy);c.arc(cx,cy,R,a0,a1);c.closePath();
+      c.fillStyle=PIECOLS[i%PIECOLS.length];c.globalAlpha=(i===mi?1:0.82);c.fill();c.globalAlpha=1;
+      c.strokeStyle='#fff';c.lineWidth=2;c.stroke();
+      a0=a1;
+    });
+    labels.forEach((lab,i)=>{
+      const y=28+i*30;
+      c.fillStyle=PIECOLS[i%PIECOLS.length];c.fillRect(w*0.64,y-12,16,16);
+      c.fillStyle='#1a2233';c.font='bold 15px sans-serif';c.textAlign='left';
+      c.fillText(lab+' — '+counts[i]+' ('+fmt(100*counts[i]/tot,0)+' %)',w*0.64+24,y+1);
+    });
+    c.fillStyle='#62708a';c.font='bold 14px sans-serif';c.textAlign='left';
+    c.fillText('NB: pai er grei for 2–3 kategorier. Søyler er nesten alltid mer presise.',20,h-10);
+    return;
+  }
+  const x0=44,pw=w-88,y=h*0.3,bh=54;
+  let acc=0;
+  labels.forEach((lab,i)=>{
+    const seg=counts[i]/tot*pw;
+    c.fillStyle=PIECOLS[i%PIECOLS.length];
+    c.fillRect(x0+acc,y,seg,bh);
+    if(seg>46){
+      c.fillStyle='#fff';c.font='bold 15px sans-serif';c.textAlign='center';
+      c.fillText(fmt(100*counts[i]/tot,0)+' %',x0+acc+seg/2,y+bh/2+5);
+    }
+    acc+=seg;
+  });
+  c.strokeStyle='#1F3864';c.lineWidth=1.5;c.strokeRect(x0,y,pw,bh);
+  c.fillStyle='#62708a';c.font='bold 15px sans-serif';c.textAlign='center';
+  for(let i=0;i<=4;i++)c.fillText(25*i+' %',x0+pw*i/4,y+bh+26);
+  labels.forEach((lab,i)=>{
+    const yl=y+bh+52+i*26;
+    c.fillStyle=PIECOLS[i%PIECOLS.length];c.fillRect(x0,yl-12,14,14);
+    c.fillStyle='#1a2233';c.font='bold 15px sans-serif';c.textAlign='left';
+    c.fillText(lab+' — '+counts[i]+' ('+fmt(100*counts[i]/tot,0)+' %)',x0+22,yl);
+  });
+}
+let besvart=false;
+const NIVAA={
+ NOMINAL:['Nominal','Uordnede kategorier. Tallene er bare navn, så bare modus og andeler gir mening.'],
+ ORDINAL:['Ordinal','Rekkefølgen er ekte, men avstandene er ukjente. Median og kvartiler er de trygge valgene.'],
+ INTERVALL:['Intervall','Like avstander, men ingen ekte nullpunkt. Differanser gir mening, ratio (forholdstall) gjør det ikke.'],
+ FORHOLD:['Ratio (forholdstall)','Like avstander og et ekte nullpunkt. «Dobbelt så mye» er en meningsfull setning.']};
+function fasit(cfg){return cfg.lvl.split(' ')[0].replace('(diskret)','').trim();}
+function nullstillGjett(){
+  besvart=false;
+  const chip=document.getElementById('lvl'); if(chip)chip.classList.add('skjult');
+  const vk=document.getElementById('vurderingKort'); if(vk)vk.style.display='none';
+  const sv=document.getElementById('gjettSvar'); if(sv){sv.style.display='none';sv.innerHTML='';}
+  document.querySelectorAll('.gjett').forEach(function(b){b.disabled=false;b.classList.remove('btn');b.classList.add('btn2');});
+}
+function avslør(valgt){
+  if(besvart)return;
+  besvart=true;
+  const key=$('vselMN').value, cfg=V[key]||autoCfg(key), f=fasit(cfg);
+  document.getElementById('lvl').classList.remove('skjult');
+  document.getElementById('vurderingKort').style.display='';
+  document.querySelectorAll('.gjett').forEach(function(b){
+    b.disabled=true;
+    if(b.dataset.l===f){b.classList.remove('btn2');b.classList.add('btn');}
+  });
+  const sv=document.getElementById('gjettSvar'); sv.style.display='block';
+  const riktig=NIVAA[f];
+  let ut='';
+  if(valgt===null) ut='<b>Riktig svar: '+riktig[0].toLowerCase()+'.</b> ';
+  else if(valgt===f) ut='<b style="color:#2E7D32">Riktig: '+riktig[0].toLowerCase()+'.</b> ';
+  else ut='<b style="color:#C0392B">Ikke helt.</b> Du svarte '+NIVAA[valgt][0].toLowerCase()+', men dette er <b>'+riktig[0].toLowerCase()+'</b>. ';
+  sv.innerHTML=ut+riktig[1]+' Se hva det betyr for hvilke mål du kan bruke, i kortet under.';
+}
+function draw(){
+  const key=$('vselMN').value, cfg=V[key]||autoCfg(key);
+  $('lvl').textContent=cfg.lvl;
+  if(besvart){const c2=document.getElementById('lvl');if(c2)c2.classList.remove('skjult');}
+  const isCat=!!cfg.cat;
+  {const st=document.getElementById('statTogg');if(st)st.style.display=isCat?'none':'';}
+  {const hb=document.querySelector('.togg[data-v="hale"]');
+   if(hb)hb.style.display=(!isCat&&dispMode(key)==='rain')?'':'none';}
+  {const sl=document.getElementById('statLine');if(sl){sl.style.display=isCat?'none':'';if(isCat)sl.innerHTML='';}}
+  document.getElementById('dispNum').style.display=isCat?'none':'inline';
+  document.getElementById('dispCat').style.display=isCat?'inline':'none';
+  document.getElementById('rainExpl').style.display=(!isCat&&dispMode(key)==='rain')?'block':'none';
+  document.getElementById('zExpl').style.display=(!isCat&&zOn())?'block':'none';
+  {const zw=document.getElementById('zmode');if(zw&&zw.parentElement)zw.parentElement.style.display=isCat?'none':'';}
+  if(isCat) drawCat(cfg); else drawNumeric(cfg);
+  $('ct').innerHTML=cfg.ct.map(([t,st])=>chip(t,st)).join('');
+  $('vr').innerHTML=cfg.vr.map(([t,st])=>chip(t,st)).join('')+(cfg.extra||'');
+  $('verdict').innerHTML='<b>Vurdering:</b> '+cfg.txt;
+  const b=$('newRT'); if(b)b.onclick=()=>{newRT();draw();};
+}
+$('vselMN').onchange=function(){nullstillGjett();draw();};
+document.querySelectorAll('.togg').forEach(function(b){
+  b.addEventListener('click',function(){
+    VIS[b.dataset.v]=!VIS[b.dataset.v];
+    b.classList.toggle('on',VIS[b.dataset.v]);
+    draw();
+  });
+});
+document.querySelectorAll('.gjett').forEach(function(b){
+  b.addEventListener('click',function(){avslør(b.dataset.l);});
+});
+(function(){const v=document.getElementById('visSvar');if(v)v.addEventListener('click',function(){avslør(null);});})();
+nullstillGjett();
+document.querySelectorAll('input[name=dispn],input[name=dispc]').forEach(r=>r.onchange=draw);
+(function(){const b=document.getElementById('zmode');if(b)b.onchange=draw;})();
+const __fsRedraw=draw;
+(function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
+const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
+window.addEventListener('resize',kick);
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{kick();setTimeout(safe,600);}));
+let __mis=0;
+setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
+ document.querySelectorAll('canvas').forEach(c=>{if(c.clientWidth>0&&c.width>0&&Math.abs(c.width-Math.round(c.clientWidth*r))>2)bad=true;});
+ __mis=bad?__mis+1:0;
+ if(__mis>=2){__mis=0;safe();}},700);})();
+draw();
+})();
+
+/* ===== Fane 3: hvorfor gjennomsnittet — fra den tidligere Sim 30 (Gjettelaben). */
+(function(){
+"use strict";
+const FREQ = {"79":98,"103":279,"110":198,"81":124,"105":221,"108":215,"104":272,"123":76,"119":122,"101":264,"106":264,"114":188,"100":285,"107":230,"115":158,"84":150,"102":255,"82":146,"120":112,"94":244,"76":66,"89":207,"125":67,"98":254,"88":194,"63":10,"91":242,"96":258,"113":170,"83":152,"97":279,"112":193,"92":235,"99":245,"95":269,"116":141,"90":198,"128":55,"87":174,"72":52,"109":225,"117":138,"131":31,"129":32,"75":71,"130":27,"85":142,"134":21,"124":77,"121":109,"93":239,"86":174,"73":45,"65":16,"118":128,"111":210,"122":102,"68":22,"139":8,"127":46,"74":57,"71":47,"56":3,"78":86,"69":30,"132":24,"67":18,"80":112,"138":11,"70":33,"52":4,"126":70,"59":8,"64":14,"77":67,"61":12,"57":7,"142":7,"135":18,"143":7,"60":8,"133":20,"51":4,"137":11,"136":17,"58":8,"149":2,"140":6,"154":1,"144":3,"141":7,"66":17,"150":1,"34":1,"152":3,"62":10,"147":1,"53":4,"146":2,"145":2,"148":2,"54":2,"153":1,"42":1,"50":2,"55":3,"151":1};
+const $ = s => document.getElementById(s);
+const fmt = (v,d)=> (v==null||!isFinite(v)) ? '\u2013' :
+  v.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+function ctx2d(cv){
+  const r=window.devicePixelRatio||1, w=cv.clientWidth, h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r; cv.height=h*r; cv.style.height=h+'px';
+  const c=cv.getContext('2d'); c.setTransform(r,0,0,r,0,0); c.clearRect(0,0,w,h); return [c,w,h];
+}
+/* Samme simulerte IQ-populasjon som Sim 2 og Sim 3, så tallene henger sammen
+   på tvers av appene. */
+const POP=[]; for(const k in FREQ){ const v=+k; for(let i=0;i<FREQ[k];i++) POP.push(v); }
+const MU=100, SIGMA=15, GJETT=100;
+const F_KURVE='#C0392B', F_PERSON='#2E5496', F_SD='#7B3F9E';
+function trekk(){ return POP[(Math.random()*POP.length)|0]; }
+let runder=[];               /* faktiske IQ-skårer, i trekkerekkefølge */
+
+/* ---------- panel 1: normalkurven ---------- */
+function tegnPop(){
+  const [c,w,h]=ctx2d($('cvPop'));
+  const lo=100-4*SIGMA, hi=100+4*SIGMA;
+  const x0=44,y0=h-42,pw=w-x0-16,ph=y0-24;
+  const X=v=>x0+(v-lo)/(hi-lo)*pw;
+  const tett=v=>Math.exp(-0.5*Math.pow((v-MU)/SIGMA,2))/(SIGMA*Math.sqrt(2*Math.PI));
+  const maks=tett(MU), Y=v=>y0-v/(maks*1.1)*ph;
+  /* ±1 og ±2 SD som bånd, slik at 68 og 95 blir noe man ser og ikke pugger */
+  const band=(a,b,farge)=>{ c.fillStyle=farge; c.beginPath(); c.moveTo(X(a),y0);
+    for(let v=a;v<=b;v+=0.5) c.lineTo(X(v),Y(tett(v)));
+    c.lineTo(X(b),y0); c.closePath(); c.fill(); };
+  band(MU-2*SIGMA,MU+2*SIGMA,'rgba(192,57,43,0.10)');
+  band(MU-SIGMA,MU+SIGMA,'rgba(192,57,43,0.20)');
+  c.beginPath();
+  for(let v=lo;v<=hi;v+=0.5){ const px=X(v),py=Y(tett(v)); v===lo?c.moveTo(px,py):c.lineTo(px,py); }
+  c.strokeStyle=F_KURVE; c.lineWidth=3; c.stroke();
+  /* de trukne personene som prikker langs aksen */
+  runder.forEach((v,i)=>{
+    c.beginPath(); c.arc(X(v), y0-6-((i%6)*7), 4.2, 0, 6.284);
+    c.fillStyle='rgba(46,84,150,0.75)'; c.fill();
+  });
+  c.strokeStyle='#8a93a6'; c.lineWidth=1.5;
+  c.beginPath(); c.moveTo(x0,y0); c.lineTo(x0+pw,y0); c.stroke();
+  /* markører */
+  const strek=(v,farge,txt,dy,dash)=>{
+    c.strokeStyle=farge; c.lineWidth=2.5; c.setLineDash(dash||[]);
+    c.beginPath(); c.moveTo(X(v),14); c.lineTo(X(v),y0); c.stroke(); c.setLineDash([]);
+    c.fillStyle=farge; c.font='bold 14px sans-serif'; c.textAlign='center';
+    c.fillText(txt, X(v), dy);
+  };
+  strek(MU,F_KURVE,'μ = 100',26);
+  [[MU-SIGMA,'85'],[MU+SIGMA,'115']].forEach(([v,t])=>strek(v,F_KURVE,t,46,[5,4]));
+  c.fillStyle='#8a4a44'; c.font='bold 13.5px sans-serif'; c.textAlign='center';
+  c.fillText('68 % av alle', X(MU), y0-ph*0.42);
+  c.fillText('95 %', X(MU), y0-ph*0.12);
+  c.fillStyle='#62708a'; c.font='13px sans-serif';
+  for(let v=40;v<=160;v+=20){ if(v<lo||v>hi) continue;
+    c.beginPath(); c.moveTo(X(v),y0); c.lineTo(X(v),y0+4); c.strokeStyle='#8a93a6'; c.stroke();
+    c.fillText(String(v), X(v), y0+18); }
+  c.font='bold 13px sans-serif'; c.fillText('IQ', x0+pw/2, y0+36);
+  $('legPop').innerHTML='<b style="color:'+F_KURVE+'">rød kurve</b> = normalfordelingen med μ = 100 og σ = 15 · '
+    +'de skraverte båndene er ±1 og ±2 standardavvik'
+    +(runder.length ? ' · <b style="color:'+F_PERSON+'">blå prikker</b> = de '+runder.length+' du har trukket' : '');
+}
+
+/* ---------- panel 2: den trinnvise oppbyggingen ----------------------------
+   Kolonnene dukker opp én om gangen, styrt av «steg»:
+     0 = bare avvikene · 1 = kvadrerte avvik · 2 = varians · 3 = standardavvik
+   Poenget med rekkefølgen er at hvert steg svarer på et problem det forrige
+   skapte: summen av avvik blir null, så vi kvadrerer; kvadratsummen vokser med
+   n, så vi deler; variansen er i kvadrerte poeng, så vi tar roten.          */
+const MAL=10;
+let steg=0;
+
+function sumAvvik(){ return runder.reduce((t,x)=>t+(x-GJETT),0); }
+function sumKvadrat(){ return runder.reduce((t,x)=>t+(x-GJETT)*(x-GJETT),0); }
+function varians(){ return sumKvadrat()/runder.length; }
+function standardavvik(){ return Math.sqrt(varians()); }
+
+function knapper(){
+  const n=runder.length;
+  $('btnKvadrat').disabled = !(n>=MAL && steg<1);
+  $('tipp100').disabled  = n<MAL || n>=100;
+  $('tipp1000').disabled = n<MAL || n>=1000;
+  $('btnVarians').disabled = !(steg>=1 && steg<2);
+  $('btnSD').disabled      = !(steg>=2 && steg<3);
+  const h=$('stegHint');
+  h.textContent = n<MAL ? (MAL-n)+' igjen til vi har '+MAL+' avvik'
+    : steg===0 && n<100 ? 'Ti avvik i boks. Tipp 100 eller 1000 og se hva som skjer med summen — så «Kvadreringstrikset»'
+    : steg===0 ? n.toLocaleString('nb-NO')+' deltakere. Se på snittavviket, og trykk «Kvadreringstrikset»'
+    : steg===1 ? 'Trykk «Regn ut varians»'
+    : steg===2 ? 'Trykk «Standardavvik»'
+    : 'Ferdig — trekk gjerne flere og se anslaget bli sikrere';
+}
+
+/* Forklaringene skal peke på deltakerne studenten faktisk har trukket, ikke på
+   et generisk eksempel — det er forskjellen på å lese om kvadrering og å se den. */
+function ytterpunkt(){
+  let stor=0, liten=0, iS=0, iL=0;
+  const d=runder.slice(0,MAL);
+  d.forEach((x,i)=>{ const a=Math.abs(x-GJETT);
+    if(a>stor){stor=a; iS=i;} if(i===0||a<liten){liten=a; iL=i;} });
+  return {stor:stor, liten:liten, nrS:iS+1, nrL:iL+1, iqS:d[iS], iqL:d[iL]};
+}
+const SJEKK=[10,100,1000];
+/* Statistikk for de m første personene, slik at 10, 100 og 1000 kan leses rett
+   nedover i samme tabell — samme personer, bare flere av dem. */
+function statFor(m){
+  const d=runder.slice(0,m);
+  const sumA=d.reduce((t,x)=>t+(x-GJETT),0);
+  const SS=d.reduce((t,x)=>t+(x-GJETT)*(x-GJETT),0);
+  const v=SS/m;
+  return {n:m, sumA:sumA, SS:SS, v:v, sd:Math.sqrt(v)};
+}
+function tabell(){
+  const boks=$('tabellBoks'), n=runder.length;
+  if(!n){ boks.innerHTML='<p class="muted">Trykk <b>Tipp ny deltaker</b> for å komme i gang.</p>'; return; }
+  const kv=steg>=1, va=steg>=2, sd=steg>=3;
+  const vist=Math.min(n,MAL);
+  const kol=3+1+(kv?1:0)+(va?1:0)+(sd?1:0);
+  const ut=['<table><tr><th>Person</th><th>Faktisk IQ</th><th>Modellen sier</th>'+
+            '<th>Avvik<br><span class="muted" style="font-weight:400;font-size:13px">IQ &minus; 100</span></th>'+
+            (kv?'<th>Avvik&sup2;</th>':'')+(va?'<th>Varians</th>':'')+(sd?'<th>Standardavvik</th>':'')+'</tr>'];
+  for(let k=0;k<vist;k++){
+    const x=runder[k], a=x-GJETT;
+    ut.push('<tr'+(k===n-1?' class="ny"':'')+'><td>'+(k+1)+'</td><td>'+x+'</td><td>'+GJETT+'</td>'+
+      '<td class="avvik" style="color:'+(a>=0?'#2E7D32':'#C0392B')+'">'+(a>0?'+':'')+a+'</td>'+
+      (kv?'<td style="color:#7B3F9E;font-weight:700">'+(a*a)+'</td>':'')+
+      (va?'<td></td>':'')+(sd?'<td></td>':'')+'</tr>');
+  }
+  if(n>MAL) ut.push('<tr><td colspan="'+kol+'" class="muted">… de øvrige '+
+    (n-MAL).toLocaleString('nb-NO')+' er trukket, men ikke listet opp — se sumradene under</td></tr>');
+  /* Sumrader for hver størrelse som er nådd, rett under de ti personene.
+     Da kan 10, 100 og 1000 leses rett nedover i samme tabell. */
+  SJEKK.filter(m=>n>=m).forEach(m=>{
+    const r=statFor(m), naer=Math.abs(r.sd-15)<0.5;
+    ut.push('<tr style="background:#f4f6fb;font-weight:700">'+
+      '<td>Sum (n = '+m.toLocaleString('nb-NO')+')</td><td></td><td></td>'+
+      '<td style="color:'+(Math.abs(r.sumA/m)<0.5?'#2E7D32':'#1a2233')+'">'+
+        (r.sumA>0?'+':'')+Math.round(r.sumA).toLocaleString('nb-NO')+
+        '<br><span class="muted" style="font-weight:400;font-size:13px">snitt '+fmt(r.sumA/m,2)+'</span></td>'+
+      (kv?'<td style="color:#7B3F9E">'+Math.round(r.SS).toLocaleString('nb-NO')+'</td>':'')+
+      (va?'<td style="color:#7B3F9E">'+fmt(r.v,1)+'</td>':'')+
+      (sd?'<td style="color:'+(naer?'#2E7D32':'#7B3F9E')+';font-size:17px">'+fmt(r.sd,2)+'</td>':'')+
+      '</tr>');
+  });
+  if(va||sd) ut.push('<tr style="background:#fbecea;font-weight:700"><td>Fasit i befolkningen</td>'+
+    '<td></td><td></td><td>0<br><span class="muted" style="font-weight:400;font-size:13px">snitt 0,00</span></td>'+
+    (kv?'<td>&mdash;</td>':'')+(va?'<td>225,0</td>':'')+
+    (sd?'<td style="color:#C0392B;font-size:17px">15,00</td>':'')+'</tr>');
+  ut.push('</table>');
+  boks.innerHTML=ut.join('');
+}
+
+function stegTekst(){
+  const boks=$('stegTekst'), n=runder.length;
+  const bit=[];
+  const kort=(farge,tittel,tekst)=>'<div class="note" style="border-left:5px solid '+farge+'"><b>'+tittel+'</b> '+tekst+'</div>';
+  if(n>=MAL && steg===0){
+    const sA=sumAvvik(), y=ytterpunkt();
+    const snitt=sA/n;
+    /* Ærlighet framfor et pent poeng: med ti personer og σ = 15 svinger summen
+       med rundt ±47, så den er sjelden nær null i absolutt forstand. Det som
+       ER poenget, er at den er liten sammenlignet med de enkelte avvikene —
+       og at den ikke vokser slik kvadratsummen gjør. */
+    bit.push(kort('#2E7D32','Summen av avvikene ble '+(sA>0?'+':'')+sA+'.',
+      'Sammenlign med de enkelte avvikene: den største bommen din alene var '+y.stor+' poeng. '+
+      'Ti avvik som hver er opptil '+y.stor+' store, summerer seg til bare '+(sA>0?'+':'')+sA+
+      ' — i snitt '+fmt(snitt,1)+' per person. De positive og negative spiser nesten hverandre opp, og det gjør de '+
+      '<b>uansett hvor spredt gruppa er</b>.'+
+      '<br><br>Det er selve problemet. Summen av avvik svinger rundt null og vokser ikke når spredningen vokser, '+
+      'så den kan ikke brukes til å måle hvor feil du tar. '+
+      (Math.abs(sA)>2*n ? 'At den ble så vidt stor som '+Math.abs(sA)+' her, er ren tilfeldighet — trekk flere og se '+
+       'gjennomsnittet krype mot null. ' : '')+
+      'Vil du se det tydeligst: hadde du gjettet gjennomsnittet av dine egne ti i stedet for 100, ville summen blitt '+
+      '<b>nøyaktig</b> null. Alltid.'+
+      '<br><br>Vi trenger altså et triks for å bli kvitt fortegnene.'));
+  }
+  if(steg>=1){
+    bit.push(kort('#7B3F9E','Kvadreringstrikset.',
+      'Vi ganger hvert avvik med seg selv. Minus ganger minus blir pluss, så fortegnene forsvinner — og store '+
+      'bommer teller mer enn små.'+
+      (function(){ const y=ytterpunkt();
+        if(y.stor===y.liten) return '';
+        return ' Se på dine egne to ytterpunkter: person '+y.nrS+' hadde IQ '+y.iqS+', altså '+y.stor+
+          ' unna gjetningen din, og bidrar med '+(y.stor*y.stor)+' til kolonnen. Person '+y.nrL+' hadde IQ '+
+          y.iqL+', bare '+y.liten+' unna, og bidrar med '+(y.liten*y.liten)+'. '+
+          (y.liten>0 ? 'Den ene bommen teller '+fmt((y.stor*y.stor)/(y.liten*y.liten),0)+' ganger så mye som den andre.'
+                     : 'Den som ble truffet blank, bidrar med ingenting.'); })()+
+      ' Summen av kolonnen heter <b>kvadratsummen</b> (engelsk: <i>sum of squares</i>, SS), og for dine tall er den <b>'+sumKvadrat()+'</b>.'+
+      '<br><br>SS er det mest brukte målet på <b>samlet modellfeil</b> i statistikk. Modellen her er den enklest '+
+      'tenkelige — «alle er 100» — og SS er prisen du betaler for den. Resten av emnet handler om å bytte den ut '+
+      'med bedre modeller og se SS krympe: en regresjonslinje, en gruppeforskjell, en interaksjon. Hver gang er '+
+      'spørsmålet det samme: <i>hvor mye av kvadratsummen klarte modellen å spise opp?</i>'));
+  }
+  if(steg>=2){
+    bit.push(kort('#7B3F9E','Variansen.',
+      'Kvadratsummen har en åpenbar svakhet: den vokser bare fordi du trekker flere personer. Trekker du dobbelt '+
+      'så mange, blir SS omtrent dobbelt så stor, uten at spredningen har endret seg. Løsningen er å dele på '+
+      'antallet.'+
+      '<div class="formel" style="margin:8px 0 2px">varians = kvadratsummen / n = '+sumKvadrat()+' / '+n+' = '+fmt(varians(),1)+'</div>'+
+      '<span class="styrt">Gjennomsnittlig kvadrert avvik.</span>'+
+      '<br><br>Lest tilbake på gjetteoppgaven: du bommet i snitt <b>'+fmt(varians(),0)+' kvadrerte IQ-poeng</b> '+
+      'per person. Det er et tall som lar seg regne videre på, men som ingen kan kjenne igjen — '+
+      'ingen sier «jeg bommet 225 kvadrerte poeng».'+
+      '<br><br>Variansen er byggesteinen i nesten alt som kommer senere: ANOVA deler den opp i biter, '+
+      'regresjonens R² er andelen av den som forklares, og t-testen sammenligner grupper i enheter av den. '+
+      'Ulempen er at tallet er i <i>kvadrerte</i> IQ-poeng, og det har ingen mennesker intuisjon for. '+
+      '<br><br>Her deler vi på n, rett og slett fordi vi kjente gjennomsnittet 100 på forhånd og ikke har brukt '+
+      'dataene til å finne det. Hva som skjer når man må estimere gjennomsnittet fra utvalget selv, er tema i Sim 31.'));
+  }
+  if(steg>=3){
+    const sd=standardavvik();
+    bit.push(kort('#2E7D32','Standardavviket.',
+      'Kvadratroten setter tallet tilbake på skalaen vi startet med.'+
+      '<div class="formel" style="margin:8px 0 2px">standardavvik = &radic;varians = &radic;'+fmt(varians(),1)+' = '+fmt(sd,2)+'</div>'+
+      '<span class="styrt">Tilbake i IQ-poeng, og dermed til å forstå.</span>'+
+      '<br><br><b>Og der er svaret på spørsmålet vi startet med.</b> Du gjettet 100 på alle '+n+' personene, og '+
+      'bommet i gjennomsnitt med <b>'+fmt(sd,1)+' IQ-poeng</b>. Fasiten er σ = 15'+
+      (n<30 ? ', og med bare '+n+' personer spretter anslaget en del — trekk flere og se det falle på plass.'
+            : ', og du ligger '+fmt(Math.abs(sd-15),1)+' unna.')+
+      '<br><br>Standardavviket er altså ikke et abstrakt spredningsmål. Det er <b>hvor feil du tar når du gjetter '+
+      'gjennomsnittet</b> — og derfor hører gjennomsnittet og standardavviket alltid sammen: det første er modellen, '+
+      'det andre er hvor dårlig den passer.'));
+  }
+  boks.innerHTML=bit.join('');
+}
+
+function alt(){ tegnPop(); tabell(); stegTekst(); knapper(); }
+
+/* ---------- trekking ---------- */
+function nyPerson(){
+  const x=trekk(); runder.push(x);
+  const a=x-GJETT;
+  $('personNr').textContent='Person '+runder.length;
+  $('fasit').innerHTML='Faktisk IQ: <b>'+x+'</b> &nbsp;·&nbsp; din gjetning: 100 &nbsp;·&nbsp; '+
+    'avvik: <b style="color:'+(a>=0?'#2E7D32':'#C0392B')+'">'+(a>0?'+':'')+a+'</b>';
+  return x;
+}
+function fyllTil(m){
+  while(runder.length<m) nyPerson();
+  alt();
+}
+$('tipp').onclick=()=>{ nyPerson(); alt(); };
+$('btnKvadrat').onclick=()=>{ steg=Math.max(steg,1); alt(); };
+$('btnVarians').onclick=()=>{ steg=Math.max(steg,2); alt(); };
+$('btnSD').onclick=()=>{ steg=Math.max(steg,3); alt(); };
+$('tipp100').onclick=()=>fyllTil(100);
+$('tipp1000').onclick=()=>fyllTil(1000);
+$('nullstill').onclick=()=>{ runder=[]; steg=0;
+  $('personNr').textContent='Ingen trukket ennå'; $('fasit').innerHTML='&nbsp;';
+  alt(); };
+window.addEventListener('resize', tegnPop);
+alt();
+})();
 </script>
 <script>
 /* ===== PSY300 språklag ===== */
@@ -848,6 +1932,941 @@ setVar10('iq');
   }, true);
 
   oversettAlt();
+})();
+</script>
+<script>
+/* ===== Fane 5 · Fra rådata til figur ===== */
+(function(){
+"use strict";
+var $=document.getElementById.bind(document);
+function nf(v,d){ return (v==null||!isFinite(v))?'–':v.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function lerret(cv){
+  var r=window.devicePixelRatio||1, w=cv.clientWidth, h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r; cv.height=h*r; cv.style.height=h+'px';
+  var c=cv.getContext('2d'); c.setTransform(r,0,0,r,0,0); c.clearRect(0,0,w,h); return [c,w,h];
+}
+function qn(p){
+  var a=[-3.969683028665376e+01,2.209460984245205e+02,-2.759285104469687e+02,1.383577518672690e+02,-3.066479806614716e+01,2.506628277459239e+00],
+      b=[-5.447609879822406e+01,1.615858368580409e+02,-1.556989798598866e+02,6.680131188771972e+01,-1.328068155288572e+01],
+      c=[-7.784894002430293e-03,-3.223964580411365e-01,-2.400758277161838e+00,-2.549732539343734e+00,4.374664141464968e+00,2.938163982698783e+00],
+      d=[7.784695709041462e-03,3.224671290700398e-01,2.445134137142996e+00,3.754408661907416e+00], q, r;
+  if(p<0.02425){ q=Math.sqrt(-2*Math.log(p));
+    return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1); }
+  if(p>1-0.02425){ q=Math.sqrt(-2*Math.log(1-p));
+    return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1); }
+  q=p-0.5; r=q*q;
+  return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);
+}
+/* normalfordelingens kumulative (Abramowitz & Stegun 26.2.17) */
+function pn(z){
+  var s=z<0?-1:1; z=Math.abs(z)/Math.SQRT2;
+  var t=1/(1+0.3275911*z);
+  var y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-z*z);
+  return 0.5*(1+s*y);
+}
+function nrm(){ var u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+
+var F={navy:'#1B2A4A', bla:'#2C6FBB', lys:'#CADCFC', rod:'#B3392B', gra:'#5A6B7B',
+       linje:'#D7DEE8', rute:'#EDF2F7', gronn:'#2E7D4F'};
+var FO={ verdier:[], des:1, navn:'', hover:-1, utl:-1, drar:false, plot:'hist',
+         steg:-1, vis:1e9, timer:null, mult:1 };
+
+/* ---------- data ---------- */
+function simuler(form,n){
+  var a=[],i,x;
+  for(i=0;i<n;i++){
+    if(form==='normal')      x=100+15*nrm();
+    else if(form==='skjev')  x=250+90*Math.exp(0.75*nrm());
+    else if(form==='tung')   x=100+15*(Math.random()<0.12?3.4*nrm():0.75*nrm());
+    else if(form==='gulv')   x=Math.max(0,8*Math.abs(nrm())-2.2);
+    else                     x=(Math.random()<0.5?92:118)+6*nrm();
+    a.push(x);
+  }
+  return a;
+}
+var DES={normal:0,skjev:0,tung:0,gulv:1,bimodal:0};
+function nyeData(){
+  var v=$('foVar').value, n=+$('foN').value, a;
+  if(DES.hasOwnProperty(v)){ a=simuler(v,n); FO.des=DES[v]; }
+  else {
+    var kilde=(typeof DATA!=='undefined'&&DATA[v])?DATA[v].d:null;
+    FO.des=(typeof DATA!=='undefined'&&DATA[v])?DATA[v].des:0;
+    a=[]; if(kilde){ for(var i=0;i<n;i++) a.push(kilde[(Math.random()*kilde.length)|0]); }
+    else a=simuler('normal',n);
+  }
+  FO.navn=$('foVar').selectedOptions[0].text.replace(/\s*·.*$/,'');
+  var f=Math.pow(10,FO.des);
+  FO.verdier=a.map(function(x){ return Math.round(x*f)/f; });
+  FO.utl=-1; FO.hover=-1; FO.vis=1e9; FO.steg=-1;
+  if($('foUtl').checked) settUtligger();
+  stopp(); skjulSteg(); tegn();
+}
+function settUtligger(){
+  if(!FO.verdier.length) return;
+  var s=FO.verdier.slice().sort(function(x,y){return x-y;});
+  var spenn=(s[s.length-1]-s[0])||1, f=Math.pow(10,FO.des);
+  FO.utl=FO.verdier.length-1;
+  FO.verdier[FO.utl]=Math.round((s[s.length-1]+0.55*spenn)*f)/f;
+}
+
+/* ---------- statistikk ---------- */
+function kvantil(sorted,p){
+  var n=sorted.length, h=(n-1)*p, lo=Math.floor(h), hi=Math.ceil(h);
+  return sorted[lo]+(h-lo)*(sorted[hi]-sorted[lo]);
+}
+function modell(){
+  var n=FO.verdier.length, i, m=0;
+  for(i=0;i<n;i++) m+=FO.verdier[i]; m/=n;
+  var ss=0; for(i=0;i<n;i++) ss+=(FO.verdier[i]-m)*(FO.verdier[i]-m);
+  var sd=Math.sqrt(ss/(n-1));
+  var idx=FO.verdier.map(function(_,i){return i;});
+  idx.sort(function(a,b){ return FO.verdier[a]-FO.verdier[b] || a-b; });
+  var rang=new Array(n), p=[], z=[], pObs=[], pTeo=[];
+  for(i=0;i<n;i++){
+    rang[idx[i]]=i;
+    var pp=(i+1-0.375)/(n+0.25);
+    p.push(pp); z.push(qn(pp));
+    pObs.push((i+0.5)/n);
+    pTeo.push(pn(sd>0?(FO.verdier[idx[i]]-m)/sd:0));
+  }
+  var s0=Math.sqrt(ss/n), m3=0, m4=0;
+  for(i=0;i<n;i++){ var d=FO.verdier[i]-m; m3+=d*d*d; m4+=d*d*d*d; }
+  m3/=n; m4/=n;
+  var sort=idx.map(function(j){ return FO.verdier[j]; });
+  var q1=kvantil(sort,0.25), med=kvantil(sort,0.5), q3=kvantil(sort,0.75), iqr=q3-q1;
+  var nedre=q1-1.5*iqr, ovre=q3+1.5*iqr;
+  var lav=sort[0], hoy=sort[sort.length-1];
+  for(i=0;i<n;i++){ if(sort[i]>=nedre){ lav=sort[i]; break; } }
+  for(i=n-1;i>=0;i--){ if(sort[i]<=ovre){ hoy=sort[i]; break; } }
+  return {n:n,m:m,sd:sd,idx:idx,rang:rang,p:p,z:z,pObs:pObs,pTeo:pTeo,sort:sort,
+          q1:q1,med:med,q3:q3,iqr:iqr,nedre:nedre,ovre:ovre,lav:lav,hoy:hoy,
+          min:sort[0],maks:sort[n-1],
+          skjev:s0>0?m3/(s0*s0*s0):0, kurt:s0>0?m4/(s0*s0*s0*s0)-3:0};
+}
+function tetthet(M,x){                      /* gaussisk kjerne, Silvermans regel */
+  var n=M.n, h=1.06*M.sd*Math.pow(n,-0.2);
+  if(!(h>0)) h=1;
+  var s=0;
+  for(var i=0;i<n;i++){ var u=(x-FO.verdier[i])/h; s+=Math.exp(-0.5*u*u); }
+  return s/(n*h*Math.sqrt(2*Math.PI));
+}
+function autoBandbredde(M){ var h=1.06*M.sd*Math.pow(M.n,-0.2); return h>0?h:1; }
+function bandbredde(M){ return autoBandbredde(M)*FO.mult; }
+
+/* ---------- felles akseoppsett ---------- */
+function omrade(M,margin){
+  var lo=M.min, hi=M.maks;
+  if(hi===lo){ hi=lo+1; lo=lo-1; }
+  var pad=(hi-lo)*(margin||0.07);
+  return [lo-pad, hi+pad];
+}
+/* Én felles verdiakse for alle figurene som måler i variabelens egne enheter.
+   Marginen tar høyde for at tetthetskurven strekker seg litt forbi ytterpunktene,
+   men bruker den AUTOMATISKE båndbredden, så aksen ikke flytter seg når man
+   drar i bredde-slideren. */
+function felles(M){
+  var lo=M.min, hi=M.maks;
+  if(hi===lo){ hi=lo+1; lo=lo-1; }
+  /* nok luft til at tetthetskurven får falle, men aldri så mye at dataene klemmes sammen */
+  var pad=Math.min(Math.max((hi-lo)*0.07, autoBandbredde(M)), (hi-lo)*0.20);
+  return [lo-pad, hi+pad];
+}
+var MARG={L:44, R:14};
+function akseX(c,W,L,R,basis,lo,hi,tittel,des){
+  c.strokeStyle=F.linje; c.lineWidth=1;
+  c.beginPath(); c.moveTo(L,basis+0.5); c.lineTo(W-R,basis+0.5); c.stroke();
+  c.fillStyle=F.gra; c.font='12px system-ui,sans-serif'; c.textAlign='center';
+  for(var i=0;i<=4;i++){ var v=lo+(hi-lo)*i/4;
+    c.fillText(nf(v,des), L+(v-lo)/(hi-lo)*(W-L-R), basis+16); }
+  if(tittel) c.fillText(tittel,(L+W-R)/2, basis+34);
+}
+
+/* ---------- venstre: rådata på tallinja ---------- */
+var RPOS=[];
+function tegnRaa(M){
+  var res=lerret($('foHist')), c=res[0], W=res[1], H=res[2];
+  var L=MARG.L, R=MARG.R, T=10, B=40;
+  var omr=felles(M), lo=omr[0], hi=omr[1];
+  var X=function(v){ return L+(v-lo)/(hi-lo)*(W-L-R); };
+  var basis=H-B;
+  /* stable prikker som ligger nær hverandre */
+  var r=Math.min(7,Math.max(3.2,(W-L-R)/(M.n*1.9)));
+  var steg=r*2.15, brukt=[];
+  RPOS=new Array(M.n);
+  var i,j;
+  for(i=0;i<M.n;i++){
+    var oi=M.idx[i], px=X(FO.verdier[oi]), niva=0;
+    for(j=0;j<brukt.length;j++) if(Math.abs(brukt[j].x-px)<r*1.9) niva=Math.max(niva,brukt[j].n+1);
+    brukt.push({x:px,n:niva});
+    RPOS[oi]={x:px, y:basis-r-niva*steg, r:r};
+  }
+  akseX(c,W,L,R,basis,lo,hi,FO.navn,FO.des);
+  /* gjennomsnitt */
+  c.strokeStyle='#9AA7B4'; c.setLineDash([4,4]);
+  c.beginPath(); c.moveTo(X(M.m),T); c.lineTo(X(M.m),basis); c.stroke(); c.setLineDash([]);
+  c.fillStyle='#9AA7B4'; c.textAlign='left'; c.font='11.5px system-ui,sans-serif';
+  c.fillText('gj.snitt', X(M.m)+4, T+9);
+  for(i=0;i<M.n;i++){
+    var p=RPOS[i]; if(!p) continue;
+    c.beginPath(); c.arc(p.x,p.y,p.r,0,7);
+    c.fillStyle = (i===FO.hover)?F.navy:(i===FO.utl?F.rod:F.bla);
+    c.globalAlpha = (i===FO.hover||i===FO.utl)?1:0.8; c.fill(); c.globalAlpha=1;
+    if(i===FO.hover){ c.lineWidth=2; c.strokeStyle='#fff'; c.stroke(); }
+  }
+  if(FO.utl>=0 && RPOS[FO.utl]){
+    c.fillStyle=F.rod; c.font='11.5px system-ui,sans-serif'; c.textAlign='center';
+    c.fillText('dra meg', RPOS[FO.utl].x, RPOS[FO.utl].y-RPOS[FO.utl].r-5);
+  }
+}
+
+/* ---------- høyre: fem figurer ---------- */
+var QPOS=[], BINS=null;
+function tegnFigur(M){
+  var res=lerret($('foQQ')), c=res[0], W=res[1], H=res[2];
+  QPOS=new Array(M.n);
+  if(FO.plot==='hist')        histogram(c,W,H,M);
+  else if(FO.plot==='tetthet')tetthetsplott(c,W,H,M);
+  else if(FO.plot==='boks')   boksplott(c,W,H,M);
+  else if(FO.plot==='sky')    raincloud(c,W,H,M);
+  else if(FO.plot==='qq')     qqplott(c,W,H,M);
+  else                        ppplott(c,W,H,M);
+}
+function histogram(c,W,H,M){
+  var L=MARG.L,R=MARG.R,T=16,B=44, basis=H-B;
+  var omr=felles(M), lo=omr[0], hi=omr[1];
+  var X=function(v){ return L+(v-lo)/(hi-lo)*(W-L-R); };
+  var autoBins=Math.max(6,Math.min(24,Math.round(Math.sqrt(M.n)*1.6)));
+  var autoBw=(hi-lo)/autoBins;
+  var bw=autoBw*FO.mult;
+  var bins=Math.max(1,Math.min(300,Math.ceil((hi-lo)/bw)));
+  bw=(hi-lo)/bins;
+  var tell=new Array(bins).fill(0), plass=new Array(M.n), i,k;
+  for(i=0;i<M.n;i++){
+    var oi=M.idx[i];
+    k=Math.min(bins-1,Math.max(0,Math.floor((FO.verdier[oi]-lo)/bw)));
+    plass[oi]={bin:k,niva:tell[k]++};
+  }
+  BINS={lo:lo,bw:bw,tell:tell,plass:plass,bins:bins,autoBw:autoBw};
+  var maks=Math.max.apply(null,tell)||1;
+  var Y=function(t){ return basis-(t/maks)*(basis-T); };
+  c.strokeStyle=F.rute; c.lineWidth=1;
+  for(i=1;i<=4;i++){ var yy=T+(basis-T)*i/5; c.beginPath(); c.moveTo(L,yy); c.lineTo(W-R,yy); c.stroke(); }
+  for(k=0;k<bins;k++){
+    var synlig=0;
+    for(i=0;i<M.n;i++) if(BINS.plass[i].bin===k && M.rang[i]<FO.vis) synlig++;
+    if(!synlig) continue;
+    var x0=X(lo+k*bw), x1=X(lo+(k+1)*bw);
+    c.fillStyle=(FO.hover>=0 && BINS.plass[FO.hover].bin===k)?F.lys:F.bla;
+    c.globalAlpha=(FO.hover>=0 && BINS.plass[FO.hover].bin===k)?1:0.85;
+    c.fillRect(x0+0.5, Y(synlig), Math.max(1,x1-x0-1), basis-Y(synlig));
+    c.globalAlpha=1;
+  }
+  for(i=0;i<M.n;i++){
+    var pl=BINS.plass[i];
+    QPOS[i]={x:(X(lo+pl.bin*bw)+X(lo+(pl.bin+1)*bw))/2,
+             y:Y(pl.niva+0.5), r:5};
+  }
+  if(FO.hover>=0 && QPOS[FO.hover]){
+    var q=QPOS[FO.hover];
+    c.beginPath(); c.arc(q.x,q.y,5.5,0,7);
+    c.fillStyle=F.navy; c.fill(); c.lineWidth=2; c.strokeStyle='#fff'; c.stroke();
+  }
+  akseX(c,W,L,R,basis,lo,hi,FO.navn,FO.des);
+  c.fillStyle=F.gra; c.font='12px system-ui,sans-serif'; c.textAlign='right';
+  c.fillText(String(maks), L-6, T+10); c.fillText('0', L-6, basis+4);
+  c.save(); c.translate(13,(T+basis)/2); c.rotate(-Math.PI/2); c.textAlign='center';
+  c.fillText('antall',0,0); c.restore();
+}
+function tetthetsplott(c,W,H,M){
+  var L=MARG.L,R=MARG.R,T=16,B=44, basis=H-B;
+  var h=bandbredde(M);
+  var omr=felles(M), lo=omr[0], hi=omr[1];
+  var X=function(v){ return L+(v-lo)/(hi-lo)*(W-L-R); };
+  var K=160, xs=[], ys=[], maks=0, i;
+  for(i=0;i<=K;i++){ var xv=lo+(hi-lo)*i/K; xs.push(xv); var d=tetthet(M,xv); ys.push(d); if(d>maks)maks=d; }
+  if(!(maks>0)) maks=1;
+  var Y=function(d){ return basis-(d/maks)*(basis-T); };
+  c.strokeStyle=F.rute; c.lineWidth=1;
+  for(i=1;i<=4;i++){ var yy=T+(basis-T)*i/5; c.beginPath(); c.moveTo(L,yy); c.lineTo(W-R,yy); c.stroke(); }
+  /* enkeltpersonens egen haug */
+  if(FO.hover>=0){
+    var v0=FO.verdier[FO.hover];
+    c.beginPath(); c.moveTo(X(lo),basis);
+    for(i=0;i<=K;i++){ var u=(xs[i]-v0)/h;
+      c.lineTo(X(xs[i]), Y(Math.exp(-0.5*u*u)/(M.n*h*Math.sqrt(2*Math.PI)))); }
+    c.lineTo(X(hi),basis); c.closePath();
+    c.fillStyle='rgba(27,42,74,.20)'; c.fill();
+  }
+  c.beginPath(); c.moveTo(X(lo),basis);
+  for(i=0;i<=K;i++) c.lineTo(X(xs[i]),Y(ys[i]));
+  c.lineTo(X(hi),basis); c.closePath();
+  c.fillStyle='rgba(44,111,187,.18)'; c.fill();
+  c.beginPath();
+  for(i=0;i<=K;i++){ if(i===0) c.moveTo(X(xs[i]),Y(ys[i])); else c.lineTo(X(xs[i]),Y(ys[i])); }
+  c.strokeStyle=F.bla; c.lineWidth=2; c.stroke();
+  /* teppet nederst: her bor hver enkelt person i et tetthetsplott */
+  var rr=Math.min(5,Math.max(2.6,(W-L-R)/(M.n*2.2))), brukt=[], k2;
+  for(i=0;i<M.n;i++){
+    var oi2=M.idx[i], xx2=X(FO.verdier[oi2]), niv=0;
+    for(k2=0;k2<brukt.length;k2++) if(Math.abs(brukt[k2].x-xx2)<rr*1.9) niv=Math.max(niv,brukt[k2].n+1);
+    brukt.push({x:xx2,n:niv});
+    QPOS[oi2]={x:xx2, y:basis-rr-niv*rr*2.15, r:rr, kurve:Y(tetthet(M,FO.verdier[oi2]))};
+  }
+  for(i=0;i<M.n;i++){
+    var q0=QPOS[i];
+    c.beginPath(); c.arc(q0.x,q0.y,q0.r,0,7);
+    c.fillStyle=(i===FO.hover)?F.navy:F.bla;
+    c.globalAlpha=(i===FO.hover)?1:0.55; c.fill(); c.globalAlpha=1;
+  }
+  if(FO.hover>=0 && QPOS[FO.hover]){
+    var q=QPOS[FO.hover];
+    c.strokeStyle=F.navy; c.lineWidth=1; c.setLineDash([3,3]);
+    c.beginPath(); c.moveTo(q.x,q.y); c.lineTo(q.x,q.kurve); c.stroke(); c.setLineDash([]);
+    c.beginPath(); c.arc(q.x,q.kurve,5.5,0,7); c.fillStyle=F.navy; c.fill();
+    c.lineWidth=2; c.strokeStyle='#fff'; c.stroke();
+  }
+  akseX(c,W,L,R,basis,lo,hi,FO.navn,FO.des);
+  c.save(); c.translate(13,(T+basis)/2); c.rotate(-Math.PI/2);
+  c.fillStyle=F.gra; c.font='12px system-ui,sans-serif'; c.textAlign='center';
+  c.fillText('tetthet',0,0); c.restore();
+}
+function boksplott(c,W,H,M){
+  var L=MARG.L,R=MARG.R,T=26,B=44, basis=H-B;
+  var omr=felles(M), lo=omr[0], hi=omr[1];
+  var X=function(v){ return L+(v-lo)/(hi-lo)*(W-L-R); };
+  var yb=T+34, hb=52;                       /* boksen */
+  var ystrip=yb+hb+34;                      /* prikkene under */
+  c.strokeStyle=F.navy; c.lineWidth=1.6;
+  c.beginPath(); c.moveTo(X(M.lav),yb+hb/2); c.lineTo(X(M.q1),yb+hb/2);
+  c.moveTo(X(M.q3),yb+hb/2); c.lineTo(X(M.hoy),yb+hb/2); c.stroke();
+  c.beginPath(); c.moveTo(X(M.lav),yb+10); c.lineTo(X(M.lav),yb+hb-10);
+  c.moveTo(X(M.hoy),yb+10); c.lineTo(X(M.hoy),yb+hb-10); c.stroke();
+  c.fillStyle='rgba(202,220,252,.65)';
+  c.fillRect(X(M.q1),yb,X(M.q3)-X(M.q1),hb);
+  c.strokeRect(X(M.q1),yb,X(M.q3)-X(M.q1),hb);
+  c.lineWidth=2.6; c.beginPath(); c.moveTo(X(M.med),yb); c.lineTo(X(M.med),yb+hb); c.stroke();
+  c.fillStyle=F.gra; c.font='11.5px system-ui,sans-serif'; c.textAlign='center';
+  c.fillText('Q1',X(M.q1),yb-6); c.fillText('median',X(M.med),yb-6); c.fillText('Q3',X(M.q3),yb-6);
+  var i;
+  for(i=0;i<M.n;i++){
+    var v=FO.verdier[i], ute=(v<M.nedre||v>M.ovre);
+    QPOS[i]={x:X(v), y: ute?yb+hb/2 : ystrip+((i*37)%22)-11, r:5};
+  }
+  for(i=0;i<M.n;i++){
+    var q=QPOS[i], utl=(FO.verdier[i]<M.nedre||FO.verdier[i]>M.ovre);
+    c.beginPath(); c.arc(q.x,q.y,utl?5:3.6,0,7);
+    c.fillStyle=(i===FO.hover)?F.navy:(utl?F.rod:F.bla);
+    c.globalAlpha=(i===FO.hover)?1:(utl?0.95:0.55); c.fill(); c.globalAlpha=1;
+    if(i===FO.hover){ c.lineWidth=2; c.strokeStyle='#fff'; c.stroke(); }
+  }
+  c.fillStyle=F.gra; c.font='11.5px system-ui,sans-serif'; c.textAlign='left';
+  c.fillText('hver prikk = én person', L, ystrip+26);
+  akseX(c,W,L,R,basis,lo,hi,FO.navn,FO.des);
+}
+function raincloud(c,W,H,M){
+  var L=MARG.L,R=MARG.R,T=14,B=44, basis=H-B;
+  var omr=felles(M), lo=omr[0], hi=omr[1];
+  var X=function(v){ return L+(v-lo)/(hi-lo)*(W-L-R); };
+  var rom=basis-T;
+  var ySky=T+rom*0.44, hSky=rom*0.42;        /* skyen: halv tetthetskurve */
+  var yBoks=ySky+rom*0.06, hBoks=rom*0.15;   /* boksen */
+  var yRegn=yBoks+hBoks+rom*0.12, hRegn=rom*0.20;
+  var i,k;
+  /* --- skyen --- */
+  var K=160, xs=[], ys=[], maks=0;
+  for(i=0;i<=K;i++){ var xv=lo+(hi-lo)*i/K; xs.push(xv); var d=tetthet(M,xv); ys.push(d); if(d>maks)maks=d; }
+  if(!(maks>0)) maks=1;
+  var Yc=function(d){ return ySky-(d/maks)*hSky; };
+  c.beginPath(); c.moveTo(X(lo),ySky);
+  for(i=0;i<=K;i++) c.lineTo(X(xs[i]),Yc(ys[i]));
+  c.lineTo(X(hi),ySky); c.closePath();
+  c.fillStyle='rgba(44,111,187,.20)'; c.fill();
+  c.beginPath();
+  for(i=0;i<=K;i++){ if(i===0) c.moveTo(X(xs[i]),Yc(ys[i])); else c.lineTo(X(xs[i]),Yc(ys[i])); }
+  c.strokeStyle=F.bla; c.lineWidth=2; c.stroke();
+  c.strokeStyle=F.linje; c.lineWidth=1;
+  c.beginPath(); c.moveTo(X(lo),ySky); c.lineTo(X(hi),ySky); c.stroke();
+  /* --- boksen --- */
+  c.strokeStyle=F.navy; c.lineWidth=1.5;
+  c.beginPath(); c.moveTo(X(M.lav),yBoks+hBoks/2); c.lineTo(X(M.q1),yBoks+hBoks/2);
+  c.moveTo(X(M.q3),yBoks+hBoks/2); c.lineTo(X(M.hoy),yBoks+hBoks/2); c.stroke();
+  c.beginPath(); c.moveTo(X(M.lav),yBoks+6); c.lineTo(X(M.lav),yBoks+hBoks-6);
+  c.moveTo(X(M.hoy),yBoks+6); c.lineTo(X(M.hoy),yBoks+hBoks-6); c.stroke();
+  c.fillStyle='rgba(202,220,252,.75)';
+  c.fillRect(X(M.q1),yBoks,X(M.q3)-X(M.q1),hBoks);
+  c.strokeRect(X(M.q1),yBoks,X(M.q3)-X(M.q1),hBoks);
+  c.lineWidth=2.4; c.beginPath(); c.moveTo(X(M.med),yBoks); c.lineTo(X(M.med),yBoks+hBoks); c.stroke();
+  /* --- regnet: hver person for seg --- */
+  for(i=0;i<M.n;i++){
+    var v=FO.verdier[i];
+    QPOS[i]={x:X(v), y:yRegn+((i*37)%Math.round(hRegn)), r:4.6};
+  }
+  for(i=0;i<M.n;i++){
+    var q=QPOS[i], ute=(FO.verdier[i]<M.nedre||FO.verdier[i]>M.ovre);
+    c.beginPath(); c.arc(q.x,q.y,(i===FO.hover)?5.6:3.6,0,7);
+    c.fillStyle=(i===FO.hover)?F.navy:(ute?F.rod:F.bla);
+    c.globalAlpha=(i===FO.hover)?1:(ute?0.95:0.55); c.fill(); c.globalAlpha=1;
+    if(i===FO.hover){ c.lineWidth=2; c.strokeStyle='#fff'; c.stroke(); }
+  }
+  /* --- den påpekte personen bindes sammen gjennom alle tre lagene --- */
+  if(FO.hover>=0 && QPOS[FO.hover]){
+    var qx=QPOS[FO.hover].x;
+    c.strokeStyle=F.navy; c.lineWidth=1; c.setLineDash([3,3]);
+    c.beginPath(); c.moveTo(qx,QPOS[FO.hover].y); c.lineTo(qx,Yc(tetthet(M,FO.verdier[FO.hover]))); c.stroke();
+    c.setLineDash([]);
+    c.beginPath(); c.arc(qx,Yc(tetthet(M,FO.verdier[FO.hover])),5,0,7);
+    c.fillStyle=F.navy; c.fill(); c.lineWidth=2; c.strokeStyle='#fff'; c.stroke();
+  }
+  c.fillStyle=F.gra; c.font='11.5px system-ui,sans-serif'; c.textAlign='left';
+  c.fillText('sky = tetthet', L, T+12);
+  c.fillText('boks = fem tall', L, yBoks-5);
+  c.fillText('regn = hver person', L, yRegn-8);
+  akseX(c,W,L,R,basis,lo,hi,FO.navn,FO.des);
+}
+function qqplott(c,W,H,M){
+  var L=MARG.L,R=MARG.R,T=16,B=44, basis=H-B;
+  var zlo=-3.1, zhi=3.1;
+  var omr=felles(M), lo=omr[0], hi=omr[1];   /* samme verdiakse som de andre figurene */
+  var X=function(z){ return L+(z-zlo)/(zhi-zlo)*(W-L-R); };
+  var Y=function(v){ return basis-(v-lo)/(hi-lo)*(basis-T); };
+  var i;
+  c.strokeStyle=F.rute; c.lineWidth=1;
+  for(i=-3;i<=3;i++){ c.beginPath(); c.moveTo(X(i),T); c.lineTo(X(i),basis); c.stroke(); }
+  c.strokeStyle=F.linje; c.beginPath(); c.moveTo(L+0.5,T); c.lineTo(L+0.5,basis); c.stroke();
+  c.save(); c.beginPath(); c.rect(L,T,W-L-R,basis-T); c.clip();
+  c.strokeStyle=F.navy; c.lineWidth=1.7;
+  c.beginPath(); c.moveTo(X(zlo),Y(M.m+M.sd*zlo)); c.lineTo(X(zhi),Y(M.m+M.sd*zhi)); c.stroke();
+  c.restore();
+  for(i=0;i<M.n;i++){ var oi=M.idx[i]; QPOS[oi]={x:X(M.z[i]), y:Y(FO.verdier[oi]), r:5}; }
+  for(i=0;i<M.n;i++){
+    if(M.rang[i]>=FO.vis) continue;
+    var q=QPOS[i];
+    c.beginPath(); c.arc(q.x,q.y,i===FO.hover?6.2:4.6,0,7);
+    c.fillStyle=(i===FO.hover)?F.navy:(i===FO.utl?F.rod:F.bla);
+    c.globalAlpha=(i===FO.hover||i===FO.utl)?1:0.78; c.fill(); c.globalAlpha=1;
+    if(i===FO.hover){ c.lineWidth=2; c.strokeStyle='#fff'; c.stroke(); }
+  }
+  c.fillStyle=F.gra; c.font='12px system-ui,sans-serif'; c.textAlign='center';
+  for(i=-3;i<=3;i++) c.fillText(String(i),X(i),basis+16);
+  c.fillText('forventet z hvis normalfordelt',(L+W-R)/2,basis+34);
+  c.textAlign='right';
+  for(i=0;i<=3;i++){ var v=lo+(hi-lo)*i/3; c.fillText(nf(v,FO.des),L-6,Y(v)+4); }
+  c.strokeStyle=F.linje; c.beginPath(); c.moveTo(L,basis+0.5); c.lineTo(W-R,basis+0.5); c.stroke();
+}
+function ppplott(c,W,H,M){
+  var L=MARG.L,R=MARG.R,T=16,B=44, basis=H-B;
+  var X=function(p){ return L+p*(W-L-R); };
+  var Y=function(p){ return basis-p*(basis-T); };
+  var i;
+  c.strokeStyle=F.rute; c.lineWidth=1;
+  for(i=0;i<=5;i++){ c.beginPath(); c.moveTo(X(i/5),T); c.lineTo(X(i/5),basis); c.stroke();
+                     c.beginPath(); c.moveTo(L,Y(i/5)); c.lineTo(W-R,Y(i/5)); c.stroke(); }
+  c.strokeStyle=F.navy; c.lineWidth=1.7;
+  c.beginPath(); c.moveTo(X(0),Y(0)); c.lineTo(X(1),Y(1)); c.stroke();
+  for(i=0;i<M.n;i++){ var oi=M.idx[i]; QPOS[oi]={x:X(M.pTeo[i]), y:Y(M.pObs[i]), r:5}; }
+  for(i=0;i<M.n;i++){
+    if(M.rang[i]>=FO.vis) continue;
+    var q=QPOS[i];
+    c.beginPath(); c.arc(q.x,q.y,i===FO.hover?6.2:4.6,0,7);
+    c.fillStyle=(i===FO.hover)?F.navy:(i===FO.utl?F.rod:F.bla);
+    c.globalAlpha=(i===FO.hover||i===FO.utl)?1:0.78; c.fill(); c.globalAlpha=1;
+    if(i===FO.hover){ c.lineWidth=2; c.strokeStyle='#fff'; c.stroke(); }
+  }
+  c.fillStyle=F.gra; c.font='12px system-ui,sans-serif'; c.textAlign='center';
+  for(i=0;i<=5;i++) c.fillText(nf(i/5,1),X(i/5),basis+16);
+  c.fillText('forventet andel under (normalfordeling)',(L+W-R)/2,basis+34);
+  c.textAlign='right';
+  for(i=0;i<=5;i++) c.fillText(nf(i/5,1),L-6,Y(i/5)+4);
+  c.save(); c.translate(13,(T+basis)/2); c.rotate(-Math.PI/2); c.textAlign='center';
+  c.fillText('observert andel under',0,0); c.restore();
+  c.strokeStyle=F.linje; c.beginPath(); c.moveTo(L,basis+0.5); c.lineTo(W-R,basis+0.5); c.stroke();
+}
+
+/* ---------- forklaringstekst ---------- */
+var TITTEL={hist:'Histogram', tetthet:'Tetthetsplott', boks:'Boksplott',
+            sky:'Raincloud-plott', qq:'Q-Q-plott', pp:'P-P-plott'};
+var HVA={
+ hist:'<b>Hva histogrammet gjør:</b> deler tallinja i like brede søyler og teller hvor mange som havner i hver. <b>Det den kaster:</b> hvor i søyla du lå. To personer i samme søyle blir helt like.',
+ tetthet:'<b>Hva tetthetsplottet gjør:</b> legger en liten haug rundt hver person og summerer alle haugene til én kurve. <b>Det den kaster:</b> ingenting direkte — men bredden på haugene (båndbredden) bestemmer hvor glatt kurven blir, akkurat som søylebredden i histogrammet.',
+ boks:'<b>Hva boksplottet gjør:</b> koker fordelingen ned til fem tall — minste, Q1, median, Q3, største — og markerer alt utenfor 1,5 kvartilbredder som uteliggere. <b>Det den kaster:</b> alt om formen. To helt ulike fordelinger kan gi identiske bokser.',
+ sky:'<b>Hva raincloud-plottet gjør:</b> legger de tre foregående oppå hverandre — tetthetskurven som «sky», boksplottet i midten, og hver enkelt person som «regn» nederst. <b>Det den kaster:</b> ingenting. Derfor er den blitt vanlig i tidsskrifter: leseren får både formen, sammendraget og rådataene i én figur, og kan selv se om de tre forteller samme historie.',
+ qq:'<b>Hva Q-Q-plottet gjør:</b> beholder hver eneste verdi, men bytter ut den vannrette aksen med «hvor ville denne verdien ligget hvis fordelingen var normal». <b>Det den viser best:</b> halene — der det pleier å svikte.',
+ pp:'<b>Hva P-P-plottet gjør:</b> sammenligner andelen som faktisk ligger under hver verdi med andelen normalfordelingen forutsier. <b>Det den viser best:</b> midten. Halene klemmes sammen mot 0 og 1, så uteliggere blir nesten usynlige — derfor er Q-Q standardvalget.'
+};
+function lesUt(M){
+  $('foTittel').textContent=TITTEL[FO.plot];
+  $('foHva').innerHTML=HVA[FO.plot];
+  if(FO.hover<0){
+    $('foLes').innerHTML='<b>Pek på en prikk.</b> Da får du se nøyaktig hva figuren til høyre gjorde med akkurat den personen.';
+    return;
+  }
+  var i=FO.hover, v=FO.verdier[i], r=M.rang[i], D=Math.max(FO.des,0), t;
+  var start='<b>Verdi '+nf(v,D)+'</b> · nummer <b>'+(r+1)+'</b> av '+M.n+' sortert fra lavest.';
+  if(FO.plot==='hist' && BINS){
+    var k=BINS.plass[i].bin, lo=BINS.lo+k*BINS.bw, hi=lo+BINS.bw;
+    t='<div style="margin-top:6px">Personen havner i søyla <b>'+nf(lo,D)+' til '+nf(hi,D)+'</b>, sammen med <b>'+BINS.tell[k]+'</b> andre. '
+      +'Fra nå av vet figuren bare <i>hvilken</i> søyle — ikke at verdien var akkurat '+nf(v,D)+'.'
+      +(Math.abs(FO.mult-1)<1e-9?'':' Med den søylebredden du har valgt nå, altså — endrer du den, får hun nye naboer.')+'</div>';
+  } else if(FO.plot==='tetthet'){
+    var h=bandbredde(M);
+    t='<div style="margin-top:6px">Personen legger igjen en liten haug med bredde <b>h = '+nf(h,2)+'</b> (Silvermans regel) sentrert på '+nf(v,D)+'. '
+      +'Den skyggelagte haugen er hennes bidrag; kurven er summen av alle '+M.n+'. Hvert bidrag veier <b>1/'+M.n+'</b>.</div>';
+  } else if(FO.plot==='boks'){
+    var hvor = v<M.q1 ? 'i nedre fjerdedel' : (v>M.q3 ? 'i øvre fjerdedel' : 'inne i boksen, blant de midterste 50 %');
+    var ute = (v<M.nedre||v>M.ovre);
+    t='<div style="margin-top:6px">Verdien ligger <b>'+hvor+'</b>. '
+      +'Q1 = '+nf(M.q1,D)+', median = '+nf(M.med,D)+', Q3 = '+nf(M.q3,D)+', kvartilbredde = '+nf(M.iqr,D)+'.'
+      +'<div style="margin-top:4px">Grensene for uteligger er Q1 − 1,5 × '+nf(M.iqr,D)+' = <b>'+nf(M.nedre,D)+'</b> og Q3 + 1,5 × '+nf(M.iqr,D)+' = <b>'+nf(M.ovre,D)+'</b>. '
+      +(ute?'Denne verdien ligger utenfor og tegnes som <b>uteligger</b>.':'Denne verdien ligger innenfor, så den forsvinner inn i boksen eller værhåret.')+'</div></div>';
+  } else if(FO.plot==='sky'){
+    var hvor2 = v<M.q1 ? 'i nedre fjerdedel' : (v>M.q3 ? 'i øvre fjerdedel' : 'blant de midterste 50 %');
+    var ute2 = (v<M.nedre||v>M.ovre);
+    t='<div style="margin-top:6px">Personen finnes tre steder samtidig: som en prikk i <b>regnet</b>, '
+      +'som en del av <b>boksen</b> (hun ligger '+hvor2+'), og som et bidrag til <b>skyen</b> over. '
+      +'Den stiplede streken viser hvor høyt kurven ligger akkurat der hun er.'
+      +'<div style="margin-top:4px">'+(ute2?'Boksplottdelen regner henne som <b>uteligger</b> — men i regnet ser du fortsatt nøyaktig hvor hun er, og i skyen at hun ikke er helt alene.':'Hun er innenfor uteliggergrensene, så boksen sier ingenting spesielt om henne — men regnet viser henne likevel.')+'</div></div>';
+  } else if(FO.plot==='qq'){
+    var p=M.p[r], zf=M.z[r], vent=M.m+M.sd*zf, avvik=v-vent;
+    t='<div style="margin-top:6px">Andelen under: ('+(r+1)+' − 0,375) / ('+M.n+' + 0,25) = <b>'+nf(p*100,1)+' %</b> → <b>z = '+nf(zf,2)+'</b>. Det er punktets plass langs den vannrette aksen.'
+      +'<div style="margin-top:4px">Var fordelingen normal, ville verdien her vært <b>'+nf(vent,D)+'</b>. Den er '+nf(v,D)+' — '
+      +(Math.abs(avvik)<1e-9?'akkurat på linja':(avvik>0?'<b>'+nf(avvik,D)+' over</b> linja':'<b>'+nf(-avvik,D)+' under</b> linja'))+'.</div></div>';
+  } else {
+    var po=M.pObs[r], pt=M.pTeo[r], z=M.sd>0?(v-M.m)/M.sd:0;
+    t='<div style="margin-top:6px">Observert andel under: ('+(r+1)+' − 0,5) / '+M.n+' = <b>'+nf(po*100,1)+' %</b>.'
+      +'<div style="margin-top:4px">Forventet andel under: personens z-skår er '+nf(z,2)+', og normalfordelingen legger <b>'+nf(pt*100,1)+' %</b> under den. '
+      +'Avstanden til diagonalen er '+nf(Math.abs(po-pt)*100,1)+' prosentpoeng.</div></div>';
+  }
+  $('foLes').innerHTML=start+t;
+}
+function breddeUt(M){
+  var vis=(FO.plot==='hist'||FO.plot==='tetthet'||FO.plot==='sky');
+  var boks=$('foBredde');
+  if(boks) boks.style.display = vis?'block':'none';
+  if(!vis) return;
+  var erHist=(FO.plot==='hist');
+  $('foBreddeNavn').textContent = erHist?'Søylebredde':'Båndbredde';
+  var D=Math.max(FO.des,1);
+  var b = erHist ? (BINS?BINS.bw:0) : bandbredde(M);
+  var auto = erHist ? (BINS?BINS.autoBw:0) : autoBandbredde(M);
+  var txt = nf(b,D) + (Math.abs(FO.mult-1)<1e-9 ? ' (automatisk)' : ' · automatisk er '+nf(auto,D));
+  if(erHist && BINS) txt += ' · '+BINS.bins+' søyler';
+  $('foBreddeUt').textContent = txt;
+  var m=FO.mult, s;
+  if(m<0.45)      s='<b>For smalt.</b> Nå er nesten hver observasjon sin egen søyle, og hver eneste tilfeldige ujevnhet ser ut som et poeng. Dette er rådataene med et tynt lag maling.';
+  else if(m<0.8)  s='<b>Litt smalt.</b> Formen begynner å bli hakkete. Spør deg selv om hver topp du ser, ville overlevd et nytt utvalg.';
+  else if(m<=1.3) s='<b>Omtrent som programmet foreslår.</b> Nok detaljer til å se formen, nok utjevning til at støyen ikke tar over.';
+  else if(m<2.6)  s='<b>Litt bredt.</b> Formen glattes ut. Skjevhet og små pukler forsvinner inn i naboene.';
+  else            s='<b>For bredt.</b> Nå er alt én eller to søyler. Fordelingen ser rolig og symmetrisk ut fordi du ikke lenger kan se noe annet.';
+  $('foBreddeNote').innerHTML=s+' <span class="muted">Ingen av innstillingene er «feil» — men figuren er et valg, og valget bør ikke være det som bærer konklusjonen din.</span>';
+}
+function tegn(){
+  if(!FO.verdier.length) return;
+  var M=modell(); FO.M=M;
+  tegnRaa(M); tegnFigur(M); lesUt(M); breddeUt(M);
+  $('foStat').innerHTML='<span class="stat">n = '+M.n+'</span>'
+    +'<span class="stat">gj.snitt = '+nf(M.m,Math.max(1,FO.des))+'</span>'
+    +'<span class="stat">SD = '+nf(M.sd,Math.max(1,FO.des))+'</span>'
+    +'<span class="stat">median = '+nf(M.med,Math.max(1,FO.des))+'</span>'
+    +'<span class="stat'+(Math.abs(M.skjev)>1?' orange':'')+'">skjevhet = '+nf(M.skjev,2)+'</span>'
+    +'<span class="stat'+(Math.abs(M.kurt)>1?' orange':'')+'">kurtose = '+nf(M.kurt,2)+'</span>';
+}
+
+/* ---------- peking ---------- */
+function naermest(pos,mx,my){
+  var best=-1,bd=1e9;
+  for(var i=0;i<pos.length;i++){
+    if(!pos[i]) continue;
+    var dx=pos[i].x-mx, dy=pos[i].y-my, d=dx*dx+dy*dy;
+    if(d<bd){ bd=d; best=i; }
+  }
+  return bd<300?best:-1;
+}
+function musPos(cv,e){ var b=cv.getBoundingClientRect(); return [e.clientX-b.left, e.clientY-b.top]; }
+function kobleHover(cv,hent){
+  cv.addEventListener('mousemove',function(e){
+    if(FO.drar) return;
+    var p=musPos(cv,e), ny=naermest(hent(),p[0],p[1]);
+    if(ny!==FO.hover){ FO.hover=ny; cv.style.cursor=ny>=0?'pointer':'default'; tegn(); }
+  });
+  cv.addEventListener('mouseleave',function(){ if(!FO.drar && FO.hover>=0){ FO.hover=-1; tegn(); } });
+}
+function dragOppsett(){
+  var cv=$('foHist');
+  cv.addEventListener('mousedown',function(e){
+    if(FO.utl<0||!RPOS[FO.utl]) return;
+    var p=musPos(cv,e);
+    if(Math.hypot(RPOS[FO.utl].x-p[0],RPOS[FO.utl].y-p[1])<18){
+      FO.drar=true; FO.hover=FO.utl; cv.style.cursor='grabbing'; e.preventDefault(); }
+  });
+  window.addEventListener('mousemove',function(e){
+    if(!FO.drar) return;
+    var p=musPos(cv,e), W=cv.clientWidth, L=20, R=16;
+    var andre=FO.verdier.filter(function(_,i){ return i!==FO.utl; });
+    var lo=Math.min.apply(null,andre), hi=Math.max.apply(null,andre), spenn=(hi-lo)||1;
+    var v0=lo-0.8*spenn, v1=hi+0.9*spenn, f=Math.pow(10,FO.des);
+    var t=Math.max(0,Math.min(1,(p[0]-L)/(W-L-R)));
+    FO.verdier[FO.utl]=Math.round((v0+t*(v1-v0))*f)/f;
+    tegn();
+  });
+  window.addEventListener('mouseup',function(){ if(FO.drar){ FO.drar=false; $('foHist').style.cursor='pointer'; } });
+}
+
+/* ---------- steg for steg ---------- */
+var STEG={
+ hist:[ 'Del tallinja i like brede søyler. Bredden er et valg — ikke noe dataene bestemmer.',
+        'Gå gjennom personene én etter én og legg hver i sin søyle.',
+        'Tegn høyden på hver søyle som antallet den fikk. Nå er hver enkelt verdi borte; bare tellingene står igjen.' ],
+ tetthet:[ 'Legg en liten, glatt haug rundt hver eneste person. Bredden på haugen er båndbredden h.',
+           'Summer alle haugene punkt for punkt langs tallinja.',
+           'Del summen på antall personer, så arealet under kurven blir 1. Nå har du tetthetskurven.' ],
+ boks:[ 'Sorter alle verdiene fra lavest til høyest.',
+        'Finn medianen, og deretter Q1 og Q3 — verdiene som deler av de nederste og øverste 25 %. Boksen går fra Q1 til Q3.',
+        'Regn kvartilbredden Q3 − Q1, og strekk værhårene til den fjerneste verdien innenfor 1,5 kvartilbredder.',
+        'Alt som ligger utenfor, tegnes som egne prikker: uteliggere.' ],
+ sky:[ 'Legg rådataene ut som «regn» nederst — én prikk per person, spredt litt i høyden så de ikke dekker hverandre.',
+       'Legg boksplottet over: median, Q1, Q3 og værhårene, altså sammendraget i fem tall.',
+       'Legg tetthetskurven øverst som en «sky», så formen kommer fram.',
+       'Nå kan leseren sjekke de tre mot hverandre: skjuler boksen noe skyen viser? Ligger regnet der begge sier det skal ligge?' ],
+ qq:[ 'Sorter verdiene fra lavest til høyest.',
+      'Gi hver observasjon en andel: p = (i − 0,375) / (n + 0,25) — «hvor stor del av utvalget ligger under denne».',
+      'Slå opp hvilken z-skår som svarer til den andelen. Disse tallene er de samme uansett hva dataene dine er — de avhenger bare av n.',
+      'Plott: z langs den vannrette aksen, personens egen verdi langs den loddrette.' ],
+ pp:[ 'Sorter verdiene fra lavest til høyest.',
+      'Regn den observerte andelen under hver verdi: (i − 0,5) / n.',
+      'Regn den forventede andelen: gjør verdien om til en z-skår, og slå opp hvor mye av normalfordelingen som ligger under.',
+      'Plott forventet mot observert. Perfekt samsvar gir diagonalen.' ]
+};
+function skjulSteg(){ $('foStegTekst').style.display='none'; $('foStegNr').textContent='av';
+  $('foStegNeste').disabled=true; }
+function stopp(){ if(FO.timer){ clearInterval(FO.timer); FO.timer=null; } FO.vis=1e9; }
+function stegVis(k){
+  var liste=STEG[FO.plot], siste=liste.length-1;
+  FO.steg=k;
+  $('foStegTekst').style.display='block';
+  $('foStegTekst').innerHTML='<b>Steg '+(k+1)+' · </b>'+liste[k];
+  $('foStegNr').textContent='steg '+(k+1)+' av '+liste.length;
+  $('foStegNeste').disabled = (k>=siste);
+  if(FO.timer){ clearInterval(FO.timer); FO.timer=null; }
+  if(k<siste || FO.plot==='boks'){ FO.vis=1e9; tegn(); return; }
+  FO.vis=0; tegn();
+  FO.timer=setInterval(function(){
+    FO.vis++; tegn();
+    if(FO.vis>=FO.verdier.length){ clearInterval(FO.timer); FO.timer=null; FO.vis=1e9; tegn();
+      $('foStegNr').textContent='ferdig'; }
+  }, Math.max(18, 900/FO.verdier.length));
+}
+
+/* ---------- oppsett ---------- */
+$('foPlot').onchange=function(){ FO.plot=this.value; stopp(); skjulSteg(); tegn(); };
+$('foBreddeSl').oninput=function(){ FO.mult=Math.pow(2,(+this.value-50)/25); tegn(); };
+$('foBreddeAuto').onclick=function(){ FO.mult=1; $('foBreddeSl').value=50; tegn(); };
+$('foVar').onchange=nyeData;
+$('foN').oninput=function(){ $('foNOut').textContent=this.value; nyeData(); };
+$('foNy').onclick=nyeData;
+$('foUtl').onchange=function(){
+  if(this.checked){ settUtligger(); tegn(); } else { FO.utl=-1; nyeData(); }
+};
+$('foSteg').onclick=function(){ stegVis(0); };
+$('foStegNeste').onclick=function(){ if(FO.steg<STEG[FO.plot].length-1) stegVis(FO.steg+1); };
+kobleHover($('foHist'), function(){ return RPOS; });
+kobleHover($('foQQ'),   function(){ return QPOS; });
+dragOppsett();
+window.addEventListener('resize', function(){ try{ tegn(); }catch(e){} });
+window.__foTegn=function(){ try{ tegn(); }catch(e){} };
+nyeData();
+})();
+</script>
+
+<script>
+/* ===== Fane 6 · Skjevhet og kurtose ===== */
+(function(){
+"use strict";
+var $=document.getElementById.bind(document);
+function nf(v,d){ return (v==null||!isFinite(v))?'–':v.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function lerret(cv){
+  var r=window.devicePixelRatio||1, w=cv.clientWidth, h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r; cv.height=h*r; cv.style.height=h+'px';
+  var c=cv.getContext('2d'); c.setTransform(r,0,0,r,0,0); c.clearRect(0,0,w,h); return [c,w,h];
+}
+function nrm(){ var u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+
+var F={navy:'#1B2A4A', bla:'#2C6FBB', lys:'#CADCFC', rod:'#B3392B', gra:'#5A6B7B',
+       linje:'#D7DEE8', rute:'#EDF2F7', gronn:'#2E7D4F', oransje:'#C97B1E'};
+var SK={ verdier:[], des:1, navn:'', maal:'skjev', hover:-1, utl:-1, drar:false };
+
+/* ---------- data ---------- */
+function simuler(form,n){
+  var a=[],i,x;
+  for(i=0;i<n;i++){
+    if(form==='normal')       x=100+15*nrm();
+    else if(form==='hoyre')   x=100+15*(Math.exp(0.85*nrm())-1.45);
+    else if(form==='venstre') x=100-15*(Math.exp(0.85*nrm())-1.45);
+    else if(form==='tung')    x=100+15*(Math.random()<0.10 ? 3.6*nrm() : 0.72*nrm());
+    else if(form==='lett')    x=100+15*(Math.random()*3.46-1.73);
+    else                      x=(Math.random()<0.5?88:112)+7*nrm();
+    a.push(x);
+  }
+  return a;
+}
+var DES={normal:0,hoyre:0,venstre:0,tung:0,lett:0,bimodal:0};
+function nyeData(){
+  var v=$('skVar').value, n=+$('skN').value, a;
+  if(DES.hasOwnProperty(v)){ a=simuler(v,n); SK.des=DES[v]; }
+  else {
+    var kilde=(typeof DATA!=='undefined'&&DATA[v])?DATA[v].d:null;
+    SK.des=(typeof DATA!=='undefined'&&DATA[v])?DATA[v].des:0;
+    a=[]; if(kilde){ for(var i=0;i<n;i++) a.push(kilde[(Math.random()*kilde.length)|0]); }
+    else a=simuler('normal',n);
+  }
+  SK.navn=$('skVar').selectedOptions[0].text.replace(/\s*·.*$/,'');
+  var f=Math.pow(10,SK.des);
+  SK.verdier=a.map(function(x){ return Math.round(x*f)/f; });
+  SK.utl=-1; SK.hover=-1;
+  if($('skUtl').checked) settUtligger();
+  tegn();
+}
+function settUtligger(){
+  if(!SK.verdier.length) return;
+  var s=SK.verdier.slice().sort(function(x,y){return x-y;});
+  var spenn=(s[s.length-1]-s[0])||1, f=Math.pow(10,SK.des);
+  SK.utl=SK.verdier.length-1;
+  SK.verdier[SK.utl]=Math.round((s[s.length-1]+0.5*spenn)*f)/f;
+}
+
+/* ---------- statistikk ---------- */
+function modell(){
+  var n=SK.verdier.length, i, m=0;
+  for(i=0;i<n;i++) m+=SK.verdier[i]; m/=n;
+  var ss=0; for(i=0;i<n;i++) ss+=(SK.verdier[i]-m)*(SK.verdier[i]-m);
+  var s=Math.sqrt(ss/n);                       /* populasjonsform, som JASP-ish */
+  var z=[], z3=[], z4=[], s3=0, s4=0;
+  for(i=0;i<n;i++){
+    var zz=s>0?(SK.verdier[i]-m)/s:0;
+    z.push(zz); z3.push(zz*zz*zz); z4.push(zz*zz*zz*zz);
+    s3+=z3[i]; s4+=z4[i];
+  }
+  var sortert=SK.verdier.slice().sort(function(a,b){return a-b;});
+  var med = n%2 ? sortert[(n-1)/2] : (sortert[n/2-1]+sortert[n/2])/2;
+  return {n:n, m:m, s:s, sd:Math.sqrt(ss/(n-1)), med:med, z:z, z3:z3, z4:z4,
+          sum3:s3, sum4:s4, skjev:s3/n, kurt:s4/n-3,
+          min:sortert[0], maks:sortert[n-1]};
+}
+function bidrag(M,i){ return SK.maal==='skjev' ? M.z3[i] : M.z4[i]; }
+
+/* ---------- felles akse ---------- */
+function omrade(M){
+  var lo=M.min, hi=M.maks;
+  if(hi===lo){ hi=lo+1; lo=lo-1; }
+  var pad=(hi-lo)*0.08;
+  return [lo-pad, hi+pad];
+}
+var MARG={L:46, R:16};
+
+/* ---------- øverst: fordelingen ---------- */
+var RPOS=[];
+function tegnRaa(M){
+  var res=lerret($('skRaa')), c=res[0], W=res[1], H=res[2];
+  var L=MARG.L, R=MARG.R, T=10, B=40, basis=H-B;
+  var omr=omrade(M), lo=omr[0], hi=omr[1];
+  var X=function(v){ return L+(v-lo)/(hi-lo)*(W-L-R); };
+  var idx=SK.verdier.map(function(_,i){return i;});
+  idx.sort(function(a,b){ return SK.verdier[a]-SK.verdier[b]; });
+  var r=Math.min(6.5,Math.max(2.8,(W-L-R)/(M.n*2.0))), steg=r*2.15, brukt=[], i, j;
+  RPOS=new Array(M.n);
+  for(i=0;i<M.n;i++){
+    var oi=idx[i], px=X(SK.verdier[oi]), niva=0;
+    for(j=0;j<brukt.length;j++) if(Math.abs(brukt[j].x-px)<r*1.9) niva=Math.max(niva,brukt[j].n+1);
+    brukt.push({x:px,n:niva});
+    RPOS[oi]={x:px, y:basis-r-niva*steg, r:r};
+  }
+  c.strokeStyle=F.linje; c.lineWidth=1;
+  c.beginPath(); c.moveTo(L,basis+0.5); c.lineTo(W-R,basis+0.5); c.stroke();
+  c.fillStyle=F.gra; c.font='12px system-ui,sans-serif'; c.textAlign='center';
+  for(i=0;i<=4;i++){ var v=lo+(hi-lo)*i/4; c.fillText(nf(v,SK.des), X(v), basis+16); }
+  c.fillText(SK.navn, (L+W-R)/2, basis+33);
+  /* gjennomsnitt og median: avstanden mellom dem ER skjevhetens retning */
+  c.setLineDash([4,4]); c.lineWidth=1.4;
+  c.strokeStyle=F.bla; c.beginPath(); c.moveTo(X(M.m),T); c.lineTo(X(M.m),basis); c.stroke();
+  c.strokeStyle=F.oransje; c.beginPath(); c.moveTo(X(M.med),T); c.lineTo(X(M.med),basis); c.stroke();
+  c.setLineDash([]);
+  c.textAlign='left'; c.font='11.5px system-ui,sans-serif';
+  c.fillStyle=F.bla;     c.fillText('gj.snitt', X(M.m)+4, T+10);
+  c.fillStyle=F.oransje; c.fillText('median',   X(M.med)+4, T+24);
+  for(i=0;i<M.n;i++){
+    var p=RPOS[i]; if(!p) continue;
+    c.beginPath(); c.arc(p.x,p.y,p.r,0,7);
+    c.fillStyle=(i===SK.hover)?F.navy:(i===SK.utl?F.rod:F.bla);
+    c.globalAlpha=(i===SK.hover||i===SK.utl)?1:0.8; c.fill(); c.globalAlpha=1;
+    if(i===SK.hover){ c.lineWidth=2; c.strokeStyle='#fff'; c.stroke(); }
+  }
+  if(SK.utl>=0 && RPOS[SK.utl]){
+    c.fillStyle=F.rod; c.textAlign='center'; c.font='11.5px system-ui,sans-serif';
+    c.fillText('dra meg', RPOS[SK.utl].x, RPOS[SK.utl].y-RPOS[SK.utl].r-5);
+  }
+}
+
+/* ---------- nederst: bidragene ---------- */
+var BPOS=[];
+function tegnBidrag(M){
+  var res=lerret($('skBidrag')), c=res[0], W=res[1], H=res[2];
+  var L=MARG.L, R=MARG.R, T=14, B=40;
+  var omr=omrade(M), lo=omr[0], hi=omr[1];
+  var X=function(v){ return L+(v-lo)/(hi-lo)*(W-L-R); };
+  var i, b, maks=0;
+  for(i=0;i<M.n;i++){ b=Math.abs(bidrag(M,i)); if(b>maks) maks=b; }
+  if(!(maks>0)) maks=1;
+  var skjevModus=(SK.maal==='skjev');
+  var null_ = skjevModus ? T+(H-T-B)*0.55 : H-B;      /* nullinje */
+  var hoyde = skjevModus ? (null_-T-4) : (H-B-T-4);
+  var Y=function(v){ return null_ - (v/maks)*hoyde; };
+  /* rutenett */
+  c.strokeStyle=F.rute; c.lineWidth=1;
+  for(i=1;i<=3;i++){
+    var yy=null_-(i/3)*hoyde; c.beginPath(); c.moveTo(L,yy); c.lineTo(W-R,yy); c.stroke();
+    if(skjevModus){ yy=null_+(i/3)*hoyde*((H-B-null_)/hoyde);
+      c.beginPath(); c.moveTo(L,yy); c.lineTo(W-R,yy); c.stroke(); }
+  }
+  var bw=Math.max(2.5, Math.min(14,(W-L-R)/(M.n*1.6)));
+  BPOS=new Array(M.n);
+  for(i=0;i<M.n;i++){
+    var v=bidrag(M,i), px=X(SK.verdier[i]), py=Y(v);
+    BPOS[i]={x:px, y:(v>=0?py:null_)+ (v>=0?0:0), r:6, topp:py};
+    var h=Math.abs(py-null_);
+    c.fillStyle=(i===SK.hover)?F.navy:(i===SK.utl?F.rod:(v<0?F.oransje:F.bla));
+    c.globalAlpha=(i===SK.hover||i===SK.utl)?1:0.72;
+    c.fillRect(px-bw/2, Math.min(py,null_), bw, Math.max(1.5,h));
+    c.globalAlpha=1;
+  }
+  /* nullinje og akse */
+  c.strokeStyle=F.navy; c.lineWidth=1.3;
+  c.beginPath(); c.moveTo(L,null_+0.5); c.lineTo(W-R,null_+0.5); c.stroke();
+  c.fillStyle=F.gra; c.font='12px system-ui,sans-serif'; c.textAlign='right';
+  c.fillText(nf(maks,1), L-6, T+11);
+  if(skjevModus) c.fillText(nf(-maks*((H-B-null_)/hoyde),1), L-6, H-B-2);
+  c.fillText('0', L-6, null_+4);
+  c.save(); c.translate(14,(T+H-B)/2); c.rotate(-Math.PI/2); c.textAlign='center';
+  c.fillText(skjevModus?'z³ per person':'z⁴ per person',0,0); c.restore();
+  c.textAlign='center';
+  c.fillText(SK.navn, (L+W-R)/2, H-6);
+}
+
+/* ---------- tekst ---------- */
+function tegn(){
+  if(!SK.verdier.length) return;
+  var M=modell(); SK.M=M;
+  var skjevModus=(SK.maal==='skjev');
+  $('skBidragTit').textContent = skjevModus ? 'Hver persons bidrag: z³' : 'Hver persons bidrag: z⁴';
+  tegnRaa(M); tegnBidrag(M);
+
+  /* hvem dominerer? */
+  var i, best=0, sumAbs=0;
+  for(i=0;i<M.n;i++){ var a=Math.abs(bidrag(M,i)); sumAbs+=a; if(a>Math.abs(bidrag(M,best))) best=i; }
+  var andel = sumAbs>0 ? Math.abs(bidrag(M,best))/sumAbs : 0;
+  var D=Math.max(SK.des,1);
+
+  var regnestykke = skjevModus
+    ? 'skjevhet = gjennomsnittet av z³ = <b>'+nf(M.sum3,1)+'</b> / '+M.n+' = <b>'+nf(M.skjev,2)+'</b>'
+    : 'kurtose = gjennomsnittet av z⁴ &minus; 3 = <b>'+nf(M.sum4,1)+'</b> / '+M.n+' &minus; 3 = <b>'+nf(M.kurt,2)+'</b>';
+
+  if(SK.hover>=0){
+    var z=M.z[SK.hover], b=bidrag(M,SK.hover);
+    $('skLes').innerHTML='<b>Verdi '+nf(SK.verdier[SK.hover],D)+'</b> ligger '+nf(Math.abs(z),2)
+      +' standardavvik '+(z>=0?'over':'under')+' gjennomsnittet, altså <b>z = '+nf(z,2)+'</b>.'
+      +'<div style="margin-top:6px">'+(skjevModus
+        ? 'Bidraget er z³ = '+nf(z,2)+'³ = <b>'+nf(b,2)+'</b>.'
+        : 'Bidraget er z⁴ = '+nf(z,2)+'⁴ = <b>'+nf(b,2)+'</b>.')
+      +' Denne ene personen står for <b>'+nf(andel===0?0:Math.abs(b)/sumAbs*100,1)+' %</b> av alt som legges sammen.'
+      +'</div><div style="margin-top:6px">'+regnestykke+'</div>';
+  } else {
+    $('skLes').innerHTML='<b>Pek på en prikk</b> for å se hva akkurat den personen bidrar med.'
+      +'<div style="margin-top:6px">'+regnestykke+'</div>';
+  }
+
+  $('skStat').innerHTML='<span class="stat">n = '+M.n+'</span>'
+    +'<span class="stat">gj.snitt = '+nf(M.m,D)+'</span>'
+    +'<span class="stat">median = '+nf(M.med,D)+'</span>'
+    +'<span class="stat">SD = '+nf(M.sd,D)+'</span>'
+    +'<span class="stat'+(Math.abs(M.skjev)>1?' orange':'')+'">skjevhet = '+nf(M.skjev,2)+'</span>'
+    +'<span class="stat'+(Math.abs(M.kurt)>1?' orange':'')+'">kurtose = '+nf(M.kurt,2)+'</span>';
+
+  /* tolkning */
+  var t;
+  if(skjevModus){
+    var d=M.m-M.med;
+    t='<b>Slik leser du det:</b> '+(Math.abs(M.skjev)<0.5
+        ? 'skjevheten er nær null, så de positive og negative bidragene omtrent opphever hverandre. Fordelingen er tilnærmet symmetrisk.'
+        : (M.skjev>0
+          ? 'de blå søylene til høyre er høyere enn de oransje til venstre. Halen peker mot høyre, og gjennomsnittet dras med.'
+          : 'de oransje søylene til venstre dominerer. Halen peker mot venstre, og gjennomsnittet dras nedover.'))
+      +' Gjennomsnittet ligger '+(Math.abs(d)<1e-9?'akkurat på':(d>0?nf(d,D)+' over':nf(-d,D)+' under'))+' medianen'
+      +(Math.abs(d)<1e-9?'':', og det er samme historie fortalt uten potenser')+'.'
+      +'<div style="margin-top:6px">Den mest ekstreme personen alene står for <b>'+nf(andel*100,0)+' %</b> av summen. '
+      +(andel>0.4?'Det er ett menneske som bestemmer tallet.':'Her er bidragene rimelig fordelt.')+'</div>';
+  } else {
+    t='<b>Slik leser du det:</b> alle søylene peker oppover — z⁴ kan ikke bli negativ. '
+      +(M.kurt>1 ? 'De høye søylene ytterst forteller at halene er <b>tyngre</b> enn i en normalfordeling: det er flere ekstreme verdier enn ventet.'
+        : (M.kurt<-1 ? 'Ingen søyler stikker seg ut. Halene er <b>lettere</b> enn i en normalfordeling — verdiene holder seg nær midten, nesten rektangulært.'
+          : 'Søylene ligner det en normalfordeling ville gitt: kurtosen er nær null.'))
+      +'<div style="margin-top:6px">Den mest ekstreme personen alene står for <b>'+nf(andel*100,0)+' %</b> av summen. '
+      +'Merk at kurtose <i>ikke</i> handler om hvor spiss toppen er — bare om hvor mye som ligger langt ute.</div>';
+  }
+  $('skTolk').innerHTML=t;
+}
+
+/* ---------- peking og draging ---------- */
+function naermest(pos,mx,my){
+  var best=-1,bd=1e9;
+  for(var i=0;i<pos.length;i++){
+    if(!pos[i]) continue;
+    var dx=pos[i].x-mx, dy=pos[i].y-my, d=dx*dx+dy*dy;
+    if(d<bd){ bd=d; best=i; }
+  }
+  return bd<400?best:-1;
+}
+function musPos(cv,e){ var b=cv.getBoundingClientRect(); return [e.clientX-b.left, e.clientY-b.top]; }
+function kobleHover(cv,hent){
+  cv.addEventListener('mousemove',function(e){
+    if(SK.drar) return;
+    var p=musPos(cv,e), ny=naermest(hent(),p[0],p[1]);
+    if(ny!==SK.hover){ SK.hover=ny; cv.style.cursor=ny>=0?'pointer':'default'; tegn(); }
+  });
+  cv.addEventListener('mouseleave',function(){ if(!SK.drar && SK.hover>=0){ SK.hover=-1; tegn(); } });
+}
+function dragOppsett(){
+  var cv=$('skRaa');
+  cv.addEventListener('mousedown',function(e){
+    if(SK.utl<0||!RPOS[SK.utl]) return;
+    var p=musPos(cv,e);
+    if(Math.hypot(RPOS[SK.utl].x-p[0],RPOS[SK.utl].y-p[1])<18){
+      SK.drar=true; SK.hover=SK.utl; cv.style.cursor='grabbing'; e.preventDefault(); }
+  });
+  window.addEventListener('mousemove',function(e){
+    if(!SK.drar) return;
+    var p=musPos(cv,e), W=cv.clientWidth, L=MARG.L, R=MARG.R;
+    var andre=SK.verdier.filter(function(_,i){ return i!==SK.utl; });
+    var lo=Math.min.apply(null,andre), hi=Math.max.apply(null,andre), spenn=(hi-lo)||1;
+    var v0=lo-0.9*spenn, v1=hi+1.0*spenn, f=Math.pow(10,SK.des);
+    var t=Math.max(0,Math.min(1,(p[0]-L)/(W-L-R)));
+    SK.verdier[SK.utl]=Math.round((v0+t*(v1-v0))*f)/f;
+    tegn();
+  });
+  window.addEventListener('mouseup',function(){ if(SK.drar){ SK.drar=false; $('skRaa').style.cursor='pointer'; } });
+}
+
+/* ---------- oppsett ---------- */
+$('skMaal').onchange=function(){ SK.maal=this.value; tegn(); };
+$('skVar').onchange=nyeData;
+$('skN').oninput=function(){ $('skNOut').textContent=this.value; nyeData(); };
+$('skNy').onclick=nyeData;
+$('skUtl').onchange=function(){ if(this.checked){ settUtligger(); tegn(); } else { SK.utl=-1; nyeData(); } };
+kobleHover($('skRaa'), function(){ return RPOS; });
+kobleHover($('skBidrag'), function(){ return BPOS; });
+dragOppsett();
+window.addEventListener('resize', function(){ try{ tegn(); }catch(e){} });
+window.__skTegn=function(){ try{ tegn(); }catch(e){} };
+nyeData();
 })();
 </script>
 </body></html>
