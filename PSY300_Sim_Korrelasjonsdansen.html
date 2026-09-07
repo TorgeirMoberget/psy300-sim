@@ -2076,6 +2076,17 @@ const DS7={
  rct:{xlab:'Undertrykkende forsvar (pre)',ylab:'Depresjon (pre)',xmin:45,xmax:118,ymin:9,ymax:40,xt:10,yt:5,jx:0.8,jy:0.5,ox:112,oy:14,real:R75,pop:POPD},
  arb:{xlab:'Selvkritisk perfeksjonisme (trekk)',ylab:'Angstsensitivitet (trekk)',xmin:0.6,xmax:5.7,ymin:-0.2,ymax:4.6,xt:1,yt:1,jx:0.06,jy:0.06,ox:5.35,oy:0.3,real:ARB,pop:ARB}
 };
+/* De innbakte datasettene har historisk brukt to navn på x-variabelen: «def»
+   (undertrykkende forsvar, fra terapidataene) og «undf» (grunnskolepoeng, fra
+   skolekullet). sampleFrom() leser P.def. Uten denne normaliseringen kaster
+   IQ-datasettet en TypeError ved lasting, og da stopper HELE resten av
+   skriptblokka — altså fanene «Utliggere», «Målefeil» og «Simpsons paradoks»,
+   som defineres lenger nede. De sto tomme i forelesning 3 av nettopp denne grunnen. */
+Object.keys(DS7).forEach(function(k){
+  [DS7[k].real, DS7[k].pop].forEach(function(P){
+    if(P && !P.def && P.undf) P.def = P.undf;
+  });
+});
 let CURDS=DS7.iq;
 let XMIN=8,XMAX=63,YMIN=52,YMAX=152;
 let base=[],out={x:58,y:62}; // det røde punktet
