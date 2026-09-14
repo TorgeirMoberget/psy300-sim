@@ -92,7 +92,7 @@ tr.endret td{background:#fdf6ec}
 tr.fjernet td{background:#fbeceb;text-decoration:line-through;color:#a06b66}
 </style></head><body>
 <header><h1>Sim 33 &middot; Tiltak ved ikke-normale data</h1>
-<p>PSY300 &middot; Forelesning 6 &middot; Trimming, winsorisering, transformasjon &mdash; hva de gj&oslash;r med tallene, og om de i det hele tatt trengs</p></header>
+<p>PSY300 &middot; Forelesning 6 &middot; Trimming, winsorisering, transformasjon &mdash; hva de gj&oslash;<i>r</i> med tallene, og om de i det hele tatt trengs</p></header>
 <div class="wrap">
 <div class="rad" style="gap:6px;margin:2px 0 6px">
 <button class="fane on" data-fane="brudd">1 &middot; Hva slags brudd har du?</button>
@@ -104,7 +104,7 @@ tr.fjernet td{background:#fbeceb;text-decoration:line-through;color:#a06b66}
 <div class="card">
 <h2>1. Se p&aring; fordelingen f&oslash;rst</h2>
 <div class="rad">
-<label>Variabel: <select id="vsel" style="max-width:100%"><optgroup label="— Simulerte eksempler —"><option value="iq">IQ · simulert (μ = 100, σ = 15)</option><option value="inntekt" selected>Inntekt i 1000 kr · simulert, høyreskjev</option><option value="rt">Reaksjonstid i ms · simulert, høyreskjev</option></optgroup><optgroup label="— Terapi-RCT, ekte tall (N = 86) —"><option value="rct_alder">Alder i år · Terapi-RCT (N = 86)</option><option value="rct_dep">Depresjon før behandling · Terapi-RCT (N = 86)</option><option value="rct_undf">Undertrykkende forsvar · Terapi-RCT (N = 86)</option><option value="rct_agg">Aggresjonsundertrykking · Terapi-RCT (N = 86)</option></optgroup><optgroup label="— Arbeidskravet, ekte tall (N = 391) —"><option value="ak_alder">Alder i år · arbeidskravet (N = 391)</option><option value="ak_selvt">Statistikk-selvtillit · arbeidskravet (N = 391)</option><option value="ak_selvk">Selvkritisk perfeksjonisme · arbeidskravet (N = 391)</option><option value="ak_kar">Selvrapportert statistikkarakter (1–5) · arbeidskravet</option><option value="ak_quiz">Prøveskåre (0–5) · arbeidskravet</option></optgroup></select></label>
+<label>Variabel: <select id="vsel" style="max-width:100%"><optgroup label="— Simulerte eksempler —"><option value="iq">IQ · simulert (μ = 100, σ = 15)</option><option value="inntekt" selected>Inntekt i 1000 kr · simulert, høyreskjev</option><option value="rt">Reaksjonstid i ms · simulert, høyreskjev</option></optgroup><optgroup label="— Terapi-RCT, ekte tall (N = 86) —"><option value="rct_alder">Alder i år · Terapi-RCT (<i>N</i> = 86)</option><option value="rct_dep">Depresjon før behandling · Terapi-RCT (<i>N</i> = 86)</option><option value="rct_undf">Undertrykkende forsvar · Terapi-RCT (<i>N</i> = 86)</option><option value="rct_agg">Aggresjonsundertrykking · Terapi-RCT (<i>N</i> = 86)</option></optgroup><optgroup label="— Arbeidskravet, ekte tall (N = 391) —"><option value="ak_alder">Alder i år · arbeidskravet (<i>N</i> = 391)</option><option value="ak_selvt">Statistikk-selvtillit · arbeidskravet (<i>N</i> = 391)</option><option value="ak_selvk">Selvkritisk perfeksjonisme · arbeidskravet (<i>N</i> = 391)</option><option value="ak_kar">Selvrapportert statistikkarakter (1–5) · arbeidskravet</option><option value="ak_quiz">Prøveskåre (0–5) · arbeidskravet</option></optgroup></select></label>
 </div>
 <div class="kort" id="formKort"></div>
 <div class="grid">
@@ -116,13 +116,13 @@ tr.fjernet td{background:#fbeceb;text-decoration:line-through;color:#a06b66}
 
 <div class="card">
 <div class="teori">
-<span class="lbl">F&oslash;r du gj&oslash;r noe som helst</span>
-<div class="pastand">Antakelsen i en t-test er <b>ikke</b> at r&aring;dataene er normalfordelte. Den er at <i>utvalgsfordelingen til gjennomsnittet</i> er det &mdash; og den blir normal nesten uansett, bare n er stor nok.</div>
+<span class="lbl">F&oslash;<i>r</i> du gj&oslash;<i>r</i> noe som helst</span>
+<div class="pastand">Antakelsen i en <i>t</i>-test er <b>ikke</b> at r&aring;dataene er normalfordelte. Den er at <i>utvalgsfordelingen til gjennomsnittet</i> er det &mdash; og den blir normal nesten uansett, bare <i>n</i> er stor nok.</div>
 <ul>
-<li>Med <b>n &ge; 30&ndash;40</b> og moderat skjevhet holder t-testen stort sett α = 5 % helt av seg selv. Sentralgrenseteoremet gj&oslash;r jobben (se Sim 3).</li>
-<li>Det som virkelig gj&oslash;r vondt, er <b>tunge haler og enkeltutliggere</b> &mdash; ikke skjevhet i seg selv. De bl&aring;ser opp variansen og &oslash;delegger styrken.</li>
+<li>Med <b><i>n</i> &ge; 30&ndash;40</b> og moderat skjevhet holder <i>t</i>-testen stort sett α = 5 % helt av seg selv. Sentralgrenseteoremet gj&oslash;<i>r</i> jobben (se Sim 3).</li>
+<li>Det som virkelig gj&oslash;<i>r</i> vondt, er <b>tunge haler og enkeltutliggere</b> &mdash; ikke skjevhet i seg selv. De bl&aring;ser opp variansen og &oslash;delegger styrken.</li>
 <li>Et tiltak er derfor ikke gratis: det endrer <b>hva du estimerer</b>. Et trimmet gjennomsnitt er ikke gjennomsnittet, og gjennomsnittet av log-verdier er ikke logaritmen av gjennomsnittet.</li>
-<li>Regelen er enkel: velg tiltaket <b>f&oslash;r</b> du ser p&aring; p-verdien, og oppgi hva du gjorde. Ellers er det p-hacking (Sim 10).</li>
+<li>Regelen er enkel: velg tiltaket <b>f&oslash;<i>r</i></b> du ser p&aring; <i>p</i>-verdien, og oppgi hva du gjorde. Ellers er det p-hacking (Sim 10).</li>
 </ul>
 <div class="tall" id="raadNote"></div>
 </div>
@@ -144,7 +144,7 @@ tr.fjernet td{background:#fbeceb;text-decoration:line-through;color:#a06b66}
 <option value="inv">Invers &mdash; 1/x</option>
 <option value="rank">Rangering</option>
 </select></label>
-<label>Utvalgsst&oslash;rrelse n: <select id="nsel">
+<label>Utvalgsst&oslash;rrelse <i>n</i>: <select id="nsel">
 <option value="15">15</option><option value="25" selected>25</option><option value="50">50</option>
 <option value="100">100</option></select></label>
 <button class="btn" id="trekk">Trekk nytt utvalg</button>
@@ -152,7 +152,7 @@ tr.fjernet td{background:#fbeceb;text-decoration:line-through;color:#a06b66}
 <div id="advarsel"></div>
 <div class="kort" id="tiltakKort"></div>
 <div class="grid">
-<div><canvas id="cvFor" height="215"></canvas><div class="legend">F&oslash;r</div></div>
+<div><canvas id="cvFor" height="215"></canvas><div class="legend">F&oslash;<i>r</i></div></div>
 <div><canvas id="cvEtter" height="215"></canvas><div class="legend" id="legEtter">Etter</div></div>
 </div>
 <div id="tiltakNote" class="note"></div>
@@ -172,13 +172,13 @@ tr.fjernet td{background:#fbeceb;text-decoration:line-through;color:#a06b66}
 <span class="lbl">Slik testes det &mdash; og hvorfor det er en rettferdig sammenligning</span>
 Vi trekker data der <b>nullhypotesen er sann per konstruksjon</b> og kj&oslash;rer alle metodene p&aring; de samme tallene. Enhver forkastning er alts&aring; en feil vi kan telle. Deretter legger vi inn en reell forskjell og teller hvor ofte hver metode finner den.
 <div class="par">
-<span class="mrk">Hvorfor designet betyr alt:</span><span>et trimmet gjennomsnitt estimerer noe annet enn et vanlig gjennomsnitt n&aring;r fordelingen er skjev. Med <i>to like grupper</i> forsvinner det problemet &mdash; alle metodene har samme sanne forskjell, nemlig null. I ett-utvalgsdesignet testes hver metode derfor mot <b>sitt eget</b> populasjonsm&aring;l, slik at sammenligningen fortsatt er rettferdig.</span>
+<span class="mrk">Hvorfor designet betyr alt:</span><span>et trimmet gjennomsnitt estimerer noe annet enn et vanlig gjennomsnitt n&aring;<i>r</i> fordelingen er skjev. Med <i>to like grupper</i> forsvinner det problemet &mdash; alle metodene har samme sanne forskjell, nemlig null. I ett-utvalgsdesignet testes hver metode derfor mot <b>sitt eget</b> populasjonsm&aring;l, slik at sammenligningen fortsatt er rettferdig.</span>
 <span class="mrk">Vi ser etter to ting:</span><span><b>Falske funn</b> skal ligge p&aring; 5 %. Ligger de h&oslash;yere, produserer metoden funn som ikke finnes. <b>Styrke</b> m&aring;les ved at vi legger en reell forskjell inn i gruppe 2 og teller hvor ofte den blir oppdaget &mdash; h&oslash;yere er bedre.</span>
 </div>
 </div>
 <div class="rad">
 <label>Design: <select id="design">
-<option value="to" selected>To like grupper (som en t-test for uavhengige utvalg)</option>
+<option value="to" selected>To like grupper (som en <i>t</i>-test for uavhengige utvalg)</option>
 <option value="ett">Ett utvalg mot en kjent verdi</option>
 <option value="ulik">To grupper med ulik st&oslash;rrelse og ulik spredning</option>
 </select></label>
@@ -186,9 +186,9 @@ Vi trekker data der <b>nullhypotesen er sann per konstruksjon</b> og kj&oslash;r
 <option value="10">10</option><option value="20">20</option><option value="30" selected>30</option>
 <option value="60">60</option><option value="120">120</option></select></label>
 <label>Reell forskjell (til styrkedelen): <select id="effsel">
-<option value="0.3">0,3 SD &mdash; liten</option><option value="0.5" selected>0,5 SD &mdash; middels</option>
-<option value="0.8">0,8 SD &mdash; stor</option></select></label>
-<button class="btn" id="kjor">Kj&oslash;r 4 000 par</button>
+<option value="0.3">0.3 <i>SD</i> &mdash; liten</option><option value="0.5" selected>0.5 <i>SD</i> &mdash; middels</option>
+<option value="0.8">0.8 <i>SD</i> &mdash; stor</option></select></label>
+<button class="btn" id="kjor">Kj&oslash;<i>r</i> 4 000 par</button>
 </div>
 <div id="kjorer" class="muted" style="display:none">Kj&oslash;rer &hellip;</div>
 <div id="virkerTab"></div>
@@ -200,9 +200,9 @@ Vi trekker data der <b>nullhypotesen er sann per konstruksjon</b> og kj&oslash;r
 <div class="keybox">
 <span class="lbl">Hovedpoenget</span>
 <b>Sp&oslash;rsm&aring;let er ikke &laquo;er dataene normalfordelte?&raquo;, men &laquo;er testen min p&aring;litelig i <i>dette</i> designet?&raquo;</b>
-Kj&oslash;r fane 3, og du ser noe som overrasker de fleste: med <b>to like store grupper</b> holder t-testen 5 % helt fint selv ved skjevhet over 3, fordi skjevheten sl&aring;r likt ut i begge gruppene. Det som faktisk velter α er <b>ett-utvalgstester p&aring; skjeve data</b> og <b>ulike gruppest&oslash;rrelser kombinert med ulik spredning</b> &mdash; og det siste er et varianshomogenitetsproblem, ikke et normalitetsproblem.
-Den viktigste grunnen til &aring; bruke robuste metoder er derfor sjelden α, men <b>styrke</b>: p&aring; fordelinger med tunge haler finner de reelle effekter langt oftere enn t-testen.
-Og prisen m&aring; oppgis: trimming og winsorisering endrer <b>hva du estimerer</b>, transformasjoner endrer <b>skalaen konklusjonen gjelder p&aring;</b>, og rangering kaster bort avstandene. Verst av alt er &aring; halvveis gj&oslash;re det: winsorisere og s&aring; kj&oslash;re en vanlig t-test gir rundt 25 % falske funn. Velg tiltaket ut fra <i>design og datatype</i>, f&oslash;r du ser p-verdien.
+Kj&oslash;<i>r</i> fane 3, og du ser noe som overrasker de fleste: med <b>to like store grupper</b> holder <i>t</i>-testen 5 % helt fint selv ved skjevhet over 3, fordi skjevheten sl&aring;<i>r</i> likt ut i begge gruppene. Det som faktisk velter α er <b>ett-utvalgstester p&aring; skjeve data</b> og <b>ulike gruppest&oslash;rrelser kombinert med ulik spredning</b> &mdash; og det siste er et varianshomogenitetsproblem, ikke et normalitetsproblem.
+Den viktigste grunnen til &aring; bruke robuste metoder er derfor sjelden α, men <b>styrke</b>: p&aring; fordelinger med tunge haler finner de reelle effekter langt oftere enn <i>t</i>-testen.
+Og prisen m&aring; oppgis: trimming og winsorisering endrer <b>hva du estimerer</b>, transformasjoner endrer <b>skalaen konklusjonen gjelder p&aring;</b>, og rangering kaster bort avstandene. Verst av alt er &aring; halvveis gj&oslash;re det: winsorisere og s&aring; kj&oslash;re en vanlig <i>t</i>-test gir rundt 25 % falske funn. Velg tiltaket ut fra <i>design og datatype</i>, f&oslash;<i>r</i> du ser <i>p</i>-verdien.
 </div>
 </div>
 
@@ -216,7 +216,7 @@ Og prisen m&aring; oppgis: trimming og winsorisering endrer <b>hva du estimerer<
 <b>Winsorisering</b> &mdash; som trimming, men ytterverdiene <i>erstattes</i> med den nærmeste beholdte verdien i stedet for &aring; slettes. Antallet observasjoner er uendret.<br>
 <b>Transformasjon</b> &mdash; &aring; regne om alle verdiene med samme funksjon. Monotone transformasjoner beholder rekkef&oslash;lgen, men endrer avstandene.<br>
 <b>Logaritmisk transformasjon</b> &mdash; log(x). Krymper h&oslash;ye verdier mest, og er derfor standardgrepet mot h&oslash;yreskjeve data. Krever at alle verdier er positive.<br>
-<b>Geometrisk gjennomsnitt</b> &mdash; det du f&aring;r n&aring;r du regner gjennomsnittet av log-verdier og transformerer tilbake. Alltid mindre enn det vanlige gjennomsnittet for skjeve data.<br>
+<b>Geometrisk gjennomsnitt</b> &mdash; det du f&aring;<i>r</i> n&aring;<i>r</i> du regner gjennomsnittet av log-verdier og transformerer tilbake. Alltid mindre enn det vanlige gjennomsnittet for skjeve data.<br>
 <b>Rangering</b> &mdash; &aring; erstatte verdiene med plassnummer. Grunnlaget for ikke-parametriske tester som Mann&ndash;Whitney og Wilcoxon.<br>
 <b>Yuens test</b> &mdash; t-testens motstykke for trimmede gjennomsnitt. Bruker winsorisert standardavvik og reduserte frihetsgrader, fordi et trimmet gjennomsnitt ikke har samme standardfeil som et vanlig.<br>
 <b>Forkastningsrate</b> &mdash; hvor ofte en test forkaster en <i>sann</i> nullhypotese. Skal ligge p&aring; α, alts&aring; 5 %.<br>
@@ -230,7 +230,7 @@ Og prisen m&aring; oppgis: trimming og winsorisering endrer <b>hva du estimerer<
 const DATA = {"rct_alder":{"lab":"Alder i år · Terapi-RCT (N = 86)","ekte":1,"des":0,"d":[18.0,27.0,29.0,41.0,60.0,29.0,42.0,52.0,60.0,26.0,34.0,26.0,27.0,34.0,22.0,18.0,33.0,34.0,19.0,59.0,51.0,19.0,52.0,46.0,40.0,55.0,22.0,31.0,34.0,33.0,35.0,19.0,32.0,51.0,52.0,44.0,41.0,31.0,27.0,25.0,23.0,32.0,32.0,19.0,18.0,23.0,60.0,51.0,31.0,23.0,41.0,44.0,46.0,32.0,43.0,51.0,23.0,26.0,51.0,42.0,34.0,32.0,41.0,51.0,42.0,32.0,42.0,42.0,34.0,51.0,60.0,50.0,20.0,32.0,30.0,44.0,35.0,36.0,27.0,42.0,51.0,30.0,47.0,33.0,53.0,41.0]},"rct_dep":{"lab":"Depresjon før behandling · Terapi-RCT (N = 86)","ekte":1,"des":0,"d":[34.0,33.0,29.0,30.0,27.0,28.0,32.0,33.0,35.0,28.0,23.0,21.0,34.0,35.0,35.0,35.0,33.0,20.0,23.0,18.0,31.0,29.0,33.0,27.0,34.0,33.0,35.0,28.0,35.0,29.0,29.0,26.0,33.0,32.0,35.0,35.0,35.0,31.0,33.0,32.0,35.0,34.0,24.0,21.0,29.0,29.0,27.0,33.0,32.0,35.0,27.0,29.0,28.0,31.0,32.0,31.0,34.0,35.0,31.0,31.0,32.0,31.0,24.0,22.0,21.0,35.0,32.0,34.0,33.0,29.0,34.0,31.0,30.0,31.0,30.0,23.0,24.0,29.0,31.0,33.0,32.0,31.0,30.0,31.0,32.0,26.0]},"rct_undf":{"lab":"Undertrykkende forsvar · Terapi-RCT (N = 86)","ekte":1,"des":0,"d":[93.0,90.0,84.0,78.0,87.0,89.0,78.0,83.0,91.0,85.0,86.0,78.0,86.0,94.0,70.0,80.0,87.0,78.0,61.0,59.0,70.0,87.0,71.0,81.0,82.0,85.0,99.0,77.0,92.0,80.0,77.0,66.0,89.0,89.0,86.0,94.0,91.0,77.0,79.0,99.0,89.0,82.0,64.0,67.0,82.0,89.0,89.0,93.0,88.0,103.0,76.0,78.0,71.0,86.0,81.0,79.0,87.0,95.0,88.0,92.0,100.0,94.0,73.0,79.0,74.0,72.0,66.0,63.0,79.0,78.0,83.0,92.0,75.0,69.0,66.0,79.0,77.0,61.0,99.0,96.0,62.0,103.0,72.0,91.0,88.0,55.0]},"rct_agg":{"lab":"Aggresjonsundertrykking · Terapi-RCT (N = 86)","ekte":1,"des":0,"d":[30.0,32.0,29.0,27.0,25.0,37.0,33.0,32.0,28.0,35.0,31.0,30.0,29.0,29.0,30.0,31.0,32.0,33.0,32.0,31.0,29.0,27.0,31.0,31.0,33.0,26.0,24.0,27.0,32.0,27.0,24.0,24.0,25.0,34.0,34.0,34.0,29.0,27.0,22.0,23.0,23.0,23.0,33.0,32.0,30.0,31.0,23.0,32.0,33.0,24.0,34.0,23.0,24.0,25.0,33.0,35.0,25.0,25.0,33.0,34.0,31.0,32.0,34.0,35.0,30.0,27.0,28.0,29.0,31.0,28.0,29.0,30.0,33.0,29.0,31.0,22.0,24.0,29.0,35.0,31.0,26.0,34.0,27.0,29.0,32.0,34.0]},"ak_alder":{"lab":"Alder i år · arbeidskravet (N = 391)","ekte":1,"des":0,"d":[25,23,22,28,23,38,28,21,24,29,23,22,30,26,22,23,21,23,21,21,23,23,28,23,41,26,21,23,22,25,22,20,22,20,22,21,22,23,25,20,22,23,25,22,26,19,23,20,24,24,26,22,32,20,20,26,20,20,21,23,27,19,21,23,24,19,24,21,19,22,23,24,20,23,22,24,23,21,19,20,24,19,22,22,20,26,23,22,21,23,21,23,24,24,27,22,27,23,20,21,22,25,36,30,27,26,26,30,21,21,34,26,29,24,22,24,25,25,20,22,21,24,22,20,29,25,23,20,21,21,30,24,24,20,23,21,21,28,21,24,21,24,23,21,25,23,22,21,23,25,22,25,22,19,18,21,28,20,27,22,21,20,20,31,23,23,20,27,21,19,21,21,28,24,21,24,21,27,23,22,21,22,23,19,23,24,20,24,19,21,26,22,27,22,23,20,22,27,23,19,22,24,20,21,20,26,21,21,19,20,21,23,19,23,21,22,29,20,21,21,23,24,25,22,19,21,23,21,20,19,24,26,22,22,19,20,25,25,20,21,28,25,21,22,30,22,23,21,21,21,32,38,23,23,20,21,22,27,18,20,26,26,21,30,21,20,21,29,20,25,33,22,27,25,28,23,22,23,25,24,22,22,23,22,21,21,23,29,20,22,27,21,23,27,23,24,21,23,27,22,31,25,27,27,20,25,23,19,22,29,19,33,21,23,20,23,19,28,20,19,20,19,30,21,28,20,22,24,23,20,24,20,19,22,23,25,19,21,23,21,18,23,20,30,29,18,21,24,22,22,26,21,21,21,26,21,29,19,28,23,28,25,21,46,20,64,23,21,18,27,20,24,25,21,24,21,22,19,18,23,19,23,21,20,27,22,27,22,22,21,28]},"ak_selvt":{"lab":"Statistikk-selvtillit · arbeidskravet (N = 391)","ekte":1,"des":2,"d":[3.714,3.786,4.0,3.286,4.357,2.929,2.643,2.571,2.429,3.786,3.786,3.929,3.643,3.357,3.571,3.286,3.429,3.214,4.357,3.857,4.071,2.929,4.071,3.571,3.143,3.143,3.786,3.5,2.214,2.429,4.143,5.0,2.571,4.143,3.786,3.0,3.214,1.929,4.071,3.429,3.071,2.786,2.929,3.429,2.143,2.462,3.357,3.357,2.5,3.143,4.0,3.929,3.071,3.929,2.143,3.643,2.286,3.286,2.929,2.786,3.357,3.25,2.571,2.429,3.643,4.643,3.643,2.857,3.286,3.143,3.357,3.286,2.786,2.5,3.429,2.357,3.071,4.429,2.857,1.357,2.364,3.071,3.929,1.714,2.643,2.385,3.357,4.429,2.571,2.429,3.786,3.143,2.5,1.571,4.143,1.857,3.571,2.714,4.786,3.0,2.143,3.5,3.571,3.786,3.286,1.857,3.0,3.286,4.091,1.714,2.643,4.214,2.643,2.786,2.643,4.0,2.571,3.286,2.286,3.714,4.286,3.714,4.214,2.643,5.0,3.571,2.5,3.929,4.286,2.357,2.143,2.786,3.929,3.929,3.857,3.857,3.857,2.143,3.214,3.923,3.071,4.538,2.714,2.929,2.714,3.071,2.857,4.286,3.154,2.571,4.214,1.857,2.786,3.0,3.357,1.429,3.286,2.357,4.0,4.214,1.714,2.071,2.357,3.214,3.714,3.071,2.357,3.714,4.0,2.714,2.143,3.571,2.929,3.0,2.714,3.643,4.071,3.143,3.071,1.643,4.071,3.929,2.143,3.143,3.357,2.786,2.286,1.643,2.214,2.357,3.857,3.929,4.286,3.571,1.929,3.786,3.5,3.571,2.429,2.929,2.143,1.786,3.071,4.357,2.286,3.714,4.286,4.0,2.429,3.643,3.286,1.929,3.357,3.429,4.286,3.143,4.071,4.143,2.929,3.5,4.357,4.286,2.571,2.071,1.786,2.929,3.5,4.857,3.0,3.143,3.714,4.857,3.571,2.0,2.786,2.857,4.286,2.0,3.143,1.857,3.714,2.5,3.5,3.214,3.143,1.929,4.071,2.857,3.714,4.214,2.571,3.5,2.5,3.071,1.214,1.429,1.929,2.5,3.643,4.071,2.857,4.0,3.429,2.0,2.5,4.357,3.0,3.286,4.214,3.143,4.154,3.214,3.286,2.786,4.5,2.929,2.857,2.071,1.214,2.786,4.071,3.929,2.385,2.286,4.143,4.143,1.571,3.0,3.5,2.714,4.0,3.571,3.929,4.429,2.786,3.143,2.929,2.929,3.143,2.5,4.643,1.571,2.929,3.929,1.769,3.429,2.615,4.071,4.571,4.143,3.571,3.143,2.929,3.0,3.714,3.857,2.357,3.429,2.143,3.929,4.0,4.071,3.786,4.357,4.0,3.214,2.571,4.357,3.786,2.857,3.143,3.143,2.5,3.071,2.929,2.0,2.929,2.214,3.143,3.143,2.429,3.714,1.786,3.5,3.143,2.857,3.286,2.857,3.857,2.857,2.5,1.5,2.429,2.571,2.214,3.286,4.0,1.929,3.786,3.071,4.286,2.786,2.357,3.846,3.143,4.5,3.0,3.071,3.357,4.429,3.214,3.857,2.643,3.286,3.154,3.643,3.357,4.143,3.643,3.143,3.429,2.929,4.0,3.0,4.714,4.143,4.143,2.429,3.5,3.429,4.214]},"ak_selvk":{"lab":"Selvkritisk perfeksjonisme · arbeidskravet (N = 391)","ekte":1,"des":2,"d":[2.167,2.389,2.722,2.778,1.556,3.778,4.0,3.056,3.722,2.389,3.111,1.833,2.833,2.889,3.294,3.778,3.0,3.222,2.0,2.444,3.278,2.722,3.556,3.111,2.333,3.556,3.444,2.722,3.5,3.278,2.389,1.944,3.778,1.944,2.722,3.167,3.118,3.889,2.778,3.667,2.778,3.056,3.056,2.0,4.444,4.533,4.056,3.056,3.278,3.833,1.333,1.833,3.278,2.222,4.833,3.889,3.889,3.111,3.722,2.111,3.056,3.056,3.556,3.778,2.667,3.0,3.111,4.059,3.278,2.889,2.278,2.667,3.0,3.0,3.056,4.5,2.667,2.556,3.111,4.167,3.562,2.056,2.333,4.111,4.0,3.778,4.056,2.444,1.889,2.722,2.778,3.5,3.111,4.667,2.278,4.278,3.611,3.667,3.278,4.0,2.389,1.444,2.889,3.278,1.944,3.611,3.833,1.944,2.5,3.889,3.444,1.833,4.056,3.765,3.778,1.944,3.25,3.333,3.529,2.882,2.333,3.389,2.5,3.556,1.444,2.389,3.722,2.0,2.778,3.722,3.5,3.833,1.833,2.556,1.056,2.833,2.5,3.722,1.611,2.833,3.333,3.167,2.944,4.611,3.5,2.889,2.167,1.944,3.588,3.778,1.611,4.389,3.333,3.111,3.222,3.333,2.111,3.444,2.875,1.944,4.944,4.111,3.389,3.722,2.556,2.278,4.389,3.833,3.389,3.667,3.889,2.556,3.5,4.5,2.778,2.222,2.938,3.5,3.056,2.9,3.167,3.611,3.778,3.944,3.111,3.667,3.333,4.222,4.111,4.278,3.056,1.944,1.556,2.833,3.944,2.667,2.5,2.722,3.5,2.444,4.611,4.833,4.778,2.167,4.6,1.444,2.389,3.222,3.2,2.0,2.706,3.611,1.611,3.556,3.167,4.278,1.778,1.611,3.389,2.778,1.389,1.333,2.111,3.944,4.222,2.444,3.5,2.0,4.75,3.0,2.167,1.111,2.278,3.889,3.833,2.611,2.833,2.833,3.5,4.444,2.667,4.353,2.667,2.611,2.833,4.222,2.556,3.278,2.444,1.556,4.056,2.167,3.333,3.278,4.222,4.444,3.667,3.667,2.833,3.389,3.111,1.667,4.0,3.611,4.0,2.056,3.556,2.222,1.444,2.722,2.889,3.278,3.5,3.222,3.611,2.722,3.389,2.444,3.833,3.643,1.833,3.056,3.222,4.056,3.444,1.722,4.5,3.667,3.167,3.444,1.833,2.667,2.722,1.944,3.222,2.667,3.611,3.167,3.167,4.111,2.944,3.8,3.444,2.056,4.111,3.5,4.333,3.722,1.667,2.556,1.778,2.222,2.833,3.556,1.056,3.389,4.875,2.778,4.727,2.778,2.222,3.167,2.5,1.944,3.056,2.5,3.111,1.647,2.389,2.889,3.056,3.167,4.5,3.667,3.167,3.667,3.778,3.111,3.889,4.389,4.611,1.889,3.556,3.056,3.667,4.333,3.778,3.111,4.056,2.833,3.778,4.875,3.667,3.0,4.111,3.611,2.529,4.667,2.667,2.944,2.722,2.222,4.333,2.0,3.333,1.111,3.556,3.778,2.389,1.0,2.5,3.556,4.056,3.667,2.882,2.444,1.111,2.611,3.778,3.278,3.111,2.167,1.944,2.056,1.889,2.722,2.5,4.222,3.444,3.833,1.889]},"ak_kar":{"lab":"Selvrapportert statistikkarakter (1–5) · arbeidskravet","ekte":1,"des":0,"d":[3,2,3,2,3,5,5,3,3,2,4,4,3,3,4,4,3,3,4,4,3,4,5,3,2,2,4,4,3,3,4,3,3,3,2,4,2,3,3,3,3,3,3,4,3,3,3,3,1,4,3,4,3,3,3,3,4,3,4,4,5,4,2,2,4,5,3,4,3,2,2,3,3,2,2,4,4,4,5,2,5,3,3,5,3,4,3,4,3,2,3,3,4,3,3,3,4,3,4,3,2,4,3,3,4,3,4,3,3,3,3,4,3,2,3,4,3,3,3,3,3,3,4,2,3,4,4,2,5,2,3,3,4,3,4,4,3,3,3,4,4,4,4,4,3,3,4,4,4,4,4,3,2,2,2,2,4,3,5,3,3,3,3,4,2,3,4,2,3,3,4,4,3,4,3,3,5,2,3,3,3,3,2,3,3,3,4,4,4,5,4,2,4,4,2,4,4,3,3,3,3,3,3,3,3,4,4,3,4,3,2,4,3,4,4,4,4,5,3,4,3,3,3,3,4,3,5,5,1,3,3,3,3,4,2,3,3,3,3,4,3,3,3,4,2,3,3,4,4,5,4,2,1,4,3,1,5,4,4,3,4,4,4,1,4,3,3,3,4,3,3,4,3,3,2,2,3,3,3,4,3,3,3,3,3,3,3,3,4,4,3,4,5,3,4,3,3,2,3,4,3,4,4,3,1,4,3,5,1,3,4,4,4,3,5,4,2,2,2,3,4,5,3,3,3,3,3,4,5,4,2,4,3,3,4,3,3,3,4,3,5,3,3,4,5,1,4,3,4,5,4,3,4,3,2,3,3,3,3,5,3,3,3,3,4,3,4,4,4,3,3,4,5,5,3,4,2,2,4,2,4,4,3,4,3,4,4,3,3,4,2]},"ak_quiz":{"lab":"Prøveskåre (0–5) · arbeidskravet","ekte":1,"des":0,"d":[1,5,4,5,1,0,4,3,5,1,5,5,1,2,0,5,1,5,5,1,0,5,0,5,1,4,2,3,1,3,5,4,4,1,1,4,4,1,5,5,1,1,1,4,0,3,0,1,4,5,1,2,1,0,5,1,1,2,1,0,3,3,1,0,2,5,1,1,4,4,5,5,0,2,0,5,1,5,1,5,1,4,5,4,3,5,5,5,0,0,5,0,1,5,0,1,1,1,2,1,2,4,5,1,1,4,2,4,1,1,4,3,5,1,5,0,0,5,0,1,2,5,0,4,1,1,5,1,2,0,0,2,3,0,5,0,3,4,0,4,0,5,2,3,0,2,2,5,3,0,1,1,4,5,5,0,0,2,4,0,1,0,0,2,5,4,1,0,5,5,3,4,5,5,5,1,3,3,5,1,4,3,0,1,0,3,5,1,3,1,4,2,2,4,1,0,2,0,4,4,5,0,3,0,3,5,0,4,0,4,0,5,3,1,1,4,1,0,0,4,5,5,0,3,1,0,0,5,3,4,0,5,0,1,4,0,2,1,2,3,2,0,4,5,4,2,1,1,1,3,5,1,2,0,0,0,0,1,5,0,5,1,0,3,0,4,1,4,2,5,0,5,5,0,5,5,0,4,2,1,4,1,5,3,4,2,1,0,5,2,0,1,4,1,0,0,1,4,1,0,4,1,4,5,4,2,4,5,4,5,5,4,2,4,5,1,4,2,0,3,0,4,4,2,3,5,1,1,1,3,0,1,4,5,0,0,5,4,4,3,1,0,2,2,2,4,2,4,0,5,4,4,5,0,3,0,0,0,5,5,1,2,5,2,0,5,4,5,4,4,1,4,1,2,3,0,5,2,2,3,1,5,1,5,2,3,5,1,4,5,4]},"iq":{"lab":"IQ · simulert (μ = 100, σ = 15)","ekte":0,"des":0,"freq":{"79":98,"103":279,"110":198,"81":124,"105":221,"108":215,"104":272,"123":76,"119":122,"101":264,"106":264,"114":188,"100":285,"107":230,"115":158,"84":150,"102":255,"82":146,"120":112,"94":244,"76":66,"89":207,"125":67,"98":254,"88":194,"63":10,"91":242,"96":258,"113":170,"83":152,"97":279,"112":193,"92":235,"99":245,"95":269,"116":141,"90":198,"128":55,"87":174,"72":52,"109":225,"117":138,"131":31,"129":32,"75":71,"130":27,"85":142,"134":21,"124":77,"121":109,"93":239,"86":174,"73":45,"65":16,"118":128,"111":210,"122":102,"68":22,"139":8,"127":46,"74":57,"71":47,"56":3,"78":86,"69":30,"132":24,"67":18,"80":112,"138":11,"70":33,"52":4,"126":70,"59":8,"64":14,"77":67,"61":12,"57":7,"142":7,"135":18,"143":7,"60":8,"133":20,"51":4,"137":11,"136":17,"58":8,"149":2,"140":6,"154":1,"144":3,"141":7,"66":17,"150":1,"34":1,"152":3,"62":10,"147":1,"53":4,"146":2,"145":2,"148":2,"54":2,"153":1,"42":1,"50":2,"55":3,"151":1}},"inntekt":{"lab":"Inntekt i 1000 kr · simulert, høyreskjev","ekte":0,"des":0,"freq":{"150":175,"575":314,"225":280,"250":293,"525":314,"325":396,"350":398,"375":420,"800":188,"500":356,"175":166,"875":135,"600":315,"700":220,"275":351,"1375":29,"725":196,"1050":74,"900":106,"625":269,"775":188,"200":209,"400":419,"925":100,"1525":17,"475":387,"750":203,"1225":50,"550":326,"1200":50,"300":361,"850":126,"1575":16,"975":94,"1725":12,"425":361,"825":150,"1100":56,"950":108,"450":414,"1000":71,"1025":91,"675":229,"1650":12,"1300":42,"650":252,"1175":54,"1825":7,"1075":71,"1150":45,"1275":46,"1350":28,"1125":52,"1475":21,"1325":27,"1600":16,"1450":22,"1250":35,"1550":14,"2000":4,"2475":2,"1425":20,"2275":1,"2300":3,"2175":6,"1700":14,"1400":20,"1850":8,"1900":7,"1750":6,"2050":5,"2600":18,"2025":3,"2150":3,"1625":6,"1950":8,"1675":9,"2100":3,"1800":10,"2075":7,"1875":9,"2250":2,"1500":16,"2325":2,"2125":5,"1925":4,"2500":4,"1775":6,"1975":3,"2200":2,"2375":2,"2225":2,"2550":1,"2350":1,"2425":1}},"rt":{"lab":"Reaksjonstid i ms · simulert, høyreskjev","ekte":0,"des":0,"freq":{"330":529,"280":328,"420":308,"440":237,"350":494,"260":182,"320":540,"540":90,"750":10,"510":115,"270":255,"360":525,"230":21,"410":357,"380":404,"520":107,"340":525,"530":97,"370":438,"550":86,"310":453,"490":161,"290":417,"450":229,"590":47,"480":171,"700":13,"430":290,"460":212,"500":147,"300":471,"400":373,"570":60,"470":181,"390":414,"640":31,"580":46,"810":6,"740":12,"660":30,"630":39,"620":39,"250":104,"600":50,"610":38,"240":47,"760":13,"830":3,"770":7,"790":5,"560":75,"650":24,"840":7,"670":23,"710":14,"850":3,"720":14,"860":5,"680":17,"690":17,"220":5,"880":3,"940":4,"1090":2,"910":2,"820":3,"800":4,"870":4,"730":8,"780":2,"950":1,"1030":1,"1190":1,"980":1,"900":2,"970":1}}};
 const $ = s => document.getElementById(s);
 const fmt = (v,d)=> (v==null||!isFinite(v)) ? '\u2013' :
-  v.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+  v.toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:false});
 function ctx2d(cv){
   const r=window.devicePixelRatio||1, w=cv.clientWidth, h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
   cv.width=w*r; cv.height=h*r; cv.style.height=h+'px';
@@ -436,7 +436,7 @@ function tegnForm(){
     '<div><div class="navn">Gjennomsnitt</div><div class="verdi">'+fmt(m,D2())+'</div><div class="under">trekkes mot halen</div></div>'+
     '<div><div class="navn">Median</div><div class="verdi">'+fmt(md,D2())+'</div><div class="under">står imot</div></div>'+
     '<div class="'+(Math.abs(m-md)/(sd(POP)||1)>0.15?'roed':'gronn')+'"><div class="navn">Avstand</div>'+
-      '<div class="verdi">'+fmt(Math.abs(m-md)/(sd(POP)||1),2)+' SD</div><div class="under">mellom de to</div></div>';
+      '<div class="verdi">'+fmt(Math.abs(m-md)/(sd(POP)||1),2)+' <i>SD</i></div><div class="under">mellom de to</div></div>';
 
   tegnHist($('cvHist'),POP,LAB,F_BLAA,{normal:true,nb:34,merker:[
     {v:m,f:F_ROED,t:'M',o:0},{v:md,f:F_GRONN,t:'Md',o:15}]});
@@ -447,8 +447,8 @@ function tegnForm(){
   else if(sk>1) txt='<b>Tydelig høyreskjev.</b> Halen strekker seg mot høye verdier, punktene i Q–Q-plottet bøyer oppover i høyre ende, og gjennomsnittet ligger over medianen fordi noen få store verdier drar det med seg. Dette er tilfellet der en logaritmisk transformasjon oftest gjør mest nytte.';
   else if(sk<-0.7) txt='<b>Venstreskjev.</b> Halen går mot lave verdier og gjennomsnittet ligger under medianen. Log og kvadratrot virker ikke direkte her — de er laget for høyreskjeve data. Enten speilvender du først (transformer maks + 1 − x), eller så bruker du et robust mål i stedet.';
   else if(aKu>1.5) txt='<b>Halene er det som skiller seg ut her, ikke skjevheten.</b> Kurtose på '+fmt(ku,2)+' betyr at fordelingen har flere ekstremverdier enn normalfordelingen. Det er nettopp dette trimming og winsorisering er laget for.';
-  else if(ku<-1) txt='<b>Flat, med lett hale.</b> Negativ kurtose betyr færre ekstremverdier enn normalfordelingen, ofte fordi fordelingen er todelt eller jevnt utover. Dette er lite farlig for t-testen — tunge haler er problemet, ikke lette.';
-  else txt='<b>Moderat avvik.</b> Skjevheten er merkbar, men ikke dramatisk. Med et rimelig utvalg vil t-testen som regel klare seg fint her — sjekk fane 3.';
+  else if(ku<-1) txt='<b>Flat, med lett hale.</b> Negativ kurtose betyr færre ekstremverdier enn normalfordelingen, ofte fordi fordelingen er todelt eller jevnt utover. Dette er lite farlig for <i>t</i>-testen — tunge haler er problemet, ikke lette.';
+  else txt='<b>Moderat avvik.</b> Skjevheten er merkbar, men ikke dramatisk. Med et rimelig utvalg vil <i>t</i>-testen som regel klare seg fint her — sjekk fane 3.';
   $('formNote').innerHTML=txt;
 
   const n=POP.length;
@@ -692,7 +692,7 @@ function gjorSim(){
   if(!kanLog) r+='<p class="muted">Log-raden er utelatt: '+LAB+' har verdier som ikke er positive.</p>';
   r+='<p class="muted">4 000 gjentakelser. '+
      (ettUtv ? 'Ett utvalg med n = '+n+', testet mot populasjonsgjennomsnittet.'
-             : (des==='ulik' ? 'Gruppe 1: n = '+n+'. Gruppe 2: n = '+n2v+' med 2,5 ganger s&aring; stor spredning, men samme gjennomsnitt.'
+             : (des==='ulik' ? 'Gruppe 1: n = '+n+'. Gruppe 2: n = '+n2v+' med 2.5 ganger s&aring; stor spredning, men samme gjennomsnitt.'
                              : 'To grupper &agrave; n = '+n+' fra samme populasjon.'))+
      ' Usikkerheten i en rate rundt 5 % er ca. &plusmn; '+fmt(2*se,1)+' prosentpoeng, s&aring; sm&aring; forskjeller mellom radene betyr ingenting.</p>';
   $('virkerTab').innerHTML=r;
@@ -731,29 +731,29 @@ function tolk(des,n,n2,falsk,styrke,REP,se){
   const sk=skjevhet(POP);
   let t='';
   if(des==='ulik'){
-    t='<b>Dette er designet der t-testen faktisk knekker.</b> Gruppene har samme gjennomsnitt, men den lille gruppen har 2,5 ganger s&aring; stor spredning. '+
-      'Den vanlige t-testen gir da <b>'+fmt(fT,1)+' %</b> falske funn i stedet for 5, fordi den slår sammen de to variansene som om de var like. '+
+    t='<b>Dette er designet der <i>t</i>-testen faktisk knekker.</b> Gruppene har samme gjennomsnitt, men den lille gruppen har 2.5 ganger s&aring; stor spredning. '+
+      'Den vanlige <i>t</i>-testen gir da <b>'+fmt(fT,1)+' %</b> falske funn i stedet for 5, fordi den slår sammen de to variansene som om de var like. '+
       'Welch-korreksjonen ('+fmt(fWe,1)+' %) er laget nettopp for dette, og er derfor standardvalget i JASP. '+
       '<br><br>Legg merke til at dette <i>ikke</i> er et normalitetsproblem &mdash; det er et varianshomogenitetsproblem. '+
       'Se ned&aring;t i tabellen: verken log-transformasjonen ('+fmt(P('log'),1)+' %) eller den rangbaserte testen ('+fmt(P('mw'),1)+' %) '+
       'redder deg heller, for de har n&oslash;yaktig samme svakhet. <b>Det eneste som hjelper er &aring; velge riktig test</b> &mdash; '+
       'og det er derfor Welch, ikke Student, er standardvalget for uavhengige utvalg i JASP.';
   } else if(des==='ett'){
-    t='<b>Her ser du hvor skjevhet faktisk gj&oslash;r skade.</b> Med bare &eacute;n gruppe er det ingenting som kansellerer skjevheten, '+
+    t='<b>Her ser du hvor skjevhet faktisk gj&oslash;<i>r</i> skade.</b> Med bare &eacute;<i>n</i> gruppe er det ingenting som kansellerer skjevheten, '+
       'og t-testen gir '+fmt(fT,1)+' % falske funn ved n = '+n+' (skjevhet '+fmt(sk,2)+'). '+
       (fT>6.5 ? 'Det er merkbart for h&oslash;yt, og forskjellen krymper langsomt: den forsvinner ikke helt f&oslash;r n blir stor. '
               : 'Det er nær nok 5 % her. ')+
-      'Sammenlign med <i>to like grupper</i> i nedtrekket over &mdash; der forsvinner problemet nesten helt, fordi skjevheten sl&aring;r likt ut i begge grupper og trekker fra hverandre.';
+      'Sammenlign med <i>to like grupper</i> i nedtrekket over &mdash; der forsvinner problemet nesten helt, fordi skjevheten sl&aring;<i>r</i> likt ut i begge grupper og trekker fra hverandre.';
   } else {
-    t='<b>Det mest overraskende i denne tabellen er hvor lite som skjer.</b> Med to like store grupper gir den vanlige t-testen '+
+    t='<b>Det mest overraskende i denne tabellen er hvor lite som skjer.</b> Med to like store grupper gir den vanlige <i>t</i>-testen '+
       fmt(fT,1)+' % falske funn selv om skjevheten er '+fmt(sk,2)+'. '+
       'Grunnen er at skjevheten sl&aring;r likt ut i begge gruppene og trekker fra hverandre n&aring;r vi tar differansen. '+
       '<b>Med et balansert todgruppedesign er alts&aring; ikke α problemet ditt</b> &mdash; og «dataene er ikke normalfordelte» er derfor sjelden en god nok grunn i seg selv til &aring; bytte test. '+
-      'Vil du se et design der det virkelig g&aring;r galt, velg <i>ett utvalg</i> eller <i>ulik st&oslash;rrelse og spredning</i> i nedtrekket over.';
+      'Vil du se et design der det virkelig g&aring;<i>r</i> galt, velg <i>ett utvalg</i> eller <i>ulik st&oslash;rrelse og spredning</i> i nedtrekket over.';
   }
-  if(fW!=null) t+='<br><br><b>Men se p&aring; winsoriseringsraden.</b> &Aring; winsorisere tallene og deretter kj&oslash;re en helt vanlig t-test p&aring; dem gir <b>'+
+  if(fW!=null) t+='<br><br><b>Men se p&aring; winsoriseringsraden.</b> &Aring; winsorisere tallene og deretter kj&oslash;re en helt vanlig <i>t</i>-test p&aring; dem gir <b>'+
     fmt(fW,1)+' %</b> falske funn. Winsoriseringen krymper standardavviket, men frihetsgradene justeres ikke, s&aring; testen tror den er langt sikrere enn den er. '+
-    'Yuens test gj&oslash;r n&oslash;yaktig samme grep <i>riktig</i> &mdash; med winsorisert varians og reduserte frihetsgrader &mdash; og lander p&aring; '+fmt(fY,1)+' %. '+
+    'Yuens test gj&oslash;<i>r</i> n&oslash;yaktig samme grep <i>riktig</i> &mdash; med winsorisert varians og reduserte frihetsgrader &mdash; og lander p&aring; '+fmt(fY,1)+' %. '+
     'Dette er den viktigste raden i appen: <b>&laquo;jeg tok bare hånd om utliggerne&raquo; er ikke en uskyldig handling.</b>';
   if(sT!=null&&sY!=null) t+='<br><br><b>Styrke er den egentlige grunnen til &aring; bruke robuste metoder.</b> '+
     (sY>sT+2 ? 'Her henter Yuen inn '+fmt(sY-sT,1)+' prosentpoeng over den vanlige t-testen ('+fmt(sY,1)+' % mot '+fmt(sT,1)+' %)'+
@@ -766,7 +766,7 @@ function tolk(des,n,n2,falsk,styrke,REP,se){
        ' ulike verdier, s&aring; svært mange observasjoner er helt like. Rangbaserte tester blir da upresise, '+
        'fordi den st&oslash;rrelsen de egentlig tester (pseudomedianen) faller midt oppi en klump av like verdier. '+
        'Det er en reell begrensning ved rangtester p&aring; grove skalaer, ikke en feil i simuleringen.</span>';
-  t+='<br><br><span class="muted">Metodene tester ikke n&oslash;yaktig samme hypotese n&aring;r det finnes en effekt, s&aring; styrkekolonnen er veiledende. Kolonnen med falske funn er derimot en direkte og rettferdig sammenligning, fordi H&#8320; er sann for alle metodene samtidig.</span>';
+  t+='<br><br><span class="muted">Metodene tester ikke n&oslash;yaktig samme hypotese n&aring;<i>r</i> det finnes en effekt, s&aring; styrkekolonnen er veiledende. Kolonnen med falske funn er derimot en direkte og rettferdig sammenligning, fordi H&#8320; er sann for alle metodene samtidig.</span>';
   return t;
 }
 
