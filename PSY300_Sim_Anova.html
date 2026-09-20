@@ -90,16 +90,11 @@ table.anova tr:last-child td{border-bottom:1px solid #333}
 .stat.s-tstat{background:var(--tstat-bg);color:var(--tstat)}
 .stat.s-p{background:var(--pverdi-bg);color:var(--pverdi)}
 .stat.s-eff{background:var(--eff-bg);color:var(--eff)}
-.stat.s-ki{background:var(--ki-bg);color:var(--ki)}
 table.anova td.c-sig,table.tt td.c-sig{color:var(--sig);font-weight:700}
 table.anova td.c-stoy,table.tt td.c-stoy{color:var(--stoy);font-weight:700}
 table.anova td.c-tstat,table.tt td.c-tstat{color:var(--tstat);font-weight:700}
 table.anova td.c-p,table.tt td.c-p{color:var(--pverdi);font-weight:700}
 table.anova td.c-eff,table.tt td.c-eff{color:var(--eff);font-weight:700}
-table.anova td.c-ki,table.tt td.c-ki{color:var(--ki);font-weight:700}
-.jasp td.c-sig{color:var(--sig)}.jasp td.c-stoy{color:var(--stoy)}
-.jasp td.c-tstat{color:var(--tstat)}.jasp td.c-p{color:var(--pverdi)}
-.jasp td.c-eff{color:var(--eff)}.jasp td.c-ki{color:var(--ki)}
 /* ---- fargeforklaring ---- */
 .fargeliste{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:8px;margin-top:8px}
 .fargeliste div{border-radius:8px;padding:7px 11px;font-size:15px;line-height:1.35}
@@ -108,6 +103,8 @@ table.anova td.c-ki,table.tt td.c-ki{color:var(--ki);font-weight:700}
 /* ---- ANOVA-tabellen med fargede rader ---- */
 table.anova tr.r-sig td,table.tt tr.r-sig td{background:var(--sig-bg)}
 table.anova tr.r-stoy td,table.tt tr.r-stoy td{background:var(--stoy-bg)}
+table.anova tr.r-total td,table.tt tr.r-total td{color:#5F6A7E}
+table.anova tr.r-total td:first-child{font-weight:700}
 table.anova tr.r-sig td:first-child{color:var(--sig);font-weight:700}
 table.anova tr.r-stoy td:first-child{color:var(--stoy);font-weight:700}
 
@@ -391,6 +388,14 @@ body.fmodus #scene{display:block;position:fixed;left:0;top:0;width:1280px;height
 .slide.stegslide #blokk-nhst .sl,
 .slide.stegslide #blokk-nhst .rad{display:none !important}
 .slide .simvert{flex:1;min-height:0;overflow:hidden;margin-top:2px}
+/* .skjul lar en slide ta bort en enkelt del av en LAANT blokk. Blokka er
+   den samme DOM-noden paa alle slidene som bruker den, saa den kan ikke
+   varieres i markupen — bare slaas av her, og slaas paa igjen av
+   BLOKKNULL naar neste slide laaner den. Klikk-motoren hopper over det
+   som er skjult, ellers ville et trinn gaatt med til aa avsloere noe
+   ingen kan se. */
+.skjul{display:none!important}
+.slide .simvert .simpakke{transform-origin:top left}
 .slide .simvert .simblokk{font-size:17px;transform-origin:top left}
 .slide .simvert .sl{margin:4px 0}
 .slide .simvert .sl{grid-template-columns:264px 1fr 84px}
@@ -513,12 +518,16 @@ body.fmodus #scene{display:block;position:fixed;left:0;top:0;width:1280px;height
 
 
 /* ---- oppsummeringsslidet: fire linjer, hver i sin farge ---- */
-.slide .oppsum{display:grid;gap:14px;margin:22px 0 6px;max-width:860px}
+.slide .oppsum{display:grid;gap:15px;margin:20px 0 6px;max-width:none}
 .slide .oppsum .rad{display:flex;align-items:baseline;gap:18px}
-.slide .oppsum .hvem{flex:none;min-width:250px;text-align:right;font-size:38px;
+.slide .oppsum .hvem{flex:none;min-width:200px;text-align:right;font-size:32px;
   font-weight:700;line-height:1.1}
-.slide .oppsum .hva{font-size:27px;color:#3F4E63;line-height:1.25}
+/* nowrap: hver setning skal staa paa EN linje, ogsaa paa den smaleste
+   scenen (1000 px). Tekstene er maalt mot den bredden — blir de lengre,
+   stikker de ut i stedet for aa brekke, og det synes med en gang.      */
+.slide .oppsum .hva{font-size:25px;color:#3F4E63;line-height:1.25;white-space:nowrap}
 .slide .oppsum .hva b{color:#16203A}
+.slide .oppsum .hva .n{font-size:18px;color:#5F6A7E}
 
 /* ---- fasitslides: samme alternativer som sporsmaalet, med ring rundt
    det riktige. Studentene ser NOYAKTIG samme liste to ganger, og oyet
@@ -573,6 +582,43 @@ body.fmodus.oversikt #foversikt{display:grid;position:fixed;inset:0;z-index:70;
   letter-spacing:.08em;text-transform:uppercase;margin:14px 0 2px}
 #foversikt .tittelrad:first-child{margin-top:0}
 
+/* ===== TRYKKMODUS =========================================================
+   ?modus=trykk legger alle slidene under hverandre som ferdige ark, med
+   alle klikk-trinn utfoldet og figurene frosset til bilder. Da kan
+   nettleseren skrive dem ut: Cmd/Ctrl + P -> Lagre som PDF.
+
+   Hvorfor bilder og ikke levende canvas: en canvas som ikke er tegnet paa
+   nytt etter at utskriftsdialogen endret sidebredden, kommer ut blank.
+   Et <img> gjoer ikke det.
+
+   Maalene: A4 liggende med 6 mm marg gir 285 x 198 mm trykkflate. 285 mm
+   er 1077 px ved 96 dpi, og 1077/1280 = 0.841 — derfor skalaen under.   */
+body.trykk{overflow:auto;background:#e9edf4}
+body.trykk>header,body.trykk>.wrap,body.trykk>.presbtn{display:none}
+body.trykk #scene,body.trykk #fnav,body.trykk #fbar,body.trykk #fnotat,
+body.trykk #foversikt,body.trykk #modusBtn{display:none!important}
+#trykkark{padding:20px 0 40px}
+.trykkside{position:relative;width:1280px;height:720px;margin:0 auto 20px;
+  background:#fff;box-shadow:0 2px 16px rgba(20,30,60,.18);overflow:hidden}
+.trykkside .skala{position:absolute;left:0;top:0;width:1280px;height:720px}
+.trykkside .slide{position:absolute;inset:0}
+.trykknr{position:absolute;right:16px;bottom:9px;z-index:5;
+  font-size:13px;font-weight:700;color:#93a2bd}
+.trykkhode{max-width:1280px;margin:0 auto 18px;padding:14px 18px;background:#fff;
+  border-left:5px solid var(--sig);box-shadow:0 2px 16px rgba(20,30,60,.18);
+  font-size:15px;line-height:1.5;color:#3F4E63}
+.trykkhode b{color:var(--navy)}
+@media print{
+  @page{size:A4 landscape;margin:6mm}
+  body.trykk{background:#fff}
+  #trykkark{padding:0}
+  .trykkhode{display:none}
+  .trykkside{width:285mm;height:198mm;margin:0;box-shadow:none;
+    page-break-after:always;break-after:page}
+  .trykkside:last-child{page-break-after:auto;break-after:auto}
+  .trykkside .skala{transform:scale(0.841);transform-origin:top left}
+}
+
 /* ===== modusbryter =====
    Samme knapp begge veier. I appmodus ligger den nede til hoyre som en
    diskret pille; i forelesningsmodus flytter den seg til venstre side og
@@ -593,7 +639,7 @@ body.fmodus #modusBtn{left:14px;right:auto;bottom:11px;
 <button class="fane on" data-fane="hvorfor">1 · Hvorfor ANOVA?</button>
 <button class="fane" data-fane="sim">2 · Variasjonen i to deler</button>
 <button class="fane" data-fane="null">3 · Nullfordelingen og <i>p</i></button>
-<button class="fane" data-fane="eta">4 · Effektstørrelse (η²)</button>
+<button class="fane" data-fane="eta">4 · Effektstørrelse (η² og ω²)</button>
 <button class="fane" data-fane="posthoc">5 · Post hoc: hvem skiller seg?</button>
 <button class="fane" data-fane="forut">6 · Forutsetninger</button>
 <button class="fane" data-fane="ekte">7 · To ekte datasett</button>
@@ -706,7 +752,7 @@ emnet. De er der for at du skal kunne følge et tall fra figuren, til tabellen, 
 <canvas id="cvA" height="330"></canvas>
 <div class="sl"><label><i>n</i> per gruppe</label><input type="range" id="n" min="5" max="60" step="1" value="20"><output id="no">20</output></div>
 <div class="sl"><label>Spredning innen gruppene (<i>SD</i>)</label><input type="range" id="sd" min="1" max="12" step="0.1" value="5"><output id="sdo">5.0</output></div>
-<button class="btn2" id="reset">Trekk nytt utvalg fra en populasjon der nullhypotesen <span class="eng">(null hypothesis)</span> er sann (like gjennomsnitt)</button>
+<button class="btn2" id="reset">Trekk nytt utvalg fra en populasjon der nullhypotesen er sann (like gjennomsnitt)</button>
 <button class="btn2" id="spread">Tydelig forskjell</button>
 <button class="btn2" id="newdata">Nye pasienter (samme gjennomsnitt)</button>
 <button class="btn" id="ekte">Sett til de ekte tallene</button>
@@ -723,6 +769,7 @@ emnet. De er der for at du skal kunne følge et tall fra figuren, til tabellen, 
      inne i en slide, saa i fane 2 er alt synlig som for. -->
 <div id="brokA" class="avslor" data-trinn="1"></div>
 <div id="tbl"></div>
+<div id="tblnote" class="avslor" data-trinn="2"></div>
 <div class="note avslor" id="verdictA" data-trinn="3"></div>
 </div><!-- /blokk-tabell -->
 </div>
@@ -825,12 +872,12 @@ stole på. De sier <b>ingenting</b> om hvor stor den er &mdash; <i>F</i> vokser 
 utvalgsstørrelsen på nøyaktig samme måte som <i>t</i> gjør.</p>
 <div class="brokfig smal">
 <div class="brk">
-<div class="tell">SS<sub>mellom</sub><span class="tall">486.19</span></div>
+<div class="tell">SS<sub>mellom</sub><span class="tall">399.48</span></div>
 <div class="strek"></div>
-<div class="nevn" style="background:#F1F3F7;color:#3F4E63;box-shadow:inset 0 0 0 1px #d9dee8">SS<sub>total</sub> = SS<sub>mellom</sub> + SS<sub>innen</sub><span class="tall">2525.12</span></div>
+<div class="nevn" style="background:#F1F3F7;color:#3F4E63;box-shadow:inset 0 0 0 1px #d9dee8">SS<sub>total</sub> = SS<sub>mellom</sub> + SS<sub>innen</sub><span class="tall">1341.55</span></div>
 </div>
 <div class="lik">=</div>
-<div class="res" style="color:var(--eff)"><b>η² = .19</b><span class="n">andelen gruppene forklarer</span></div>
+<div class="res" style="color:var(--eff)"><b>η² = .30</b><span class="n">andelen gruppene forklarer</span></div>
 </div>
 <p style="font-size:16.5px;line-height:1.55"><b>Legg merke til nevneren.</b> <i>F</i> deler
 <span class="k-sig">grønt</span> på <span class="k-stoy">rødt</span>.
@@ -852,17 +899,83 @@ er SS<sub>mellom</sub> + SS<sub>innen</sub>. JASP oppgir det ikke som egen rad, 
 
 <div class="steg">
 <div class="tit">To analyser på det samme datasettet</div>
-Depresjon etter behandling, etter antall tidligere behandlinger: <b>η² = .193</b>,
-<i>p</i> &lt; .001. Negativ affekt, samme faktor: <b>η² = .019</b>, <i>p</i> = .50.
+Depresjon ved oppstart, etter antall tidligere behandlingsforsøk: <b>η² = .298</b>,
+<i>p</i> &lt; .001. Negativ affekt etter behandling, samme faktor: <b>η² = .019</b>,
+<i>p</i> = .50.
 <div class="n">Samme 75 personer, samme gruppeinndeling, samme <i>n</i>. Den ene effekten er
-<b>ti ganger så stor</b> som den andre. Når alt annet er likt, kan forskjellen ikke skyldes
-design eller utvalgsstørrelse &mdash; <b>den må være effekten selv.</b></div></div>
+<b>nesten seksten ganger</b> så stor som den andre. Når alt annet er likt, kan forskjellen
+ikke skyldes design eller utvalgsstørrelse &mdash; <b>den må være effekten selv.</b></div></div>
 
-<div class="card" style="margin-top:14px;padding:0;border:0">
-<div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
-<b>η² leses av kvadratsummene du allerede har. Den vokser <i>ikke</i> med <i>n</i>, og derfor er
-den det eneste tallet i ANOVA-tabellen som kan sammenlignes på tvers av studier.</b></div>
 </div>
+
+<div class="card">
+<h2>ω² &mdash; den samme andelen, men for populasjonen</h2>
+<p style="font-size:16.5px;line-height:1.55">η² beskriver <b>utvalget du har</b>: av variasjonen
+vi faktisk observerte, følger denne andelen gruppeinndelingen. Det er et regnestykke, ikke et
+anslag &mdash; og derfor er η² <b>alltid litt for høy</b> som svar på spørsmålet folk egentlig
+stiller: hvor stor er effekten <b>i populasjonen</b>?</p>
+
+<div class="steg" style="border-left-color:#B26A00">
+<div class="tit">Hvorfor η² er systematisk for høy</div>
+SS<sub>mellom</sub> blir <b>aldri</b> null &mdash; heller ikke når de tre gruppene er trukket fra
+nøyaktig samme populasjon. Tilfeldigheter alene sprer gjennomsnittene litt.
+<div class="n">Under en <b>sann nullhypotese</b> forventes η² å bli omtrent
+<i>df</i><sub>mellom</sub> / (<i>N</i> &minus; 1). Her: <b>2 / 74 = .027</b>, ikke 0. En η² på
+2 % er altså ikke et lite funn &mdash; det er akkurat det tomme hender ser ut som.</div></div>
+
+<p style="font-size:16.5px;line-height:1.55">ω² trekker fra nettopp så mye. Den tar
+SS<sub>mellom</sub> og fjerner den delen <span class="k-stoy">støyen</span> forventes å bidra
+med &mdash; <i>df</i><sub>mellom</sub> ganger MS<sub>innen</sub> &mdash; før den deler:</p>
+
+<div class="brokfig smal">
+<div class="brk">
+<div class="tell">SS<sub>mellom</sub> &minus; <i>df</i><sub>mellom</sub> &middot; MS<sub>innen</sub>
+<span class="tall">399.48 &minus; 2 &middot; 13.08 = 373.31</span></div>
+<div class="strek"></div>
+<div class="nevn" style="background:#F1F3F7;color:#3F4E63;box-shadow:inset 0 0 0 1px #d9dee8">SS<sub>total</sub> + MS<sub>innen</sub><span class="tall">1341.55 + 13.08 = 1354.63</span></div>
+</div>
+<div class="lik">=</div>
+<div class="res" style="color:var(--eff)"><b>ω² = .276</b><span class="n">mot η² = .298</span></div>
+</div>
+
+<p style="font-size:16.5px;line-height:1.55"><b>Alle fire tallene står allerede i
+ANOVA-tabellen.</b> Du trenger ikke rådataene for å regne ω² &mdash; bare de to
+kvadratsummene og MS<sub>innen</sub>.</p>
+
+<div class="steg" style="border-left-color:#C0392B">
+<div class="tit">Og her er tilfellet som gjør poenget selv</div>
+Negativ affekt, samme faktor: <b>η² = .019</b>. Det er <b>under</b> de .027 som tilfeldigheter
+alene pleier å gi &mdash; og da blir <b>ω² negativ</b>: &minus;.008.
+<div class="n">En negativ andel finnes ikke, så den <b>rapporteres som 0</b>. Det er ikke en
+regnefeil, det er den ærlige lesningen: gruppene forklarer <b>ikke mer</b> enn støy ville gjort.
+η² sa «2 % forklart varians» om det samme datasettet, og det høres ut som noe.</div></div>
+
+<table class="tt" style="margin-top:12px">
+<tr><th></th><th class="k-eff">η²</th><th class="k-eff">ω²</th></tr>
+<tr><td>Svarer på</td><td>hvor mye gruppene forklarer <b>i utvalget</b></td>
+<td>hvor mye de forklarer <b>i populasjonen</b></td></tr>
+<tr><td>Kan bli negativ</td><td>nei, alltid 0&ndash;1</td><td><b>ja</b> &mdash; rapporteres da som 0</td></tr>
+<tr><td>Skjevhet</td><td>systematisk for høy</td><td>omtrent forventningsrett</td></tr>
+<tr class="na"><td><b>I JASP</b></td><td>må hukes av selv</td><td><b>står avhuket fra før</b></td></tr>
+</table>
+
+<div class="keybox" style="margin-top:12px"><span class="lbl">Når betyr valget noe?</span>
+Skjevheten er omtrent <i>df</i><sub>mellom</sub> / <i>N</i>: den <b>vokser med antall grupper</b>
+og <b>krymper med utvalgsstørrelsen</b>. Tre grupper og <i>N</i> = 75 gir 2 prosentpoeng &mdash;
+merkbart, men det endrer ingen konklusjon. <b>Fem grupper og <i>n</i> = 8 i hver gir over 10
+prosentpoeng</b>, og da kan halve «effekten» din være skjevhet.
+<div class="n" style="margin-top:6px">Bruk <b>η²</b> i dette emnet &mdash; det er tallet eksamen
+spør om, og det du kan regne ut av kvadratsummene i hodet. Bytt til <b>ω²</b> når gruppene er
+små, når det er mange av dem, når resultatet <b>ikke</b> ble signifikant, og alltid når tallet
+skal inn i en metaanalyse eller en styrkeberegning. Å oppgi begge er helt greit &mdash; og pent
+i en metodetung oppgave.</div></div>
+</div>
+
+<div class="card">
+<div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>Begge effektstørrelsene leses av kvadratsummene du allerede har, og ingen av dem vokser med
+<i>n</i>. Derfor er de de eneste tallene i ANOVA-tabellen som kan sammenlignes på tvers av
+studier &mdash; η² om utvalget du målte, ω² om populasjonen du uttaler deg om.</b></div>
 </div>
 </div><!-- /fane-eta -->
 
@@ -883,7 +996,7 @@ kastet bort hele grunnen til at du kjørte omnibustesten først.</div></div>
 
 <div class="card">
 <h2>Gruppegjennomsnittene, med usikkerheten rundt seg</h2>
-<p class="muted">Depresjon etter behandling, etter antall tidligere behandlingsforløp.
+<p class="muted">Depresjon <b>ved oppstart</b>, etter antall tidligere behandlingsforsøk.
 Søylene er gjennomsnittene &mdash; <span class="k-sig">grønt</span>, som alltid, fordi det er
 forskjellen <b>mellom</b> gruppene. Feilfeltene er <span class="k-ki">95 % konfidensintervall</span>
 &mdash; bredden deres kommer fra gruppens <span class="k-stoy">spredning</span> delt på
@@ -895,11 +1008,13 @@ som bør stå i oppgaven din.</p>
 </div>
 <div class="steg" style="border-left-color:#B26A00">
 <div class="tit">Se på bredden, ikke bare høyden</div>
-Gruppen med <b>tre eller flere</b> tidligere forløp har det klart videste intervallet, og den
-ligger nesten på samme høyde som gruppen med to.
-<div class="n">Grunnen er <i>n</i> = 15 mot 25. Halve jobben i å lese en slik figur er å legge
-merke til at usikkerheten ikke er den samme for alle søylene &mdash; og at det er
-gruppestørrelsen, ikke effekten, som bestemmer det.</div></div>
+Gruppen med <b>tre eller flere</b> tidligere forsøk er den <b>minste</b> (<i>n</i> = 15) og har
+likevel det <b>smaleste</b> intervallet. Det er ikke en feil i figuren.
+<div class="n">Bredden er <span class="k-stoy"><i>SD</i></span>/&radic;<i>n</i>, og her varierer
+<i>SD</i> mye mer enn <i>n</i> gjør: 4.88 i den første gruppen mot <b>1.16</b> i den siste.
+Den siste gruppen ligger nesten på skalaens tak &mdash; <i>M</i> = 34.27 av 35 &mdash; og da
+har skårene ikke plass til å spre seg. <b>Takeffekten kommer tilbake som et brudd på
+forutsetningen om like varianser i fane 6.</b></div></div>
 <div class="note"><b>Og en advarsel som er verdt å ta med seg:</b> at to feilfelt
 <b>overlapper</b>, betyr ikke at gruppene er like. Overlappende 95 % KI er forenlig med en
 signifikant forskjell &mdash; fordi usikkerheten i <b>differansen</b> er mindre enn summen av
@@ -927,19 +1042,22 @@ forskjeller som ikke er store nok, forsvinner.</p>
 
 <div class="card">
 <h2>Tre korreksjoner på det samme paret</h2>
-<p class="muted">Depresjon etter behandling, paret <b>1 tidligere behandling</b> mot
-<b>2 tidligere</b> (den største forskjellen: 5.2 poeng).</p>
+<p class="muted">Depresjon ved oppstart, paret <b>2 tidligere forsøk</b> mot
+<b>3 eller flere</b> &mdash; det <b>knappeste</b> paret i datasettet (3.23 poeng). Det er her
+korreksjonen er verdt å se på; på de to andre parene spiller valget ingen rolle.</p>
 <table class="tt" style="margin-top:8px">
-<tr><th>Metode</th><th><i>p</i></th><th>Hva den kontrollerer for</th></tr>
-<tr><td>Ukorrigert</td><td>&lt; .001</td><td>ingenting &mdash; én test om gangen</td></tr>
-<tr class="na"><td><b>Tukey</b></td><td><b>.001</b></td><td>alle tre parvise sammenligninger. JASPs standard</td></tr>
-<tr><td>Bonferroni</td><td>.001</td><td>et vilkårlig antall tester</td></tr>
-<tr><td>Scheffé</td><td>.002</td><td><b>alle mulige</b> kontraster, også de ingen kom til å kjøre</td></tr>
+<tr><th>Metode</th><th class="k-p"><i>p</i></th><th>Hva den kontrollerer for</th></tr>
+<tr><td>Ukorrigert</td><td class="c-p">.008</td><td>ingenting &mdash; én test om gangen</td></tr>
+<tr class="na"><td><b>Tukey</b></td><td class="c-p"><b>.021</b></td><td>alle tre parvise sammenligninger. JASPs standard</td></tr>
+<tr><td>Bonferroni</td><td class="c-p">.024</td><td>et vilkårlig antall tester</td></tr>
+<tr><td>Scheffé</td><td class="c-p">.029</td><td><b>alle mulige</b> kontraster, også de ingen kom til å kjøre</td></tr>
 </table>
 <p style="font-size:16.5px;line-height:1.55;margin-top:12px"><b>Bruk Tukey.</b> Den er konstruert
 for nøyaktig den situasjonen du er i: alle par, ikke flere og ikke færre.</p>
-<div class="note">Med bare tre grupper er forskjellen mellom korreksjonene liten. Den vokser
-fort: med fem grupper er Scheffé fire ganger så streng som ukorrigert.</div>
+<div class="note"><b>Her holder konklusjonen uansett hvilken du velger</b> &mdash; men
+<i>p</i> nesten firedobles fra ukorrigert til Scheff&eacute;. Det er avstanden til .05 som er
+poenget: et par som lander på .03 ukorrigert, ville ikke overlevd. Med bare tre grupper er
+spennet lite; med fem grupper er Scheff&eacute; fire ganger så streng som ukorrigert.</div>
 </div>
 
 
@@ -971,30 +1089,36 @@ kan slutte å gjøre det. Det er styrken du betaler med.</div></div>
 
 <div class="card">
 <h2>Alle tre parene</h2>
-<p class="muted">Tukey-korrigert. <code>Depression_post</code> etter
+<p class="muted">Tukey-korrigert. <code>Depression</code> (ved oppstart) etter
 <code>Tidligere_behandling</code>, <i>N</i> = 75.</p>
 <table class="tt" style="margin-top:8px">
-<tr><th>Par</th><th>Differanse</th><th><i>p</i></th><th></th></tr>
-<tr class="na"><td><b>1 vs. 2</b></td><td><b>&minus;5.20</b></td><td><b>.001</b></td><td>✔</td></tr>
-<tr class="na"><td><b>1 vs. 3 eller flere</b></td><td><b>&minus;4.93</b></td><td><b>.010</b></td><td>✔</td></tr>
-<tr><td>2 vs. 3 eller flere</td><td>+0.27</td><td>.987</td><td></td></tr>
+<tr><th>Par</th><th class="k-sig">Differanse</th><th class="k-ki">95 % KI</th>
+<th class="k-p"><i>p</i></th><th></th></tr>
+<tr class="na"><td><b>1 mot 2</b></td><td class="c-sig"><b>&minus;2.81</b></td>
+<td class="c-ki">[&minus;5.08, &minus;0.54]</td><td class="c-p"><b>.011</b></td><td>✔</td></tr>
+<tr class="na"><td><b>1 mot 3 eller flere</b></td><td class="c-sig"><b>&minus;6.04</b></td>
+<td class="c-ki">[&minus;8.71, &minus;3.37]</td><td class="c-p"><b>&lt; .001</b></td><td>✔</td></tr>
+<tr class="na"><td><b>2 mot 3 eller flere</b></td><td class="c-sig"><b>&minus;3.23</b></td>
+<td class="c-ki">[&minus;6.05, &minus;0.40]</td><td class="c-p"><b>.021</b></td><td>✔</td></tr>
 </table>
 
-<div class="note" style="margin-top:12px"><b>Mønsteret er verdt å se på.</b> De to
-signifikante parene involverer begge <b>nivå 1</b>. Forskjellen mellom 2 og 3+ er null
-&mdash; 0.27 poeng, <i>p</i> = .99.</div>
+<div class="note" style="margin-top:12px"><b>Her overlever alle tre parene.</b> Gjennomsnittene
+stiger jevnt &mdash; 28.23, 31.04, 34.27 &mdash; og hvert steg oppover er en ekte forskjell,
+ikke bare summen av dem.</div>
 
-<div class="note"><b>Det forteller noe omnibustesten ikke gjorde:</b> det er ikke en jevn
-stigning med antall tidligere behandlinger. Det er et <b>skille mellom dem som er i sin
-første behandling og alle andre</b>. En signifikant <i>F</i> er forenlig med begge mønstrene
-&mdash; bare post hoc kan skille dem.</div>
+<div class="note"><b>Sammenlign med de fem behandlingsformene i forelesningen:</b> der
+overlevde bare 3 av 10 par, og alle tre involverte ventelisten. Samme test, samme korreksjon,
+samme signifikante <i>F</i> &mdash; og to helt ulike mønstre bak den. <b>Det er nettopp dette
+omnibustesten ikke kan fortelle deg.</b></div>
 
 <div class="steg" style="border-left-color:#C0392B;margin-top:12px">
 <div class="tit">Og se på gruppestørrelsene</div>
-Nivå 3+ har <b><i>n</i> = 15</b>, mot 35 i nivå 1.
-<div class="n">Paret 1 vs. 3+ har nesten like stor differanse som 1 vs. 2 (4.93 mot 5.20), men
-<i>p</i> er ti ganger større (.010 mot .001). Grunnen er ikke effekten &mdash; det er at
-standardfeilen til en differanse avhenger av <b>begge</b> gruppestørrelsene.</div></div>
+Paret <b>2 mot 3+</b> har <b>større</b> differanse enn <b>1 mot 2</b> (3.23 mot 2.81), men
+<b>høyere</b> <i>p</i> (.021 mot .011).
+<div class="n">Grunnen er ikke effekten &mdash; det er at standardfeilen til en differanse
+avhenger av <b>begge</b> gruppestørrelsene. Differansen på 3.23 bygger på 25 og 15 personer;
+differansen på 2.81 på 35 og 25. <b>Les aldri rekkefølgen på <i>p</i>-verdiene som en
+rekkefølge på effektene.</b></div></div>
 </div>
 
 <div class="card">
@@ -1093,35 +1217,38 @@ tolkningen.</div>
 </div>
 
 <div class="card">
-<h2>1 · Depresjon etter behandling <span class="muted">— den signifikante</span></h2>
-<p class="muted"><code>Depression_post</code> etter <code>Tidligere_behandling</code> ·
-<i>N</i> = 75</p>
+<h2>1 · Depresjon ved oppstart <span class="muted">— den signifikante</span></h2>
+<p class="muted"><code>Depression</code> etter <code>Tidligere_behandling</code> ·
+<i>N</i> = 75 &mdash; en beskrivelse av utvalget <b>før</b> behandlingen starter</p>
 <table class="tt" style="margin-top:8px">
-<tr><th>Tidligere behandlinger</th><th>M</th><th><i>SD</i></th><th><i>n</i></th></tr>
-<tr><td>1</td><td>23.00</td><td>5.49</td><td>35</td></tr>
-<tr><td>2</td><td>28.20</td><td>5.05</td><td>25</td></tr>
-<tr><td>3 eller flere</td><td>27.93</td><td>5.35</td><td><b>15</b></td></tr>
+<tr><th>Tidligere behandlingsforsøk</th><th class="k-sig">M</th><th class="k-stoy"><i>SD</i></th><th><i>n</i></th></tr>
+<tr><td>1</td><td class="c-sig">28.23</td><td class="c-stoy"><b>4.88</b></td><td>35</td></tr>
+<tr><td>2</td><td class="c-sig">31.04</td><td class="c-stoy">2.19</td><td>25</td></tr>
+<tr><td>3 eller flere</td><td class="c-sig">34.27</td><td class="c-stoy"><b>1.16</b></td><td><b>15</b></td></tr>
 </table>
 <table class="tt" style="margin-top:10px">
-<tr><th></th><th>Sum of Squares</th><th><i>df</i></th><th>Mean Square</th><th><i>F</i></th><th><i>p</i></th></tr>
-<tr><td>Tidligere behandling</td><td>486.19</td><td>2</td><td>243.09</td><td><b>8.58</b></td><td><b>&lt; .001</b></td></tr>
-<tr><td>Residual</td><td>2038.93</td><td>72</td><td>28.32</td><td></td><td></td></tr>
+<tr><th></th><th>Sum of Squares</th><th><i>df</i></th><th>Mean Square</th><th class="k-tstat"><i>F</i></th><th class="k-p"><i>p</i></th></tr>
+<tr class="r-sig"><td>Tidligere_behandling</td><td>399.48</td><td>2</td><td>199.74</td><td class="c-tstat"><b>15.27</b></td><td class="c-p"><b>&lt; .001</b></td></tr>
+<tr class="r-stoy"><td>Residuals</td><td>942.06</td><td>72</td><td>13.08</td><td></td><td></td></tr>
 </table>
-<div class="note" style="margin-top:10px"><b>η²</b> = 486.19 / 2525.12 = <b>.193</b> &mdash;
-19 % av variasjonen, en stor effekt etter Cohens merkelapper.
-<b>Levene</b>: <i>F</i>(2, 72) = 0.32, <i>p</i> = .73 &mdash; antakelsen holder, så du bruker
-den vanlige tabellen.</div>
+<div class="note" style="margin-top:10px"><b>η²</b> = 399.48 / 1341.55 = <b>.298</b> &mdash;
+30 % av variasjonen. (<b>ω²</b> = .276 &mdash; se fane 4 for forskjellen.)</div>
+<div class="note" style="border-left-color:#C0392B"><b>Levene</b>:
+<i>F</i>(2, 72) = 16.01, <i>p</i> &lt; .001 &mdash; <b>antakelsen holder ikke her.</b>
+Standardavviket er fire ganger større i den første gruppen enn i den siste.
+Da rapporterer du <b>Welchs</b> justerte test, <i>F</i>(2, 47.9) = 34.91, <i>p</i> &lt; .001,
+og <b>Games-Howell</b> til post hoc. Se fane 6 for hvorfor bruddet oppstår.</div>
 
 <h3 style="margin-top:14px">Post hoc: hvem skiller seg?</h3>
 <table class="tt" style="margin-top:8px">
-<tr><th>Par</th><th>Differanse</th><th><i>p</i> (Tukey)</th></tr>
-<tr class="na"><td><b>1 vs. 2</b></td><td>&minus;5.20</td><td><b>.001</b> ✔</td></tr>
-<tr class="na"><td><b>1 vs. 3+</b></td><td>&minus;4.93</td><td><b>.010</b> ✔</td></tr>
-<tr><td>2 vs. 3+</td><td>+0.27</td><td>.987</td></tr>
+<tr><th>Par</th><th class="k-sig">Differanse</th><th class="k-ki">95 % KI</th><th class="k-p"><i>p</i> (Tukey)</th></tr>
+<tr class="na"><td><b>1 mot 2</b></td><td class="c-sig">&minus;2.81</td><td class="c-ki">[&minus;5.08, &minus;0.54]</td><td class="c-p"><b>.011</b> ✔</td></tr>
+<tr class="na"><td><b>1 mot 3+</b></td><td class="c-sig">&minus;6.04</td><td class="c-ki">[&minus;8.71, &minus;3.37]</td><td class="c-p"><b>&lt; .001</b> ✔</td></tr>
+<tr class="na"><td><b>2 mot 3+</b></td><td class="c-sig">&minus;3.23</td><td class="c-ki">[&minus;6.05, &minus;0.40]</td><td class="c-p"><b>.021</b> ✔</td></tr>
 </table>
-<p style="font-size:16.5px;line-height:1.55;margin-top:10px">Mønsteret er tydelig: de som er
-<b>inne i sin første behandling</b>, skårer lavere på depresjon etterpå enn de som har vært
-gjennom flere før. <b>Forskjellen mellom 2 og 3+ er null.</b></p>
+<p style="font-size:16.5px;line-height:1.55;margin-top:10px">Mønsteret er en <b>jevn
+stigning</b>: jo flere forsøk bak seg, jo høyere depresjonsskår ved oppstart &mdash; og
+<b>hvert steg</b> er en ekte forskjell, ikke bare summen av dem.</p>
 
 <div class="steg" style="border-left-color:#C0392B">
 <div class="tit">Og så tolkningen, som er den vanskelige delen</div>
@@ -1153,7 +1280,7 @@ aldri vise.<br>
 <div class="note"><b>Og ingen post hoc.</b> Omnibus var ikke signifikant, så det er ingenting
 å følge opp.</div>
 <p style="font-size:16.5px;line-height:1.55;margin-top:10px"><b>Legg merke til kontrasten:</b>
-samme personer, samme faktor, samme <i>n</i> &mdash; og η² på .193 mot .019. Det eneste som
+samme personer, samme faktor, samme <i>n</i> &mdash; og η² på .298 mot .019. Det eneste som
 skiller analysene er utfallet. Da kan forskjellen ikke skyldes design eller utvalgsstørrelse.
 <b>Den må være effekten selv.</b></p>
 </div>
@@ -1218,43 +1345,43 @@ det ene stedet, så lyser makkeren det andre stedet. Fargene er de samme som i f
 <span class="k-sig">grønt</span> er mellom grupper, <span class="k-stoy">rødt</span> er innen
 grupper.</p>
 
-<p class="tabnavn"><i>ANOVA &mdash; Depression_post</i></p>
+<p class="tabnavn"><i>ANOVA &mdash; Depression</i> <span class="muted">(ved oppstart)</span></p>
 <table class="tt sportab" id="sporTab">
 <tr><th>Cases</th><th>Sum of Squares</th><th><i>df</i></th><th>Mean Square</th>
 <th><i>F</i></th><th><i>p</i></th><th>η²</th></tr>
 <tr class="r-sig"><td>Tidligere_behandling</td>
-  <td class="sp sp-sig" data-sp="ssb" title="SS mellom — mellomregning. Står ikke i setningen, men er telleren i η².">486.19</td>
+  <td class="sp sp-sig" data-sp="ssb" title="SS mellom — mellomregning. Står ikke i setningen, men er telleren i η².">399.48</td>
   <td class="sp sp-df" data-sp="df1">2</td>
-  <td class="sp sp-sig" data-sp="msb" title="MS mellom — telleren i F. Mellomregning; leseren får resultatet, ikke ingrediensene.">243.09</td>
-  <td class="sp sp-tstat" data-sp="f">8.585</td>
+  <td class="sp sp-sig" data-sp="msb" title="MS mellom — telleren i F. Mellomregning; leseren får resultatet, ikke ingrediensene.">199.74</td>
+  <td class="sp sp-tstat" data-sp="f">15.266</td>
   <td class="sp sp-p" data-sp="p">&lt; .001</td>
-  <td class="sp sp-eff" data-sp="eta">0.193</td></tr>
+  <td class="sp sp-eff" data-sp="eta">0.298</td></tr>
 <tr class="r-stoy"><td>Residuals</td>
-  <td class="sp sp-stoy" data-sp="ssw" title="SS innen — mellomregning. Sammen med SS mellom gir den SS total, nevneren i η².">2038.93</td>
+  <td class="sp sp-stoy" data-sp="ssw" title="SS innen — mellomregning. Sammen med SS mellom gir den SS total, nevneren i η².">942.06</td>
   <td class="sp sp-df" data-sp="df2">72</td>
-  <td class="sp sp-stoy" data-sp="msw" title="MS innen — nevneren i F. Mellomregning.">28.32</td>
+  <td class="sp sp-stoy" data-sp="msw" title="MS innen — nevneren i F. Mellomregning.">13.08</td>
   <td></td><td></td><td></td></tr>
 </table>
 
 <div class="brokfig smal" style="margin:10px 0">
 <div class="brk">
-<div class="tell">MS<sub>mellom</sub><span class="tall">243.09</span></div>
+<div class="tell">MS<sub>mellom</sub><span class="tall">199.74</span></div>
 <div class="strek"></div>
-<div class="nevn">MS<sub>innen</sub><span class="tall">28.32</span></div>
+<div class="nevn">MS<sub>innen</sub><span class="tall">13.08</span></div>
 </div>
 <div class="lik">=</div>
-<div class="res"><b><i>F</i> = 8.58</b><span class="n">de to fete tallene i MS-kolonnen</span></div>
+<div class="res"><b><i>F</i> = 15.27</b><span class="n">de to fete tallene i MS-kolonnen</span></div>
 </div>
 
 <p class="tabnavn" style="margin-top:14px"><i>Descriptives</i></p>
 <table class="tt sportab" id="sporDesk">
 <tr><th>Tidligere_behandling</th><th><i>N</i></th><th>Mean</th><th>SD</th></tr>
-<tr><td>1</td><td>35</td><td class="sp sp-sig" data-sp="m1">23.00</td>
-  <td class="sp sp-stoy" data-sp="sd1">5.49</td></tr>
-<tr><td>2</td><td>25</td><td class="sp sp-sig" data-sp="m2">28.20</td>
-  <td class="sp sp-stoy" data-sp="sd2">5.05</td></tr>
-<tr><td>3 eller flere</td><td>15</td><td class="sp sp-sig" data-sp="m3">27.93</td>
-  <td class="sp sp-stoy" data-sp="sd3">5.35</td></tr>
+<tr><td>1</td><td>35</td><td class="sp sp-sig" data-sp="m1">28.23</td>
+  <td class="sp sp-stoy" data-sp="sd1">4.88</td></tr>
+<tr><td>2</td><td>25</td><td class="sp sp-sig" data-sp="m2">31.04</td>
+  <td class="sp sp-stoy" data-sp="sd2">2.19</td></tr>
+<tr><td>3 eller flere</td><td>15</td><td class="sp sp-sig" data-sp="m3">34.27</td>
+  <td class="sp sp-stoy" data-sp="sd3">1.16</td></tr>
 </table>
 <p class="sporlegg"><b>Hvorfor er gjennomsnittene grønne og standardavvikene røde?</b> Fordi det
 er nøyaktig det skillet <i>F</i> er bygget på. Spriket <b>mellom</b> de tre gjennomsnittene er
@@ -1263,25 +1390,29 @@ det allerede &mdash; den sier det bare ikke høyt.</p>
 
 <p class="tabnavn" style="margin-top:16px">Setningen, med de samme tallene</p>
 <div class="sporsetn" id="sporSetn">
-Depresjonsskåren etter behandling skilte seg mellom pasienter med ulikt antall tidligere
-behandlingsforløp, <i>F</i>(<span class="sp sp-df" data-sp="df1">2</span>,
+Depresjonsskåren ved oppstart skilte seg mellom pasienter med ulikt antall tidligere
+behandlingsforsøk, <i>F</i>(<span class="sp sp-df" data-sp="df1">2</span>,
 <span class="sp sp-df" data-sp="df2">72</span>) =
-<span class="sp sp-tstat" data-sp="f">8.58</span>,
+<span class="sp sp-tstat" data-sp="f">15.27</span>,
 <i>p</i> <span class="sp sp-p" data-sp="p">&lt; .001</span>,
-η² = <span class="sp sp-eff" data-sp="eta">.19</span>. Tukey-korrigerte sammenligninger viste at
-pasienter med &eacute;tt tidligere forløp (<i>M</i> =
-<span class="sp sp-sig" data-sp="m1">23.00</span>, <i>SD</i> =
-<span class="sp sp-stoy" data-sp="sd1">5.49</span>) skåret lavere enn både de med to
-(<i>M</i> = <span class="sp sp-sig" data-sp="m2">28.20</span>, <i>SD</i> =
-<span class="sp sp-stoy" data-sp="sd2">5.05</span>) og de med tre eller flere
-(<i>M</i> = <span class="sp sp-sig" data-sp="m3">27.93</span>, <i>SD</i> =
-<span class="sp sp-stoy" data-sp="sd3">5.35</span>).
+η² = <span class="sp sp-eff" data-sp="eta">.30</span>. Tukey-korrigerte sammenligninger viste at
+pasienter med &eacute;tt tidligere forsøk (<i>M</i> =
+<span class="sp sp-sig" data-sp="m1">28.23</span>, <i>SD</i> =
+<span class="sp sp-stoy" data-sp="sd1">4.88</span>) skåret lavere enn både de med to
+(<i>M</i> = <span class="sp sp-sig" data-sp="m2">31.04</span>, <i>SD</i> =
+<span class="sp sp-stoy" data-sp="sd2">2.19</span>) og de med tre eller flere
+(<i>M</i> = <span class="sp sp-sig" data-sp="m3">34.27</span>, <i>SD</i> =
+<span class="sp sp-stoy" data-sp="sd3">1.16</span>).
 </div>
 <p class="sporlegg"><b>Legg merke til hva som IKKE er med i setningen.</b> Kvadratsummene
-(<span class="sp sp-sig">486.19</span> og <span class="sp sp-stoy">2038.93</span>) og
+(<span class="sp sp-sig">399.48</span> og <span class="sp sp-stoy">942.06</span>) og
 gjennomsnittskvadratene står ikke der &mdash; de er mellomregning. Leseren trenger resultatet
 av brøken, ikke de to tallene den ble laget av. Men du må kunne peke på dem, for det er der
-η² kommer fra: 486.19 / (486.19 + 2038.93) = .193.</p>
+η² kommer fra: 399.48 / (399.48 + 942.06) = .298.</p>
+<div class="note" style="border-left-color:#C0392B"><b>Én ting mangler i setningen over, med
+vilje:</b> i akkurat dette datasettet er Levenes test signifikant, så den ferdige setningen
+skal også rapportere <b>Welch</b> &mdash; se malen lenger ned. Kortet her viser hvordan hvert
+tall i tabellen finner plassen sin i teksten; forutsetningssjekken kommer i tillegg.</div>
 
 <div class="keybox"><span class="lbl">Regelen bak fargene</span><b>Alt som er
 <span class="k-sig">grønt</span> handler om forskjellen mellom gruppene. Alt som er
@@ -1293,14 +1424,14 @@ effektstørrelsen. Fem farger, og du kan lese hvilken som helst ANOVA-utskrift.<
 
 <div class="card">
 <h2>Setningen, delt i biter</h2>
-<p class="muted">Terapistudien: <code>Depression_post</code> etter
+<p class="muted">Terapistudien: <code>Depression</code> (ved oppstart) etter
 <code>Tidligere_behandling</code>, <i>N</i> = 75. Hold musa over en bit for å se hva den gjør.</p>
 <div class="rapsetning" id="rapSetn"></div>
 <div id="rapDeler"></div>
-<div class="note"><b>Legg merke til at nullresultatet står i setningen.</b> Paret 2 mot 3+
-skilte seg ikke, og det er en del av funnet &mdash; ikke et hull. Utelater du det, ser
-mønsteret ut som en jevn stigning med antall tidligere behandlinger, og det er ikke det
-dataene viser.</div>
+<div class="note"><b>Legg merke til at det er &eacute;n bit per spørsmål.</b> Påstanden sier
+<i>hva</i>, testen sier <i>om</i>, effektstørrelsen sier <i>hvor mye</i>, og de deskriptive
+tallene sier <i>hvilken vei</i>. Fjerner du en av dem, er det et spørsmål leseren ikke får
+svar på &mdash; og i denne rekkefølgen leses setningen uten at noen må lete.</div>
 </div>
 
 <div class="card">
@@ -1321,21 +1452,28 @@ klikkestien i JASP.</p>
 (<i>M</i> = __, <i>SD</i> = __), differanse = __, 95 % KI [__, __], <i>p</i> = __.</div>
 
 <div class="malboks utfylt"><span class="mallbl">Utfylt</span>
-Depresjonsskåren etter behandling skilte seg mellom pasienter med ulikt antall tidligere
-behandlingsforløp, <span class="k-tstat"><i>F</i>(2, 72) = 8.58</span>,
-<i>p</i> <span class="k-p">&lt; .001</span>, <span class="k-eff">η² = .19</span>.
-Tukey-korrigerte sammenligninger viste at pasienter med &eacute;tt tidligere forløp
-(<i>M</i> = <span class="k-sig">23.00</span>, <i>SD</i> = <span class="k-stoy">5.49</span>)
-skåret lavere enn både de med to (<i>M</i> = <span class="k-sig">28.20</span>,
-<i>SD</i> = <span class="k-stoy">5.05</span>; differanse =
-<span class="k-sig">&minus;5.20</span>,
-<span class="k-ki">95 % KI [&minus;8.53, &minus;1.87]</span>,
-<i>p</i> = <span class="k-p">.001</span>) og de med tre eller flere
-(<i>M</i> = <span class="k-sig">27.93</span>, <i>SD</i> = <span class="k-stoy">5.35</span>;
-differanse = <span class="k-sig">&minus;4.93</span>,
-<span class="k-ki">95 % KI [&minus;8.86, &minus;1.00]</span>,
-<i>p</i> = <span class="k-p">.010</span>). De to sistnevnte gruppene skilte seg ikke fra
-hverandre (<i>p</i> = <span class="k-p">.99</span>).</div>
+Depresjonsskåren ved oppstart skilte seg mellom pasienter med ulikt antall tidligere
+behandlingsforsøk, <span class="k-tstat"><i>F</i>(2, 72) = 15.27</span>,
+<i>p</i> <span class="k-p">&lt; .001</span>, <span class="k-eff">η² = .30</span>.
+Tukey-korrigerte sammenligninger viste at pasienter med &eacute;tt tidligere forsøk
+(<i>M</i> = <span class="k-sig">28.23</span>, <i>SD</i> = <span class="k-stoy">4.88</span>)
+skåret lavere enn både de med to (<i>M</i> = <span class="k-sig">31.04</span>,
+<i>SD</i> = <span class="k-stoy">2.19</span>; differanse =
+<span class="k-sig">&minus;2.81</span>,
+<span class="k-ki">95 % KI [&minus;5.08, &minus;0.54]</span>,
+<i>p</i> = <span class="k-p">.011</span>) og de med tre eller flere
+(<i>M</i> = <span class="k-sig">34.27</span>, <i>SD</i> = <span class="k-stoy">1.16</span>;
+differanse = <span class="k-sig">&minus;6.04</span>,
+<span class="k-ki">95 % KI [&minus;8.71, &minus;3.37]</span>,
+<i>p</i> <span class="k-p">&lt; .001</span>). Også de to sistnevnte skilte seg fra hverandre
+(differanse = <span class="k-sig">&minus;3.23</span>,
+<span class="k-ki">95 % KI [&minus;6.05, &minus;0.40]</span>,
+<i>p</i> = <span class="k-p">.021</span>).</div>
+
+<div class="note" style="border-left-color:#C0392B"><b>Dette er malen for det vanlige
+tilfellet</b> &mdash; den du bruker når forutsetningene holder. I nettopp dette datasettet
+gjør de det <b>ikke</b>: Levene er signifikant, og da skal setningen også ha med Welch.
+Trykk på <b>Welch</b> over for å se hvordan den ser ut da.</div>
 
 <div class="klikksti"><span class="mallbl">JASP</span>
 <b>ANOVA ▸ ANOVA</b>. Utfallet i <i>Dependent Variable</i>, gruppevariabelen i
@@ -1461,15 +1599,16 @@ lesningen: gruppene forklarer ikke mer enn støy ville gjort.</p>
 Emnets egne analyser</h3>
 <table class="tt">
 <tr><th>Analyse</th><th><i>F</i></th><th><i>df</i></th><th>η²</th><th>ω²</th><th>Differanse</th></tr>
-<tr><td>Depresjon ved oppstart</td><td>15.27</td><td>2, 72</td><td>.298</td><td>.276</td><td>&minus;.022</td></tr>
-<tr class="na"><td><b>Depresjon etter behandling</b></td><td><b>8.58</b></td><td>2, 72</td>
-<td><b>.193</b></td><td><b>.168</b></td><td>&minus;.025</td></tr>
+<tr class="na"><td><b>Depresjon ved oppstart</b> <span class="muted">— emnets eksempel</span></td>
+<td><b>15.27</b></td><td>2, 72</td><td><b>.298</b></td><td><b>.276</b></td><td>&minus;.022</td></tr>
+<tr><td>Depresjon etter behandling</td><td>8.58</td><td>2, 72</td>
+<td>.193</td><td>.168</td><td>&minus;.025</td></tr>
 <tr><td>Fem behandlingsformer (simulert, <i>N</i> = 160)</td><td>6.14</td><td>4, 155</td><td>.137</td><td>.114</td><td>&minus;.023</td></tr>
 <tr><td>Negativ affekt &mdash; nullfunnet</td><td>0.69</td><td>2, 72</td><td>.019</td>
 <td><b>0</b></td><td>&minus;.019</td></tr>
 </table>
 <p class="tabnote">Alle fire er regnet fra kvadratsummene i datasettene emnet bruker.
-Merkelappene flytter seg ikke: .193 og .168 er begge «stor».</p>
+Merkelappene flytter seg ikke: .298 og .276 er begge «stor».</p>
 
 <div class="steg" style="border-left-color:#C0392B">
 <div class="tit">Den nederste raden er den som avslører forskjellen</div>
@@ -1485,7 +1624,7 @@ det riktige svaret.</div></div>
 <div class="tit">Når skjevheten er stor nok til å bety noe</div>
 Den er omtrent <i>df</i><sub>mellom</sub> / <i>N</i>: den <b>vokser med antall grupper</b> og
 <b>krymper med utvalgsstørrelsen</b>.
-<div class="n">Tre grupper og <i>N</i> = 75 gir 2.5 prosentpoeng &mdash; merkbart, men det
+<div class="n">Tre grupper og <i>N</i> = 75 gir 2 prosentpoeng &mdash; merkbart, men det
 endrer ingen konklusjon. Fem grupper og <i>n</i> = 8 i hver gir over 10 prosentpoeng, og da
 kan halve «effekten» din være regnefeil.</div></div>
 
@@ -1500,7 +1639,7 @@ skal si noe om størrelsen. Skal tallet inn i en metaanalyse eller en styrkebere
 riktige &mdash; da er det populasjonen du uttaler deg om, ikke utvalget.</div>
 
 <div class="note"><b>Og om du oppgir begge:</b> det er helt greit, og faktisk pent i en
-metodetung oppgave. Skriv <i>F</i>(2, 72) = 8.58, <i>p</i> &lt; .001, η² = .19, ω² = .17.
+metodetung oppgave. Skriv <i>F</i>(2, 72) = 15.27, <i>p</i> &lt; .001, η² = .30, ω² = .28.
 Det signaliserer at du vet at de to svarer på litt ulike spørsmål.</div>
 
 <div class="steg">
@@ -1514,7 +1653,7 @@ partielle η² gjerne summerer til mer &mdash; de deler på ulike nevnere.</div>
 
 <div class="card">
 <h2>Tabellene fra JASP, og hva de er verdt</h2>
-<p class="muted">Utskriften for <code>Depression_post</code> etter
+<p class="muted">Utskriften for <code>Depression</code> (ved oppstart) etter
 <code>Tidligere_behandling</code>, slik den faktisk ser ut. <b>Ingen av dem limes rått inn i
 en oppgavetekst</b> &mdash; du leser av tallene og skriver setningen.</p>
 
@@ -1526,9 +1665,9 @@ med fargesporingen mot setningen. Her er de tre andre.</div>
 <span class="gradering gr1">med når omnibus er signifikant</span></p>
 <table class="tt">
 <tr><th></th><th></th><th>Mean Difference</th><th>SE</th><th><i>t</i></th><th>p<sub>tukey</sub></th></tr>
-<tr class="na"><td>1</td><td>2</td><td class="c-sig">&minus;5.200</td><td class="c-stoy">1.387</td><td class="c-tstat">&minus;3.749</td><td class="c-p">0.001</td></tr>
-<tr class="na"><td>1</td><td>3 eller flere</td><td class="c-sig">&minus;4.933</td><td class="c-stoy">1.643</td><td class="c-tstat">&minus;3.003</td><td class="c-p">0.010</td></tr>
-<tr><td>2</td><td>3 eller flere</td><td class="c-sig">0.267</td><td class="c-stoy">1.738</td><td class="c-tstat">0.153</td><td class="c-p">0.987</td></tr>
+<tr class="na"><td>1</td><td>2</td><td class="c-sig">&minus;2.811</td><td class="c-stoy">0.947</td><td class="c-tstat">&minus;2.968</td><td class="c-p">0.011</td></tr>
+<tr class="na"><td>1</td><td>3 eller flere</td><td class="c-sig">&minus;6.038</td><td class="c-stoy">1.116</td><td class="c-tstat">&minus;5.409</td><td class="c-p">&lt; .001</td></tr>
+<tr class="na"><td>2</td><td>3 eller flere</td><td class="c-sig">&minus;3.227</td><td class="c-stoy">1.181</td><td class="c-tstat">&minus;2.731</td><td class="c-p">0.021</td></tr>
 </table>
 <div class="tabnote">Kryss av for <b>Confidence intervals</b>, så kommer KI-kolonnene i tillegg
 &mdash; det er de som gjør post hoc-setningen din komplett. Og merk at <i>t</i>-kolonnen her
@@ -1539,11 +1678,13 @@ modellen, ikke bare fra de to gruppene i paret.</div>
 <span class="gradering gr2">sjekk alltid, rapporter når den er signifikant</span></p>
 <table class="tt">
 <tr><th></th><th><i>F</i></th><th>df1</th><th>df2</th><th><i>p</i></th></tr>
-<tr><td>Depression_post</td><td class="c-tstat">0.320</td><td class="c-tstat">2</td><td class="c-tstat">72</td><td class="c-p">0.727</td></tr>
+<tr class="na"><td>Depression</td><td class="c-tstat">16.015</td><td class="c-tstat">2</td><td class="c-tstat">72</td><td class="c-p">&lt; .001</td></tr>
 </table>
-<div class="tabnote"><i>p</i> = .73 betyr <b>ikke</b> at variansene er like &mdash; bare at du
-ikke klarte å vise at de er ulike. Er den ikke signifikant, trenger den ingen plass i teksten.
-Er den signifikant, må den nevnes, for da har du byttet test.</div>
+<div class="tabnote"><b>Denne er signifikant, og da må den nevnes</b> &mdash; for da har du
+byttet test: det er Welchs <i>F</i>(2, 47.9) = 34.91 som skal rapporteres, og Games-Howell til
+post hoc. Motsatt vei gjelder det motsatte: en Levene som <i>ikke</i> er signifikant, betyr
+ikke at variansene er like &mdash; bare at du ikke klarte å vise at de er ulike, og da trenger
+den ingen plass i teksten.</div>
 
 <p class="tabnavn"><i>Q&ndash;Q Plot / Shapiro&ndash;Wilk</i> &nbsp;&mdash;&nbsp;
 <span class="gradering gr3">sjekk den, rapporter sjelden</span></p>
@@ -1578,7 +1719,7 @@ funnet. Med tre eller flere grupper er figuren dessuten <b>mer</b> verdt enn i e
 <div class="card">
 <h2>Åtte feil som koster poeng</h2>
 <div class="feilliste">
-<div class="feil"><b><i>F</i> med bare &eacute;n frihetsgrad</b><span><i>F</i>(72) = 8.58
+<div class="feil"><b><i>F</i> med bare &eacute;n frihetsgrad</b><span><i>F</i>(72) = 15.27
 finnes ikke. ANOVA har alltid to: <b><i>F</i>(2, 72)</b>. Første tall er antall grupper minus
 1, andre er <i>N</i> minus antall grupper.</span></div>
 <div class="feil"><b><i>p</i> = .000</b><span>Finnes ikke. En <i>p</i>-verdi kan bli vilkårlig
@@ -1599,7 +1740,7 @@ utelukker ingenting. Se på effektstørrelsen og gruppestørrelsene: hvor stor k
 vært uten at du oppdaget den?</span></div>
 <div class="feil"><b>Komma som desimaltegn, og innledende null på <i>p</i> og η²</b>
 <span>JASP skriver 0.03; i APA-tekst blir det <b>.03</b> for tall som ikke kan overstige 1
-(<i>p</i>, η², ω²), og <b>8.58</b> med null foran for tall som kan (<i>F</i>, <i>M</i>,
+(<i>p</i>, η², ω²), og <b>15.27</b> med null foran for tall som kan (<i>F</i>, <i>M</i>,
 <i>SD</i>). Aldri komma.</span></div>
 </div>
 </div>
@@ -1685,13 +1826,14 @@ function fTetthet(x,d1,d2){
 function fcrit(d1,d2,a){let lo=0,hi=100;for(let i=0;i<90;i++){const m=(lo+hi)/2;if(pF(m,d1,d2)>a)lo=m;else hi=m;}return (lo+hi)/2;}
 
 /* De tre gruppene forelesningen faktisk analyserer: antall tidligere
-   behandlingsforsoek. Skalaen gaar til 35, saa aksen stopper paa 40. */
+   behandlingsforsoek. Aksen stopper paa 35, fordi 35 ER skalaens maksimum:
+   tomrom over taket later som om det finnes skaarer aa naa der oppe. */
 /* Aksen starter paa 15, ikke 0. Depresjonsskaarene i dette datasettet
    ligger mellom 20 og 35, og med 0 som gulv ble to tredjedeler av figuren
    staaende tom — akkurat den plassen forskjellene mellom gruppene skulle
    hatt. Skalaens tak paa 35 er fortsatt synlig, saa takeffekten kan
    pekes paa. */
-const K=3, LAB=['1 forsøk','2 forsøk','3 eller flere'], YLO=15, YHI=40;
+const K=3, LAB=['1 forsøk','2 forsøk','3 eller flere'], YLO=15, YHI=35;
 const TAK=35;                  // depresjonsskalaens maksimum
 let means=[20,20,20], z=[], N10=20;
 function newResid(){z=[];for(let g=0;g<K;g++){const a=[];for(let i=0;i<60;i++)a.push(rnorm());z.push(a);}}
@@ -1727,12 +1869,11 @@ function drawA(){
   const af=window.__aksefont||13;
   c.fillStyle='#62708a';c.font='bold '+af+'px sans-serif';c.textAlign='right';
   for(let v=YLO;v<=YHI;v+=5)c.fillText(v,x0-6,Y(v)+5);
-  c.save();c.translate(13,18+ph/2);c.rotate(-Math.PI/2);c.textAlign='center';c.fillText('depresjonsskår FØR behandling',0,0);c.restore();
-  // skalaens tak — det er her takeffekten oppstaar
-  c.strokeStyle='#C0392B';c.setLineDash([3,4]);c.lineWidth=1.5;
-  c.beginPath();c.moveTo(x0,Y(35));c.lineTo(x0+pw,Y(35));c.stroke();c.setLineDash([]);
-  c.fillStyle='#C0392B';c.font='bold '+(window.__aksefont||13)+'px sans-serif';
-  c.textAlign='right';c.fillText('skalaens tak = 35',x0+pw-4,Y(35)-6);
+  c.save();c.translate(13,18+ph/2);c.rotate(-Math.PI/2);c.textAlign='center';c.fillText('depresjonsskår FØR behandling (maks 35)',0,0);c.restore();
+  /* Taklinja er fjernet: etter at aksen ble satt til aa slutte paa 35,
+     ER toppen av plottet skalaens tak. En stiplet strek oppaa aksekanten
+     og en etikett som blir klippet mot overkanten, sier ikke noe mer enn
+     aksen allerede sier — det staar i aksetittelen i stedet. */
   // samlet gjennomsnitt
   c.strokeStyle='#8894ad';c.setLineDash([7,5]);c.lineWidth=2;
   c.beginPath();c.moveTo(x0,Y(a.gm));c.lineTo(x0+pw,Y(a.gm));c.stroke();c.setLineDash([]);
@@ -1783,10 +1924,32 @@ function drawA(){
         : 'signalet er '+fmt(a.F,1)+' ganger så stort som støyen')+'</span></div>'+
     '</div>';
   const fc=fcrit(a.d1,a.d2,0.05);
-  $('tbl').innerHTML='<table class="anova"><tr><th>Kilde</th><th>SS</th><th><i>df</i></th><th>MS</th><th><i>F</i></th><th><i>p</i></th><th>η²</th></tr>'+
-    '<tr class="r-sig"><td>Mellom grupper (behandling)</td><td>'+fmt(a.ssB,1)+'</td><td>'+a.d1+'</td><td><b>'+fmt(a.msB,1)+'</b></td><td class="c-tstat">'+fmt(a.F)+'</td><td class="c-p">'+(a.p<0.001?'&lt; .001':fmt(a.p,3).replace('0.','.'))+'</td><td class="c-eff">'+fmt(a.eta)+'</td></tr>'+
-    '<tr class="r-stoy"><td>Innen grupper (residual)</td><td>'+fmt(a.ssW,1)+'</td><td>'+a.d2+'</td><td><b>'+fmt(a.msW,1)+'</b></td><td></td><td></td><td></td></tr>'+
-    '<tr><td>Total</td><td>'+fmt(a.sst,1)+'</td><td>'+(a.Nt-1)+'</td><td></td><td></td><td></td><td></td></tr></table>'+
+  /* Fargekoden gjelder celle for celle, ikke bare rad for rad: SS og MS
+     arver radens betydning (groenn = mellom, roed = innen), mens df og F
+     er marineblaa, p lilla og η² rav — de samme fargene som i broken over
+     og i APA-setningen i fane 8. Totalraden staar graa, fordi den er en
+     sum av begge deler og ikke hoerer til noen av dem. */
+  $('tbl').innerHTML='<table class="anova"><tr><th>Kilde</th><th>SS</th>'+
+    '<th class="k-tstat"><i>df</i></th><th>MS</th><th class="k-tstat"><i>F</i></th>'+
+    '<th class="k-p"><i>p</i></th><th class="k-eff">η²</th></tr>'+
+    '<tr class="r-sig"><td>Mellom grupper (behandling)</td>'+
+      '<td class="c-sig">'+fmt(a.ssB,1)+'</td>'+
+      '<td class="c-tstat">'+a.d1+'</td>'+
+      '<td class="c-sig"><b>'+fmt(a.msB,1)+'</b></td>'+
+      '<td class="c-tstat">'+fmt(a.F)+'</td>'+
+      '<td class="c-p">'+(a.p<0.001?'&lt; .001':fmt(a.p,3).replace('0.','.'))+'</td>'+
+      '<td class="c-eff">'+fmt(a.eta)+'</td></tr>'+
+    '<tr class="r-stoy"><td>Innen grupper (residual)</td>'+
+      '<td class="c-stoy">'+fmt(a.ssW,1)+'</td>'+
+      '<td class="c-tstat">'+a.d2+'</td>'+
+      '<td class="c-stoy"><b>'+fmt(a.msW,1)+'</b></td>'+
+      '<td></td><td></td><td></td></tr>'+
+    '<tr class="r-total"><td>Total</td><td>'+fmt(a.sst,1)+'</td>'+
+      '<td class="c-tstat">'+(a.Nt-1)+'</td><td></td><td></td><td></td><td></td></tr></table>';
+  /* Egen boks, ikke en del av #tbl: teksten peker paa broken, og skal
+     derfor ikke staa paa lerretet foer broken er klikket fram. Ligger den
+     inne i #tbl, mister den .vist hver gang tabellen tegnes om.        */
+  $('tblnote').innerHTML=
     '<p class="tabnote" style="margin-top:6px">De to fete tallene i MS-kolonnen er teller og '+
     'nevner i brøken over. <i>F</i>-kolonnen er resultatet, og den står bare på den '+
     '<span class="k-sig">grønne</span> raden — fordi det er den raden som testes.</p>';
@@ -1851,16 +2014,25 @@ function drawB(a){
 (function(){
   const cv=$('cvA'); let drag=-1;
   const geom=()=>{const w=cv.clientWidth,h=+(cv.dataset.h||330);const x0=44,y0=h-32,pw=w-x0-14,ph=y0-18;return {x0,y0,pw,ph,gw:pw/K};};
-  const pos=e=>{const b=cv.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return [t.clientX-b.left,t.clientY-b.top];};
-  const toVal=py=>{const g=geom();return Math.max(YLO+3,Math.min(YHI-3,YLO+(g.y0-py)/g.ph*(YHI-YLO)));};
+  /* getBoundingClientRect() gir SKALERTE piksler: i forelesningsmodus er
+     bade scenen og simblokken transform:scale-et. geom() regner i
+     ulskalerte layout-piksler. Uten omregningen her landet pekeren et
+     annet sted enn handtaket, og gjennomsnittene ble tunge aa treffe. */
+  const pos=e=>{const b=cv.getBoundingClientRect();const t=e.touches?e.touches[0]:e;
+    const k=(b.width>0&&cv.clientWidth>0)?cv.clientWidth/b.width:1;
+    return [(t.clientX-b.left)*k,(t.clientY-b.top)*k];};
+  /* Oevre grense er taket minus en halv enhet: handtaket skal kunne dras
+     helt opp i takeffekten, men ikke ligge oppaa aksekanten. */
+  const KLEM=v=>Math.max(YLO+2,Math.min(YHI-0.5,v));
+  const toVal=py=>{const g=geom();return KLEM(YLO+(g.y0-py)/g.ph*(YHI-YLO));};
   const near=(px,py)=>{const g=geom();
     for(let i=0;i<K;i++){const cx=g.x0+g.gw*(i+0.5);
       const gm=A?A.gMeans[i]:means[i];
       const y=g.y0-(gm-YLO)/(YHI-YLO)*g.ph;
-      if(Math.abs(px-cx)<g.gw*0.45 && Math.abs(py-y)<26)return i;}
+      if(Math.abs(px-cx)<g.gw*0.48 && Math.abs(py-y)<38)return i;}
     return -1;};
   const setTo=(i,py)=>{const target=toVal(py); const cur=A?A.gMeans[i]:means[i];
-    means[i]=Math.max(YLO+3,Math.min(YHI-3,means[i]+(target-cur)));};
+    means[i]=KLEM(means[i]+(target-cur));};
   const down=e=>{const [px,py]=pos(e);const i=near(px,py);if(i>=0){drag=i;setTo(i,py);drawA();e.preventDefault();}};
   const move=e=>{if(drag<0)return;const [,py]=pos(e);setTo(drag,py);drawA();e.preventDefault();};
   const up=()=>{drag=-1;};
@@ -2149,7 +2321,7 @@ const f=q.get('fane'); if(f&&FANER.indexOf(f)>=0) visFane(f);
 
 /* ---- fane 0: gjenkjenningsøvelsen ---- */
 (function(){
-const SP=[{"q": "«Skiller depresjonsskårene seg mellom pasienter med ulikt antall tidligere behandlinger?»", "ja": true, "f": "Ja. Ett talltutfall, én kategorisk faktor med fem nivåer — enveis-ANOVA."}, {"q": "«Hvilke to av de tre gruppene skiller seg fra hverandre?»", "ja": false, "f": "Nei, ikke ANOVA alene. Omnibustesten <span class='eng'>(omnibus test)</span> sier bare at <i>noen</i> skiller seg. Skal du peke ut hvem, trenger du <b>post hoc</b>-tester med korreksjon — Bonferroni eller Tukey."}, {"q": "«Er behandlingsgruppen bedre enn ventelisten?»", "ja": false, "f": "Nei — to grupper er en <b><i>t</i>-test</b> (Sim 16). Du kan kjøre en ANOVA og få <i>F</i> = <i>t</i>², men <i>t</i>-testen gir deg retningen på kjøpet."}, {"q": "«Er forskjellen mellom gruppene stor nok til å bety noe klinisk?»", "ja": false, "f": "Nei, ikke <i>F</i>. Den vokser med <i>n</i>. Effektstørrelsen <b>η²</b> svarer på dette, og den skal rapporteres ved siden av <i>F</i> og <i>p</i>."}, {"q": "«Endret de samme pasientene seg over tre måletidspunkt?»", "ja": false, "f": "Nei, ikke <i>enveis</i>-ANOVA. Samme personer målt flere ganger krever ANOVA for <b>gjentatte målinger</b> — se Sim 25 og Sim 27."}, {"q": "«Henger antall tidligere behandlinger sammen med depresjonsskåren?»", "ja": false, "f": "Nei. Begge er tallvariabler, så dette er <b>korrelasjon</b> eller <b>regresjon</b>, ikke en gruppesammenligning."}];
+const SP=[{"q": "«Skiller depresjonsskårene seg mellom pasienter med ulikt antall tidligere behandlinger?»", "ja": true, "f": "Ja. Ett tallutfall, én kategorisk faktor med tre nivåer (1 · 2 · 3 eller flere tidligere forsøk) — enveis-ANOVA."}, {"q": "«Hvilke to av de tre gruppene skiller seg fra hverandre?»", "ja": false, "f": "Nei, ikke ANOVA alene. Omnibustesten <span class='eng'>(omnibus test)</span> sier bare at <i>noen</i> skiller seg. Skal du peke ut hvem, trenger du <b>post hoc</b>-tester med korreksjon — Bonferroni eller Tukey."}, {"q": "«Er behandlingsgruppen bedre enn ventelisten?»", "ja": false, "f": "Nei — to grupper er en <b><i>t</i>-test</b> (Sim 16). Du kan kjøre en ANOVA og få <i>F</i> = <i>t</i>², men <i>t</i>-testen gir deg retningen på kjøpet."}, {"q": "«Er forskjellen mellom gruppene stor nok til å bety noe klinisk?»", "ja": false, "f": "Nei, ikke <i>F</i>. Den vokser med <i>n</i>. Effektstørrelsen <b>η²</b> svarer på dette, og den skal rapporteres ved siden av <i>F</i> og <i>p</i>."}, {"q": "«Endret de samme pasientene seg over tre måletidspunkt?»", "ja": false, "f": "Nei, ikke <i>enveis</i>-ANOVA. Samme personer målt flere ganger krever ANOVA for <b>gjentatte målinger</b> — se Sim 25 og Sim 27."}, {"q": "«Henger antall tidligere behandlinger sammen med depresjonsskåren?»", "ja": false, "f": "Nei. Begge er tallvariabler, så dette er <b>korrelasjon</b> eller <b>regresjon</b>, ikke en gruppesammenligning."}];
 const vert=document.getElementById('hvQuiz'); if(!vert) return;
 let svart=0,rett=0;
 SP.forEach(function(s,i){
@@ -2202,12 +2374,15 @@ SP.forEach(function(s,i){
 (function(){
 const cv1=$('cvPH1'), cv2=$('cvPH2'); if(!cv1||!cv2) return;
 
-/* Depression_post etter Tidligere_behandling, N = 75. Samme tall som i
-   ANOVA-tabellen i fane 8. */
-const G=[{navn:'1',      m:23.000, sd:5.486, n:35},
-         {navn:'2',      m:28.200, sd:5.050, n:25},
-         {navn:'3 el. fl', m:27.933, sd:5.345, n:15}];
-const MSW=28.32, DFW=72, Q_TUKEY=3.3844;
+/* Depresjon ved OPPSTART etter Tidligere_behandling, N = 75 — samme tall
+   som i ANOVA-tabellen i fane 8 og i forelesningen. Regnet ut av raadata:
+   MS innen = 13.08, saa standardfeilen til en differanse er
+   sqrt(13.08 * (1/na + 1/nb)). */
+const G=[{navn:'1',      m:28.229, sd:4.875, n:35},
+         {navn:'2',      m:31.040, sd:2.189, n:25},
+         {navn:'3 el. fl', m:34.267, sd:1.163, n:15}];
+const MSW=13.084, DFW=72, Q_TUKEY=3.3844;
+const TAKET=35;                // depresjonsskalaens maksimum
 const PAR=[{navn:'1 mot 2', a:0, b:1},
            {navn:'1 mot 3+', a:0, b:2},
            {navn:'2 mot 3+', a:1, b:2}];
@@ -2229,7 +2404,9 @@ function tegn1(){
   const o=fit(cv1), c=o[0], W=o[1], H=o[2];
   const x0=52, y0=H-44, pw=W-x0-16, ph=y0-24;
   const halv=G.map(function(g){ return Math.sqrt(fcrit(1,g.n-1,0.05))*g.sd/Math.sqrt(g.n); });
-  const topp=Math.max.apply(null,G.map(function(g,i){ return g.m+halv[i]; }))*1.12;
+  /* Aksen stopper paa 35, som er skalaens tak. En akse som fortsetter
+     forbi taket later som om det finnes skaarer aa naa der oppe. */
+  const topp=TAKET;
   const Y=function(v){ return y0-v/topp*ph; };
 
   c.strokeStyle='#d9dee8'; c.fillStyle='#62708a';
@@ -2265,7 +2442,7 @@ function tegn1(){
   });
   c.save(); c.translate(15,(Y(topp)+y0)/2); c.rotate(-Math.PI/2);
   c.fillStyle='#3F4E63'; c.font='13px -apple-system,Segoe UI,Arial'; c.textAlign='center';
-  c.fillText('Depresjonsskår etter behandling',0,0); c.restore();
+  c.fillText('Depresjonsskår ved oppstart (maks 35)',0,0); c.restore();
 
   $('ph1Tall').innerHTML = G.map(function(g,i){
     return '<span class="stat s-sig">'+g.navn+': <i>M</i> = '+f1(g.m)+'</span>'+
@@ -2320,7 +2497,7 @@ function tegn2(){
     c.fillText(r.sig?'utelukker null':'krysser null', xT, y+14);
   });
   c.fillStyle='#3F4E63'; c.font='12.5px -apple-system,Segoe UI,Arial'; c.textAlign='center';
-  c.fillText('forskjell i depresjonsskår', (x0+xT)/2, H-7);
+  c.fillText('forskjell i depresjonsskår ved oppstart', (x0+xT)/2, H-7);
   c.fillStyle='#62708a'; c.font='11.5px -apple-system,Segoe UI,Arial'; c.textAlign='left';
   c.fillText('differanse [95 % KI]', xT, y0-12);
 
@@ -2329,13 +2506,20 @@ function tegn2(){
     '<span class="stat">multiplikator = '+f1(mult,3)+'</span>'+
     '<span class="stat s-ki">intervallene er ±'+f1(mult*Math.sqrt(MSW*(1/G[0].n+1/G[1].n)),2)+' rundt paret 1 mot 2</span>';
   const ant=rad.filter(function(r){ return r.sig; }).length;
+  /* Hvor naer nullinja kommer det knappeste paret? Det er tallet som
+     faktisk endrer seg naar du bytter korreksjon — antall signifikante
+     par gjoer det ikke i dette datasettet, og da maa figuren si hva den
+     ellers viser, i stedet for aa late som ingenting skjedde. */
+  const margin=Math.min.apply(null,rad.map(function(r){
+    return Math.min(Math.abs(r.lo),Math.abs(r.hi)); }));
   $('ph2Note').innerHTML =
     '<b>'+k.navn+'</b> kontrollerer for '+k.hva+'. Med den utelukker <b>'+ant+
-    ' av 3</b> par null'+(ant===2
-      ? ' — begge involverer gruppen med bare <b>ett</b> tidligere forløp. Paret 2 mot 3+ '+
-        'ligger midt på nullinja, og det er en del av funnet: det er ikke en jevn stigning '+
-        'med antall behandlinger, det er et <b>skille mellom den første behandlingen og alle andre</b>.'
-      : '.');
+    ' av 3</b> par null'+(ant===3
+      ? ' — hele stigningen overlever, og hvert steg oppover er en ekte forskjell. '+
+        'Se likevel på <b>2 mot 3+</b>: det knappeste intervallet har bare <b>'+f1(margin)+
+        '</b> poeng igjen til nullinja. Bytt til Scheff&eacute; og se marginen krympe. '+
+        'Med noen få deltakere mindre hadde valget av korreksjon avgjort konklusjonen.'
+      : ' — det knappeste intervallet har '+f1(margin)+' poeng igjen til nullinja.');
 }
 
 function tegn(){ tegn1(); tegn2(); }
@@ -2373,29 +2557,29 @@ tegn();
 (function(){
 const boks=$('rapSetn'); if(!boks) return;
 const BITER=[
- ['rb-pastand','Depresjonsskåren etter behandling skilte seg mellom pasienter med ulikt antall tidligere behandlingsforløp',
+ ['rb-pastand','Depresjonsskåren ved oppstart skilte seg mellom pasienter med ulikt antall tidligere behandlingsforsøk',
   'Påstanden','Funnet på norsk, før noen parentes. En leser som bare leser denne biten, skal ha fått med seg hva du fant.'],
- ['rb-test',', <i>F</i>(2, 72) = 8.58',
+ ['rb-test',', <i>F</i>(2, 72) = 15.27',
   'Testobservatoren','Signal delt på støy — og begge frihetsgradene. 2 er antall grupper minus 1; 72 er N minus antall grupper.'],
  ['rb-p',', <i>p</i> &lt; .001',
   '<i>p</i>-verdien','Uten innledende null, og aldri som .000. En p-verdi kan bli liten, men ikke null.'],
- ['rb-eff',', η² = .19',
-  'Effektstørrelsen','19 % av variasjonen i depresjonsskår følger gruppeinndelingen. Dette er tallet F ikke kan gi deg, fordi F vokser med n.'],
+ ['rb-eff',', η² = .30',
+  'Effektstørrelsen','30 % av variasjonen i depresjonsskår ved oppstart følger gruppeinndelingen. Dette er tallet F ikke kan gi deg, fordi F vokser med n.'],
  ['rb-pastand','. ',''  ,''],
  ['rb-ph','Tukey-korrigerte sammenligninger viste',
   'Post hoc, med navn','Omnibus sa at noen skiller seg; her sier du hvem. Korreksjonen må navngis — samme data gir ulike p med Tukey og Scheffé.'],
- ['rb-pastand',' at pasienter med &eacute;tt tidligere forløp ',''  ,''],
- ['rb-desk','(<i>M</i> = 23.00, <i>SD</i> = 5.49)',
+ ['rb-pastand',' at pasienter med &eacute;tt tidligere forsøk ',''  ,''],
+ ['rb-desk','(<i>M</i> = 28.23, <i>SD</i> = 4.88)',
   'Gruppetallene','Gjennomsnitt og spredning for hver gruppe du nevner. Uten dem kan leseren ikke se hvilken vei forskjellen går.'],
  ['rb-pastand',' skåret lavere enn både de med to ',''  ,''],
- ['rb-desk','(<i>M</i> = 28.20, <i>SD</i> = 5.05; differanse = &minus;5.20, 95 % KI [&minus;8.53, &minus;1.87], <i>p</i> = .001)',
+ ['rb-desk','(<i>M</i> = 31.04, <i>SD</i> = 2.19; differanse = &minus;2.81, 95 % KI [&minus;5.08, &minus;0.54], <i>p</i> = .011)',
   'Differansen med intervall','Selve forskjellen i skalaens egne enheter, og hvor presist den er målt. Krysser intervallet null, er paret ikke signifikant.'],
  ['rb-pastand',' og de med tre eller flere ',''  ,''],
- ['rb-desk','(<i>M</i> = 27.93, <i>SD</i> = 5.35; differanse = &minus;4.93, 95 % KI [&minus;8.86, &minus;1.00], <i>p</i> = .010)',
-  'Og det andre paret','Nesten samme differanse som forrige par, men en p ti ganger større. Grunnen er n = 15, ikke effekten.'],
+ ['rb-desk','(<i>M</i> = 34.27, <i>SD</i> = 1.16; differanse = &minus;6.04, 95 % KI [&minus;8.71, &minus;3.37], <i>p</i> &lt; .001)',
+  'Og det andre paret','Dobbelt så stor differanse som forrige par, og en p som er mye mindre. Merk at retningen er den samme hele veien: skåren stiger jevnt.'],
  ['rb-pastand','. ',''  ,''],
- ['rb-nullpar','De to sistnevnte gruppene skilte seg ikke fra hverandre (<i>p</i> = .99)',
-  'Paret som ikke skilte seg','Hører med. Utelater du det, ser mønsteret ut som en jevn stigning — og det er det ikke.'],
+ ['rb-ph','Også de to sistnevnte skilte seg fra hverandre (differanse = &minus;3.23, 95 % KI [&minus;6.05, &minus;0.40], <i>p</i> = .021)',
+  'Det tredje paret','Alle tre parene hører med, også når alle er signifikante. Med tre grupper er det tre par, og leseren skal slippe å lure på hva som skjedde med det siste.'],
  ['rb-pastand','.',''  ,'']
 ];
 function bygg(){
@@ -2471,6 +2655,28 @@ const BLOKKFANE = {
   'blokk-dra':'sim', 'blokk-tabell':'sim', 'blokk-ss':'sim', 'blokk-msbar':'sim',
   'blokk-nullsim':'null', 'blokk-fdf':'null'
 };
+
+/* Undervisernotatene er det eneste i appen som ikke er ment for
+   studentene: de sier hvilket alternativ som lurer flest, hva du ikke skal
+   lese hoeyt, og naar du skal holde igjen. Appen er publisert, saa dette er
+   ingen sperre i sikkerhetsforstand — den som leser kildekoden, finner dem
+   uansett. Den holder dem borte fra lerretet og fra DOM-en, og det er det
+   den er ment aa gjoere.
+
+   Aapne  ?rolle=underviser  en gang, saa huskes det i nettleseren din.
+   Aapne  ?rolle=student     for aa glemme det igjen (delt maskin).      */
+const ROLLENOKKEL='psy300_rolle';
+const UNDERVISER=(function(){
+  const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+
+                              (location.hash||'').replace(/^#/,''));
+  const r=q.get('rolle');
+  try{
+    if(r==='underviser'){ localStorage.setItem(ROLLENOKKEL,'underviser'); return true; }
+    if(r==='student'){ localStorage.removeItem(ROLLENOKKEL); return false; }
+    return localStorage.getItem(ROLLENOKKEL)==='underviser';
+  }catch(e){ return r==='underviser'; }
+})();
+window.__erUnderviser=function(){ return UNDERVISER; };
 
 const S = [];
 function slide(o){ S.push(o); }
@@ -2713,6 +2919,21 @@ slide({t:'SIM · ANOVA-tabellen', blokk:'blokk-tabell', html:
  '<p class="lead">Nøyaktig de samme tallene som figuren. Sjekk selv: MS = SS/<i>df</i> i hver '+
  'rad, og <i>F</i> er den ene MS-en delt på den andre.</p>',
  notat:'Be dem regne 2.352 ÷ 0.586 med kalkulator en gang. Da slipper de å tro på det.'});
+
+slide({t:'SIM · figuren og JASP-tabellen sammen', blokk:['blokk-dra','blokk-tabell'], html:
+ '<h1>Den samme simuleringen, lest som JASP ville skrevet den ut</h1>'+
+ '<p class="lead">Øverst: figuren du nettopp dro i. Under: <b>nøyaktig de samme tallene</b>, '+
+ 'satt opp slik programmet gjør det. <b>Dra et gjennomsnitt</b> og se begge deler flytte seg '+
+ 'samtidig &mdash; tabellen er ikke en ny analyse, den er den samme figuren skrevet med tall.</p>',
+ /* Brøken står på slide 15, og to ganger på rad gjør sliden urolig: her er
+    poenget figuren MOT tabellen, ikke utregningen mellom dem. */
+ forbered:function(){ sett('n',25); sett('sd',5);
+   const b=$('brokA'); if(b) b.classList.add('skjul'); },
+ notat:'Dette er broen mellom bildet og utskriften, og den er verdt to minutter. Dra gruppe 3 '+
+       'oppover mens de ser på tabellen: SS mellom vokser, SS innen står stille, F stiger, p '+
+       'faller, η² vokser. Spør hvilken KOLONNE som flyttet seg først. Dra så SD-glideren i '+
+       'stedet, og still det samme spørsmålet — nå er det nevneren. Poenget er at ingen av '+
+       'tallene i utskriften er nye: alle sammen er avlesninger av det samme bildet.'});
 
 slide({t:'AVSTEMNING S2', klasse:'harqr', qr:'F5-A3', html:
  '<h1>Hvis alle tre gruppene er helt like i populasjonen &mdash; hva blir <i>F</i>?</h1>'+
@@ -3147,7 +3368,7 @@ slide({t:'Hva Welch gjør med svaret', klasse:'tett', html:
  '<div class="jasp">'+
  '<p class="tit">Test of Equality of Variances (Levene\'s)</p>'+
  '<table><tr><th class="venstre"></th><th>F</th><th>df1</th><th>df2</th><th>p</th></tr>'+
- '<tr><td class="venstre">Depresjon_pre</td><td class="c-tstat">16.01</td>'+
+ '<tr><td class="venstre">Depression</td><td class="c-tstat">16.01</td>'+
  '<td class="c-tstat">2</td><td class="c-tstat">72</td>'+
  '<td class="c-p">&lt; .001</td></tr></table></div>'+
  '<table class="tt" style="margin-top:12px">'+
@@ -3186,7 +3407,7 @@ slide({t:'Nullfunnet', klasse:'tett', html:
 slide({t:'Rapporteringsmalen', klasse:'tett', html:
  '<h1>Fra JASP-tabellen til setningen &mdash; tall for tall</h1>'+
  '<div class="jasp">'+
- '<p class="tit">ANOVA &ndash; Depresjon_pre</p>'+
+ '<p class="tit">ANOVA &ndash; Depression</p>'+
  '<table><tr><th class="venstre">Cases</th><th>Sum of Squares</th><th>df</th>'+
  '<th>Mean Square</th><th>F</th><th>p</th><th>η²</th></tr>'+
  '<tr><td class="venstre">Tidligere_behandling</td><td class="c-sig">399.5</td>'+
@@ -3271,7 +3492,7 @@ slide({t:'BONUS · ANOVA er en regresjon', klasse:'bonus', html:
  'Til venstre ANOVA, til høyre den samme modellen kjørt som regresjon.</p>'+
  '<div class="todelt" style="gap:16px">'+
  '<div><div class="jasp">'+
- '<p class="tit">ANOVA &ndash; Depresjon_pre</p>'+
+ '<p class="tit">ANOVA &ndash; Depression</p>'+
  '<table><tr><th class="venstre">Cases</th><th>Sum of Squares</th><th>df</th>'+
  '<th>Mean Square</th><th>F</th><th>p</th><th>η²</th></tr>'+
  '<tr><td class="venstre">Tidligere_behandling</td><td class="c-sig">399.5</td>'+
@@ -3377,15 +3598,15 @@ slide({t:'Fasit SLUTTSPØRSMÅL', klasse:'fasitsvar', html:
 
 slide({t:'Hele forelesningen på én linje', klasse:'stort-tall', html:
  '<h1>Fire spørsmål, fire svar</h1>'+
- '<p class="lead" style="max-width:900px;margin:0 auto 6px">Du startet dagen med å ville '+
- 'sammenligne gruppene <b>to og to</b>. Det var fella. Dette er hva du gjør i stedet:</p>'+
+ '<p class="lead" style="font-size:21px;margin:0 0 4px">Fella var å ta gruppene '+
+ '<b>to og to</b>. Dette er hva du gjør i stedet:</p>'+
  '<div class="oppsum">'+
  '<div class="rad avslor" data-trinn="1"><span class="hvem k-tstat"><i>F</i></span>'+
- '<span class="hva">sier at <b>noen</b> skiller seg &mdash; i <b>én</b> test, så feilraten '+
- 'holder seg på 5 %</span></div>'+
+ '<span class="hva">sier at <b>noen</b> skiller seg'+
+ '<span class="n"> &mdash; i <b>én</b> test, ikke tre parvise</span></span></div>'+
  '<div class="rad avslor" data-trinn="2"><span class="hvem k-ki">Post hoc</span>'+
- '<span class="hva">sier <b>hvem</b> &mdash; med korreksjon, så de parvise '+
- 'sammenligningene blir lovlige</span></div>'+
+ '<span class="hva">sier <b>hvem</b>'+
+ '<span class="n"> &mdash; korrigert, så parvise tester blir lovlige</span></span></div>'+
  '<div class="rad avslor" data-trinn="3"><span class="hvem k-eff">η²</span>'+
  '<span class="hva">sier om det <b>betyr noe</b></span></div>'+
  '<div class="rad avslor" data-trinn="4"><span class="hvem k-sig">Gjennomsnittene</span>'+
@@ -3433,7 +3654,9 @@ let avsloert=0;       // hvor mange .avslor som er klikket fram
    neste slide — frosne kurver, et trukket utvalg. Hver av dem melder
    inn sin egen nullstilling; motoren kaller den naar blokka laanes ut. */
 const BLOKKNULL = {
-  'blokk-nullsim': function(){ if(window.__anovaNullstill) window.__anovaNullstill(); }
+  'blokk-nullsim': function(){ if(window.__anovaNullstill) window.__anovaNullstill(); },
+  /* Slide 16 tar bort brøken; alle andre skal ha den tilbake. */
+  'blokk-tabell': function(){ const b=$('brokA'); if(b) b.classList.remove('skjul'); }
 };
 /* Testharnessen maa kunne kjore den EKTE nullstillingen. */
 window.__blokkNull=function(b){ const f=BLOKKNULL[b]; if(f) f(); };
@@ -3449,6 +3672,11 @@ function lever(){
     if(!node) return;
     /* nullstill tilpassningen, ellers følger den med tilbake til utforskeren */
     node.style.transform=''; node.style.width='';
+    /* ... og det en slide eventuelt har skjult inne i blokka. Uten dette
+       ble brøken borte i fane 2 hvis du forlot forelesningen på slide 16. */
+    node.classList.remove('skjul');
+    [].slice.call(node.querySelectorAll('.skjul'))
+      .forEach(function(e){ e.classList.remove('skjul'); });
     if(h&&h.forelder) h.forelder.insertBefore(node,h.neste);
   });
   laant=[];
@@ -3478,8 +3706,8 @@ function skaler(){
    til den passer — og gjøres tilsvarende bredere først, så figuren fyller
    sliden i full bredde og canvas tegnes på nytt i riktig oppløsning.
    Uten dette forsvant nedre halvdel av figuren og alle tallene under den. */
-function tilpassBlokk(tegnPaaNytt){
-  const vert=scene.querySelector('.simvert'); if(!vert) return;
+function tilpassBlokk(tegnPaaNytt, vertInn){
+  const vert=vertInn||scene.querySelector('.simvert'); if(!vert) return;
   const blokk=vert.firstElementChild; if(!blokk) return;
   blokk.style.transform=''; blokk.style.width='';
   const H=vert.clientHeight, B=vert.clientWidth;
@@ -3502,14 +3730,14 @@ function tilpassBlokk(tegnPaaNytt){
    bytter slide — funksjonen fantes, men ingenting paa skjermen sa fra. */
 function trinnteller(){
   const e=$('fTrinn'); if(!e) return;
-  const alle=scene.querySelectorAll('.avslor').length;
+  const alle=scene.querySelectorAll('.avslor:not(.skjul)').length;
   if(!alle){ e.classList.remove('vis'); e.textContent=''; return; }
-  const vist=scene.querySelectorAll('.avslor.vist').length;
+  const vist=scene.querySelectorAll('.avslor.vist:not(.skjul)').length;
   e.classList.add('vis');
   e.textContent='trinn '+vist+' / '+alle;
 }
 function fram(){
-  const skjult=[...scene.querySelectorAll('.avslor:not(.vist)')];
+  const skjult=[...scene.querySelectorAll('.avslor:not(.vist):not(.skjul)')];
   if(!skjult.length) return false;
   /* Elementer merket med samme data-trinn kommer fram sammen. En figur og
      tekstboksen som forklarer den hoerer til samme klikk, selv om de staar
@@ -3541,7 +3769,7 @@ function gjor(kommando){
    og bytter foerst slide naar det ikke er noe igjen aa ta bort. Da kan du
    gaa tilbake og vise et poeng en gang til uten aa miste resten. */
 function tilbake(){
-  const vist=[...scene.querySelectorAll('.avslor.vist')];
+  const vist=[...scene.querySelectorAll('.avslor.vist:not(.skjul)')];
   if(!vist.length) return false;
   const siste=vist[vist.length-1], t=siste.dataset.trinn;
   (t?vist.filter(e=>e.dataset.trinn===t):[siste])
@@ -3571,8 +3799,14 @@ function settSlide(i){
   const blokker = s.blokk ? (Array.isArray(s.blokk)?s.blokk:[s.blokk]) : [];
   if(blokker.length){
     const vert=document.createElement('div'); vert.className='simvert';
+    /* Alle laante blokker inn i EN innpakning. tilpassBlokk() skalerer
+       vert.firstElementChild — uten pakka ble bare den foerste blokka
+       maalt og skalert, og blokk nummer to havnet utenfor .simvert
+       (overflow:hidden) og var rett og slett borte fra lerretet. */
+    const pakke=document.createElement('div'); pakke.className='simpakke';
+    vert.appendChild(pakke);
     d.appendChild(vert);
-    blokker.forEach(function(b){ laan(b,vert); });
+    blokker.forEach(function(b){ laan(b,pakke); });
   }
   skaler();
   /* Nullstill for forbered(): sliden skal kunne slaa noe paa etterpaa,
@@ -3603,7 +3837,10 @@ function settSlide(i){
   trinnteller();
   $('fTeller').textContent=(n+1)+' / '+S.length;
   fbar.style.width=((n+1)/S.length*100)+'%';
-  fnotat.innerHTML=s.notat?('<b>'+s.t+':</b> '+(window.NOTATTEKST?window.NOTATTEKST(n,s.notat):s.notat)):'<b>'+s.t+'</b>';
+  /* Ikke bare skjult med CSS: for en student legges teksten aldri inn. */
+  fnotat.innerHTML=(UNDERVISER&&s.notat)
+    ? '<b>'+s.t+':</b> '+(window.NOTATTEKST?window.NOTATTEKST(n,s.notat):s.notat)
+    : '<b>'+s.t+'</b>';
   try{ history.replaceState(null,'','?modus=forelesning#slide='+(n+1)); }catch(e){}
 }
 function byggOversikt(){
@@ -3839,7 +4076,18 @@ document.addEventListener('keydown',function(e){
       /* Vis salens svar. Gjor ingenting paa slides uten prediksjons-ID. */
       AVSTEMNING.veksle(); break;
     case 'r': case 'R': AVSTEMNING.hentNa(); break;
-    case 'n': case 'N': document.body.classList.toggle('notat'); break;
+    case 'n': case 'N':
+      /* Sier fra hva som mangler i stedet for aa gjoere ingenting — ellers
+         staar du foran salen og lurer paa om tasten er oede. */
+      if(!UNDERVISER){
+        document.body.classList.add('notat');
+        fnotat.innerHTML='<b>Notatene er for underviser.</b> '+
+          'Åpne appen én gang med <code>?rolle=underviser</code> i adressen, '+
+          'så huskes det i denne nettleseren.';
+        setTimeout(function(){ document.body.classList.remove('notat'); },4000);
+        break;
+      }
+      document.body.classList.toggle('notat'); break;
     case 'f': case 'F':
       if(!document.fullscreenElement){ document.documentElement.requestFullscreen&&
         document.documentElement.requestFullscreen(); }
@@ -3854,6 +4102,129 @@ document.addEventListener('keydown',function(e){
 /* eksporter for oppstartsblokken nederst */
 window.__startForelesning=start;
 window.__F4slides=S;          /* for testharnessen og spraaklaget */
+/* ===================== TRYKKMODUS =====================================
+   Bygger hele dekket som statiske ark, ett per slide, med alle klikk-trinn
+   utfoldet. Figurene tegnes for hvert ark og fryses deretter til <img>,
+   fordi appen bare har EN kopi av hver simuleringsblokk: den laanes inn,
+   tegnes, kopieres — og leveres tilbake foer neste ark laaner den.
+   utenFasit=true hopper over fasitslidene, saa studentene kan faa heftet
+   foer forelesningen uten aa faa svarene med paa kjoepet.              */
+function frysKopi(pakke){
+  const orig=[].slice.call(pakke.querySelectorAll('canvas'));
+  const klon=pakke.cloneNode(true);
+  const kopi=[].slice.call(klon.querySelectorAll('canvas'));
+  kopi.forEach(function(c,i){
+    const o=orig[i]; if(!o) return;
+    const img=document.createElement('img');
+    try{ img.src=o.toDataURL('image/png'); }catch(e){ return; }
+    img.style.width='100%';
+    img.style.height=(o.style.height||(o.clientHeight+'px'));
+    img.style.display='block';
+    c.parentNode.replaceChild(img,c);
+  });
+  return klon;
+}
+let trykkark=null;
+/* Folder ut alt som ellers kommer med et klikk, og utfoerer gjor-kommandoen
+   som hoerer til trinnet. Skjulte trinn hoppes over. */
+function folgUt(d){
+  [].slice.call(d.querySelectorAll('.avslor:not(.skjul)')).forEach(function(e){
+    e.classList.add('vist');
+    try{ gjor(e.dataset.gjor); }catch(f){}
+  });
+}
+function trykk(utenFasit){
+  lever();
+  document.body.classList.remove('fmodus','oversikt','notat');
+  document.body.classList.add('trykk');
+  window.__aksefont=19;
+  /* Egen referanse, ikke getElementById: arket er laget her, og en ny
+     kjoering skal bytte ut det forrige — ikke legge seg under det. */
+  const gammelt=trykkark||document.getElementById('trykkark');
+  if(gammelt&&gammelt.remove) gammelt.remove();
+  const ark=document.createElement('div'); ark.id='trykkark'; trykkark=ark;
+  const hode=document.createElement('div'); hode.className='trykkhode';
+  hode.innerHTML='<b>Trykkmodus.</b> Alle slidene ligger under hverandre, ferdig '+
+    'utfoldet. Skriv ut med <b>Cmd/Ctrl + P</b> og velg <b>Lagre som PDF</b> — '+
+    'A4 liggende, og slå på bakgrunnsgrafikk. '+
+    (utenFasit ? '<b>Fasitslidene er utelatt</b> (studentversjon).'
+               : 'Fasitslidene er med. Vil du ha versjonen uten, legg til '+
+                 '<code>&amp;fasit=nei</code> i adressen.')+
+    ' <a href="'+location.pathname+'" style="color:#2E5496;font-weight:700">'+
+    'Tilbake til appen</a>';
+  ark.appendChild(hode);
+  document.body.appendChild(ark);
+
+  let feilet=0;
+  S.forEach(function(sl,i){
+    const erFasit=/^Fasit/.test(sl.t||'')||/fasitsvar/.test(sl.klasse||'');
+    if(utenFasit&&erFasit) return;
+
+    const side=document.createElement('div'); side.className='trykkside';
+    const skala=document.createElement('div'); skala.className='skala';
+    side.appendChild(skala); ark.appendChild(side);
+
+    const nr=document.createElement('div');
+    nr.className='trykknr'; nr.textContent='Slide '+(i+1);
+    side.appendChild(nr);
+
+    /* Én slide som kaster skal koste én slide — ikke resten av dekket.
+       Uten dette stoppet hele arket ved den første feilen, og det så ut
+       som om forelesningen var 15 slides lang. */
+    try{
+      const d=document.createElement('div');
+      d.className='slide '+(sl.klasse||'')+(sl.blokk?' tett':'');
+      d.innerHTML=(sl.qr&&QR[sl.qr]
+          ? '<div class="qrboks"><img alt="QR til avstemningen" src="'+QR[sl.qr]+'">'+
+            '<div class="txt">Svar på mobilen</div></div>' : '')+
+        (window.SLIDETEKST?window.SLIDETEKST(i,sl.html):sl.html);
+      skala.appendChild(d);
+
+      const blokker = sl.blokk ? (Array.isArray(sl.blokk)?sl.blokk:[sl.blokk]) : [];
+      if(blokker.length){
+        const vert=document.createElement('div'); vert.className='simvert';
+        const pakke=document.createElement('div'); pakke.className='simpakke';
+        vert.appendChild(pakke); d.appendChild(vert);
+        blokker.forEach(function(b){ laan(b,pakke); });
+        blokker.forEach(function(b){ if(BLOKKNULL[b]){ try{ BLOKKNULL[b](); }catch(e){} } });
+        if(sl.forbered){ try{ sl.forbered(); }catch(e){} }
+        /* Klikk-trinnene FØR figuren fryses: et trinn som «Sett til de ekte
+           tallene» endrer jo nettopp det figuren skal vise. Gjorde vi det
+           etterpå, sto boksen og sa ett tall mens figuren viste et annet. */
+        folgUt(d);
+        const fns=[];
+        blokker.forEach(function(b){
+          const fane=BLOKKFANE[b], t=(fane&&TEGN[fane])||null;
+          if(t && fns.indexOf(t)<0) fns.push(t);
+        });
+        const tegn=function(){ fns.forEach(function(t){ t(); }); };
+        tegn();
+        void vert.offsetHeight;              // tving fram layout foer maalingen
+        tilpassBlokk(tegn, vert);
+        const klon=frysKopi(pakke);
+        lever();                             // originalene hjem foer neste ark
+        pakke.remove();
+        vert.appendChild(klon);
+      } else {
+        if(sl.forbered){ try{ sl.forbered(); }catch(e){} }
+        folgUt(d);
+      }
+    }catch(e){
+      feilet++;
+      lever();                               // aldri la en blokk bli liggende igjen
+      const boks=document.createElement('div');
+      boks.style.cssText='position:absolute;left:40px;right:40px;bottom:40px;'+
+        'padding:14px 16px;background:#fdecea;border-left:5px solid #C0392B;'+
+        'font:600 15px/1.5 sans-serif;color:#8c2b20';
+      boks.textContent='Slide '+(i+1)+' kunne ikke bygges: '+(e && e.message || e);
+      skala.appendChild(boks);
+      if(window.console) console.error('trykkmodus · slide '+(i+1), e);
+    }
+  });
+  if(feilet && window.console) console.error('trykkmodus: '+feilet+' slide(r) feilet');
+  window.scrollTo(0,0);
+}
+window.__trykkModus=trykk;
 window.__avsluttForelesning=avslutt;
 })();
 
@@ -3883,6 +4254,9 @@ window.__avsluttForelesning=avslutt;
   const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+
                               (location.hash||'').replace(/^#/,''));
   if(q.get('modus')==='forelesning' && window.__startForelesning){ window.__startForelesning(); }
+  if(q.get('modus')==='trykk' && window.__trykkModus){
+    window.__trykkModus(q.get('fasit')==='nei');
+  }
 })();
 
 </script>

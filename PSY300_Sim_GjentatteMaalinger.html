@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY300 · Sim 25 — Kraften i innen-person-design</title>
+<style>
+:root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+/* =====================================================================
+   PSY300 FARGEKODE — én betydning per farge, den samme i alle appene.
+   Poenget er at en student som har sett grønt over rødt i figuren, skal
+   kjenne igjen de samme fargene i JASP-tabellen og i den ferdige
+   setningen — og dermed se hvor hvert tall kommer fra.
+     grønn   variasjon MELLOM grupper · signal · det vi leter etter
+     rød     variasjon INNEN grupper · støy · residual
+     marine  teststatistikken (F, t, χ²) og frihetsgradene
+     lilla   p-verdien
+     rav     effektstørrelsen (η², ω², d, R²)
+     turkis  konfidensintervallet
+   ===================================================================== */
+:root{
+  --sig:#1E7A3C;    --sig-bg:#E7F4EA;    --sig-kant:#A9D6B6;
+  --stoy:#C0392B;   --stoy-bg:#FBEDEB;   --stoy-kant:#EEC3BD;
+  --tstat:#1F3864;  --tstat-bg:#E7ECF6;  --tstat-kant:#B9C8E2;
+  --pverdi:#7B3FA0; --pverdi-bg:#F3EAF8; --pverdi-kant:#D3BCE4;
+  --eff:#B26A00;    --eff-bg:#FDF2E2;    --eff-kant:#EBD0A6;
+  --ki:#0F6E7B;     --ki-bg:#E4F1F3;     --ki-kant:#AAD3D9;
+}
+.k-sig{color:var(--sig);font-weight:600}
+.k-stoy{color:var(--stoy);font-weight:600}
+.k-tstat{color:var(--tstat);font-weight:700}
+.k-p{color:var(--pverdi);font-weight:600}
+.k-eff{color:var(--eff);font-weight:600}
+.k-ki{color:var(--ki);font-weight:600}
+/* markert variant — brukes der et tall skal kunne spores fra tabell til setning */
+.m-sig,.m-stoy,.m-tstat,.m-p,.m-eff,.m-ki{border-radius:5px;padding:1px 5px;font-weight:600}
+.m-sig{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+.m-stoy{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+.m-tstat{background:var(--tstat-bg);color:var(--tstat);box-shadow:inset 0 0 0 1px var(--tstat-kant)}
+.m-p{background:var(--pverdi-bg);color:var(--pverdi);box-shadow:inset 0 0 0 1px var(--pverdi-kant)}
+.m-eff{background:var(--eff-bg);color:var(--eff);box-shadow:inset 0 0 0 1px var(--eff-kant)}
+.m-ki{background:var(--ki-bg);color:var(--ki);box-shadow:inset 0 0 0 1px var(--ki-kant)}
+
+/* ---- brøkfiguren: teller over streken, nevner under ---- */
+.brokfig{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 18px;
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 14px;margin:12px 0}
+.brokfig .brk{text-align:center;min-width:250px;flex:0 1 auto}
+.brokfig .tell,.brokfig .nevn{border-radius:8px;padding:8px 13px;font-size:15.5px;line-height:1.28}
+.brokfig .tell{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+.brokfig .nevn{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+.brokfig .strek{height:3px;background:#16203A;border-radius:2px;margin:6px 0}
+.brokfig .tall{display:block;font-size:23px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+.brokfig .lik{font-size:27px;color:#16203A;font-weight:600}
+.brokfig .res{font-size:17px;color:var(--tstat);text-align:center;line-height:1.3}
+.brokfig .res b{display:block;font-size:31px;font-weight:700;font-variant-numeric:tabular-nums}
+.brokfig .res .n{display:block;font-size:13.5px;color:#5C6A80;font-weight:400;margin-top:3px}
+.brokfig.smal .brk{min-width:210px}
+.brokfig.smal .tall{font-size:19px}
+.brokfig.smal .res b{font-size:25px}
+
+.stat.s-sig{background:var(--sig-bg);color:var(--sig)}
+.stat.s-stoy{background:var(--stoy-bg);color:var(--stoy)}
+.stat.s-tstat{background:var(--tstat-bg);color:var(--tstat)}
+.stat.s-p{background:var(--pverdi-bg);color:var(--pverdi)}
+.stat.s-eff{background:var(--eff-bg);color:var(--eff)}
+table.anova td.c-sig,table.tt td.c-sig{color:var(--sig);font-weight:700}
+table.anova td.c-stoy,table.tt td.c-stoy{color:var(--stoy);font-weight:700}
+table.anova td.c-tstat,table.tt td.c-tstat{color:var(--tstat);font-weight:700}
+table.anova td.c-p,table.tt td.c-p{color:var(--pverdi);font-weight:700}
+table.anova td.c-eff,table.tt td.c-eff{color:var(--eff);font-weight:700}
+/* ---- fargeforklaring ---- */
+.fargeliste{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:8px;margin-top:8px}
+.fargeliste div{border-radius:8px;padding:7px 11px;font-size:15px;line-height:1.35}
+.fargeliste b{display:block;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+
+/* ---- ANOVA-tabellen med fargede rader ---- */
+table.anova tr.r-sig td,table.tt tr.r-sig td{background:var(--sig-bg)}
+table.anova tr.r-stoy td,table.tt tr.r-stoy td{background:var(--stoy-bg)}
+table.anova tr.r-total td,table.tt tr.r-total td{color:#5F6A7E}
+table.anova tr.r-total td:first-child{font-weight:700}
+table.anova tr.r-sig td:first-child{color:var(--sig);font-weight:700}
+table.anova tr.r-stoy td:first-child{color:var(--stoy);font-weight:700}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:20.5px;margin:0;font-weight:700}
+header p{margin:2px 0 0;font-size:15.5px;opacity:.85}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+h2{color:var(--navy);margin:.2em 0 .5em;font-size:19px}
+button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+.btn{background:var(--blue);color:#fff}.btn:hover{background:var(--navy)}
+.btn2{background:#eef1f7;color:var(--navy)}.btn2:hover{background:var(--light)}
+.muted{color:#62708a;font-size:16px}
+canvas{width:100%;display:block}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+.stat{display:inline-block;background:var(--light);color:var(--navy);border-radius:8px;padding:3px 10px;font-size:15.5px;font-weight:600;margin:3px 4px 3px 0;font-variant-numeric:tabular-nums}
+.stat.red{background:#fbeceb;color:var(--red)}
+.stat.green{background:#eaf6ea;color:var(--green)}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}
+.sl label{min-width:230px;font-weight:600;font-size:16px;color:var(--navy)}
+.sl input[type=range]{flex:1}
+.sl output{min-width:60px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--navy);font-size:17px}
+.note{background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px;margin-top:10px}
+.formula{background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:17px;font-variant-numeric:tabular-nums;margin-top:8px}
+.gloss{font-size:15.5px}
+.gloss b{color:var(--navy)}
+.keybox{background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:12px 14px;margin:14px 0;font-size:16.5px}
+.keybox .lbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:4px}
+
+/* ===== Presentasjonsmodus (P) — for lerret under forelesning =============== */
+.presbtn{position:fixed;right:12px;bottom:12px;z-index:50;background:#fff;color:var(--navy);
+  border:1px solid var(--line);border-radius:20px;padding:7px 14px;font-size:14px;font-weight:700;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer;opacity:.75}
+.presbtn:hover{opacity:1}
+body.pres header{padding:6px 14px}
+body.pres header h1{font-size:17px}
+body.pres header p{display:none}
+body.pres .wrap{max-width:1240px;padding:6px 14px}
+body.pres .card{padding:10px 12px;margin:8px 0}
+body.pres h2{font-size:16.5px;margin:.1em 0 .3em}
+body.pres .muted:not([id]){display:none}
+body.pres .card.docs{display:none}
+body.pres .stat{font-size:16.5px}
+body.pres .sl{margin:4px 0}
+body.pres .sl label{font-size:15px;min-width:210px}
+body.pres .note{padding:8px 11px;margin-top:7px}
+body.pres .keybox{font-size:18px}
+
+.fane{background:#fff;border:1px solid #d9dee8;border-radius:9px;padding:7px 13px;font-size:15px;
+  font-family:inherit;cursor:pointer;color:#1F3864}
+.fane.on{background:#1F3864;color:#fff;border-color:#1F3864;font-weight:700}
+.hide{display:none}
+
+/* ===== Fane 0 «Hvorfor …?» — felles mal for metodeappene ================= */
+.hvbig{font-size:20px;line-height:1.45;color:#1F3864;font-weight:600;margin:2px 0 10px}
+.hvgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+@media(max-width:760px){.hvgrid{grid-template-columns:1fr}}
+.hvkort{border-radius:10px;padding:11px 13px;font-size:16px;line-height:1.5}
+.hver{background:#eaf6ea;border:1px solid #bcdcbc;border-left:5px solid #2E7D32}
+.hvikke{background:#fbeceb;border:1px solid #edc9c5;border-left:5px solid #C0392B}
+.hvkort h3{margin:0 0 6px;font-size:16.5px;color:#1F3864}
+.hvkort ul{margin:0;padding-left:19px}
+.hvkort li{margin:0 0 7px}.hvkort li:last-child{margin-bottom:0}
+.hvkort .eks{display:block;color:#5A6B7B;font-size:14.5px;margin-top:2px}
+.hvnaar{border-collapse:collapse;width:100%;font-size:16px;margin-top:4px}
+.hvnaar th,.hvnaar td{border-bottom:1px solid #e2e6ee;padding:7px 8px;text-align:left;vertical-align:top}
+.hvnaar th{color:#4a5568;font-weight:600;font-size:14.5px}
+.hvnaar tr.na{background:rgba(46,84,150,.10)}
+.hvnaar tr.na td{font-weight:700;color:#1F3864}
+.hvq{border:1px solid #d9dee8;border-radius:10px;padding:10px 12px;margin:0 0 9px;
+  background:#fff;font-size:16.5px;line-height:1.45}
+.hvq .sp{display:block;margin-bottom:7px}
+.hvq button{font-size:15px;padding:6px 15px;margin:0 6px 0 0}
+.hvq .sv{display:none;margin-top:8px;font-size:15.5px;line-height:1.45;
+  border-left:3px solid #2E5496;background:#f7f9ff;border-radius:0 8px 8px 0;padding:8px 11px}
+.hvq.svart .sv{display:block}
+.hvq.rett{border-color:#8fc38f;background:#f6fbf6}
+.hvq.feil{border-color:#e3aaa4;background:#fdf6f5}
+.hvfasit{font-weight:700}.hvfasit.ja{color:#2E7D32}.hvfasit.nei{color:#C0392B}
+
+/* =====================================================================
+   FORELESNINGSMODUS — 16:9-scene skalert til lerretet
+   Aktiveres med ?modus=forelesning. Scenen er 1280 × 720 logiske piksler
+   og skaleres opp eller ned til den fyller vinduet, med sorte marger.
+   Simuleringsblokkene LÅNES inn i sliden fra utforskerdelen og leveres
+   tilbake etterpå, så det finnes bare én kopi av koden.
+   ===================================================================== */
+body.fmodus{background:#0d1526;overflow:hidden}
+body.fmodus>header,body.fmodus>.wrap,body.fmodus>.presbtn{display:none}
+#scene{display:none}
+/* Bredden settes av skaler() ut fra vinduets format; hoyden er alltid
+   720 logiske piksler, som er maalestokken all typografien er satt i. */
+body.fmodus #scene{display:block;position:fixed;left:0;top:0;width:1280px;height:720px;
+  transform-origin:0 0;background:#fff;overflow:hidden;
+  box-shadow:0 0 60px rgba(0,0,0,.55);font-size:19px}
+.slide{position:absolute;inset:0;padding:44px 60px 62px;display:flex;flex-direction:column}
+.slide h1{font-size:40px;line-height:1.15;color:var(--navy);margin:0 0 6px;font-weight:700}
+.slide h2{font-size:26px;color:var(--blue);margin:0 0 18px;font-weight:600}
+.slide p{font-size:23px;line-height:1.5;margin:0 0 14px}
+.slide ul{font-size:23px;line-height:1.5;margin:4px 0 14px;padding-left:28px}
+.slide li{margin-bottom:11px}
+.slide b{color:var(--navy)}
+.slide .stor{font-size:30px;line-height:1.4}
+.slide .liten{font-size:19px;line-height:1.45;color:#3F4E63}
+.slide table{font-size:21px;border-collapse:collapse;width:100%}
+.slide table th,.slide table td{border-bottom:1px solid #dbe1ec;padding:8px 11px;text-align:left}
+.slide table th{font-size:17px;color:#2B3648;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.slide table td.r,.slide table th.r{text-align:right;font-variant-numeric:tabular-nums}
+.slide table tr.uthev td{background:rgba(46,84,150,.10);font-weight:700;color:var(--navy)}
+
+/* slidetyper */
+.sl-tittel{justify-content:center;align-items:flex-start;
+  background:linear-gradient(135deg,#1F3864 0%,#2E5496 100%);color:#fff}
+.sl-tittel h1{color:#fff;font-size:58px;margin-bottom:14px}
+.sl-tittel .under{font-size:27px;opacity:.9}
+.sl-tittel .merke{font-size:19px;opacity:.65;margin-top:30px;letter-spacing:.07em;text-transform:uppercase}
+.sl-sitat{justify-content:center;align-items:center;text-align:center;background:#f7f9ff}
+.sl-sitat .ord{font-size:44px;line-height:1.28;color:var(--navy);font-weight:700;max-width:1000px}
+.sl-sitat .kilde{font-size:21px;color:#3F4E63;margin-top:26px}
+/* Klikk fram: et element med klassen .avslor står usynlig til neste
+   piltrykk. Det tar plassen sin med én gang, så resten av sliden ikke
+   hopper når det dukker opp. */
+.slide .avslor{opacity:0;transition:opacity .25s}
+.slide .avslor.vist{opacity:1}
+.slide.stort-tall{justify-content:center;align-items:center;text-align:center}
+.talldu{display:flex;gap:70px;justify-content:center;align-items:flex-end;margin:18px 0}
+.talldu div{text-align:center}
+.talldu .tall{font-size:76px;font-weight:700;color:var(--navy);line-height:1;font-variant-numeric:tabular-nums}
+.talldu .tall.mut{color:#5F6A7E}
+.talldu .navn{font-size:21px;color:#3F4E63;margin-top:10px}
+.slide .todelt{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:6px}
+.slide .tabellnavn{font-size:18px;font-weight:600;color:#3F4E63;margin:0 0 6px;
+  letter-spacing:.01em}
+/* Sammenlikningssliden setter to tabeller ved siden av hverandre — da maa
+   de vaere litt mindre enn en tabell som staar alene. */
+.slide .todelt .tabellnavn+table{font-size:19px}
+/* JASP-output slik studentene ser den: tynne linjer, tall hoyrestilt,
+   kolonnenavnene paa engelsk fordi det er JASPs egne. */
+.slide .minitab{font-size:17px;border-collapse:collapse;width:100%;margin-top:2px}
+.slide .minitab th{font-size:14.5px;white-space:nowrap;padding:3px 7px;
+  color:#16203A;border-bottom:1.5px solid #16203A;font-weight:600}
+.slide .minitab td{padding:5px 7px;font-variant-numeric:tabular-nums;
+  border-bottom:1px solid #E1E6EF}
+.slide .minitab tr:last-child td{border-bottom:1.5px solid #16203A}
+.slide .minitab td:first-child,.slide .minitab th:first-child{text-align:left}
+.slide .minitab td:not(:first-child),
+.slide .minitab th:not(:first-child){text-align:right}
+.slide .minitab .kb1{color:var(--kb1,#1E8E4E);font-weight:700}
+.slide .minitab .valgt td{background:#f2f5fa}
+.slide .jaspnote{font-size:14.5px;color:#5C6A80;margin:5px 0 0;line-height:1.35}
+/* Bonusslides kan hoppes over. Plaketten sier det, saa underviseren
+   slipper aa slaa opp i kjoremanuset midt i timen. */
+.bonusmerke{position:absolute;top:22px;right:26px;background:#fff3d6;
+  border:1px solid #e6c982;color:#7a5a12;border-radius:8px;
+  padding:5px 12px;font-size:15px;font-weight:700;letter-spacing:.04em}
+.slide.bonus h1{font-size:34px}
+.slide.bonus .todelt{gap:20px;margin-top:10px}
+.slide.bonus .boks{font-size:18px;line-height:1.4;padding:12px 16px}
+.slide.bonus .boks h3{font-size:19px;margin-bottom:4px}
+/* Tre bokser i bredden. Boksene maa ned fra 21 til 18 px for aa faa
+   plass — tre spalter er en tredjedel av bredden hver. */
+.slide .tredelt{display:grid;grid-template-columns:repeat(3,1fr);
+  gap:16px;margin-top:12px}
+/* Forklaringsbaandet under en laant simuleringsfigur: tre korte bokser
+   som sier hva tallene over betyr. order:3 er det som faktisk plasserer
+   dem UNDER figuren — .simvert settes inn sist i DOM-en, men uten en
+   order havner baandet likevel over den. */
+.slide .ordbaand{order:3;display:grid;grid-template-columns:repeat(3,1fr);
+  gap:14px;margin-top:14px}
+.slide .ordbaand .boks{padding:11px 14px;font-size:18px;line-height:1.4}
+.slide .ordbaand .boks h3{font-size:18px;margin-bottom:4px}
+/* Cohens d-sliden: figuren er poenget, de tre metaanalysene er fotnoter
+   til den. Baandet settes ned saa lerretet faar hoyden. */
+.slide.tvslide .ordbaand{gap:11px;margin-top:10px}
+.slide.tvslide .ordbaand .boks{font-size:15.5px;line-height:1.35;padding:9px 12px}
+.slide.tvslide .ordbaand .boks h3{font-size:16.5px;margin-bottom:2px}
+.slide.dslide .ordbaand{gap:11px;margin-top:10px}
+.slide.dslide .ordbaand .boks{font-size:15.5px;line-height:1.35;padding:9px 12px}
+.slide.dslide .ordbaand .boks h3{font-size:16.5px;margin-bottom:2px}
+/* Notatlinja under figuren sier det samme som den forste boksen i
+   baandet. Paa lerretet er den en gjentakelse som spiser hoyde; i
+   utforskeren staar den. De tre tallbrikkene blir staaende — de er
+   levende og endrer seg mens glideren dras. */
+.slide.dslide #efTall .note{display:none}
+/* Snittet under hver bunke med lapper, og summen av alle tolv. */
+/* De to fordelingsslidene baerer en bred figur og en paastand som er
+   for lang til 40 px uten aa brekke. 36 px holder den paa én linje. */
+.slide.fordelingsfigur h1{font-size:36px;line-height:1.15}
+.slide.fordelingsfigur .figurark{margin:6px 0 0}
+.slide .lappsnitt{margin-top:9px;font-size:19px;color:#3F4E63}
+.slide .lappsnitt b{font-size:23px;color:var(--navy)}
+.slide .lappalle{margin-top:14px;font-size:21px;color:#16203A;text-align:center}
+/* Deskriptivtabellen: tall i lesestorrelse, grupperadene uthevet. */
+.slide table.deskr{font-size:23px;margin-top:10px}
+.slide table.deskr th{font-size:17px}
+.slide table.deskr td.r,.slide table.deskr th.r{text-align:right;
+  font-variant-numeric:tabular-nums}
+.slide table.deskr tr.sum td{color:#3F4E63;border-top:2px solid #16203A}
+.slide .tredelt .boks{font-size:18px;line-height:1.4;padding:13px 16px}
+.slide .tredelt .boks h3{font-size:19px;margin-bottom:4px}
+.slide.bonus .formel{font-size:26px;margin:12px 0 4px;padding:12px 16px;
+  text-align:center}
+.slide .boks{border-radius:12px;padding:16px 20px;font-size:21px;line-height:1.45}
+.slide .boks h3{margin:0 0 8px;font-size:22px;color:var(--navy)}
+.slide .boks ul{font-size:20px;padding-left:22px;margin:0}
+.slide .boks li{margin-bottom:8px}
+.boks.gul{background:#fff8ec;border:1px solid #f0d9a8}
+.boks.bla{background:#eef3fb;border:1px solid #c7d6ec}
+.boks.gronn{background:#eaf6ea;border:1px solid #bcdcbc}
+.boks.rod{background:#fbeceb;border:1px solid #edc9c5}
+/* Simuleringsblokken lånes inn hit. Den er bygget for en nettside der man
+   kan rulle; på en slide finnes ingen rulling. Derfor to ting: kontrollene
+   pakkes tettere, og tilpassBlokk() nedskalerer resten hvis det fortsatt
+   ikke går opp. Uten dette blir nedre halvdel av figuren klippet bort. */
+/* Stegknappene er underviserens verktoy i utforskeren. Paa sliden
+   styres trinnene av klikk-fram, saa raden skal ikke spise hoyde. */
+.slide #blokk-nhsteg .rad{display:none !important}
+/* Paa stegsliden styrer klikk-fram alt. Underviserens glidere og
+   knapper hoerer til utforskeren og skal ikke ta hoyde her. */
+.slide.stegslide #blokk-nhst .sl,
+.slide.stegslide #blokk-nhst .rad{display:none !important}
+.slide .simvert{flex:1;min-height:0;overflow:hidden;margin-top:2px}
+.slide .simvert .simblokk{font-size:17px;transform-origin:top left}
+.slide .simvert .sl{margin:4px 0}
+.slide .simvert .sl{grid-template-columns:264px 1fr 84px}
+.slide .simvert .sl label{font-size:17px}
+.slide .simvert .sl output{font-size:18px}
+.slide .simvert button{font-size:17px;padding:5px 13px;margin:2px}
+.slide .simvert .rad{margin-top:2px!important}
+.slide .simvert .stat{font-size:17px;padding:2px 9px;margin:2px 4px 2px 0}
+.slide .simvert .note{font-size:17px;padding:7px 11px;margin-top:6px!important}
+.slide .simvert canvas{margin-top:4px!important}
+.slide .simvert table.tt{font-size:17px}
+.slide .simvert .steg{margin-bottom:6px}
+/* Alt som hører til utforskerversjonen og bare stjeler høyde på en slide. */
+.slide .simvert .keybox,.slide .simvert details.mer,.slide .simvert h3{display:none}
+.slide .lead{font-size:22px;color:#3F4E63;margin:0 0 10px;line-height:1.4}
+.slide.tett h1{font-size:34px;margin-bottom:2px}
+.slide.tett .lead{font-size:20px;margin-bottom:4px}
+/* Fasitsliden gjentar rutenettet fra avstemningen, med det riktige
+   alternativet markert og de andre dempet. Uten det maa studenten huske
+   hva «A og C» var mens hun leser hvorfor de er feil. */
+.slide.fasitsvar h1{font-size:32px;line-height:1.15}
+.slide.fasitsvar .avstsvar{gap:9px;margin-top:10px}
+.slide.fasitsvar .avstsvar div{font-size:19px;padding:8px 14px}
+.slide.fasitsvar .avstsvar div.rett{border-color:#2E7D32;
+  background:rgba(46,125,50,.10);font-weight:600}
+.slide.fasitsvar .avstsvar div.feil{opacity:.6}
+.slide.fasitsvar .todelt{gap:18px;margin-top:14px}
+.slide.fasitsvar .todelt .boks{font-size:18px;padding:11px 15px;line-height:1.4}
+.slide.fasitsvar .todelt .boks h3{font-size:19px;margin-bottom:3px}
+.slide.fasitsvar .liten{margin-top:12px}
+.avstsvar{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:14px}
+.avstsvar div{border:2px solid #BCC6D6;border-radius:11px;padding:12px 16px;font-size:22px}
+.avstsvar div b{color:var(--blue);margin-right:9px}
+.qrboks{position:absolute;right:52px;top:44px;text-align:center}
+.qrboks img{width:168px;height:168px;display:block;border:5px solid #fff;border-radius:8px;
+  box-shadow:0 2px 10px rgba(0,0,0,.16)}
+.qrboks .txt{font-size:16px;color:#3F4E63;margin-top:7px;font-weight:600}
+/* QR-boksen ligger absolutt plassert oppe til høyre. Plassen må reserveres
+   for HELE sliden, ikke bare for overskriften: svaralternativene og
+   tabellene er fullbredde-elementer, og de la seg rett under koden.
+   Absolutt plassering måles fra slidens ytterkant, så boksen står støtt
+   selv om innholdet trekkes inn. */
+.slide.harqr{padding-right:290px}
+/* ---- live avstemning: panelet under QR-koden ---- */
+.avstpanel{display:none;margin-top:12px;width:178px}
+.avstpanel.vist{display:block}
+.avstgraf{width:100%;display:block;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.16);border-radius:8px}
+.avststatus{font-size:12.5px;color:#b9c8e2;margin-top:5px;line-height:1.35;
+  font-weight:600;text-align:center}
+.qrboks .avsthint{font-size:12.5px;color:#8fa0bd;margin-top:7px;font-weight:600}
+
+/* ---- svarene malt rett inn i alternativkortene ---- */
+.slide .svaralt .opt{position:relative;overflow:hidden;transition:border-color .2s}
+.slide .svaralt .opt.svart{border-color:#6e93c8}
+.slide .svaralt .opt.svart::before{content:'';position:absolute;left:0;top:0;bottom:0;
+  width:var(--andel,0%);background:#a9c8ec;transition:width .45s ease;z-index:0}
+.slide .svaralt .opt > *{position:relative;z-index:1}
+.slide .svaralt .opt .pst{margin-left:auto;padding-left:14px;font-weight:700;
+  color:#2E5496;font-variant-numeric:tabular-nums;white-space:nowrap}
+/* panelet under QR-koden krymper til bare statuslinja naar kortene brukes */
+.avstpanel.kunstatus .avstgraf{display:none}
+.avstpanel.kunstatus{width:178px;margin-top:10px}
+.fasitmerke{display:inline-block;background:#2E7D32;color:#fff;border-radius:8px;
+  padding:5px 15px;font-size:21px;font-weight:700;margin-bottom:12px}
+
+/* chrome */
+#fnav{display:none}
+body.fmodus #fnav{display:flex;position:fixed;right:14px;bottom:11px;z-index:60;
+  align-items:center;gap:11px;color:#8fa0bd;font-size:14px;font-weight:600}
+#fnav button{background:rgba(255,255,255,.10);color:#cfdaeb;border:1px solid rgba(255,255,255,.20);
+  border-radius:8px;padding:5px 12px;font-size:14px;margin:0}
+#fnav button:hover{background:rgba(255,255,255,.20)}
+#fbar{position:fixed;left:0;bottom:0;height:4px;background:#4d7fd4;z-index:60;transition:width .18s}
+body:not(.fmodus) #fbar{display:none}
+#fnotat{display:none}
+body.fmodus.notat #fnotat{display:block;position:fixed;left:0;right:0;bottom:26px;z-index:59;
+  background:rgba(13,21,38,.94);color:#dbe4f2;padding:11px 22px;font-size:15.5px;line-height:1.45;
+  border-top:1px solid rgba(255,255,255,.14)}
+#fnotat b{color:#9fc0f5}
+#foversikt{display:none}
+body.fmodus.oversikt #foversikt{display:grid;position:fixed;inset:0;z-index:70;
+  background:rgba(13,21,38,.97);padding:26px 30px;overflow:auto;
+  grid-template-columns:repeat(4,1fr);gap:9px;align-content:start}
+#foversikt button{background:rgba(255,255,255,.07);color:#cfdaeb;border:1px solid rgba(255,255,255,.14);
+  border-radius:9px;padding:9px 12px;font-size:14px;text-align:left;margin:0;font-weight:600;line-height:1.3}
+#foversikt button:hover{background:rgba(77,127,212,.35)}
+#foversikt button .nr{color:#7e90ad;margin-right:8px;font-variant-numeric:tabular-nums}
+#foversikt .tittelrad{grid-column:1/-1;color:#9fc0f5;font-size:15px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;margin:14px 0 2px}
+#foversikt .tittelrad:first-child{margin-top:0}
+
+/* ===== modusbryter =====
+   Samme knapp begge veier. I appmodus ligger den nede til hoyre som en
+   diskret pille; i forelesningsmodus flytter den seg til venstre side og
+   blir moerk, saa den ikke kolliderer med slide-navigasjonen til hoyre. */
+#modusBtn{position:fixed;right:12px;bottom:12px;z-index:80;
+  background:var(--navy,#1F3864);color:#fff;border:0;border-radius:20px;
+  padding:8px 16px;font-size:14px;font-weight:700;font-family:inherit;
+  box-shadow:0 2px 10px rgba(0,0,0,.20);cursor:pointer;opacity:.9}
+#modusBtn:hover{opacity:1}
+body.fmodus #modusBtn{left:14px;right:auto;bottom:11px;
+  background:rgba(255,255,255,.10);color:#cfdaeb;
+  border:1px solid rgba(255,255,255,.20);box-shadow:none;font-weight:600}
+</style></head><body>
+<header><h1>Sim 25 · Gjentatte målinger — de samme personene, flere ganger</h1>
+<p>PSY300 · Forelesning 7 · ANOVA for gjentatte målinger: tre eller flere målinger av de samme personene</p></header>
+<div class="wrap">
+<div class="rad" style="display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 6px">
+<button class="fane on" data-fane="hvorfor">1 · Hvorfor gjentatte målinger?</button>
+<button class="fane" data-fane="sim">2 · Gevinsten: innen mot mellom personer</button>
+<button class="fane" data-fane="tre">3 · Tre tidspunkt: RM-ANOVA</button>
+<button class="fane" data-fane="sfare">4 · Sfærisitet</button>
+<button class="fane" data-fane="posthoc">5 · Post hoc over tid</button>
+<button class="fane" data-fane="ekte">6 · Ekte forløpsdata</button>
+<button class="fane" data-fane="feller">7 · Feller og forutsetninger</button>
+</div>
+<div id="fane-hvorfor">
+<div class="card">
+<h2>Spørsmålet ANOVA for gjentatte målinger svarer på</h2>
+<p class="hvbig">«Endret de samme personene seg over flere måletidspunkt?»</p>
+<p style="font-size:16.5px;line-height:1.55">Når du sammenligner <b>grupper</b> av mennesker,
+drukner effekten lett i at folk er så forskjellige fra før. Noen starter høyt, noen lavt, noen er
+engstelige og noen ikke &mdash; og alt det rotet ligger i nevneren og gjør <i>F</i>-verdien liten.</p>
+<p style="font-size:16.5px;line-height:1.55">Måler du <b>de samme personene flere ganger</b>, kan du
+trekke hele det rotet ut av regnestykket. Variasjonen deles ikke i to, men i <b>tre</b>: tid,
+person og feil &mdash; og personleddet <i>fjernes</i> fra feilleddet. <b>Hver deltaker blir sin
+egen kontroll.</b></p>
+<div class="keybox"><span class="lbl">Sagt på &eacute;n linje</span><b>ANOVA for gjentatte målinger stiller ett omnibusspørsmål om flere tidspunkt, og trekker de stabile individforskjellene ut av støyen.</b></div>
+</div>
+
+<div class="card">
+<h2>Hva RM-ANOVA er &mdash; og hva den ikke er</h2>
+<div class="hvgrid">
+<div class="hvkort hver"><h3>✓ Den forteller deg</h3><ul>
+<li><b>Ett samlet svar</b> på om det er forskjell mellom tidspunktene <i>et sted</i> &mdash; i stedet for tre, seks eller ti parvise tester.</li>
+<li><b>Mye kraftigere</b> enn en analyse med uavhengige grupper når målingene henger sammen. Jo høyere innen-person-korrelasjonen er, jo større gevinst.</li>
+<li><b>Billigere.</b> Du trenger færre deltakere for samme styrke.</li>
+<li><b>Riktig test</b> også når målingene hører sammen av andre grunner enn tid &mdash; samme person i tre betingelser, matchede par, samme pasient vurdert av flere.</li>
+</ul></div>
+<div class="hvkort hvikke"><h3>✗ Den forteller deg ikke</h3><ul>
+<li><b>Hvilke tidspunkt som skiller seg.</b> Omnibustesten sier bare at noe endret seg. Til resten trengs post hoc (fane 5).</li>
+<li><b>Et bevis for at tiltaket virket.</b> Folk endrer seg av seg selv: modning, læringseffekter, regresjon mot gjennomsnittet.<span class="eks">Uten kontrollgruppe vet du ikke hva som ville skjedd uansett.</span></li>
+<li><b>Gratis.</b> Gjentatte målinger gir rekkefølgeeffekter, og &eacute;n manglende måling slår ut hele personen.<span class="eks">Se fane 7.</span></li>
+<li><b>Noe du kan bruke på ulike grupper mennesker.</b> Da er observasjonene uavhengige, og enveis ANOVA (Sim 22) er testen.</li>
+</ul></div>
+</div>
+</div>
+
+<div class="card">
+<h2>Når kan du bruke den?</h2>
+<ul style="font-size:16.5px;line-height:1.55">
+<li><b>De samme personene målt tre eller flere ganger</b> — over tid, eller i flere betingelser.</li>
+<li><b>Ett tallutfall</b> per måling.</li>
+<li><b>Alle målingene til stede for hver person</b>, og de må kunne kobles person for person.</li>
+</ul>
+<p style="font-size:16.5px;line-height:1.55;margin-top:14px"><b>Hvilket spørsmål stiller du
+egentlig?</b> Her er hele kartet over metodene i emnet. Raden i blått er den du står i nå.</p>
+<table class="hvnaar">
+<tr><th>Spørsmålet ditt</th><th>Metoden</th><th>Hvor</th></tr>
+<tr><td>Henger disse to tallvariablene sammen?</td><td>Korrelasjon</td><td>Sim 11</td></tr>
+<tr><td>Hvor mye endrer den ene seg når den andre går opp ett hakk? Og hva gjetter jeg for en ny person?</td><td>Regresjon</td><td>Sim 5</td></tr>
+<tr><td>Henger de fortsatt sammen når jeg holder en tredje ting konstant?</td><td>Multippel regresjon</td><td>Sim 15</td></tr>
+<tr><td>Er <b>to grupper</b> forskjellige i gjennomsnitt?</td><td><i>t</i>-test</td><td>Sim 16</td></tr>
+<tr><td>Er <b>tre eller flere grupper</b> forskjellige?</td><td>Enveis-ANOVA</td><td>Sim 22</td></tr>
+<tr><td>Avhenger effekten av den ene faktoren av den andre?</td><td>Faktoriell ANOVA</td><td>Sim 24</td></tr>
+<tr><td>Endret <b>de samme personene</b> seg fra før til etter (to målinger)?</td><td>Paret <i>t</i>-test</td><td>Sim 16, fane 10</td></tr>
+<tr class="na"><td>Endret <b>de samme personene</b> seg over <b>tre eller flere</b> målinger?</td><td>ANOVA for gjentatte målinger</td><td>denne appen</td></tr>
+<tr><td>Henger to <b>kategorier</b> sammen?</td><td>Kjikvadrat</td><td>Sim 29</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h2>Prøv selv: er dette et spørsmål for ANOVA med gjentatte målinger?</h2>
+<p class="muted">Seks påstander. Svar først, så får du begrunnelsen. Det er begrunnelsen som er
+poenget &mdash; ikke om du traff.</p>
+<div id="hvQuiz"></div>
+<div id="hvSum" class="note" style="display:none"></div>
+</div>
+
+<div class="keybox"><span class="lbl">Klar for simuleringen?</span><b>To spørsmål avgjør: er det de samme personene hver gang, og hvor mange målinger er det? Samme personer og tre eller flere målinger — da er det RM-ANOVA.</b></div>
+</div><!-- /fane-hvorfor -->
+<div id="fane-sim" class="hide">
+
+
+<div class="card">
+<h2>Gevinsten, i sitt enkleste tilfelle: to målinger</h2>
+<p style="font-size:16.5px;line-height:1.55">Hele kraften i gjentatte målinger ligger i &eacute;n
+ting: <b>personleddet trekkes ut av feilleddet</b>. Den mekanismen er lettest å se med <b>to</b>
+målinger, der RM-ANOVA er nøyaktig det samme regnestykket som en paret <i>t</i>-test
+(<i>F</i> = <i>t</i>²). Her ser du hva du vinner. I fane 3 gjør vi det samme med tre
+måletidspunkt, der RM-ANOVA er det eneste alternativet.</p>
+<p class="muted">Vi måler depresjon før og etter terapi hos de samme <i>n</i> pasientene. Nøkkelen er <b>innen-person-korrelasjonen <i>r</i></b>: hvor stabile de individuelle forskjellene er over tid.</p>
+<div class="sl"><label>Sann forbedring Δ (poeng)</label><input type="range" id="delta" min="0" max="10" step="0.5" value="3"><output id="deltaOut">3.0</output></div>
+<div class="sl"><label>Innen-person-korrelasjon <i>r</i> (pre, post)</label><input type="range" id="rw" min="0" max="0.95" step="0.05" value="0.7"><output id="rwOut">0.70</output></div>
+<div class="sl"><label>Antall pasienter <i>n</i></label><input type="range" id="n" min="5" max="100" step="1" value="20"><output id="nOut">20</output></div>
+<button class="btn" id="draw">Ny simulering</button>
+<button class="btn2" id="power">Kjør 2 000 simuleringer (styrke)</button>
+<button class="btn2" id="realBtn">Vis de EKTE ISTDP-pasientene (<i>n</i> = 36)</button>
+<div id="realNote" class="note" style="display:none"><b>Ekte data:</b> depresjon pre → post hos de 36 ISTDP-pasientene &mdash; de to første av de tre måletidspunktene du møter i fane 3. Innen-person-korrelasjon <i>r</i> = .50, gjennomsnittlig bedring 8.5 poeng (<i>d</i> = 1.7). Gliderne er satt til de ekte verdiene, så «Kjør 2 000 simuleringer» viser styrken for en studie som denne.</div>
+</div>
+
+<div class="grid">
+<div class="card">
+<h2>Spagettiplott: hver linje er én pasient</h2>
+<div class="simblokk" id="blokk-spagetti">
+<canvas id="cv" height="300"></canvas>
+</div><!-- /blokk-spagetti -->
+</div>
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>Innen-person-design fjerner de stabile forskjellene mellom deltakere fra feilleddet. Samme sanne effekt kan derfor bli klart signifikant med gjentatte målinger og forsvinne i støyen med uavhengige grupper.</b></div></div>
+
+<div class="card">
+<h2>Samme data, to analyser</h2>
+<div id="tests" class="muted">Trykk «Ny simulering».</div>
+<p class="muted" style="margin:6px 0 0;font-size:14px">Begge er ANOVA-er med &eacute;n frihetsgrad i telleren, så <i>F</i> = <i>t</i>². Det eneste som skiller dem, er hva som ligger i nevneren.</p>
+<div class="formula" id="formula"></div>
+<div id="powerOut" style="margin-top:10px"></div>
+<div class="simblokk" id="blokk-styrke">
+<canvas id="cvPow" height="110"></canvas>
+</div><!-- /blokk-styrke -->
+</div>
+</div>
+
+<div class="card note"><b>Hva skal du se?</b> Innen-person-analysen bruker <i>differansene</i>, og feilleddet krymper når <i>r</i> øker: SE²<sub>diff</sub> = (s₁² + s₂² − 2·r·s₁·s₂)/n. Med høy <i>r</i> (stabile individuelle forskjeller) blir innen-person-analysen dramatisk kraftigere enn å (feilaktig) behandle pre og post som to uavhengige grupper — samme personer, samme tall, helt forskjellig konklusjon. Skru <i>r</i> mot 0 og se fordelen forsvinne: da er det ingenting å trekke ut, og du sitter igjen med færre frihetsgrader og ingen gevinst.</div>
+<div class="card docs" id="ordforklaringer">
+<h2>Ordforklaringer</h2>
+<div class="gloss">
+<p><b>ISTDP</b> — intensiv dynamisk korttidsterapi, behandlingen i emnets terapi-RCT (<i>N</i> = 86).<br>
+<b><i>M</i></b> — gjennomsnittet i et utvalg (skrives også x̄). <b>Median</b> = midtverdien når verdiene sorteres. <b>Modus</b> = den hyppigste verdien.<br>
+<b><i>SE</i></b> — standardfeil: hvor mye et estimat ville variert mellom gjentatte utvalg. For et gjennomsnitt: <i>SE</i> = σ/√n.<br>
+<b><i>p</i>-verdi</b> — sannsynligheten for et resultat minst så ekstremt som ditt, <i>gitt at H₀ er sann</i>. Ikke sannsynligheten for at H₀ er sann.<br>
+<b>Statistisk styrke</b> — sannsynligheten for å oppdage en effekt som faktisk finnes (1 − type II-risikoen). Se Sim 20.<br>
+<b><i>t</i></b> — testobservator for gjennomsnitt: forskjell delt på standardfeil. <b><i>t</i>-fordelingen</b> er litt tyngre i halene enn normalfordelingen ved lav <i>df</i>.<br>
+<b><i>r</i></b> — Pearsons korrelasjon: styrken på den <i>lineære</i> sammenhengen mellom to variabler (−1 til +1). <b>Spearmans rho</b> gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.<br>
+<b>Innen-person-design (gjentatte målinger)</b> — samme personer måles flere ganger, slik at hver person er sin egen kontroll. Med to målinger: paret <i>t</i>-test (Sim 16, fane 10). Med tre eller flere: <b>RM-ANOVA</b> (repeated measures) — denne appen.<br>
+<b>partiell η²</b> — andelen av variasjonen som blir igjen når personleddet er trukket ut, som henger sammen med tid. Den er derfor ikke sammenlignbar med η² fra en analyse med uavhengige grupper.<br>
+<b>Sfærisitet</b> — forutsetningen om at alle de parvise differansene mellom måletidspunkt har samme varians. Sjekkes med Mauchlys test, korrigeres med Greenhouse-Geisser. Se fane 4.</p>
+</div>
+</div>
+
+
+</div><!-- /fane-sim -->
+
+<div id="fane-tre" class="hide">
+<div class="card">
+<h2>Fra to tidspunkt til tre</h2>
+<p style="font-size:16.5px;line-height:1.55">Med <b>to</b> målinger er paret <i>t</i>-test hele
+svaret &mdash; den finner du i <b>Sim 16 · <i>t</i>-testen, fane 10</b>. Med <b>tre eller flere</b>
+får du det samme problemet som i forelesning 5: tre parvise tester gir 14 % sjanse for falsk
+alarm.</p>
+<p class="hvbig">Løsningen er den samme &mdash; ett omnibusspørsmål &mdash; men nevneren er en annen.</p>
+
+<h3 style="margin-top:14px">Variasjonen deles i <i>tre</i>, ikke to</h3>
+<table class="tt" style="margin-top:8px">
+<tr><th>Kilde</th><th>Hva den er</th><th><i>df</i></th></tr>
+<tr><td>SS<sub>tid</sub></td><td>Det vi vil teste: skiller tidspunktene seg?</td><td><i>k</i> &minus; 1</td></tr>
+<tr class="na"><td><b>SS<sub>person</sub></b></td><td><b>At folk starter på ulike nivåer</b></td>
+<td><i>n</i> &minus; 1</td></tr>
+<tr><td>SS<sub>feil</sub></td><td>Det som blir igjen &mdash; nevneren i <i>F</i></td>
+<td>(<i>k</i>&minus;1)(<i>n</i>&minus;1)</td></tr>
+</table>
+
+<div class="keybox"><span class="lbl">Hele gevinsten på én linje</span>
+<b>SS<sub>person</sub> trekkes <i>ut</i> av feilleddet. I en analyse med uavhengige grupper hadde
+den ligget der og skjult effekten.</b></div>
+
+<p style="font-size:16.5px;line-height:1.55;margin-top:14px">Det er nøyaktig samme trikk som i
+paret <i>t</i>-test: forskjellene mellom mennesker stryker seg selv ut fordi hver person er sin
+egen kontroll. Her har bare trikket fått et navn i tabellen.</p>
+</div>
+
+<div class="card">
+<h2>Tallene fra terapistudien</h2>
+<p class="muted">ISTDP-gruppa, depresjon ved tre tidspunkt, <i>n</i> = 36</p>
+<table class="tt" style="margin-top:8px">
+<tr><th>Kilde</th><th>SS</th><th><i>df</i></th><th>MS</th><th><i>F</i></th><th><i>p</i></th></tr>
+<tr><td>Tid</td><td>3112.1</td><td>2</td><td>1556.0</td><td><b>127.6</b></td><td>&lt; .001</td></tr>
+<tr class="na"><td>Person</td><td>1876.9</td><td>35</td><td colspan="3"><i>trekkes ut av feilleddet</i></td></tr>
+<tr><td>Feil</td><td>853.9</td><td>70</td><td>12.2</td><td></td><td></td></tr>
+</table>
+<p style="font-size:16.5px;line-height:1.55;margin-top:12px"><b>partiell η² = .785.</b> Nesten
+79 % av variasjonen som ikke skyldes stabile personforskjeller, henger sammen med tid.</p>
+
+<div class="steg" style="border-left-color:#C0392B">
+<div class="tit">Samme tall, feil analyse</div>
+Kjører du det som tre <i>uavhengige</i> grupper, havner SS<sub>person</sub> i feilleddet:
+1876.9 + 853.9 = 2730.9 med 105 frihetsgrader.
+<div class="n"><b><i>F</i> faller fra 127.6 til 59.8</b> &mdash; under halvparten. Konklusjonen
+overlever her fordi effekten er enorm. Med en typisk psykologieffekt ville den ikke gjort det.</div></div>
+</div>
+</div><!-- /fane-tre -->
+
+<div id="fane-sfare" class="hide">
+<div class="card">
+<h2>Sfærisitet — forutsetningen som bare finnes her</h2>
+<p style="font-size:16.5px;line-height:1.55">Med to tidspunkt finnes bare <b>én</b> differanse,
+og den har én spredning. Med tre tidspunkt finnes <b>tre</b> differanser &mdash; og de kan ha
+helt ulik spredning.</p>
+<p class="hvbig">Sfærisitet = alle de parvise differansene har samme varians.</p>
+
+<table class="tt" style="margin-top:8px">
+<tr><th>Differanse</th><th>Varians i ISTDP-gruppa</th></tr>
+<tr><td>før → etter</td><td>24.9</td></tr>
+<tr><td>før → 3 måneder</td><td><b>32.1</b></td></tr>
+<tr><td>etter → 3 måneder</td><td><b>16.3</b></td></tr>
+</table>
+
+<p style="font-size:16.5px;line-height:1.55;margin-top:12px">De er ikke like &mdash; og det er
+det vanlige. Målinger som ligger <b>nær hverandre i tid</b> henger tettere sammen enn målinger
+langt fra hverandre, så differansen over lang tid spriker mer.</p>
+
+<div class="steg" style="border-left-color:#E08A2E">
+<div class="tit">Hva bruddet koster</div>
+Brytes sfærisiteten, blir <i>F</i>-testen <b>for liberal</b>: den gir for små <i>p</i>-verdier,
+og du finner effekter som ikke er der.
+<div class="n">Sjekkes med <b>Mauchlys test</b>. Den er selv upålitelig ved små <i>n</i>, så
+mange anbefaler å korrigere uansett.</div></div>
+
+<h3 style="margin-top:16px">Korreksjonen: færre frihetsgrader</h3>
+<p style="font-size:16.5px;line-height:1.55">Løsningen er å <b>gange frihetsgradene med et tall
+mellom 0 og 1</b> &mdash; epsilon (ε). Jo verre bruddet, jo mindre ε, jo strengere test.</p>
+
+<table class="tt" style="margin-top:8px">
+<tr><th>Korreksjon</th><th>Når</th><th>I terapidataene</th></tr>
+<tr class="na"><td><b>Greenhouse-Geisser</b></td><td>standardvalget, litt konservativ</td>
+<td>ε = <b>.877</b> → <i>F</i>(1.75, 61.4)</td></tr>
+<tr><td>Huynh-Feldt</td><td>mindre konservativ; brukes når ε &gt; .75</td><td>litt høyere ε</td></tr>
+<tr><td>Ingen</td><td>bare når Mauchly er klart ikke-signifikant</td><td><i>F</i>(2, 70)</td></tr>
+</table>
+
+<div class="note" style="margin-top:12px">Her endrer korreksjonen ingenting i konklusjonen
+(<i>p</i> &lt; .001 begge veier). <b>Det er det normale.</b> Korreksjonen betyr noe når
+<i>p</i> ligger nær .05 &mdash; og da betyr den alt.</div>
+
+<div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>Sfærisitet handler om differansene, ikke om målingene. Er den brutt, er <i>F</i>-testen for
+snill mot deg &mdash; og Greenhouse-Geisser strammer den inn ved å ta frihetsgrader.</b></div>
+</div>
+</div><!-- /fane-sfare -->
+
+<div id="fane-posthoc" class="hide">
+<div class="card">
+<h2>Omnibus sier at noe endret seg. Post hoc sier når.</h2>
+<p style="font-size:16.5px;line-height:1.55">Samme logikk som i forelesning 5, med to
+forskjeller: sammenligningene er <b>parete</b>, og de er ofte <b>færre og mer spesifikke</b>
+&mdash; du har som regel en rekkefølge i tid å følge.</p>
+
+<p class="muted" style="margin-top:12px">ISTDP-gruppa, parete <i>t</i>-tester med Bonferroni:</p>
+<table class="tt" style="margin-top:8px">
+<tr><th>Sammenligning</th><th>M<sub>diff</sub></th><th><i>t</i>(35)</th><th><i>p</i> korrigert</th>
+<th>Cohens <i>d</i></th></tr>
+<tr><td>før → etter</td><td>&minus;8.47</td><td>&minus;10.19</td><td>&lt; .001</td><td>&minus;1.70</td></tr>
+<tr><td>før → 3 måneder</td><td><b>&minus;12.94</b></td><td>&minus;13.72</td><td>&lt; .001</td><td><b>&minus;2.29</b></td></tr>
+<tr class="na"><td>etter → 3 måneder</td><td>&minus;4.47</td><td>&minus;6.66</td><td>&lt; .001</td><td>&minus;1.11</td></tr>
+</table>
+
+<p style="font-size:16.5px;line-height:1.55;margin-top:12px">Alle tre er signifikante, og den
+siste raden er den klinisk interessante: <b>bedringen fortsatte etter at behandlingen var over.</b>
+Det er et annet funn enn «terapi virker», og det er bare synlig fordi det finnes et tredje
+måletidspunkt.</p>
+
+<div class="note"><b>I JASP:</b> under <i>Post Hoc Tests</i> i Repeated Measures ANOVA. Merk at
+Tukey ikke tilbys her &mdash; den forutsetter uavhengige grupper. Bruk <b>Bonferroni</b> eller
+<b>Holm</b>.</div>
+</div>
+</div><!-- /fane-posthoc -->
+
+<div id="fane-ekte" class="hide">
+<div class="card">
+<h2>To forløp, samme analyse</h2>
+<p class="muted"><code>Psykoterapi_RCT_data_real_N75_completers</code> ·
+<code>Depression</code>, <code>Depression_post</code>, <code>Depression_3_months</code></p>
+<table class="tt" style="margin-top:8px">
+<tr><th>Gruppe</th><th>Oppstart</th><th>Etter</th><th>3 måneder</th><th><i>n</i></th></tr>
+<tr class="na"><td><b>ISTDP</b></td><td>30.28</td><td>21.81</td><td><b>17.33</b></td><td>36</td></tr>
+<tr><td>Venteliste</td><td>30.46</td><td>29.33</td><td>29.23</td><td>39</td></tr>
+</table>
+
+<table class="tt" style="margin-top:12px">
+<tr><th>Gruppe</th><th><i>F</i></th><th><i>df</i></th><th><i>p</i></th><th>partiell η²</th>
+<th>GG ε</th></tr>
+<tr><td>ISTDP</td><td><b>127.6</b></td><td>2, 70</td><td>&lt; .001</td><td><b>.785</b></td><td>.877</td></tr>
+<tr><td>Venteliste</td><td>7.61</td><td>2, 76</td><td>&lt; .001</td><td>.167</td><td>.842</td></tr>
+</table>
+
+<div class="steg" style="border-left-color:#C0392B">
+<div class="tit">Les de to radene sammen</div>
+Begge er signifikante. Ventelistegruppa falt <b>1.2 poeng</b> på ti måneder uten behandling.
+<div class="n">Med <i>n</i> = 39 og en innen-person-analyse er selv en så liten endring
+signifikant. <b>Det er ikke en bedring noen ville merket</b> &mdash; og det er nettopp derfor
+kontrollgruppa finnes: uten den ville ISTDP-gruppas 13 poeng sett ut som mer enn de er.</div></div>
+
+<p style="font-size:16.5px;line-height:1.55;margin-top:12px">Det riktige svaret på «virker
+terapien?» er ikke noen av de to analysene alene. Det er <b>forskjellen mellom dem</b> &mdash;
+en <b>blandet ANOVA</b> med tid innen person og gruppe mellom personer, der interaksjonen
+tid × gruppe er hele funnet.</p>
+</div>
+
+<div class="card">
+<div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>En innen-person-analyse er sterk nok til å gjøre klinisk uinteressante endringer
+signifikante. Det er en styrke når du leter etter små effekter, og en felle når du skal tolke
+dem.</b></div>
+</div>
+</div><!-- /fane-ekte -->
+
+<div id="fane-feller" class="hide">
+<div class="card">
+<h2>Forutsetningene, i rekkefølge</h2>
+<div class="steg" style="border-left-color:#C0392B"><div class="tit">1 · Uavhengighet <i>mellom</i> personer</div>
+Målingene skal henge sammen <b>innenfor</b> en person &mdash; det er poenget. Men personene
+skal være uavhengige av hverandre.
+<div class="n">Brudd: pasienter i samme gruppeterapi, søsken, klassekamerater.</div></div>
+
+<div class="steg" style="border-left-color:#E08A2E"><div class="tit">2 · Sfærisitet</div>
+Den nye. Mauchlys test, og Greenhouse-Geisser som løsning. Se fane 4.</div>
+
+<div class="steg" style="border-left-color:#2E7D32"><div class="tit">3 · Normalfordelte differanser</div>
+Som i paret <i>t</i>-test: det er <b>differansene</b> som skal være tilnærmet normalfordelte,
+ikke målingene. Rangbasert reserve: <b>Friedman</b>.</div>
+</div>
+
+<div class="card">
+<h2>Tre feller som er spesielle for design med gjentatte målinger</h2>
+
+<div class="steg"><div class="tit">Frafall</div>
+En person som mangler <b>ett</b> tidspunkt, faller ut av <b>hele</b> analysen i standard
+RM-ANOVA.
+<div class="n">Med tre måletidspunkt og 10 % frafall per gang sitter du fort igjen med
+to tredjedeler av utvalget &mdash; og de som blir igjen, er sjelden et tilfeldig utvalg av dem
+du startet med.</div></div>
+
+<div class="steg"><div class="tit">Rekkefølgeeffekter</div>
+Har alle fått betingelsene i samme rekkefølge, er «tid» forvekslet med «trening», «tretthet»
+og alt annet som følger rekkefølgen.
+<div class="n">Løsningen i eksperimenter er <b>motbalansering</b>. I forløpsstudier finnes den
+ikke &mdash; der er tid tid, og du trenger en kontrollgruppe i stedet.</div></div>
+
+<div class="steg"><div class="tit">Regresjon mot gjennomsnittet</div>
+Rekrutterer du folk fordi de skårer høyt, vil de skåre lavere neste gang uansett hva du gjør.
+<div class="n">Det er ikke en effekt av behandlingen. Det er den eneste grunnen til at
+ventelistegruppa i tabellen over falt 1.2 poeng. Se <b>Sim 26 · Regresjon mot gjennomsnittet</b>.</div></div>
+
+<div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>Gjentatte målinger kjøper deg styrke, og betaler med nye trusler: sfærisitet, frafall,
+rekkefølge og regresjon mot gjennomsnittet. Ingen av dem er statistiske problemer &mdash; alle
+fire er designproblemer.</b></div>
+</div>
+</div><!-- /fane-feller -->
+
+
+</div>
+
+<button id="modusBtn" type="button">Start forelesning</button>
+
+<button class="presbtn" id="presBtn">Presentasjonsmodus</button>
+
+<!-- ===== forelesningsmodus ===== -->
+<div id="scene"></div>
+<div id="fbar"></div>
+<div id="fnotat"></div>
+<div id="foversikt"></div>
+<div id="fnav">
+  <button id="fPrev" title="Forrige (venstrepil)">◀</button>
+  <span id="fTeller">1 / 1</span>
+  <button id="fNext" title="Neste (høyrepil eller mellomrom)">▶</button>
+  <span style="opacity:.6">O oversikt · <i>N</i> notater · <i>F</i> fullskjerm · Esc ut</span>
+
+</div>
+
+
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const fmt=(x,d=2)=>x.toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:false});
+function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function lgamma(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];let y=x,tmp=x+5.5;tmp-=(x+0.5)*Math.log(tmp);let ser=1.000000000190015;for(let j=0;j<6;j++)ser+=c[j]/++y;return -tmp+Math.log(2.5066282746310005*ser/x);}
+function betacf(a,b,x){const MAXIT=200,EPS=3e-12,FPMIN=1e-30;const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<FPMIN)d=FPMIN;d=1/d;let h=d;for(let m=1;m<=MAXIT;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;h*=d*c;aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<EPS)break;}return h;}
+function ibeta(a,b,x){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+function tcdf(t,df){const x=df/(df+t*t);const p=0.5*ibeta(df/2,0.5,x);return t>0?1-p:p;}
+const pTwo=(t,df)=>2*(1-tcdf(Math.abs(t),df));
+
+const MU_PRE=30,SD=6;
+function simulate(delta,r,n){
+  const pre=[],post=[];
+  for(let i=0;i<n;i++){
+    const z1=rnorm(),z2=rnorm();
+    pre.push(MU_PRE+SD*z1);
+    post.push(MU_PRE-delta+SD*(r*z1+Math.sqrt(1-r*r)*z2));
+  }
+  return [pre,post];
+}
+const mean=a=>a.reduce((x,y)=>x+y,0)/a.length;
+const sdev=a=>{const m=mean(a);return Math.sqrt(a.reduce((t,x)=>t+(x-m)*(x-m),0)/(a.length-1));};
+function tests(pre,post){
+  const n=pre.length;
+  const d=pre.map((v,i)=>v-post[i]);
+  const md=mean(d),sdd=sdev(d);
+  const tP=md/(sdd/Math.sqrt(n)),dfP=n-1;
+  const m1=mean(pre),m2=mean(post),s1=sdev(pre),s2=sdev(post);
+  const sp=Math.sqrt((s1*s1+s2*s2)/2);
+  const tI=(m1-m2)/(sp*Math.sqrt(2/n)),dfI=2*n-2;
+  return {tP,dfP,pP:pTwo(tP,dfP),tI,dfI,pI:pTwo(tI,dfI),md,sdd,s1,s2};
+}
+
+/* Med to maalinger er RM-ANOVA identisk med paret t-test: F = t^2 med df (1, n-1).
+   Tilsvarende er enveis ANOVA paa to grupper F = t^2 med df (1, 2n-2). Vi rapporterer
+   derfor det samme regnestykket paa F-form, saa fane 2 og fane 3 snakker samme spraak. */
+function rapport(t,tittel){
+  const chip=(p)=>'<span class="stat '+(p<0.05?'green':'red')+'">p = '+(p<0.001?'&lt; 0.001':fmt(p,3))+(p<0.05?' ✓':' (ikke sig.)')+'</span>';
+  const rad=(lab,farge,Fv,df2,p,tv)=>
+    '<b style="color:'+farge+'">'+lab+'</b><br>'+
+    '<span class="stat"><i>F</i>(1, '+df2+') = '+fmt(Fv)+'</span>'+chip(p)+
+    '<span class="stat" style="opacity:.7">= <i>t</i>('+df2+')² = '+fmt(tv)+'²</span>';
+  return (tittel?'<div style="margin-bottom:6px">'+tittel+'</div>':'')+
+    rad('Gjentatte målinger — personleddet trukket ut (riktig)','#2E7D32',t.tP*t.tP,t.dfP,t.pP,t.tP)+
+    '<div style="height:8px"></div>'+
+    rad('Som om det var to uavhengige grupper (feil)','#C0392B',t.tI*t.tI,t.dfI,t.pI,t.tI);
+}
+
+let cur=null;
+function drawSpaghetti(pre,post){
+  const cv=$('cv'),r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';
+  const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);
+  c.clearRect(0,0,w,h);
+  const all=pre.concat(post);
+  let lo=Math.min(...all)-2,hi=Math.max(...all)+2;
+  const x1=w*0.28,x2=w*0.72;
+  const Y=v=>h-32-(v-lo)/(hi-lo)*(h-50);
+  c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';
+  c.fillText('Pre',x1,h-14);c.fillText('Post',x2,h-14);
+  c.strokeStyle='rgba(46,84,150,0.35)';c.lineWidth=1.2;
+  for(let i=0;i<pre.length;i++){
+    c.beginPath();c.moveTo(x1,Y(pre[i]));c.lineTo(x2,Y(post[i]));c.stroke();
+    c.fillStyle='rgba(31,56,100,0.5)';
+    c.beginPath();c.arc(x1,Y(pre[i]),3,0,7);c.fill();
+    c.beginPath();c.arc(x2,Y(post[i]),3,0,7);c.fill();
+  }
+  // means
+  c.strokeStyle='#C0392B';c.lineWidth=4;
+  c.beginPath();c.moveTo(x1,Y(mean(pre)));c.lineTo(x2,Y(mean(post)));c.stroke();
+  c.fillStyle='#C0392B';c.font='bold 16px sans-serif';c.textAlign='left';
+  c.fillText('gjennomsnitt',x2+8,Y(mean(post))+4);
+}
+function run(){
+  const delta=+$('delta').value,r=+$('rw').value,n=+$('n').value;
+  const [pre,post]=simulate(delta,r,n);
+  cur=[pre,post];
+  drawSpaghetti(pre,post);
+  const t=tests(pre,post);
+  $('tests').innerHTML=rapport(t,'');
+  const seD=Math.sqrt((t.s1**2+t.s2**2-2*r*t.s1*t.s2)/n);
+  const seI=Math.sqrt((t.s1**2+t.s2**2)/n);
+  $('formula').innerHTML='<i>SE</i><sub>innen person</sub> ≈ √((s₁²+s₂²−2·r·s₁·s₂)/n) = <b>'+fmt(seD)+'</b> &nbsp;·&nbsp; <i>SE</i><sub>mellom personer</sub> ≈ '+fmt(seI)+' &nbsp;→&nbsp; med r = '+fmt(r)+' krymper feilleddet med '+fmt(100*(1-seD/seI),0)+' %';
+}
+function powerSim(){
+  const delta=+$('delta').value,r=+$('rw').value,n=+$('n').value;
+  let sigP=0,sigI=0;const K=2000;
+  for(let i=0;i<K;i++){
+    const [pre,post]=simulate(delta,r,n);
+    const t=tests(pre,post);
+    if(t.pP<0.05)sigP++;
+    if(t.pI<0.05)sigI++;
+  }
+  const pP=sigP/K,pI=sigI/K;
+  $('powerOut').innerHTML='<span class="stat green">styrke, innen person: '+fmt(100*pP,1)+' %</span><span class="stat red">styrke, «uavhengige grupper»: '+fmt(100*pI,1)+' %</span>';
+  powerSim._last=[pP,pI];
+  drawPow(pP,pI);
+}
+function drawPow(pP,pI){
+  const cv=$('cvPow'),rr=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*rr;cv.height=h*rr;cv.style.height=h+'px';
+  const c=cv.getContext('2d');c.setTransform(rr,0,0,rr,0,0);
+  c.clearRect(0,0,w,h);
+  const rows=[['Innen person',pP,'#2E7D32'],['Mellom personer',pI,'#C0392B']];
+  rows.forEach(([lab,p,col],i)=>{
+    const y=18+i*42;
+    c.fillStyle='#eef1f7';c.fillRect(90,y,w-110,24);
+    c.fillStyle=col;c.fillRect(90,y,(w-110)*p,24);
+    c.fillStyle='#1a2233';c.font='bold 17px sans-serif';c.textAlign='right';c.fillText(lab,84,y+16);
+    c.fillStyle='#fff';c.textAlign='left';c.font='bold 17px sans-serif';
+    if(p>0.12)c.fillText(fmt(100*p,0)+' %',96,y+16);
+  });
+}
+// ---------- de 36 ekte ISTDP-pasientene: 2 tegn per pasient [Depr_pre][Depr_post], base62 (offset 0) ----------
+const A62="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const ISTDP_ENC="ypxotkulrqsmwvxwzpsknmlgykzmzlzwxyklndiavmtfxnrkykxozksmzttktlqhxkwlzgzi";
+const R_PRE=[],R_POST=[];
+for(let i=0;i<ISTDP_ENC.length;i+=2){R_PRE.push(A62.indexOf(ISTDP_ENC[i]));R_POST.push(A62.indexOf(ISTDP_ENC[i+1]));}
+function showReal(){
+  // sett gliderne til de ekte verdiene og vis de ekte pasientene
+  $('delta').value=8.5;$('deltaOut').textContent=fmt(8.5,1);
+  $('rw').value=0.5;$('rwOut').textContent=fmt(0.5);
+  $('n').value=36;$('nOut').textContent='36';
+  cur=[R_PRE.slice(),R_POST.slice()];
+  drawSpaghetti(R_PRE,R_POST);
+  const t=tests(R_PRE,R_POST);
+  $('tests').innerHTML=rapport(t,'<b>EKTE DATA · ISTDP, <i>n</i> = 36</b>');
+  const rr=0.5;
+  const seD=Math.sqrt((t.s1**2+t.s2**2-2*rr*t.s1*t.s2)/36), seI=Math.sqrt((t.s1**2+t.s2**2)/36);
+  $('formula').innerHTML='<i>SE</i><sub>innen person</sub> = <b>'+fmt(seD)+'</b> &nbsp;·&nbsp; <i>SE</i><sub>mellom personer</sub> = '+fmt(seI)+' &nbsp;→&nbsp; med r = 0.50 krymper feilleddet med '+fmt(100*(1-seD/seI),0)+' %';
+  $('realNote').style.display='block';
+}
+$('realBtn').onclick=showReal;
+$('draw').onclick=()=>{$('realNote').style.display='none';run();};
+$('power').onclick=powerSim;
+$('delta').oninput=()=>{$('deltaOut').textContent=fmt(+$('delta').value,1);run();};
+$('rw').oninput=()=>{$('rwOut').textContent=fmt(+$('rw').value);run();};
+$('n').oninput=()=>{$('nOut').textContent=$('n').value;run();};
+const __fsRedraw=()=>{if(cur)drawSpaghetti(cur[0],cur[1]);if(powerSim._last)drawPow(powerSim._last[0],powerSim._last[1]);};
+(function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
+const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
+window.addEventListener('resize',kick);
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{kick();setTimeout(safe,600);}));
+let __mis=0;
+setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
+ document.querySelectorAll('canvas').forEach(c=>{if(c.clientWidth>0&&c.width>0&&Math.abs(c.width-Math.round(c.clientWidth*r))>2)bad=true;});
+ __mis=bad?__mis+1:0;
+ if(__mis>=2){__mis=0;safe();}},700);})();
+run();
+
+/* ===== PSY300 anonym bruksstatistikk =====================================
+   Sender to signaler til det samme Apps Script-endepunktet som MCQ-appen:
+   ett når appen åpnes, ett når fanen lukkes (med antall sekunder aktiv og
+   antall interaksjoner). Ingen navn, ingen kode, ingen IP — bare app-id,
+   tidspunkt og varighet. Lim inn /exec-URL-en under; står plassholderen
+   igjen, sendes ingenting og appen fungerer helt som før.                */
+const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA05xK7n1rC0ex_UVpNAjJPYNmRqvGfgUGuXp0EclxmyFUeKeVktMfg5YQ/exec";
+(function(){
+  if(!PSY300_USAGE_URL || PSY300_USAGE_URL.indexOf("PASTE_")>=0) return;
+  var APP="Sim 25", NAVN="Gjentatte målinger (RM-ANOVA)";
+  var t0=Date.now(), aktiv=0, sist=Date.now(), interaksjoner=0, sendt=false;
+  var sid=Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8);
+  // tell bare tid der fanen faktisk er synlig
+  function tikk(){ if(!document.hidden){ var na=Date.now(); aktiv+=Math.min(30000,na-sist); sist=na; } else { sist=Date.now(); } }
+  setInterval(tikk, 5000);
+  document.addEventListener("visibilitychange", tikk);
+  ["click","input","change","touchstart"].forEach(function(ev){
+    document.addEventListener(ev, function(){ interaksjoner++; }, {passive:true, capture:true});
+  });
+
+  /* Skiller underviserens egen bruk fra studentenes. Åpne en app én gang med
+     ?rolle=underviser, så huskes det i denne nettleseren til du åpner med
+     ?rolle=student. Ingen innlogging, ingen personopplysninger.            */
+  function PSY300_ROLLE(){
+    try{
+      var q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'')).get("rolle");
+      if(q==="underviser"||q==="student"){ localStorage.setItem("psy300_rolle",q); }
+      return localStorage.getItem("psy300_rolle")||"student";
+    }catch(e){ return "student"; }
+  }
+  function send(type){
+    if(type==="lukket"){ if(sendt) return; sendt=true; tikk(); }
+    var payload=JSON.stringify({kind:"usage", app:APP, navn:NAVN, event:type,
+      session_id:sid, sekunder:Math.round(aktiv/1000), interaksjoner:interaksjoner,
+      innebygd:(window.top!==window.self)?1:0, rolle:PSY300_ROLLE()});
+    try{
+      if(type==="lukket" && navigator.sendBeacon){
+        navigator.sendBeacon(PSY300_USAGE_URL, new Blob([payload],{type:"text/plain;charset=utf-8"}));
+      } else {
+        fetch(PSY300_USAGE_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:payload, keepalive:true}).catch(function(){});
+      }
+    }catch(e){}
+  }
+  send("apnet");
+  window.addEventListener("pagehide", function(){ send("lukket"); });
+  document.addEventListener("visibilitychange", function(){ if(document.hidden) send("lukket"); });
+})();
+/* ===== slutt bruksstatistikk ============================================ */
+
+/* ===== Presentasjonsmodus: skjuler brødtekst og ordliste, strammer marger === */
+(function(){
+  var b=document.createElement("button");
+  b.className="presbtn"; b.type="button";
+  b.title="Skjuler forklarende tekst og ordlisten, slik at figuren og kontrollene fyller lerretet (snarvei: P)";
+  var av="Presentasjonsmodus", pa="Vis all tekst igjen";
+  b.textContent=av;
+  function veksle(){
+    var på=document.body.classList.toggle("pres");
+    b.textContent=på?pa:av;
+    window.dispatchEvent(new Event("resize"));
+  }
+  b.addEventListener("click",veksle);
+  document.addEventListener("keydown",function(e){
+    if((e.key==="p"||e.key==="P")&&!/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) veksle();
+  });
+  document.body.appendChild(b);
+})();
+
+/* =====================================================================
+   Fane 0 «Hvorfor …?» — formelfri inngang, lagt til i ettertid.
+   Appen åpner her; simuleringen nås med #fane=sim (kjøremanusene bruker
+   den dyplenken). Simuleringen tegner seg selv på nytt via resize.
+   ===================================================================== */
+(function(){
+const FANER=['hvorfor','sim','tre','sfare','posthoc','ekte','feller'];
+function visFane(f){
+  if(FANER.indexOf(f)<0) f='hvorfor';
+  FANER.forEach(function(x){
+    const e=document.getElementById('fane-'+x);
+    if(e) e.classList.toggle('hide', x!==f);
+  });
+  document.querySelectorAll('.fane').forEach(function(b){
+    b.classList.toggle('on', b.dataset.fane===f);
+  });
+  if(f==='sim') window.dispatchEvent(new Event('resize'));
+  try{ history.replaceState(null,'','#fane='+f); }catch(e){}
+}
+document.querySelectorAll('.fane').forEach(function(b){
+  b.addEventListener('click',function(){ visFane(b.dataset.fane); });
+});
+const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+
+        (location.hash||'').replace(/^#/,''));
+const f=q.get('fane'); if(f&&FANER.indexOf(f)>=0) visFane(f);
+})();
+
+/* ---- fane 0: gjenkjenningsøvelsen ---- */
+(function(){
+const SP=[{"q": "«Endret depresjonsskåren seg hos de samme 36 pasientene over tre måletidspunkt?»", "ja": true, "f": "Ja. Samme personer, tre målinger — det er RM-ANOVA. Dette er dagens hovedeksempel."}, {"q": "«Falt selvtilliten hos de samme studentene fra før til etter prøven?»", "ja": false, "f": "Nei — bare to målinger. Da er paret <i>t</i>-test det enkleste svaret (<b>Sim 16, fane 10</b>). RM-ANOVA ville gitt nøyaktig samme <i>p</i>-verdi, siden <i>F</i> = <i>t</i>²."}, {"q": "«Skårer terapigruppen lavere enn ventelisten ved oppstart?»", "ja": false, "f": "Nei. To ulike sett med mennesker, én måling — uavhengig <i>t</i>-test (Sim 16)."}, {"q": "«Hver deltaker løste oppgaver i tre betingelser: stille, musikk og støy. Skiller betingelsene seg?»", "ja": true, "f": "Ja. Det er ikke tid, men det er de <i>samme</i> personene i tre betingelser — og da gjelder nøyaktig samme analyse. Her kan du dessuten motbalansere rekkefølgen."}, {"q": "«Pasientene ble bedre over de tre målingene. Virket behandlingen?»", "ja": false, "f": "Ikke uten videre. RM-ANOVA viser at de <i>endret seg</i>, ikke hvorfor. Ventelistegruppa i emnets egen terapistudie endret seg også signifikant — 1.2 poeng (fane 6)."}, {"q": "«Falt depresjonen mer i ISTDP-gruppa enn i ventelistegruppa over de tre målingene?»", "ja": false, "f": "Ikke med RM-ANOVA alene. Her er det <i>både</i> tid innen person og gruppe mellom personer — det er en <b>blandet ANOVA</b>, og funnet ligger i interaksjonen tid × gruppe (Sim 28)."}];
+const vert=document.getElementById('hvQuiz'); if(!vert) return;
+let svart=0,rett=0;
+SP.forEach(function(s,i){
+  const d=document.createElement('div'); d.className='hvq';
+  d.innerHTML='<span class="sp"><b>'+(i+1)+'.</b> '+s.q+'</span>'+
+    '<button class="btn2" data-v="1">Ja</button><button class="btn2" data-v="0">Nei</button>'+
+    '<div class="sv"></div>';
+  d.querySelectorAll('button').forEach(function(b){
+    b.addEventListener('click',function(){
+      if(d.classList.contains('svart'))return;
+      const valgt=b.dataset.v==='1', ok=(valgt===s.ja);
+      d.classList.add('svart', ok?'rett':'feil');
+      d.querySelector('.sv').innerHTML=
+        '<span class="hvfasit '+(s.ja?'ja':'nei')+'">'+(s.ja?'JA':'NEI')+'</span>. '+s.f;
+      d.querySelectorAll('button').forEach(function(x){x.disabled=true;});
+      svart++; if(ok)rett++;
+      if(svart===SP.length){
+        const sum=document.getElementById('hvSum'); sum.style.display='block';
+        sum.innerHTML='<b>Du traff '+rett+' av '+SP.length+'.</b> Men det er ikke tallet som '+
+          'teller — det er at du nå har sett de fire tingene som skiller: om det er de samme personene, hvor mange målinger det er, om det også finnes grupper, og at endring ikke er det samme som effekt.';
+      }
+    });
+  });
+  vert.appendChild(d);
+});
+})();
+
+/* =====================================================================
+   FORELESNINGSMODUS · F7 · gjentatte målinger
+   ===================================================================== */
+window.__rmTegn = function(){ if(typeof __fsRedraw==='function') __fsRedraw(); };
+
+(function(){
+const QR = {};
+function sett(id,v){ const e=$(id); if(e){ e.value=v; e.dispatchEvent(new Event('input')); } }
+function klikk(id){ const e=$(id); if(e) e.click(); }
+function kryss(id,paa){ const e=$(id); if(e && e.checked!==paa){ e.checked=paa;
+  e.dispatchEvent(new Event('change')); } }
+const TEGN = { sim: function(){ if(window.__rmTegn) window.__rmTegn(); } };
+const BLOKKFANE = { 'blokk-spagetti':'sim', 'blokk-styrke':'sim' };
+
+/* Undervisernotatene er det eneste i appen som ikke er ment for
+   studentene: de sier hvilket alternativ som lurer flest, hva du ikke skal
+   lese hoeyt, og naar du skal holde igjen. Appen er publisert, saa dette er
+   ingen sperre i sikkerhetsforstand — den som leser kildekoden, finner dem
+   uansett. Den holder dem borte fra lerretet og fra DOM-en, og det er det
+   den er ment aa gjoere.
+
+   Aapne  ?rolle=underviser  en gang, saa huskes det i nettleseren din.
+   Aapne  ?rolle=student     for aa glemme det igjen (delt maskin).      */
+const ROLLENOKKEL='psy300_rolle';
+const UNDERVISER=(function(){
+  const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+
+                              (location.hash||'').replace(/^#/,''));
+  const r=q.get('rolle');
+  try{
+    if(r==='underviser'){ localStorage.setItem(ROLLENOKKEL,'underviser'); return true; }
+    if(r==='student'){ localStorage.removeItem(ROLLENOKKEL); return false; }
+    return localStorage.getItem(ROLLENOKKEL)==='underviser';
+  }catch(e){ return r==='underviser'; }
+})();
+window.__erUnderviser=function(){ return UNDERVISER; };
+
+const S = [];
+function slide(o){ S.push(o); }
+
+slide({del:'Time 1 · Hva som skjer når det er de samme personene', t:'Tittel', klasse:'sl-tittel', html:
+ '<h1>Gjentatte målinger</h1>'+
+ '<div class="under">Forelesning 7 · Kapittel 13</div>'+
+ '<div class="merke">PSY300 · to timer</div>',
+ notat:'Start på neste.'});
+
+slide({t:'Forskningsspørsmålet', klasse:'sl-sitat', html:
+ '<div class="ord">Holder bedringen seg?</div>'+
+ '<div class="kilde avslor">Vi har målt 36 pasienter ved oppstart og rett etter behandling. '+
+ 'Nå har det gått tre måneder til, og vi har målt dem en tredje gang.</div>',
+ notat:'Dette er det spørsmålet ingen av de tidligere metodene kan svare på. '+
+       'Paret t-test tar to tidspunkt. Enveis ANOVA tar tre grupper. Ingen tar tre målinger '+
+       'av de samme personene.'});
+
+slide({t:'Dagens kontrast', klasse:'stort-tall', html:
+ '<h1>To grupper, tre målinger, to helt ulike forløp</h1>'+
+ '<div class="tallrad">'+
+ '<div class="tall"><b>30 → 22 → 17</b><span>ISTDP</span></div>'+
+ '<div class="tall avslor"><b>30 → 29 → 29</b><span>venteliste</span></div>'+
+ '</div>'+
+ '<p class="liten avslor"><b>Begge endringene er statistisk signifikante.</b> '+
+ 'Bare den ene betyr noe. Det er dagens viktigste poeng.</p>',
+ notat:'Plant kontrasten tidlig. Den kommer tilbake i time 2 med tall.'});
+
+slide({t:'Det ene spørsmålet, igjen', klasse:'tett', html:
+ '<h1>Er det de samme personene på begge sider?</h1>'+
+ '<table class="tt">'+
+ '<tr><th>Antall målinger</th><th>Samme personer?</th><th>Metode</th></tr>'+
+ '<tr><td>2</td><td>nei</td><td>uavhengig <i>t</i>-test</td></tr>'+
+ '<tr><td>2</td><td>ja</td><td>paret <i>t</i>-test</td></tr>'+
+ '<tr><td>3+</td><td>nei</td><td>enveis ANOVA</td></tr>'+
+ '<tr class="na"><td><b>3+</b></td><td><b>ja</b></td><td><b>ANOVA for gjentatte målinger</b></td></tr>'+
+ '</table>'+
+ '<p class="liten avslor">Hele kurset har bygget mot denne tabellen. I dag fyller vi den '+
+ 'siste ruta.</p>',
+ notat:'Vis at de kjenner tre av fire rader fra før. Dette er ikke en ny verden, '+
+       'det er en utvidelse.'});
+
+slide({t:'SIM · hver linje er én person', blokk:'blokk-spagetti', html:
+ '<h1>Derfor er innen person sterkere</h1>'+
+ '<p class="lead">Hver linje er én pasient. Legg merke til at linjene starter på vidt '+
+ 'forskjellige nivåer &mdash; og at nesten alle heller samme vei.</p>'+
+ '<div class="ordbaand">'+
+ '<div class="boks bla avslor" data-trinn="1"><h3>1 · Spredningen mellom personer</h3>'+
+ 'Den er stor. I en analyse med uavhengige grupper er dette <b>støy</b>.</div>'+
+ '<div class="boks gronn avslor" data-trinn="2"><h3>2 · Hellingen</h3>'+
+ 'Den er det vi vil måle. Og den er den samme uansett hvor høyt linja starter.</div>'+
+ '<div class="boks rod avslor" data-trinn="3"><h3>3 · Trikset</h3>'+
+ 'Regn ut differansen for hver person, så forsvinner startnivået ut av regnestykket.</div>'+
+ '</div>',
+ notat:'Dette er repetisjon fra seminar 3 og t-test-fanen om paret test — men det er '+
+       'fundamentet for alt som kommer i dag, så bruk tid.'});
+
+slide({t:'Fra to til tre målinger', klasse:'tett', html:
+ '<h1>Samme problem som i forelesning 5</h1>'+
+ '<p class="lead">Tre tidspunkt gir tre parvise sammenligninger. Tre tester på α = .05 '+
+ 'gir <b>14 %</b> sjanse for minst én falsk alarm.</p>'+
+ '<p class="lead avslor">Løsningen er den samme: <b>ett omnibusspørsmål først</b>. '+
+ 'Men nevneren i <i>F</i> er en annen.</p>',
+ notat:'Koble til F5. Strukturen er kjent; det som er nytt er hvordan feilleddet bygges.'});
+
+slide({t:'Variasjonen deles i tre', klasse:'tett', html:
+ '<h1>Én kilde mer enn i enveis ANOVA</h1>'+
+ '<table class="tt">'+
+ '<tr><th>Kilde</th><th>Hva den er</th><th><i>df</i></th></tr>'+
+ '<tr><td>SS<sub>tid</sub></td><td>det vi vil teste</td><td><i>k</i> &minus; 1</td></tr>'+
+ '<tr class="na"><td><b>SS<sub>person</sub></b></td>'+
+ '<td><b>at folk starter på ulike nivåer</b></td><td><i>n</i> &minus; 1</td></tr>'+
+ '<tr><td>SS<sub>feil</sub></td><td>det som blir igjen &mdash; nevneren</td>'+
+ '<td>(<i>k</i>&minus;1)(<i>n</i>&minus;1)</td></tr>'+
+ '</table>'+
+ '<div class="keybox avslor"><span class="lbl">Hele gevinsten på én linje</span>'+
+ '<b>SS<sub>person</sub> trekkes <i>ut</i> av feilleddet. I en analyse med uavhengige grupper '+
+ 'hadde den ligget der og skjult effekten.</b></div>',
+ notat:'Den midterste raden er hele forskjellen fra F5. Pek på den.'});
+
+slide({t:'Tallene fra terapistudien', klasse:'tett', html:
+ '<h1>ISTDP-gruppa, tre tidspunkt, <i>n</i> = 36</h1>'+
+ '<table class="tt">'+
+ '<tr><th>Kilde</th><th>SS</th><th><i>df</i></th><th>MS</th><th><i>F</i></th><th><i>p</i></th></tr>'+
+ '<tr><td>Tid</td><td>3112.1</td><td>2</td><td>1556.0</td><td><b>127.6</b></td><td>&lt; .001</td></tr>'+
+ '<tr class="na"><td>Person</td><td>1876.9</td><td>35</td>'+
+ '<td colspan="3"><i>trekkes ut av feilleddet</i></td></tr>'+
+ '<tr><td>Feil</td><td>853.9</td><td>70</td><td>12.2</td><td></td><td></td></tr>'+
+ '</table>'+
+ '<p class="liten avslor"><b>partiell η² = .785.</b> Nesten 79 % av variasjonen som ikke '+
+ 'skyldes stabile personforskjeller, henger sammen med tid.</p>',
+ notat:'Be dem regne 1556.0 ÷ 12.2. Det er 127.6.'});
+
+slide({t:'AVSTEMNING S1', klasse:'harqr', html:
+ '<h1>Hva skjer med <i>F</i> hvis vi analyserer de samme tallene som tre <i>ulike</i> grupper?</h1>'+
+ '<div class="ordbaand">'+
+ '<div class="boks">A · Nøyaktig det samme</div>'+
+ '<div class="boks">B · Litt lavere</div>'+
+ '<div class="boks">C · Under halvparten</div>'+
+ '<div class="boks">D · Høyere</div>'+
+ '</div>',
+ notat:'De har sett det samme poenget for paret t-test. Spørsmålet er om de husker '+
+       'hvor stort det er.'});
+
+slide({t:'Fasit S1', klasse:'fasitsvar', html:
+ '<h1>C · fra 127.6 til 59.8</h1>'+
+ '<p class="lead">SS<sub>person</sub> havner i feilleddet: 1876.9 + 853.9 = 2730.9, med 105 '+
+ 'frihetsgrader i stedet for 70.</p>'+
+ '<p class="liten avslor">Konklusjonen overlever her fordi effekten er enorm. '+
+ '<b>Med en typisk psykologieffekt ville den ikke gjort det</b> &mdash; og det er derfor '+
+ 'designet er verdt bryet.</p>',
+ notat:'Samme poeng som paret mot uavhengig i seminar 3, i ny drakt. Si det.'});
+
+slide({t:'Sfærisitet', klasse:'tett', html:
+ '<h1>Én ny forutsetning &mdash; og den finnes bare her</h1>'+
+ '<p class="lead">Med to tidspunkt finnes <b>én</b> differanse. Med tre finnes <b>tre</b>, '+
+ 'og de kan ha helt ulik spredning.</p>'+
+ '<p class="hvbig avslor">Sfærisitet = alle de parvise differansene har samme varians.</p>'+
+ '<table class="tt avslor" style="margin-top:10px">'+
+ '<tr><th>Differanse</th><th>Varians</th></tr>'+
+ '<tr><td>før → etter</td><td>24.9</td></tr>'+
+ '<tr><td>før → 3 måneder</td><td><b>32.1</b></td></tr>'+
+ '<tr><td>etter → 3 måneder</td><td><b>16.3</b></td></tr>'+
+ '</table>'+
+ '<p class="liten avslor">De er ikke like &mdash; og det er det vanlige. Målinger nær '+
+ 'hverandre i tid henger tettere sammen.</p>',
+ notat:'Den intuitive grunnen er verdt å si høyt: det er lettere å forutsi neste måned '+
+       'enn neste år.'});
+
+slide({t:'Hva bruddet koster', klasse:'tett', html:
+ '<h1><i>F</i>-testen blir for snill mot deg</h1>'+
+ '<div class="todelt">'+
+ '<div class="boks rod"><h3>Uten korreksjon</h3>For små <i>p</i>-verdier. Du finner '+
+ 'effekter som ikke er der.</div>'+
+ '<div class="boks gronn"><h3>Med korreksjon</h3>Frihetsgradene ganges med ε &mdash; et tall '+
+ 'mellom 0 og 1. Strengere test.</div>'+
+ '</div>'+
+ '<table class="tt avslor" style="margin-top:12px">'+
+ '<tr><th>Korreksjon</th><th>I terapidataene</th></tr>'+
+ '<tr class="na"><td><b>Greenhouse-Geisser</b> (standardvalget)</td>'+
+ '<td>ε = <b>.877</b> → <i>F</i>(1.75, 61.4)</td></tr>'+
+ '<tr><td>Huynh-Feldt (mindre konservativ)</td><td>litt høyere ε</td></tr>'+
+ '<tr><td>Ingen</td><td><i>F</i>(2, 70)</td></tr>'+
+ '</table>'+
+ '<p class="liten avslor">Her endrer korreksjonen ingenting (<i>p</i> &lt; .001 begge veier). '+
+ '<b>Det er det normale.</b> Den betyr noe når <i>p</i> ligger nær .05 &mdash; og da betyr '+
+ 'den alt.</p>',
+ notat:'Mauchlys test sjekker det, men er selv upålitelig ved små n. Mange anbefaler å '+
+       'korrigere uansett; det er et forsvarlig standpunkt studentene kan innta.'});
+
+slide({t:'Pause', klasse:'sl-tittel', html:
+ '<h1>Pause</h1>'+
+ '<div class="under">Etter pausen: de to forløpene, og fellene</div>'+
+ '<div class="merke">10 minutter</div>',
+ notat:''});
+
+slide({del:'Time 2 · Forløpene, post hoc og fellene', t:'De to forløpene', klasse:'tett', html:
+ '<h1>Samme analyse, to grupper</h1>'+
+ '<table class="tt">'+
+ '<tr><th>Gruppe</th><th>Oppstart</th><th>Etter</th><th>3 mnd</th><th><i>n</i></th></tr>'+
+ '<tr class="na"><td><b>ISTDP</b></td><td>30.28</td><td>21.81</td><td><b>17.33</b></td><td>36</td></tr>'+
+ '<tr><td>Venteliste</td><td>30.46</td><td>29.33</td><td>29.23</td><td>39</td></tr>'+
+ '</table>'+
+ '<table class="tt avslor" style="margin-top:12px">'+
+ '<tr><th>Gruppe</th><th><i>F</i></th><th><i>df</i></th><th><i>p</i></th><th>partiell η²</th></tr>'+
+ '<tr><td>ISTDP</td><td><b>127.6</b></td><td>2, 70</td><td>&lt; .001</td><td><b>.785</b></td></tr>'+
+ '<tr><td>Venteliste</td><td>7.61</td><td>2, 76</td><td>&lt; .001</td><td>.167</td></tr>'+
+ '</table>',
+ notat:'La dem se begge p-verdiene før du sier noe. Begge er under .001.'});
+
+slide({t:'Begge er signifikante', klasse:'stort-tall', html:
+ '<h1>Ventelistegruppa falt 1.2 poeng på ti måneder</h1>'+
+ '<div class="tallrad">'+
+ '<div class="tall"><b>&minus;12.9</b><span>ISTDP</span></div>'+
+ '<div class="tall"><b>&minus;1.2</b><span>venteliste</span></div>'+
+ '</div>'+
+ '<p class="lead avslor">Begge er statistisk signifikante. <b>Den ene er en behandling '+
+ 'som virker. Den andre er ingenting noen ville merket.</b></p>'+
+ '<p class="liten avslor">Med <i>n</i> = 39 og en innen-person-analyse er selv en så liten '+
+ 'endring signifikant. Det er styrken ved designet &mdash; og fella.</p>',
+ notat:'Dette er timens viktigste slide. En innen-person-analyse er sterk nok til å gjøre '+
+       'klinisk uinteressante endringer signifikante.'});
+
+slide({t:'Det riktige svaret', klasse:'sl-sitat', html:
+ '<div class="ord">Ingen av de to analysene er svaret.</div>'+
+ '<div class="kilde avslor">Svaret er <b>forskjellen mellom dem</b> &mdash; en blandet ANOVA '+
+ 'med tid innen person og gruppe mellom personer. Interaksjonen tid × gruppe er hele funnet.</div>',
+ notat:'Introduser mixed ANOVA her, kort. De trenger å vite at den finnes og hva den svarer på — '+
+       'ikke å regne den for hånd.'});
+
+slide({t:'Post hoc over tid', klasse:'tett', html:
+ '<h1>Omnibus sier at noe endret seg. Post hoc sier når.</h1>'+
+ '<p class="muted">ISTDP, parete <i>t</i>-tester med Bonferroni</p>'+
+ '<table class="tt">'+
+ '<tr><th>Sammenligning</th><th>M<sub>diff</sub></th><th><i>t</i>(35)</th><th><i>p</i></th>'+
+ '<th><i>d</i></th></tr>'+
+ '<tr><td>før → etter</td><td>&minus;8.47</td><td>&minus;10.19</td><td>&lt; .001</td><td>&minus;1.70</td></tr>'+
+ '<tr><td>før → 3 måneder</td><td><b>&minus;12.94</b></td><td>&minus;13.72</td><td>&lt; .001</td><td><b>&minus;2.29</b></td></tr>'+
+ '<tr class="na"><td>etter → 3 måneder</td><td>&minus;4.47</td><td>&minus;6.66</td><td>&lt; .001</td><td>&minus;1.11</td></tr>'+
+ '</table>'+
+ '<p class="liten avslor">Siste rad er den klinisk interessante: <b>bedringen fortsatte '+
+ 'etter at behandlingen var over.</b> Det er et annet funn enn «terapi virker», og det er '+
+ 'bare synlig fordi det finnes et tredje måletidspunkt.</p>',
+ notat:'Merk at Tukey ikke tilbys her — den forutsetter uavhengige grupper. Bonferroni eller Holm.'});
+
+slide({t:'Felle 1 · frafall', klasse:'tett', html:
+ '<h1>Mangler ett tidspunkt? Da faller hele personen ut</h1>'+
+ '<p class="lead">Standard RM-ANOVA bruker bare komplette rader. En pasient som ikke møtte '+
+ 'til tremånederskontrollen, forsvinner fra <b>hele</b> analysen &mdash; også fra de to '+
+ 'målingene du faktisk har.</p>'+
+ '<p class="liten avslor">Med tre måletidspunkt og 10 % frafall per gang sitter du igjen med '+
+ 'rundt to tredjedeler &mdash; og de som blir igjen, er sjelden et tilfeldig utvalg av dem '+
+ 'du startet med.</p>'+
+ '<div class="note avslor"><b>Merk:</b> terapistudien vår har <i>N</i> = 75 «completers» av '+
+ '86 rekrutterte. De 11 som falt fra, er ikke med i noen av tallene i dag.</div>',
+ notat:'Dette er en ærlighet studentene sjelden møter: tallene i forelesningen er selv '+
+       'et resultat av frafall.'});
+
+slide({t:'Felle 2 · rekkefølge', klasse:'tett', html:
+ '<h1>Er «tid» det samme som «trening»?</h1>'+
+ '<p class="lead">Har alle fått betingelsene i samme rekkefølge, er tid forvekslet med '+
+ 'alt annet som følger rekkefølgen: trening, tretthet, kjedsomhet, modning.</p>'+
+ '<div class="todelt avslor">'+
+ '<div class="boks gronn"><h3>I eksperimenter</h3><b>Motbalanser.</b> Halvparten får A først, '+
+ 'halvparten B først.</div>'+
+ '<div class="boks rod"><h3>I forløpsstudier</h3>Motbalansering finnes ikke &mdash; tid er tid. '+
+ '<b>Da trenger du en kontrollgruppe.</b></div>'+
+ '</div>',
+ notat:'Koble til hvorfor ventelistegruppa i studien finnes.'});
+
+slide({t:'Felle 3 · regresjon mot gjennomsnittet', klasse:'tett', html:
+ '<h1>Hvorfor falt ventelistegruppa i det hele tatt?</h1>'+
+ '<p class="lead">Pasientene ble rekruttert fordi de skåret <b>høyt</b> på depresjon. '+
+ 'Måler du de samme personene igjen, vil de i snitt skåre lavere &mdash; uansett hva som '+
+ 'skjer imellom.</p>'+
+ '<p class="liten avslor">Det er ikke en behandlingseffekt. Det er <b>regresjon mot '+
+ 'gjennomsnittet</b>, og den forklarer store deler av de 1.2 poengene.</p>'+
+ '<div class="note avslor">Og den er den tredje grunnen til at kontrollgruppa må være der: '+
+ 'den regresserer like mye.</div>',
+ notat:'Sim 26 har hele simuleringen hvis noen vil se den. Her holder poenget.'});
+
+slide({t:'Forutsetningene', klasse:'tett', html:
+ '<h1>Tre, hvorav én er ny</h1>'+
+ '<div class="steg" style="border-left-color:#C0392B"><div class="tit">1 · Uavhengighet <i>mellom</i> personer</div>'+
+ 'Målingene skal henge sammen innenfor en person &mdash; det er poenget. Personene skal være '+
+ 'uavhengige av hverandre.</div>'+
+ '<div class="steg avslor" style="border-left-color:#E08A2E"><div class="tit">2 · Sfærisitet</div>'+
+ 'Den nye. Mauchly sjekker, Greenhouse-Geisser løser.</div>'+
+ '<div class="steg avslor" style="border-left-color:#2E7D32"><div class="tit">3 · Normalfordelte differanser</div>'+
+ 'Som i paret <i>t</i>-test: differansene, ikke målingene. Reserve: <b>Friedman</b>.</div>',
+ notat:'Samme rekkefølgeprinsipp som alltid: sortert etter hvor mye skade bruddet gjør.'});
+
+slide({t:'Rapporteringsmalen', klasse:'tett', html:
+ '<h1>Slik ser avsnittet ut</h1>'+
+ '<div class="apadel"><p>En variansanalyse for gjentatte målinger viste en signifikant '+
+ 'endring i depresjon over de tre måletidspunktene, <i>F</i>(2, 70) = 127.55, '+
+ '<i>p</i> &lt; .001, partiell η² = .79. Mauchlys test indikerte brudd på '+
+ 'sfærisitetsantakelsen, og Greenhouse-Geisser-korrigerte frihetsgrader ble derfor brukt '+
+ '(ε = .88). Parvise sammenligninger med Bonferroni-korreksjon viste signifikant nedgang '+
+ 'fra oppstart til avslutning (<i>M</i><sub>diff</sub> = &minus;8.47, <i>p</i> &lt; .001) '+
+ 'og videre fra avslutning til tremånederskontroll '+
+ '(<i>M</i><sub>diff</sub> = &minus;4.47, <i>p</i> &lt; .001).</p></div>'+
+ '<p class="liten avslor"><b>Fire deler:</b> omnibus med begge <i>df</i> og partiell η² → '+
+ 'sfærisitet og hvilken korreksjon → parvise sammenligninger med navngitt korreksjon → '+
+ 'retningen i ord.</p>',
+ notat:'Les hele avsnittet høyt. Merk at sfærisiteten nevnes ÉN gang, og at den nevnes '+
+       'selv når den ikke endret noe.'});
+
+slide({t:'Fem ting som trekker ned', klasse:'tett', html:
+ '<h1>Det jeg ser etter når jeg retter</h1>'+
+ '<ol style="font-size:19px;line-height:1.7">'+
+ '<li><b>Sfærisitet ikke nevnt</b> &mdash; verken test eller korreksjon</li>'+
+ '<li class="avslor"><b>Tukey brukt som post hoc</b> på gjentatte målinger</li>'+
+ '<li class="avslor"><b>Uavhengig analyse på parede data</b> &mdash; motsatt av poenget</li>'+
+ '<li class="avslor"><b>Frafall ikke rapportert</b></li>'+
+ '<li class="avslor"><b>Signifikant forvekslet med klinisk viktig</b> &mdash; jf. ventelista</li>'+
+ '</ol>',
+ notat:'Klikk dem fram én om gangen.'});
+
+slide({t:'Hele kartet', klasse:'tett', html:
+ '<h1>Der vi er nå</h1>'+
+ '<table class="tt">'+
+ '<tr><th>Designet ditt</th><th>Metoden</th><th>Hvor</th></tr>'+
+ '<tr><td>To grupper</td><td><i>t</i>-test</td><td>F4</td></tr>'+
+ '<tr><td>Tre eller flere grupper</td><td>Enveis ANOVA</td><td>F5</td></tr>'+
+ '<tr><td>To faktorer</td><td>Faktoriell ANOVA</td><td>F6</td></tr>'+
+ '<tr class="na"><td><b>Samme personer, flere ganger</b></td>'+
+ '<td><b>RM-ANOVA</b></td><td><b>i dag</b></td></tr>'+
+ '<tr><td>Begge deler samtidig</td><td>Blandet ANOVA</td><td>nevnt i dag</td></tr>'+
+ '</table>'+
+ '<p class="liten avslor">Alle fem er den samme modellen. Det eneste som endrer seg, er '+
+ 'hvordan feilleddet bygges.</p>',
+ notat:'Siste faglige slide. Avslutt med å si at de nå har hele ANOVA-familien.'});
+
+slide({t:'Avslutning', klasse:'sl-tittel', html:
+ '<h1>Tre setninger å ta med</h1>'+
+ '<div class="under">Personforskjellene trekkes ut av feilleddet &mdash; det er hele gevinsten.<br>'+
+ 'Sfærisitet er den nye forutsetningen, og Greenhouse-Geisser er svaret.<br>'+
+ 'Et signifikant forløp er ikke nødvendigvis et forløp som betyr noe.</div>'+
+ '<div class="merke">PSY300 · Forelesning 7</div>',
+ notat:''});
+
+const scene=$('scene'), fnav=$('fnav'), fbar=$('fbar'),
+      fnotat=$('fnotat'), foversikt=$('foversikt');
+const HJEM={};      // blokk-id -> {forelder, neste}
+let laant=[];       // blokk-id-er som står i scenen nå
+let n=0;
+let sisteTegn=null;   // tegnefunksjonen for sliden vi staar paa
+let avsloert=0;       // hvor mange .avslor som er klikket fram
+
+/* Noen blokker holder paa en tilstand som ikke skal folge med til
+   neste slide — frosne kurver, et trukket utvalg. Hver av dem melder
+   inn sin egen nullstilling; motoren kaller den naar blokka laanes ut. */
+const BLOKKNULL = {};
+/* Testharnessen maa kunne kjore den EKTE nullstillingen. */
+window.__blokkNull=function(b){ const f=BLOKKNULL[b]; if(f) f(); };
+
+function laan(bid,vert){
+  const node=$(bid); if(!node) return;
+  if(!HJEM[bid]) HJEM[bid]={forelder:node.parentNode, neste:node.nextSibling};
+  vert.appendChild(node); laant.push(bid);
+}
+function lever(){
+  laant.forEach(function(bid){
+    const node=$(bid), h=HJEM[bid];
+    if(!node) return;
+    /* nullstill tilpassningen, ellers følger den med tilbake til utforskeren */
+    node.style.transform=''; node.style.width='';
+    if(h&&h.forelder) h.forelder.insertBefore(node,h.neste);
+  });
+  laant=[];
+}
+/* Scenen er 720 logiske piksler hoy, alltid. Bredden folger skjermens
+   format, slik at sliden fyller lerretet enten det er 16:9, 16:10 (som en
+   MacBook), 3:2 eller noe annet. Uten dette ble alt utenom 16:9 staaende
+   med marger, og paa en lav skjerm krympet hele sliden unodig mye.       */
+const SCENE_H=720, SCENE_MIN=1000, SCENE_MAKS=1600;
+function sceneBredde(){
+  const forhold=window.innerWidth/Math.max(1,window.innerHeight);
+  return Math.round(Math.max(SCENE_MIN,Math.min(SCENE_MAKS,SCENE_H*forhold)));
+}
+function skaler(){
+  const B=sceneBredde();
+  scene.style.width=B+'px';
+  scene.style.height=SCENE_H+'px';
+  const k=Math.min(window.innerWidth/B, window.innerHeight/SCENE_H);
+  window.__sceneskala=k;
+  window.__scenebredde=B;
+  scene.style.transform='translate('+((window.innerWidth-B*k)/2)+'px,'+
+    ((window.innerHeight-SCENE_H*k)/2)+'px) scale('+k+')';
+}
+/* Får blokken plass på sliden?
+   Simuleringsblokkene er tegnet for en rullbar nettside. En slide er 720 px
+   høy, punktum. Er blokken høyere enn plassen den har fått, skaleres den ned
+   til den passer — og gjøres tilsvarende bredere først, så figuren fyller
+   sliden i full bredde og canvas tegnes på nytt i riktig oppløsning.
+   Uten dette forsvant nedre halvdel av figuren og alle tallene under den. */
+function tilpassBlokk(tegnPaaNytt){
+  const vert=scene.querySelector('.simvert'); if(!vert) return;
+  const blokk=vert.firstElementChild; if(!blokk) return;
+  blokk.style.transform=''; blokk.style.width='';
+  const H=vert.clientHeight, B=vert.clientWidth;
+  if(!H||!B) return;
+  let k=1;
+  for(let runde=0;runde<3;runde++){
+    const h=blokk.scrollHeight;             // uskalert høyde ved gjeldende bredde
+    if(h*k<=H+0.5) break;                   // passer allerede
+    k=Math.max(0.55,Math.min(1,H/h));
+    blokk.style.width=(B/k)+'px';
+    blokk.style.transform='scale('+k+')';
+    if(tegnPaaNytt) tegnPaaNytt();          // canvas er nå bredere — tegn om
+  }
+  window.__blokkskala=k;
+}
+/* Er det noe igjen å klikke fram på denne sliden, gjør vi det først —
+   ellers går vi videre til neste slide. */
+function fram(){
+  const skjult=[...scene.querySelectorAll('.avslor:not(.vist)')];
+  if(!skjult.length) return false;
+  /* Elementer merket med samme data-trinn kommer fram sammen. En figur og
+     tekstboksen som forklarer den hoerer til samme klikk, selv om de staar
+     langt fra hverandre i markupen. */
+  const t=skjult[0].dataset.trinn;
+  const gruppe=t?skjult.filter(e=>e.dataset.trinn===t):[skjult[0]];
+  gruppe.forEach(e=>{ e.classList.add('vist'); gjor(e.dataset.gjor); });
+  avsloert+=gruppe.length;
+  return true;
+}
+/* Et trinn kan stille inn simuleringen samtidig som det viser en tekstboks.
+   Skrivemaaten er «sett:id:verdi», «kryss:id:1» eller «klikk:id», flere
+   adskilt med semikolon. Uten denne sto de usynlige trinnene paa
+   steg-sliden og gjorde ingenting naar de ble klikket fram. */
+function gjor(kommando){
+  if(!kommando) return;
+  kommando.split(';').forEach(function(k){
+    const d=k.split(':');
+    if(d[0]==='sett')  sett(d[1], d.slice(2).join(':'));
+    if(d[0]==='kryss') kryss(d[1], d[2]==='1');
+    if(d[0]==='klikk') klikk(d[1]);
+    /* Absolutt steg i en flerstegssimulering. Maa vaere absolutt, ikke
+       «neste», for at tilbake() skal kunne spole riktig vei. */
+    if(d[0]==='steg' && window.__stSett) window.__stSett(d[1]);
+  });
+}
+/* Motstykket til fram(): venstrepil tar bort det siste du klikket fram,
+   og bytter foerst slide naar det ikke er noe igjen aa ta bort. Da kan du
+   gaa tilbake og vise et poeng en gang til uten aa miste resten. */
+function tilbake(){
+  const vist=[...scene.querySelectorAll('.avslor.vist')];
+  if(!vist.length) return false;
+  const siste=vist[vist.length-1], t=siste.dataset.trinn;
+  (t?vist.filter(e=>e.dataset.trinn===t):[siste])
+    .forEach(e=>e.classList.remove('vist'));
+  /* Tilbake til innstillingen trinnet foer — eller til utgangspunktet. */
+  const igjen=[...scene.querySelectorAll('.avslor.vist[data-gjor]')];
+  gjor(igjen.length ? igjen[igjen.length-1].dataset.gjor
+                    : (scene.querySelector('.slide')||{dataset:{}}).dataset.gjor0);
+  return true;
+}
+function settSlide(i){
+  n=Math.max(0,Math.min(S.length-1,i));
+  const s=S[n];
+  lever();
+  scene.innerHTML='';
+  const d=document.createElement('div');
+  d.className='slide '+(s.klasse||'')+(s.blokk?' tett':'');
+  /* tilbake() spoler til denne naar det ikke er flere trinn aa ta bort. */
+  if(s.gjor0) d.dataset.gjor0=s.gjor0;
+  d.innerHTML=(s.qr&&QR[s.qr]
+      ? '<div class="qrboks"><img alt="QR til avstemningen" src="'+QR[s.qr]+'">'+
+        '<div class="txt">Svar på mobilen</div><div class="avsthint">V viser svarene</div></div>' : '')+(window.SLIDETEKST?window.SLIDETEKST(n,s.html):s.html);
+  scene.appendChild(d);
+  /* En slide kan laane flere blokker — de stables i samme innpakning,
+     slik at tilpassBlokk() maaler dem under ett. */
+  const blokker = s.blokk ? (Array.isArray(s.blokk)?s.blokk:[s.blokk]) : [];
+  if(blokker.length){
+    const vert=document.createElement('div'); vert.className='simvert';
+    d.appendChild(vert);
+    blokker.forEach(function(b){ laan(b,vert); });
+  }
+  skaler();
+  /* Nullstill for forbered(): sliden skal kunne slaa noe paa etterpaa,
+     men aldri arve en tilstand fra sliden for. */
+  blokker.forEach(function(b){
+    if(BLOKKNULL[b]){ try{ BLOKKNULL[b](); }catch(e){} }
+  });
+  if(s.forbered){ try{ s.forbered(); }catch(e){} }
+  sisteTegn=null;
+  if(blokker.length){
+    /* Flere blokker kan dele tegnefunksjon — kall hver bare én gang. */
+    const fns=[];
+    blokker.forEach(function(b){
+      const fane=BLOKKFANE[b], t=(fane&&TEGN[fane])||null;
+      if(t && fns.indexOf(t)<0) fns.push(t);
+    });
+    const tegn=fns.length?function(){ fns.forEach(function(t){ t(); }); }:null;
+    sisteTegn=tegn;
+    if(tegn) tegn();
+    /* Måling må skje etter at nettleseren har lagt ut sliden, ellers er
+       høydene fortsatt null. Derfor to bilder fram. */
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ tilpassBlokk(tegn); });
+    });
+  }
+  AVSTEMNING.nySlide(s);
+  avsloert=0;
+  $('fTeller').textContent=(n+1)+' / '+S.length;
+  fbar.style.width=((n+1)/S.length*100)+'%';
+  /* Ikke bare skjult med CSS: for en student legges teksten aldri inn. */
+  fnotat.innerHTML=(UNDERVISER&&s.notat)
+    ? '<b>'+s.t+':</b> '+(window.NOTATTEKST?window.NOTATTEKST(n,s.notat):s.notat)
+    : '<b>'+s.t+'</b>';
+  try{ history.replaceState(null,'','?modus=forelesning#slide='+(n+1)); }catch(e){}
+}
+function byggOversikt(){
+  foversikt.innerHTML='';
+  S.forEach(function(s,i){
+    if(s.del){ const h=document.createElement('div'); h.className='tittelrad';
+      h.textContent=s.del; foversikt.appendChild(h); }
+    const b=document.createElement('button');
+    b.innerHTML='<span class="nr">'+(i+1)+'</span>'+s.t;
+    b.addEventListener('click',function(){
+      document.body.classList.remove('oversikt'); settSlide(i);
+    });
+    foversikt.appendChild(b);
+  });
+}
+function start(){
+  document.body.classList.add('fmodus');
+  window.__aksefont=19;          // storre akseskrift paa lerretet
+  byggOversikt();
+  const q=new URLSearchParams((location.hash||'').replace(/^#/,''));
+  const nr=parseInt(q.get('slide'),10);
+  /* Er det en slide i adressen, gaa dit. Ellers fortsett der du slapp:
+     n er 0 foerste gang, men beholder verdien om du hoppet ut i appen for
+     aa vise noe og saa kom tilbake. */
+  settSlide(isFinite(nr)&&nr>0?nr-1:n);
+}
+function avslutt(){
+  window.__aksefont=13;          // tilbake til nettsidestorrelse
+  lever();
+  document.body.classList.remove('fmodus','oversikt','notat');
+  scene.innerHTML='';
+  try{ history.replaceState(null,'','#fane=hvorfor'); }catch(e){}
+  visFane('hvorfor');
+}
+$('fPrev').addEventListener('click',function(){ if(!tilbake()) settSlide(n-1); });
+$('fNext').addEventListener('click',function(){ if(!fram()) settSlide(n+1); });
+/* Endres vinduet, endres scenebredden - og dermed bredden paa canvas.
+   Da maa figuren tegnes om og passformen maales paa nytt. Vi venter litt,
+   saa vi ikke gjor det for hvert eneste piksel mens brukeren drar.        */
+let __resizeT=null;
+window.addEventListener('resize',function(){
+  if(!document.body.classList.contains('fmodus')) return;
+  skaler();
+  clearTimeout(__resizeT);
+  __resizeT=setTimeout(function(){
+    if(sisteTegn) sisteTegn();
+    tilpassBlokk(sisteTegn);
+  },160);
+});
+/* =====================================================================
+   LIVE AVSTEMNING I FORELESNINGSMODUS
+   ---------------------------------------------------------------------
+   Studentene svarer i prediksjonsappen, som skriver til Apps Script.
+   Her hentes den samme aggregerte fordelingen tilbake og tegnes ved
+   siden av QR-koden, slik at salen ser fordelingen vokse mens de svarer.
+
+   Kobling: slidene har allerede feltet «qr», og verdien er prediksjons-
+   IDen (F4-S1, PRED-F4-01 …). Den IDen er nøkkelen backenden aggregerer
+   på, så det trengs ingen ny kobling — bare et kall.
+
+       V   hent svarene / skjul dem igjen
+       R   hent på nytt nå (venter ellers på neste runde)
+
+   Ingenting her kan spores til en person: backenden returnerer bare
+   antall per bokstav. Fasiten markeres ikke — den kommer på neste slide,
+   og røper man den her, er peer instruction over.
+   ===================================================================== */
+const AVSTEMNING = (function(){
+const BACKEND = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA05xK7n1rC0ex_UVpNAjJPYNmRqvGfgUGuXp0EclxmyFUeKeVktMfg5YQ/exec";
+const TAKT = 5000;              /* hvor ofte tallene hentes mens panelet staar aapent */
+const BOKSTAVER = ['A','B','C','D'];
+
+let paa = false, timer = null, id = null, data = null, status = '', henter = false;
+
+function slide(){ return document.querySelector('#scene .slide'); }
+function boks(){ const d=slide(); return d && d.querySelector('.qrboks'); }
+
+/* Panelet bygges under QR-koden, i den kolonnen som allerede er reservert. */
+function panel(){
+  const q = boks(); if(!q) return null;
+  let p = q.querySelector('.avstpanel');
+  if(!p){
+    p = document.createElement('div');
+    p.className = 'avstpanel';
+    p.innerHTML = '<canvas class="avstgraf" height="132"></canvas>'+
+                  '<div class="avststatus"></div>';
+    q.appendChild(p);
+  }
+  return p;
+}
+
+function hent(){
+  if(!id || henter) return;
+  henter = true;
+  status = 'henter …'; tegn();
+  fetch(BACKEND+'?action=pred&id='+encodeURIComponent(id)+'&vis=student')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      henter = false;
+      if(!d || !d.ok){ data=null; status='ingen svar registrert på «'+id+'» ennå'; tegn(); return; }
+      data = d;
+      status = (d.n||0)+' svar'+((d.n2||0) ? ' · runde 2: '+d.n2 : '');
+      tegn();
+    })
+    .catch(function(){
+      henter = false; data = null;
+      /* Den vanligste grunnen er at Apps Script-utrullingen er gammel.
+         Si det, i stedet for «noe gikk galt». */
+      status = 'fikk ikke kontakt — er Apps Script redeployet?';
+      tegn();
+    });
+}
+
+
+/* Naar sliden har .svaralt-kort, tegnes ikke en figur ved siden av — da
+   fylles kortene selv. Hvert alternativ faar en vannrett stolpe bak
+   teksten og prosenten til hoyre. Det er mye lettere aa lese fra bakerste
+   rad enn et lite diagram, og oyet slipper aa flytte seg mellom figur og
+   tekst for aa vite hvilken bokstav som er hvilken.
+
+   Fasiten markeres ikke. Den kommer paa fasitsliden. */
+function malKort(){
+  const sl=slide(); if(!sl) return false;
+  const kort=[].slice.call(sl.querySelectorAll('.svaralt .opt'));
+  if(!kort.length) return false;
+  if(!paa || !data){
+    kort.forEach(function(e){
+      e.classList.remove('svart');
+      e.style.removeProperty('--andel');
+      const t=e.querySelector('.pst'); if(t) t.remove();
+    });
+    return true;
+  }
+  const f=data.fordeling||{}, f2=data.fordeling2||{};
+  const n=data.n||0, n2=data.n2||0, to=n2>0;
+  const kilde=to?f2:f, nn=to?n2:n;
+  const maks=Math.max(1, BOKSTAVER.reduce(function(a,b){
+    return Math.max(a, kilde[b]||0); },0));
+  BOKSTAVER.forEach(function(b,i){
+    const e=kort[i]; if(!e) return;
+    const v=kilde[b]||0, pst=nn?Math.round(v/nn*100):0;
+    e.classList.add('svart');
+    e.style.setProperty('--andel', (v/maks*100)+'%');
+    let t=e.querySelector('.pst');
+    if(!t){ t=document.createElement('span'); t.className='pst'; e.appendChild(t); }
+    t.textContent=pst+' %';
+  });
+  return true;
+}
+
+function tegn(){
+  const harKort = malKort();
+  const p = panel(); if(!p) return;
+  /* Har sliden svaralternativ-kort, trengs bare statuslinja under QR-koden. */
+  p.classList.toggle('vist', paa);
+  p.classList.toggle('kunstatus', harKort);
+  if(!paa) return;
+  p.querySelector('.avststatus').textContent = status;
+  if(harKort) return;
+  const cv = p.querySelector('.avstgraf');
+  const w = cv.clientWidth || 178, h = 132;
+  const r = window.devicePixelRatio || 1;
+  cv.width = w*r; cv.height = h*r; cv.style.height = h+'px';
+  const c = cv.getContext('2d');
+  c.setTransform(r,0,0,r,0,0); c.clearRect(0,0,w,h);
+  if(!data){ return; }
+
+  const f = data.fordeling || {A:0,B:0,C:0,D:0};
+  const f2 = data.fordeling2 || {A:0,B:0,C:0,D:0};
+  const n = data.n||0, n2 = data.n2||0, to = n2>0;
+  const y0 = h-20, ph = y0-16, x0 = 4, pw = w-8, gap = pw/4;
+  const maks = Math.max(1, f.A,f.B,f.C,f.D, to?Math.max(f2.A,f2.B,f2.C,f2.D):0);
+  const bw = gap*(to?0.32:0.56);
+  c.font = 'bold 12px -apple-system,Segoe UI,Arial';
+  BOKSTAVER.forEach(function(b,i){
+    const midt = x0+gap*i+gap/2;
+    const v = f[b]||0, bh = v/maks*ph;
+    const bx = to ? midt-bw-2 : midt-bw/2;
+    c.fillStyle = '#7fa8dd';
+    c.fillRect(bx, y0-bh, bw, bh);
+    if(to){
+      const v2 = f2[b]||0, bh2 = v2/maks*ph;
+      c.fillStyle = '#2E5496';
+      c.fillRect(midt+2, y0-bh2, bw, bh2);
+    }
+    c.fillStyle = '#e8eefb'; c.textAlign = 'center';
+    c.fillText(b, midt, y0+15);
+    if(n){ c.fillStyle='#b9c8e2'; c.font='11px -apple-system,Segoe UI,Arial';
+           c.fillText(Math.round(v/n*100)+'%', midt, y0-Math.max(bh,0)-4);
+           c.font='bold 12px -apple-system,Segoe UI,Arial'; }
+  });
+  if(to){
+    c.fillStyle='#9fb6d8'; c.font='10.5px -apple-system,Segoe UI,Arial';
+    c.textAlign='left'; c.fillText('lys = runde 1 · mørk = runde 2', x0, 11);
+  }
+}
+
+function stopp(){ if(timer){ clearInterval(timer); timer=null; } }
+
+/* Kalles fra settSlide: ny slide, nytt spørsmål — eller ingen. */
+function nySlide(s){
+  stopp(); paa=false; data=null; status='';
+  malKort();                       /* rydd kortene fra forrige slide */
+  id = (s && s.qr) ? s.qr : null;
+  const p = panel(); if(p) p.classList.remove('vist');
+}
+
+function veksle(){
+  if(!id) return false;
+  paa = !paa;
+  if(paa){ hent(); timer = setInterval(hent, TAKT); }
+  else { stopp(); }
+  tegn();
+  return true;
+}
+
+return {nySlide:nySlide, veksle:veksle, hentNa:function(){ if(paa) hent(); },
+        stopp:function(){ stopp(); paa=false; }, harId:function(){ return !!id; }};
+})();
+
+document.addEventListener('keydown',function(e){
+  if(!document.body.classList.contains('fmodus')) return;
+  const t=e.target.tagName;
+  if(t==='INPUT'&&e.target.type==='range'&&(e.key==='ArrowLeft'||e.key==='ArrowRight')) return;
+  switch(e.key){
+    case 'ArrowRight': case 'PageDown': if(!fram()) settSlide(n+1); e.preventDefault(); break;
+    case ' ': if(!fram()) settSlide(n+1); e.preventDefault(); break;
+    case 'ArrowLeft': case 'PageUp': if(!tilbake()) settSlide(n-1); e.preventDefault(); break;
+    case 'Home': settSlide(0); break;
+    case 'End': settSlide(S.length-1); break;
+    case 'o': case 'O': document.body.classList.toggle('oversikt'); break;
+    case 'v': case 'V':
+      /* Vis salens svar. Gjor ingenting paa slides uten prediksjons-ID. */
+      AVSTEMNING.veksle(); break;
+    case 'r': case 'R': AVSTEMNING.hentNa(); break;
+    case 'n': case 'N':
+      /* Sier fra hva som mangler i stedet for aa gjoere ingenting — ellers
+         staar du foran salen og lurer paa om tasten er oede. */
+      if(!UNDERVISER){
+        document.body.classList.add('notat');
+        fnotat.innerHTML='<b>Notatene er for underviser.</b> '+
+          'Åpne appen én gang med <code>?rolle=underviser</code> i adressen, '+
+          'så huskes det i denne nettleseren.';
+        setTimeout(function(){ document.body.classList.remove('notat'); },4000);
+        break;
+      }
+      document.body.classList.toggle('notat'); break;
+    case 'f': case 'F':
+      if(!document.fullscreenElement){ document.documentElement.requestFullscreen&&
+        document.documentElement.requestFullscreen(); }
+      else { document.exitFullscreen&&document.exitFullscreen(); }
+      break;
+    case 'Escape':
+      if(document.body.classList.contains('oversikt')) document.body.classList.remove('oversikt');
+      else avslutt();
+      break;
+  }
+});
+/* eksporter for oppstartsblokken nederst */
+window.__startForelesning=start;
+window.__F4slides=S;          /* for testharnessen og spraaklaget */
+window.__avsluttForelesning=avslutt;
+})();
+
+(function(){
+  const b=document.getElementById('modusBtn');
+  if(!b) return;
+  function iF(){ return document.body.classList.contains('fmodus'); }
+  function opp(){ b.textContent = iF() ? '\u2715  Tilbake til appen' : 'Start forelesning'; }
+  b.addEventListener('click',function(){
+    if(iF()){ if(window.__avsluttForelesning) window.__avsluttForelesning(); }
+    else    { if(window.__startForelesning)   window.__startForelesning(); }
+    b.blur(); opp();
+  });
+  new MutationObserver(opp).observe(document.body,{attributes:true,attributeFilter:['class']});
+  opp();
+})();
+
+(function(){
+  const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+
+                              (location.hash||'').replace(/^#/,''));
+  if(q.get('modus')==='forelesning' && window.__startForelesning){ window.__startForelesning(); }
+})();
+
+</script>
+</body></html>

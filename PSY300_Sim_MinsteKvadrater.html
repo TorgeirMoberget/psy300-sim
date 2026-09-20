@@ -8,6 +8,80 @@
      Samme farge i figur, ligning og tekstboks. */
   --kb0:#1F3864; --kb1:#1E8E4E; --kfeil:#C0392B;
   --kb0lys:#eaeff8; --kb1lys:#e8f5ec; --kfeillys:#fdecea;}
+/* =====================================================================
+   PSY300 FARGEKODE — én betydning per farge, den samme i alle appene.
+   Poenget er at en student som har sett grønt over rødt i figuren, skal
+   kjenne igjen de samme fargene i JASP-tabellen og i den ferdige
+   setningen — og dermed se hvor hvert tall kommer fra.
+     grønn   variasjon MELLOM grupper · signal · det vi leter etter
+     rød     variasjon INNEN grupper · støy · residual
+     marine  teststatistikken (F, t, χ²) og frihetsgradene
+     lilla   p-verdien
+     rav     effektstørrelsen (η², ω², d, R²)
+     turkis  konfidensintervallet
+   ===================================================================== */
+:root{
+  --sig:#1E7A3C;    --sig-bg:#E7F4EA;    --sig-kant:#A9D6B6;
+  --stoy:#C0392B;   --stoy-bg:#FBEDEB;   --stoy-kant:#EEC3BD;
+  --tstat:#1F3864;  --tstat-bg:#E7ECF6;  --tstat-kant:#B9C8E2;
+  --pverdi:#7B3FA0; --pverdi-bg:#F3EAF8; --pverdi-kant:#D3BCE4;
+  --eff:#B26A00;    --eff-bg:#FDF2E2;    --eff-kant:#EBD0A6;
+  --ki:#0F6E7B;     --ki-bg:#E4F1F3;     --ki-kant:#AAD3D9;
+}
+.k-sig{color:var(--sig);font-weight:600}
+.k-stoy{color:var(--stoy);font-weight:600}
+.k-tstat{color:var(--tstat);font-weight:700}
+.k-p{color:var(--pverdi);font-weight:600}
+.k-eff{color:var(--eff);font-weight:600}
+.k-ki{color:var(--ki);font-weight:600}
+/* markert variant — brukes der et tall skal kunne spores fra tabell til setning */
+.m-sig,.m-stoy,.m-tstat,.m-p,.m-eff,.m-ki{border-radius:5px;padding:1px 5px;font-weight:600}
+.m-sig{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+.m-stoy{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+.m-tstat{background:var(--tstat-bg);color:var(--tstat);box-shadow:inset 0 0 0 1px var(--tstat-kant)}
+.m-p{background:var(--pverdi-bg);color:var(--pverdi);box-shadow:inset 0 0 0 1px var(--pverdi-kant)}
+.m-eff{background:var(--eff-bg);color:var(--eff);box-shadow:inset 0 0 0 1px var(--eff-kant)}
+.m-ki{background:var(--ki-bg);color:var(--ki);box-shadow:inset 0 0 0 1px var(--ki-kant)}
+
+/* ---- brøkfiguren: teller over streken, nevner under ---- */
+.brokfig{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 18px;
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 14px;margin:12px 0}
+.brokfig .brk{text-align:center;min-width:250px;flex:0 1 auto}
+.brokfig .tell,.brokfig .nevn{border-radius:8px;padding:8px 13px;font-size:15.5px;line-height:1.28}
+.brokfig .tell{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+.brokfig .nevn{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+.brokfig .strek{height:3px;background:#16203A;border-radius:2px;margin:6px 0}
+.brokfig .tall{display:block;font-size:23px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+.brokfig .lik{font-size:27px;color:#16203A;font-weight:600}
+.brokfig .res{font-size:17px;color:var(--tstat);text-align:center;line-height:1.3}
+.brokfig .res b{display:block;font-size:31px;font-weight:700;font-variant-numeric:tabular-nums}
+.brokfig .res .n{display:block;font-size:13.5px;color:#5C6A80;font-weight:400;margin-top:3px}
+.brokfig.smal .brk{min-width:210px}
+.brokfig.smal .tall{font-size:19px}
+.brokfig.smal .res b{font-size:25px}
+
+.stat.s-sig{background:var(--sig-bg);color:var(--sig)}
+.stat.s-stoy{background:var(--stoy-bg);color:var(--stoy)}
+.stat.s-tstat{background:var(--tstat-bg);color:var(--tstat)}
+.stat.s-p{background:var(--pverdi-bg);color:var(--pverdi)}
+.stat.s-eff{background:var(--eff-bg);color:var(--eff)}
+table.anova td.c-sig,table.tt td.c-sig{color:var(--sig);font-weight:700}
+table.anova td.c-stoy,table.tt td.c-stoy{color:var(--stoy);font-weight:700}
+table.anova td.c-tstat,table.tt td.c-tstat{color:var(--tstat);font-weight:700}
+table.anova td.c-p,table.tt td.c-p{color:var(--pverdi);font-weight:700}
+table.anova td.c-eff,table.tt td.c-eff{color:var(--eff);font-weight:700}
+/* ---- fargeforklaring ---- */
+.fargeliste{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:8px;margin-top:8px}
+.fargeliste div{border-radius:8px;padding:7px 11px;font-size:15px;line-height:1.35}
+.fargeliste b{display:block;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+
+/* ---- ANOVA-tabellen med fargede rader ---- */
+table.anova tr.r-sig td,table.tt tr.r-sig td{background:var(--sig-bg)}
+table.anova tr.r-stoy td,table.tt tr.r-stoy td{background:var(--stoy-bg)}
+table.anova tr.r-total td,table.tt tr.r-total td{color:#5F6A7E}
+table.anova tr.r-total td:first-child{font-weight:700}
+table.anova tr.r-sig td:first-child{color:var(--sig);font-weight:700}
+table.anova tr.r-stoy td:first-child{color:var(--stoy);font-weight:700}
 *{box-sizing:border-box}
 body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
 .wrap{max-width:1000px;margin:0 auto;padding:16px}
@@ -3026,6 +3100,28 @@ function modell(sett_, y, x1, x2){
 }
 
 /* ===================== dekket ===================== */
+/* Undervisernotatene er det eneste i appen som ikke er ment for
+   studentene: de sier hvilket alternativ som lurer flest, hva du ikke skal
+   lese hoeyt, og naar du skal holde igjen. Appen er publisert, saa dette er
+   ingen sperre i sikkerhetsforstand — den som leser kildekoden, finner dem
+   uansett. Den holder dem borte fra lerretet og fra DOM-en, og det er det
+   den er ment aa gjoere.
+
+   Aapne  ?rolle=underviser  en gang, saa huskes det i nettleseren din.
+   Aapne  ?rolle=student     for aa glemme det igjen (delt maskin).      */
+const ROLLENOKKEL='psy300_rolle';
+const UNDERVISER=(function(){
+  const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+
+                              (location.hash||'').replace(/^#/,''));
+  const r=q.get('rolle');
+  try{
+    if(r==='underviser'){ localStorage.setItem(ROLLENOKKEL,'underviser'); return true; }
+    if(r==='student'){ localStorage.removeItem(ROLLENOKKEL); return false; }
+    return localStorage.getItem(ROLLENOKKEL)==='underviser';
+  }catch(e){ return r==='underviser'; }
+})();
+window.__erUnderviser=function(){ return UNDERVISER; };
+
 const S=[];
 function slide(o){ S.push(o); }
 
@@ -4131,7 +4227,10 @@ function settSlide(i){
   }
   $F('fTeller').textContent=(n+1)+' / '+S.length;
   fbar.style.width=((n+1)/S.length*100)+'%';
-  fnotat.innerHTML=s.notat?('<b>'+s.t+':</b> '+(window.NOTATTEKST?window.NOTATTEKST(n,s.notat):s.notat)):'<b>'+s.t+'</b>';
+  /* Ikke bare skjult med CSS: for en student legges teksten aldri inn. */
+  fnotat.innerHTML=(UNDERVISER&&s.notat)
+    ? '<b>'+s.t+':</b> '+(window.NOTATTEKST?window.NOTATTEKST(n,s.notat):s.notat)
+    : '<b>'+s.t+'</b>';
   try{ history.replaceState(null,'','?modus=forelesning#slide='+(n+1)); }catch(e){}
 }
 function byggOversikt(){
@@ -4192,7 +4291,18 @@ document.addEventListener('keydown',function(e){
     case 'Home': settSlide(0); break;
     case 'End': settSlide(S.length-1); break;
     case 'o': case 'O': document.body.classList.toggle('oversikt'); break;
-    case 'n': case 'N': document.body.classList.toggle('notat'); break;
+    case 'n': case 'N':
+      /* Sier fra hva som mangler i stedet for aa gjoere ingenting — ellers
+         staar du foran salen og lurer paa om tasten er oede. */
+      if(!UNDERVISER){
+        document.body.classList.add('notat');
+        fnotat.innerHTML='<b>Notatene er for underviser.</b> '+
+          'Åpne appen én gang med <code>?rolle=underviser</code> i adressen, '+
+          'så huskes det i denne nettleseren.';
+        setTimeout(function(){ document.body.classList.remove('notat'); },4000);
+        break;
+      }
+      document.body.classList.toggle('notat'); break;
     case 'f': case 'F':
       if(document.fullscreenElement) document.exitFullscreen();
       else document.documentElement.requestFullscreen();
