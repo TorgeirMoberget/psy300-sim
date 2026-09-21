@@ -582,6 +582,8 @@ body.fmodus.oversikt #foversikt{display:grid;position:fixed;inset:0;z-index:70;
   letter-spacing:.08em;text-transform:uppercase;margin:14px 0 2px}
 #foversikt .tittelrad:first-child{margin-top:0}
 
+
+/* TRYKK-CSS-START */
 /* ===== TRYKKMODUS =========================================================
    ?modus=trykk legger alle slidene under hverandre som ferdige ark, med
    alle klikk-trinn utfoldet og figurene frosset til bilder. Da kan
@@ -592,22 +594,28 @@ body.fmodus.oversikt #foversikt{display:grid;position:fixed;inset:0;z-index:70;
    Et <img> gjoer ikke det.
 
    Maalene: A4 liggende med 6 mm marg gir 285 x 198 mm trykkflate. 285 mm
-   er 1077 px ved 96 dpi, og 1077/1280 = 0.841 — derfor skalaen under.   */
+   er 1077 px ved 96 dpi; skalaen regnes ut i JS og settes som --k.      */
 body.trykk{overflow:auto;background:#e9edf4}
 body.trykk>header,body.trykk>.wrap,body.trykk>.presbtn{display:none}
 body.trykk #scene,body.trykk #fnav,body.trykk #fbar,body.trykk #fnotat,
 body.trykk #foversikt,body.trykk #modusBtn{display:none!important}
 #trykkark{padding:20px 0 40px}
-.trykkside{position:relative;width:1280px;height:720px;margin:0 auto 20px;
+.trykkside{position:relative;width:var(--sb,1280px);height:720px;margin:0 auto 20px;
   background:#fff;box-shadow:0 2px 16px rgba(20,30,60,.18);overflow:hidden}
-.trykkside .skala{position:absolute;left:0;top:0;width:1280px;height:720px}
+.trykkside .skala{position:absolute;left:0;top:0;
+  width:var(--sb,1280px);height:720px;transform-origin:top left}
 .trykkside .slide{position:absolute;inset:0}
 .trykknr{position:absolute;right:16px;bottom:9px;z-index:5;
   font-size:13px;font-weight:700;color:#93a2bd}
+.trykkfeil{position:absolute;left:40px;right:40px;bottom:40px;z-index:6;
+  padding:14px 16px;background:#fdecea;border-left:5px solid #C0392B;
+  font:600 15px/1.5 sans-serif;color:#8c2b20}
 .trykkhode{max-width:1280px;margin:0 auto 18px;padding:14px 18px;background:#fff;
-  border-left:5px solid var(--sig);box-shadow:0 2px 16px rgba(20,30,60,.18);
+  border-left:5px solid #1E7A3C;box-shadow:0 2px 16px rgba(20,30,60,.18);
   font-size:15px;line-height:1.5;color:#3F4E63}
-.trykkhode b{color:var(--navy)}
+.trykkhode b{color:#1F3864}
+/* .skjul lar en slide ta bort en enkelt del av en LAANT blokk. */
+.skjul{display:none!important}
 @media print{
   @page{size:A4 landscape;margin:6mm}
   body.trykk{background:#fff}
@@ -616,8 +624,9 @@ body.trykk #foversikt,body.trykk #modusBtn{display:none!important}
   .trykkside{width:285mm;height:198mm;margin:0;box-shadow:none;
     page-break-after:always;break-after:page}
   .trykkside:last-child{page-break-after:auto;break-after:auto}
-  .trykkside .skala{transform:scale(0.841);transform-origin:top left}
+  .trykkside .skala{transform:scale(var(--k,0.841))}
 }
+/* TRYKK-CSS-SLUTT */
 
 /* ===== modusbryter =====
    Samme knapp begge veier. I appmodus ligger den nede til hoyre som en
@@ -827,7 +836,7 @@ kvadratsum sier at støyen er alt, gjennomsnittlig kvadratsum sier noe helt anne
 <h2>Nullverdenen: hvor store <i>F</i>-verdier gir tilfeldigheter alene?</h2>
 <p class="muted">Her settes alle tre gjennomsnittene like (H₀ er sann) og vi kjører mange studier. Fordelingen du får, er <b><i>F</i>-fordelingen</b>, og den kritiske verdien er der de øverste 5 % begynner.</p>
 <div class="simblokk" id="blokk-nullsim">
-<button class="btn" id="run">Kjør 2 000 studier under H₀</button>
+<button data-trykk="kjor" class="btn" id="run">Kjør 2 000 studier under H₀</button>
 <canvas id="cvC" height="260"></canvas>
 <div id="statsC"></div>
 <div class="note" id="verdictC"></div>
@@ -2640,7 +2649,11 @@ window.__anovaNullstill= function(){ sim=null; };
 const QR = {"F5-A1": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKQAAACkCAAAAAA83tqdAAACNElEQVR42u3b0W7CMAxGYd7/pdktQo3/47ZoEJ/ebGJd8nXCwXayx/MHrodIkSJFfgHyUVyv9xwO0rjex0L3ihyLXAFeB3v/fvlmP0AdIdK8IkVWg6QAWD1U5/XDeUWKPLg5vdlXQZE+DESKvBI4VWKQFn4ScCJFdhOManFfJR30w+C2LEjkVsiqIPrk19uqRZFbIdtNpGbCUQXgx7pqIn8aWQ3aSSbSwk2LOJEiV5OsJuw2p1KQVfOInIkkhRcFX2nM4mpR5AgkaYimBbkDpmOJnIlcDXaliUqCoxU4IkchU9PpCJ8S4dXvkWQ5ZuYixyDJIp2CpbqfBlNMMESOQpJiP21I0UWbNPxFzkWShDcd/KiS3dQ0aFeLIrdGksFpkz8FVHcukTOR6XAHQXdReGEXORKZDtNViQdpbtHXygRD5CgkbmiGBgJ5oJRoX64WRW6DJJuhpDFADtglfLkBKnIMsrPJdAbaWfhbHQyRWyPTgt7dfCINgri5L3IksiqSzm7YV0UduUTORqbDIJ1Np7Qxf8sGqMgRyBQwVYCkBTk9FO6qiRyLTIOnJIQUY6kJIVIkPRzXOdBJxooJtMiRSLIwn30Q8qBlwIociUwFEV20yUG8qqBDhZjIMcjYOArFFcGf2UgQORtZBQJt/pPgos0qkSLpYZFO8kEPmLSrRZEin71/+KU/v9RVE7k9km4+dTZJOwdIccNK5AhkKsRS0KwW9tQAiH8IkSOR33yJFClS5D9ef+KnVvUJrmFTAAAAAElFTkSuQmCC", "F5-A2": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKQAAACkCAAAAAA83tqdAAACNElEQVR42u2aQY4CMQwE5/+f3r0ilLjLWdDCuHIBoVGmItFJu+Pr5wvGJaSQQgr5AZBXMR6fWU7SGM9zoWeFHAu5A3ic7Pn79s++gFpBpPcKKWQ1SRLAblGd35fvFVLIxcPpz74TRToMhBTyL8KpjEHa+InghBSyazCqzX1nOuhh8DIXJOStIKuC6J2fL6sWhbwVZDtEahqOSoBvS9WE/GrIatKOmUgbNy3ihBSyU+ifhFNJZLuFCTkXshIMmWhncrvBbCzEhBwDuTMHVUCQDAMJq8hcQs6GrILQbohKxHEkHCFHQHZCJxqiLs0CNMvIYAh5a8gkIGJuSaBAxYQCKyFvDUnMbNrk6bPVYnGwL+QISFqsp+Bg+7IQGrQuQIUcAUkvzlPInwRFFoJdkJC3hUzBQJroBApv7EKOhEwG90Rc9HIqHghCjoTsFv+ngkvCwuoW8vaQ3bA+hVLELFfwWxck5CjItCHTMP8VG388cYS8PSRtkus21JGAIF7uCzkSMl0K0Ya6SkCk2RgbDCHHQHZCURKOdgoylKoJORIymdfuhSdZFA6shBwNSUPPZCJo4wk2GEKOg+w0cXQvPZN4lnMLORKy03hEX56g6QEh5EzIVBDRTbsSQGfRsVFEyBGQMTg6aKgjBiIVY0LOhkxCIIEVERcNq4QUkoSlVYhPDW3a/I+FI+QoSFKMUWORNnIhhUwGoyOA1ACFAgEhhQSFGCmySDDQbYgScibkJw8hhRRSyH8cv0o3lrWkxO5CAAAAAElFTkSuQmCC", "F5-A3": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKQAAACkCAAAAAA83tqdAAACK0lEQVR42u3a0W6DMAxGYd7/pbfbqgr+j0mrtvhws2lC4ZuEg+34+PuB6xApUqTIL0AexfV4z3KRxvW8FrpX5FjkGeBxseffT1/2BWqFSM8VKbJaJAXA2T/V+fvyuSJFLm5OL/tZUKSPgUiRO4FTJQZp4ycBJ1JkN8GoNvezpIN+DF6WBYm8FbIqiN7582XVoshbIdtNpGbCUQXg27pqIn8aWS3aSSbSxk2LOJEiaeJ6tTmVgqx6jkiRVVAQ8E5jtlUtirw1snpIVTyRgEhJSFpL5EzkqjFFiqSqiUqCY6thJXIMkjSgSCK8TBZgshwDR+QYJG3sJ8xOYhEHRUSOQdLNOjWsOps2afiLnItsFezFIFOVIJPGmEiR6WVPjfhuQJF/JHZ6Rd4eSQr8aqErKLyxixyLJAg6hJSasK0PgsiRSDrg1kmKUyOVHhyInIlMB0dVQZUKsbNkOSXcIkWSJiltWO1u/OgAVOQIJG5swoE60iCIh/sixyNpoyq98CkA6SGryJnI+JFvDhmnINs+pRU5DtldiCTNZENvBY7IEchU4FcN0c5hagpIkSLTzWRgszNM0hqWFzkS2d2YW5sxGNYrizKRI5GpIOoUWekQPx0k4IE6kbdHxsYRbFiRTZoMj4oUSQ4yScMqJRidZpVIkRRZJQckoW0VeyJFBmQaFuk2sS43rESOQKZDetqwohs5gosci0yFGAkO0hjoDKeInIv85kukSJEiP3j9A7CVNiTE+TL5AAAAAElFTkSuQmCC", "F5-A4": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKQAAACkCAAAAAA83tqdAAACNElEQVR42u3b207DMBBF0fz/T8Nrhewze0JQi2f3BSitsyphZ25cX//gcYkUKVLkByCv8Fj9/udzr+uk71+fI9cVORu5/KNdPJ8WTO9Z/UyuK3I2crU5dgvvgGTj7dZaXlekyM2LV7DqwE8fQKTIJ5HVa+i6IkX+JsAgh3kKIhLysShI5FHIKhH7q6+PZosij0GWRaNNEaBKulIA/HhVTeRRyN0iqQBFki5ywLcPc5GjkDSB6handslb2pQiZyOrRL8KODqbj25GkSJJ0ygFHtWmI+9ZriFSJDjEU2G/+8GqooPIuchUXLoTWNCCahnEiByP3N7oQ8OT3BToAAnaOCKPR7aLSKB5XyV4GC1yLJI0OtMQXXUjoEkaHqgTeTQyBaxVQamTdJEGFkrERI5A0qIVOcw765TDJiJHIumB2x0A6SRz2yBF5EhkB9gZtiNBc9l8EjkSSS6QilidpgAdoBcpkhSfyCA7CTQ6H07kTGQ6rFMRvkrWukEFGvIUORaZgtdUlKoao49uHJHHImmiRItR6bC/3QAVORZ5dyCJbpJqKB41QEWOQBJgN2hIgyipGS9S5N1GU7fpmYr925uKyJFIOhhCG/Yk+CVBsci5SHIReoHOP22gBE3kWCQddiPDHekDVMOieMJK5AhkVbzvbLSqqFANj4gUSYbeqqTszmF/O1sUORpZBQjdxjwdfhIpsiow0QSts045bC9yLJIMGlMgGWAiTX2Rc5Gf/BApUqTINz6+AU1vdPNAXkllAAAAAElFTkSuQmCC", "F5-A5": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKQAAACkCAAAAAA83tqdAAACN0lEQVR42u2a247CMAwF+f+f3n1FqDmXUAStJy+7guBMpNq1j/34u8B6AAkkkED+AORDrOc9h0aK9Wor2gvkWMgVwLOx1/+XD/sB1BGEOxdIIJUR5wCrSzWfH54LJJAHm93DvnIK9zIAEsh3HEclBi7wJw4HJJBtgqGC+yrpSF8Gp2VBQN4KUhVEn/x7WrUI5K0gaxGpTDiUA35MVQPy0pDKaJNMuMCdFnFAApkWS7vilHOy1cWABHLlAKqoUr9thVlZiAE5DnIlNqVNoxY4tQXkTEgVjJsDVVKhRNZasALy9pBtgpEkwofJQpgsn5IFAXlpSCWCpgMiiaCQOpNU1YAcBamaTCoQN3tV4RYL+0COgGwTgmXwXR1mRIO6SwvkrSFVA74V+Z1DJReR1SKQYyCTwRCXjDRQcWAHcjTkOwcmTrT1QgByJKQKrknRlTTfk4vbQgzIMZDJg+wEKxWQnfglnRbIsZBNA2gHtAn8NgsCcgSkHdgIC650qClu7gM5ErIVptICLR3Sq6ajgRwDmTSZ0iFj1Zh/qwEK5DjINCloGp7JpSLBCsiRkDsNpGSIxNnaEqyAHAXZGGyans55Dm0DORKyDcxVMDbf2yEpIEdCuoIoFazUfiWmVtUikGMgU4dJB0LcHvUyABJIN9jmPk8GPxrBKhIHgBwPqQJzm9A6+9uOA+QoyKRJtCNibatqQI6AVMlp0mh3v2kSaiCBTAuxNrCnDaxTq0UgLw/5ywtIIIEE8ovrHzcCtaTY9/LoAAAAAElFTkSuQmCC", "F5-A6": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKQAAACkCAAAAAA83tqdAAACOklEQVR42u2a0Y7CMAwE+f+fvntFqPGsU04H8fQFhKp0irrueuPHzxccDyGFFFLID4B8FMfzOZeLNI7XtaJzhRwLuQJ4Xuz1+/Jhv4C6gqDrCilktQgJYHVTnd8vryukkBcn08O+EgW9DIQU8o5wKmNAhT8RnJBCdg1GVdxXpiN9GbzNBQl5FGTVEP3l59u6RSGPgmyHSE3DUQnwz1I1Ib8aslq0YyaocKdNnJBC7piATjhFIltdW8jZkIlYKoN7JZ5uMFs2YkKOglwV5KQZI0GQCaG1hJwNSYW9E6Im4rgdWAl5LGQXIDHC1Q2SWUYXJOQYyEo4ZG6TQCEVUxxYCXksJJ4IhTi9uWRtDPaFHANJD3kyEFKZXQoN2i5IyOMhO2KoQn5aI7kRTHqFHAOZXpzCgAQqLuxCjoUk2M4Q0gqSfosMhpAjIKkpSgPRJHCthIXdopDjIGmYLg2lqOATPG6ACjkCsruh3gXtFH4M9oU8HpJgdgfqkoAAN/eFHAm5I5qkQUuH9OLBYyHHQGK4Xmwm4UU2hkOjVE3I4yHvGF0qyJ2wIQqshBwDmYTtNARHNxMN0QkpZDj0VpncZNOTxHO5tpAjIZPCnAasJDTa2BJSSGqOkjA/EVcS0MaNmJAjIHeMaxquYnhfGRohR0OSENJG7W5g1XZBQo6ETAbqUkNLxX9bOEKOhEwH6tKXw/ZAnZAjICtzmgqgatY6hlpIIZNGjEL9JBigP+J2tyjkEZCffAgppJBC/uPxC9HCVvXUTyLuAAAAAElFTkSuQmCC", "F5-A7": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKQAAACkCAAAAAA83tqdAAACQUlEQVR42u2aQY7DMAwD8/9P716LbkRSdottrfGlRRA4YyBSKErXzxesC0gggQTyAyAvsR7vud2ksZ73iu4FcixkBfC42fP/8mW/gbqDcM8FEki1iQuA6lCd67fPBRLIm5vdy14FhfsYAAnkTuAoYeASfxJwQALZFRgquVeiI/0YvEwFAXkUpCqI3vn7smoRyKMg2yZSU3CoAHybqwbkV0OqTTtiwiXutIgDEkhlQiXmkhMeLsiqgwE5F9IZ9qqoUiK3a8zKQgzIUZAqETtj1QWEEyFuLyBnQiaJWSV9ZUypwy5FN5BjINWHPknsSdJPxXIZOECOgVQNoiopJ4JjRVjYQREgx0A6OJWIE7GcBqU19oEcA9ltcpbJNwy07UIMyOMhkyZmYvK7gEoOYp1eIEdAukZ7Uox1oOLEDuRISGcgdYeQKkh3TQoMIEdBpkOaiWGlhp1cYLWmWYAcAZkM0SWmlEv4Dt52aYEcBekMrMSw2k38sYMB5NGQrkBaGahLDALb3AdyLKQTGS6wXAAlw8bt6Wggj4d0hqYbckoa81sNUCBHQSpxmibhxHxNDmS7D0COgkySrxMmaaNANQGABFIZRx1TPwFWgubP3kCOhEwSc/fhSVAqYQHkbEhXECUvv0rOzkxdrhaBPBoyEa7dgbpEQLhiDMjZkMkAnTOskuBKzSoggVxJziuC1u2/FThAjoHsFP0dE2tr6g/I4yGVOE0CwA2TxIYAkECGhdhKYncGgBuIAnIm5CcvIIEEEsh/XL9BZddmr5cGbgAAAABJRU5ErkJggg==", "F5-A8": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKQAAACkCAAAAAA83tqdAAACOUlEQVR42u3ay47CMBBEUf7/p2e2CLm7qpwgwH2zmRGKzAmynX748fcD1wMkSJAgvwD5aK7ne5aDBNfrWNa9IMciK8DzYK//l5N9gVoh1PeCBNkNohZA9VDJ58vvBQlycbOa7NWiUC8DkCCvLJwuMFAbv7PgQIJMA4xuc6+CDvdlcFsUBPIoZJcQvfPvbdkiyKOQcREpDDi6Bfi2qhrIn0Z2gybBhNq43SQOJEg1ubuJ7hSn1CKrHgzkbGQFXiVjVrC6UZi1EzGQI5EJxEnCnAUnN3OQY5DV5E1AKqjoxrcWDshRSPmSLzb0LhDuxlHBcru6QY5AquSpCzScJn0SWLQFK5CjkO3kFZu0+1JQP0Rb2Ac5CukMqgpWKthVRQMrwAA5CtkmQyIxcw6UdEFFHAWBPB6ZHEByGvAOyt7YQY5FOoV6VbBSi2jrhQByJNJpDqlFkzasVGEBJMjkxe8WDdQBvQpvRUEgj0buNjsTaLLxyygI5PFIF+ckXO6hJrvJCnIkUhXj08nvJHfqAjkbmTQ81abuNAEudWlBjkKqQ5k7DU/noayCFUiQogDQJVZusbX7MUCCdApQXZDrND2TAhnI2cjk4JH75QptFyFAjkSqhMg9bNzdnzy03X0AeTQyLQ44gbETQMgmAsjRSHch7BzgTApWW8UBkOOQSUPeafDfli2CHIt0m6JpEeu2qhrII5FucJo0n5zPtrq0II9HOomYKuo7hQHV6L+cLYI8AvnNF0iQIEF+8PoHdS0WRH5XYxoAAAAASUVORK5CYII="};          /* QR-kodene genereres når prediksjonene er på plass */
 
 /* --- hjelpere slidene bruker til å stille inn en blokk --- */
-function sett(id,v){ const e=$(id); if(e){ e.value=v; e.dispatchEvent(new Event('input')); } }
+/* Bade input OG change: et <select> lytter paa change, en range paa input.
+   Sendte vi bare input, gjorde «sett:r2Vis:sse» ingenting — figuren ble
+   staaende tom, ogsaa i salen. */
+function sett(id,v){ const e=$(id); if(e){ e.value=v;
+  e.dispatchEvent(new Event('input')); e.dispatchEvent(new Event('change')); } }
 function klikk(id){ const e=$(id); if(e) e.click(); }
 function kryss(id,paa){ const e=$(id); if(e && e.checked!==paa){ e.checked=paa;
   e.dispatchEvent(new Event('change')); } }
@@ -4102,47 +4115,52 @@ document.addEventListener('keydown',function(e){
 /* eksporter for oppstartsblokken nederst */
 window.__startForelesning=start;
 window.__F4slides=S;          /* for testharnessen og spraaklaget */
+/* TRYKK-JS-START */
 /* ===================== TRYKKMODUS =====================================
-   Bygger hele dekket som statiske ark, ett per slide, med alle klikk-trinn
-   utfoldet. Figurene tegnes for hvert ark og fryses deretter til <img>,
-   fordi appen bare har EN kopi av hver simuleringsblokk: den laanes inn,
-   tegnes, kopieres — og leveres tilbake foer neste ark laaner den.
-   utenFasit=true hopper over fasitslidene, saa studentene kan faa heftet
-   foer forelesningen uten aa faa svarene med paa kjoepet.              */
-function frysKopi(pakke){
-  const orig=[].slice.call(pakke.querySelectorAll('canvas'));
-  const klon=pakke.cloneNode(true);
+   Bygger hele dekket som statiske ark ved aa kjoere appens EGEN settSlide()
+   for hver slide, folde ut alle klikk-trinn med appens egen fram(), og
+   fryse resultatet. Da ser arket ut som lerretet — samme layout, samme
+   figurer, samme tall — og trykkmodusen trenger ikke vite noe om hvordan
+   den enkelte appen monterer blokkene sine.
+
+   Bygget gaar ett bilde om gangen (requestAnimationFrame), fordi
+   settSlide() maaler hoeyder og det krever at nettleseren har lagt ut
+   sliden foerst. Du ser slidene bla forbi mens det staar paa; det er
+   framdriftsindikatoren.
+
+   ?modus=trykk            hele dekket
+   ?modus=trykk&fasit=nei  uten fasitslidene                            */
+let trykkark=null;
+function trykkFrys(kilde){
+  const orig=[].slice.call(kilde.querySelectorAll('canvas'));
+  const klon=kilde.cloneNode(true);
   const kopi=[].slice.call(klon.querySelectorAll('canvas'));
   kopi.forEach(function(c,i){
-    const o=orig[i]; if(!o) return;
+    const o=orig[i]; if(!o||!c.parentNode) return;
     const img=document.createElement('img');
     try{ img.src=o.toDataURL('image/png'); }catch(e){ return; }
-    img.style.width='100%';
-    img.style.height=(o.style.height||(o.clientHeight+'px'));
+    img.style.width=o.style.width||'100%';
+    img.style.height=o.style.height||(o.clientHeight+'px');
     img.style.display='block';
     c.parentNode.replaceChild(img,c);
   });
   return klon;
 }
-let trykkark=null;
-/* Folder ut alt som ellers kommer med et klikk, og utfoerer gjor-kommandoen
-   som hoerer til trinnet. Skjulte trinn hoppes over. */
-function folgUt(d){
-  [].slice.call(d.querySelectorAll('.avslor:not(.skjul)')).forEach(function(e){
-    e.classList.add('vist');
-    try{ gjor(e.dataset.gjor); }catch(f){}
-  });
+/* Simuleringer som maa kjoeres for aa vise noe. I salen trykker du paa
+   knappen; her gjoeres det for deg. En slide som VIL vise den tomme
+   tilstanden, sier trykkfyll:false. */
+function trykkFyll(){
+  [].slice.call(scene.querySelectorAll('[data-trykk="kjor"]'))
+    .forEach(function(b){ try{ b.click(); }catch(e){} });
+}
+function trykkErFasit(s){
+  return /^Fasit/.test(s.t||'')||/fasitsvar/.test(s.klasse||'');
 }
 function trykk(utenFasit){
-  lever();
-  document.body.classList.remove('fmodus','oversikt','notat');
-  document.body.classList.add('trykk');
-  window.__aksefont=19;
-  /* Egen referanse, ikke getElementById: arket er laget her, og en ny
-     kjoering skal bytte ut det forrige — ikke legge seg under det. */
   const gammelt=trykkark||document.getElementById('trykkark');
   if(gammelt&&gammelt.remove) gammelt.remove();
   const ark=document.createElement('div'); ark.id='trykkark'; trykkark=ark;
+  ark.style.display='none';
   const hode=document.createElement('div'); hode.className='trykkhode';
   hode.innerHTML='<b>Trykkmodus.</b> Alle slidene ligger under hverandre, ferdig '+
     'utfoldet. Skriv ut med <b>Cmd/Ctrl + P</b> og velg <b>Lagre som PDF</b> — '+
@@ -4155,76 +4173,62 @@ function trykk(utenFasit){
   ark.appendChild(hode);
   document.body.appendChild(ark);
 
-  let feilet=0;
-  S.forEach(function(sl,i){
-    const erFasit=/^Fasit/.test(sl.t||'')||/fasitsvar/.test(sl.klasse||'');
-    if(utenFasit&&erFasit) return;
+  /* Bygges i forelesningsmodus: scenen maa vaere synlig og utlagt, ellers
+     er alle bredder null og figurene kommer ut tomme. */
+  document.body.classList.remove('trykk','oversikt','notat');
+  document.body.classList.add('fmodus');
+  window.__aksefont=19;
 
+  const BREDDE=1280;                 // fast, uavhengig av vindusformatet
+  const liste=[];
+  S.forEach(function(s,i){ if(!(utenFasit&&trykkErFasit(s))) liste.push(i); });
+  let k=0, feilet=0;
+
+  function ferdig(){
+    try{ lever(); }catch(e){}
+    ark.style.setProperty('--sb', BREDDE+'px');
+    ark.style.setProperty('--k', (1077/BREDDE).toFixed(4));
+    ark.style.display='';
+    document.body.classList.remove('fmodus');
+    document.body.classList.add('trykk');
+    window.scrollTo(0,0);
+    if(feilet&&window.console) console.error('trykkmodus: '+feilet+' slide(r) feilet');
+  }
+  function neste(){
+    if(k>=liste.length){ ferdig(); return; }
+    const i=liste[k++];
     const side=document.createElement('div'); side.className='trykkside';
-    const skala=document.createElement('div'); skala.className='skala';
-    side.appendChild(skala); ark.appendChild(side);
-
-    const nr=document.createElement('div');
-    nr.className='trykknr'; nr.textContent='Slide '+(i+1);
-    side.appendChild(nr);
-
-    /* Én slide som kaster skal koste én slide — ikke resten av dekket.
-       Uten dette stoppet hele arket ved den første feilen, og det så ut
-       som om forelesningen var 15 slides lang. */
+    const nr=document.createElement('div'); nr.className='trykknr';
+    nr.textContent='Slide '+(i+1);
+    ark.appendChild(side); side.appendChild(nr);
+    /* Én slide som kaster skal koste én slide — ikke resten av dekket. */
     try{
-      const d=document.createElement('div');
-      d.className='slide '+(sl.klasse||'')+(sl.blokk?' tett':'');
-      d.innerHTML=(sl.qr&&QR[sl.qr]
-          ? '<div class="qrboks"><img alt="QR til avstemningen" src="'+QR[sl.qr]+'">'+
-            '<div class="txt">Svar på mobilen</div></div>' : '')+
-        (window.SLIDETEKST?window.SLIDETEKST(i,sl.html):sl.html);
-      skala.appendChild(d);
-
-      const blokker = sl.blokk ? (Array.isArray(sl.blokk)?sl.blokk:[sl.blokk]) : [];
-      if(blokker.length){
-        const vert=document.createElement('div'); vert.className='simvert';
-        const pakke=document.createElement('div'); pakke.className='simpakke';
-        vert.appendChild(pakke); d.appendChild(vert);
-        blokker.forEach(function(b){ laan(b,pakke); });
-        blokker.forEach(function(b){ if(BLOKKNULL[b]){ try{ BLOKKNULL[b](); }catch(e){} } });
-        if(sl.forbered){ try{ sl.forbered(); }catch(e){} }
-        /* Klikk-trinnene FØR figuren fryses: et trinn som «Sett til de ekte
-           tallene» endrer jo nettopp det figuren skal vise. Gjorde vi det
-           etterpå, sto boksen og sa ett tall mens figuren viste et annet. */
-        folgUt(d);
-        const fns=[];
-        blokker.forEach(function(b){
-          const fane=BLOKKFANE[b], t=(fane&&TEGN[fane])||null;
-          if(t && fns.indexOf(t)<0) fns.push(t);
-        });
-        const tegn=function(){ fns.forEach(function(t){ t(); }); };
-        tegn();
-        void vert.offsetHeight;              // tving fram layout foer maalingen
-        tilpassBlokk(tegn, vert);
-        const klon=frysKopi(pakke);
-        lever();                             // originalene hjem foer neste ark
-        pakke.remove();
-        vert.appendChild(klon);
-      } else {
-        if(sl.forbered){ try{ sl.forbered(); }catch(e){} }
-        folgUt(d);
+      settSlide(i);
+      scene.style.width=BREDDE+'px';          // samme bredde paa alle ark
+      let vakt=0; while(fram() && ++vakt<300){}
+      if(S[i].trykkfyll!==false) trykkFyll();
+      const tegn=(typeof sisteTegn==='function')?sisteTegn:null;
+      if(tegn) tegn();
+      tilpassBlokk(tegn);
+      const kilde=scene.querySelector('.slide');
+      if(kilde){
+        const skala=document.createElement('div'); skala.className='skala';
+        skala.appendChild(trykkFrys(kilde));
+        side.insertBefore(skala,nr);
       }
     }catch(e){
       feilet++;
-      lever();                               // aldri la en blokk bli liggende igjen
-      const boks=document.createElement('div');
-      boks.style.cssText='position:absolute;left:40px;right:40px;bottom:40px;'+
-        'padding:14px 16px;background:#fdecea;border-left:5px solid #C0392B;'+
-        'font:600 15px/1.5 sans-serif;color:#8c2b20';
-      boks.textContent='Slide '+(i+1)+' kunne ikke bygges: '+(e && e.message || e);
-      skala.appendChild(boks);
+      const boks=document.createElement('div'); boks.className='trykkfeil';
+      boks.textContent='Slide '+(i+1)+' kunne ikke bygges: '+((e&&e.message)||e);
+      side.appendChild(boks);
       if(window.console) console.error('trykkmodus · slide '+(i+1), e);
     }
-  });
-  if(feilet && window.console) console.error('trykkmodus: '+feilet+' slide(r) feilet');
-  window.scrollTo(0,0);
+    requestAnimationFrame(function(){ requestAnimationFrame(neste); });
+  }
+  neste();
 }
 window.__trykkModus=trykk;
+/* TRYKK-JS-SLUTT */
 window.__avsluttForelesning=avslutt;
 })();
 
@@ -4253,10 +4257,10 @@ window.__avsluttForelesning=avslutt;
 (function(){
   const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+
                               (location.hash||'').replace(/^#/,''));
-  if(q.get('modus')==='forelesning' && window.__startForelesning){ window.__startForelesning(); }
   if(q.get('modus')==='trykk' && window.__trykkModus){
     window.__trykkModus(q.get('fasit')==='nei');
   }
+  if(q.get('modus')==='forelesning' && window.__startForelesning){ window.__startForelesning(); }
 })();
 
 </script>

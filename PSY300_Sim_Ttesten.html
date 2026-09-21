@@ -472,6 +472,52 @@ body.fmodus.oversikt #foversikt{display:grid;position:fixed;inset:0;z-index:70;
   letter-spacing:.08em;text-transform:uppercase;margin:14px 0 2px}
 #foversikt .tittelrad:first-child{margin-top:0}
 
+
+/* TRYKK-CSS-START */
+/* ===== TRYKKMODUS =========================================================
+   ?modus=trykk legger alle slidene under hverandre som ferdige ark, med
+   alle klikk-trinn utfoldet og figurene frosset til bilder. Da kan
+   nettleseren skrive dem ut: Cmd/Ctrl + P -> Lagre som PDF.
+
+   Hvorfor bilder og ikke levende canvas: en canvas som ikke er tegnet paa
+   nytt etter at utskriftsdialogen endret sidebredden, kommer ut blank.
+   Et <img> gjoer ikke det.
+
+   Maalene: A4 liggende med 6 mm marg gir 285 x 198 mm trykkflate. 285 mm
+   er 1077 px ved 96 dpi; skalaen regnes ut i JS og settes som --k.      */
+body.trykk{overflow:auto;background:#e9edf4}
+body.trykk>header,body.trykk>.wrap,body.trykk>.presbtn{display:none}
+body.trykk #scene,body.trykk #fnav,body.trykk #fbar,body.trykk #fnotat,
+body.trykk #foversikt,body.trykk #modusBtn{display:none!important}
+#trykkark{padding:20px 0 40px}
+.trykkside{position:relative;width:var(--sb,1280px);height:720px;margin:0 auto 20px;
+  background:#fff;box-shadow:0 2px 16px rgba(20,30,60,.18);overflow:hidden}
+.trykkside .skala{position:absolute;left:0;top:0;
+  width:var(--sb,1280px);height:720px;transform-origin:top left}
+.trykkside .slide{position:absolute;inset:0}
+.trykknr{position:absolute;right:16px;bottom:9px;z-index:5;
+  font-size:13px;font-weight:700;color:#93a2bd}
+.trykkfeil{position:absolute;left:40px;right:40px;bottom:40px;z-index:6;
+  padding:14px 16px;background:#fdecea;border-left:5px solid #C0392B;
+  font:600 15px/1.5 sans-serif;color:#8c2b20}
+.trykkhode{max-width:1280px;margin:0 auto 18px;padding:14px 18px;background:#fff;
+  border-left:5px solid #1E7A3C;box-shadow:0 2px 16px rgba(20,30,60,.18);
+  font-size:15px;line-height:1.5;color:#3F4E63}
+.trykkhode b{color:#1F3864}
+/* .skjul lar en slide ta bort en enkelt del av en LAANT blokk. */
+.skjul{display:none!important}
+@media print{
+  @page{size:A4 landscape;margin:6mm}
+  body.trykk{background:#fff}
+  #trykkark{padding:0}
+  .trykkhode{display:none}
+  .trykkside{width:285mm;height:198mm;margin:0;box-shadow:none;
+    page-break-after:always;break-after:page}
+  .trykkside:last-child{page-break-after:auto;break-after:auto}
+  .trykkside .skala{transform:scale(var(--k,0.841))}
+}
+/* TRYKK-CSS-SLUTT */
+
 /* ===== modusbryter =====
    Samme knapp begge veier. I appmodus ligger den nede til hoyre som en
    diskret pille; i forelesningsmodus flytter den seg til venstre side og
@@ -658,7 +704,7 @@ Du får se alle sammen.</p>
 
 <div class="rad" style="gap:8px;margin-top:6px">
 <button class="btn" id="esTrekk">Trekk ett nytt utvalg</button>
-<button class="btn2" id="esMange">Trekk 200 utvalg etter hverandre</button>
+<button data-trykk="kjor" class="btn2" id="esMange">Trekk 200 utvalg etter hverandre</button>
 <button class="btn2" id="esNull">Nullstill</button>
 <button class="btn2" id="esFrys">Frys denne kurven</button>
 <button class="btn2" id="esTom">Tøm frosne</button></div>
@@ -712,7 +758,7 @@ samme uansett hvem som ble med. Stor standardfeil = du kunne like gjerne fått n
 <input type="range" id="seN" min="0" max="8" step="1" value="2"><output id="seNO">20</output></div>
 
 <div class="rad" style="gap:8px;margin-top:6px">
-<button class="btn" id="seKjor">Kjør studien 2 000 ganger</button>
+<button data-trykk="kjor" class="btn" id="seKjor">Kjør studien 2 000 ganger</button>
 <button class="btn2" id="seFrys">Frys denne kurven</button>
 <button class="btn2" id="seTom">Tøm frosne</button></div>
 
@@ -799,7 +845,7 @@ estimatene i ett histogram — det er utvalgsfordelingen. Så legger vi
 <div class="sl"><label>Antall per gruppe (<i>n</i>)</label>
 <input type="range" id="kiN" min="5" max="120" step="1" value="20"><output id="kiNO">20</output></div>
 <div class="rad" style="gap:8px;margin-top:6px" data-t="b17">
-<button class="btn" id="kiKjor">Kjør 100 studier og tegn 100 intervaller</button></div>
+<button data-trykk="kjor" class="btn" id="kiKjor">Kjør 100 studier og tegn 100 intervaller</button></div>
 
 <canvas id="kiCv" height="330" style="margin-top:10px"></canvas>
 <div id="kiTall" style="margin-top:8px"></div>
@@ -1363,7 +1409,7 @@ av seg selv når utvalget vokser.
 <div class="sl"><label><i>n</i> i gruppe 2</label>
 <input type="range" id="fN2" min="5" max="80" step="1" value="50"><output id="fN2O">50</output></div>
 <div class="rad" style="gap:8px;margin-top:6px" data-t="b60">
-<button class="btn" id="fKjor">Kjør 3 000 studier uten sann effekt</button>
+<button data-trykk="kjor" class="btn" id="fKjor">Kjør 3 000 studier uten sann effekt</button>
 <button class="btn2" id="fLik">Sett variansene like</button></div>
 <div id="fTall" style="margin-top:10px"></div>
 <canvas id="fCv" height="200" style="margin-top:8px"></canvas>
@@ -5668,6 +5714,120 @@ document.addEventListener('keydown',function(e){
 /* eksporter for oppstartsblokken nederst */
 window.__startForelesning=start;
 window.__F4slides=S;          /* for testharnessen og spraaklaget */
+/* TRYKK-JS-START */
+/* ===================== TRYKKMODUS =====================================
+   Bygger hele dekket som statiske ark ved aa kjoere appens EGEN settSlide()
+   for hver slide, folde ut alle klikk-trinn med appens egen fram(), og
+   fryse resultatet. Da ser arket ut som lerretet — samme layout, samme
+   figurer, samme tall — og trykkmodusen trenger ikke vite noe om hvordan
+   den enkelte appen monterer blokkene sine.
+
+   Bygget gaar ett bilde om gangen (requestAnimationFrame), fordi
+   settSlide() maaler hoeyder og det krever at nettleseren har lagt ut
+   sliden foerst. Du ser slidene bla forbi mens det staar paa; det er
+   framdriftsindikatoren.
+
+   ?modus=trykk            hele dekket
+   ?modus=trykk&fasit=nei  uten fasitslidene                            */
+let trykkark=null;
+function trykkFrys(kilde){
+  const orig=[].slice.call(kilde.querySelectorAll('canvas'));
+  const klon=kilde.cloneNode(true);
+  const kopi=[].slice.call(klon.querySelectorAll('canvas'));
+  kopi.forEach(function(c,i){
+    const o=orig[i]; if(!o||!c.parentNode) return;
+    const img=document.createElement('img');
+    try{ img.src=o.toDataURL('image/png'); }catch(e){ return; }
+    img.style.width=o.style.width||'100%';
+    img.style.height=o.style.height||(o.clientHeight+'px');
+    img.style.display='block';
+    c.parentNode.replaceChild(img,c);
+  });
+  return klon;
+}
+/* Simuleringer som maa kjoeres for aa vise noe. I salen trykker du paa
+   knappen; her gjoeres det for deg. En slide som VIL vise den tomme
+   tilstanden, sier trykkfyll:false. */
+function trykkFyll(){
+  [].slice.call(scene.querySelectorAll('[data-trykk="kjor"]'))
+    .forEach(function(b){ try{ b.click(); }catch(e){} });
+}
+function trykkErFasit(s){
+  return /^Fasit/.test(s.t||'')||/fasitsvar/.test(s.klasse||'');
+}
+function trykk(utenFasit){
+  const gammelt=trykkark||document.getElementById('trykkark');
+  if(gammelt&&gammelt.remove) gammelt.remove();
+  const ark=document.createElement('div'); ark.id='trykkark'; trykkark=ark;
+  ark.style.display='none';
+  const hode=document.createElement('div'); hode.className='trykkhode';
+  hode.innerHTML='<b>Trykkmodus.</b> Alle slidene ligger under hverandre, ferdig '+
+    'utfoldet. Skriv ut med <b>Cmd/Ctrl + P</b> og velg <b>Lagre som PDF</b> — '+
+    'A4 liggende, og slå på bakgrunnsgrafikk. '+
+    (utenFasit ? '<b>Fasitslidene er utelatt</b> (studentversjon).'
+               : 'Fasitslidene er med. Vil du ha versjonen uten, legg til '+
+                 '<code>&amp;fasit=nei</code> i adressen.')+
+    ' <a href="'+location.pathname+'" style="color:#2E5496;font-weight:700">'+
+    'Tilbake til appen</a>';
+  ark.appendChild(hode);
+  document.body.appendChild(ark);
+
+  /* Bygges i forelesningsmodus: scenen maa vaere synlig og utlagt, ellers
+     er alle bredder null og figurene kommer ut tomme. */
+  document.body.classList.remove('trykk','oversikt','notat');
+  document.body.classList.add('fmodus');
+  window.__aksefont=19;
+
+  const BREDDE=1280;                 // fast, uavhengig av vindusformatet
+  const liste=[];
+  S.forEach(function(s,i){ if(!(utenFasit&&trykkErFasit(s))) liste.push(i); });
+  let k=0, feilet=0;
+
+  function ferdig(){
+    try{ lever(); }catch(e){}
+    ark.style.setProperty('--sb', BREDDE+'px');
+    ark.style.setProperty('--k', (1077/BREDDE).toFixed(4));
+    ark.style.display='';
+    document.body.classList.remove('fmodus');
+    document.body.classList.add('trykk');
+    window.scrollTo(0,0);
+    if(feilet&&window.console) console.error('trykkmodus: '+feilet+' slide(r) feilet');
+  }
+  function neste(){
+    if(k>=liste.length){ ferdig(); return; }
+    const i=liste[k++];
+    const side=document.createElement('div'); side.className='trykkside';
+    const nr=document.createElement('div'); nr.className='trykknr';
+    nr.textContent='Slide '+(i+1);
+    ark.appendChild(side); side.appendChild(nr);
+    /* Én slide som kaster skal koste én slide — ikke resten av dekket. */
+    try{
+      settSlide(i);
+      scene.style.width=BREDDE+'px';          // samme bredde paa alle ark
+      let vakt=0; while(fram() && ++vakt<300){}
+      if(S[i].trykkfyll!==false) trykkFyll();
+      const tegn=(typeof sisteTegn==='function')?sisteTegn:null;
+      if(tegn) tegn();
+      tilpassBlokk(tegn);
+      const kilde=scene.querySelector('.slide');
+      if(kilde){
+        const skala=document.createElement('div'); skala.className='skala';
+        skala.appendChild(trykkFrys(kilde));
+        side.insertBefore(skala,nr);
+      }
+    }catch(e){
+      feilet++;
+      const boks=document.createElement('div'); boks.className='trykkfeil';
+      boks.textContent='Slide '+(i+1)+' kunne ikke bygges: '+((e&&e.message)||e);
+      side.appendChild(boks);
+      if(window.console) console.error('trykkmodus · slide '+(i+1), e);
+    }
+    requestAnimationFrame(function(){ requestAnimationFrame(neste); });
+  }
+  neste();
+}
+window.__trykkModus=trykk;
+/* TRYKK-JS-SLUTT */
 window.__avsluttForelesning=avslutt;
 })();
 
@@ -5736,6 +5896,9 @@ window.addEventListener('resize',function(){
 });
 (function(){
   const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,''));
+  if(q.get('modus')==='trykk' && window.__trykkModus){
+    window.__trykkModus(q.get('fasit')==='nei');
+  }
   if(q.get('modus')==='forelesning'){ window.__startForelesning(); return; }
   const fn=q.get('fane');
   if(fn&&FANER.indexOf(fn)>=0) visFane(fn);
