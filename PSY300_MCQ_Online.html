@@ -99,8 +99,10 @@
       <button data-fmt="chapter" data-i18n-html="fmtChapter">Single chapter<small>20 questions</small></button>
       <button data-fmt="mock" data-i18n-html="fmtMock">Mock exam<small>40 questions, timed</small></button>
       <button data-fmt="output" data-i18n-html="fmtOutput">Output interpretation<small>read a JASP table or plot</small></button>
+      <button data-fmt="svak" data-i18n-html="fmtSvak">Where you have practised least<small>20 questions, picked from your own history</small></button>
     </div>
     <div id="chapterWrap" class="hide"><label class="fld" data-i18n="chapLbl">Chapter</label><select id="chapterSel"></select></div>
+    <div id="svakWrap" class="hide"><p class="hint" data-i18n="svakNote"></p></div>
     <div id="outputWrap" class="hide"><label class="fld" data-i18n="outLbl">How many output items?</label><select id="outSel"><option value="10">10</option><option value="20" selected>20</option><option value="30">30</option></select><p class="hint" style="text-align:left;margin-top:6px" data-i18n="outHelp"></p></div>
     <div id="mockWrap" class="hide"><label class="fld" data-i18n="mockLbl">Which mock exam?</label><select id="mockSel"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select><p class="hint" style="text-align:left;margin-top:6px" data-i18n="mockHelp"></p></div>
 
@@ -201,7 +203,9 @@ const I18N = {
  en:{title:"PSY300 — MCQ Practice (online)",subtitle:"Your answers are submitted anonymously to help improve the questions and track how the class is learning.",
   lang:"Language",codeLbl:"Your private code (anonymous)",codeHelp:"Invent a code only you know and reuse it each time. It is not your name — it just lets you see your own progress. Never use your real name or student number.",
   fmtLbl:"Format",chapLbl:"Chapter",diffLbl:"Difficulty",
-  fmtOutput:'Output interpretation<small>read a JASP table or plot</small>',outLbl:"How many output items?",
+  fmtOutput:'Output interpretation<small>read a JASP table or plot</small>',
+    fmtSvak:'Where you have practised least<small>20 questions, picked from your own history</small>',
+    svakNote:'Picks the items this browser has answered fewest times, spread across chapters. Nothing is sent anywhere \u2014 the history stays on this device.',outLbl:"How many output items?",
   outHelp:"Every item shows a real JASP table or plot from the course datasets. This is the format the exam uses most.",
   oiToggle:"Include output-interpretation items",
   oiToggleSub:"JASP tables and plots, mixed into the chapters. Loads once, about 1.3 MB. Items like these appear on the exam.",
@@ -225,7 +229,9 @@ const I18N = {
  no:{title:"PSY300 — Flervalg (online)",subtitle:"Svarene dine sendes anonymt for å forbedre oppgavene og følge hvordan klassen lærer.",
   lang:"Språk",codeLbl:"Din private kode (anonym)",codeHelp:"Finn på en kode bare du kjenner, og bruk den hver gang. Det er ikke navnet ditt — den lar deg bare se din egen fremgang. Bruk aldri ekte navn eller studentnummer.",
   fmtLbl:"Format",chapLbl:"Kapittel",diffLbl:"Vanskelighetsgrad",
-  fmtOutput:'Output-tolkning<small>les en JASP-tabell eller et plott</small>',outLbl:"Hvor mange output-oppgaver?",
+  fmtOutput:'Output-tolkning<small>les en JASP-tabell eller et plott</small>',
+    fmtSvak:'Der du har \u00f8vd minst<small>20 sp\u00f8rsm\u00e5l, valgt ut fra din egen historikk</small>',
+    svakNote:'Henter de oppgavene denne nettleseren har svart p\u00e5 f\u00e6rrest ganger, spredt over kapitler. Ingenting sendes noe sted \u2014 historikken blir liggende p\u00e5 denne enheten.',outLbl:"Hvor mange output-oppgaver?",
   outHelp:"Hver oppgave viser en ekte JASP-tabell eller et plott fra emnets datasett. Dette er formatet eksamen bruker mest.",
   oiToggle:"Ta med output-tolkningsoppgaver",
   oiToggleSub:"JASP-tabeller og figurer, blandet inn i kapitlene. Lastes én gang, om lag 1,3 MB. Slike oppgaver kommer også på eksamen.",
@@ -267,8 +273,14 @@ function PSY300_ROLLE(){
   }catch(e){ return "student"; }
 }
 
-const CHAPTERS=(()=>{const m={};BANK.forEach(it=>{if(!m[it.ch])m[it.ch]={ch:it.ch,en:it.chapter_en,no:(it.no&&it.no.chapter)||it.chapter_en};});return Object.values(m).sort((a,b)=>a.ch-b.ch);})();
-function buildChapterSelect(){const sel=$("#chapterSel");sel.innerHTML="";CHAPTERS.forEach(c=>{const o=document.createElement("option");o.value=c.ch;o.textContent=(lang==="no"?c.no:c.en);sel.appendChild(o);});if(state.chapter==null)state.chapter=(CHAPTERS.find(c=>c.ch===1)||CHAPTERS[0]).ch;sel.value=state.chapter;}
+const CHAPTERS=(()=>{const m={};BANK.forEach(it=>{if(!m[it.ch])m[it.ch]={ch:it.ch,en:it.chapter_en,no:(it.no&&it.no.chapter)||it.chapter_en};});/* Rekkefølgen er pedagogisk, ikke numerisk. Kapittel 1-3 sto tidligere
+   øverst og fikk 59 % av all øving, mens kapittel 7-16 - som utgjør
+   tre firedeler av eksamen - nesten ikke ble øvd. Derfor: tyngdepunktet
+   først, innføringskapitlene sist. */
+   const PRIORITET=[7,8,9,11,13,14,16,5,6,1,2,3];
+   const rang=c=>{const i=PRIORITET.indexOf(c);return i<0?99:i;};
+   return Object.values(m).sort((a,b)=>rang(a.ch)-rang(b.ch)||a.ch-b.ch);})();
+function buildChapterSelect(){const sel=$("#chapterSel");sel.innerHTML="";CHAPTERS.forEach(c=>{const o=document.createElement("option");o.value=c.ch;o.textContent=(lang==="no"?c.no:c.en);sel.appendChild(o);});if(state.chapter==null)state.chapter=CHAPTERS[0].ch;sel.value=state.chapter;}
 function applyLang(){document.documentElement.lang=lang;$$("[data-i18n]").forEach(el=>{if(el.dataset.i18n!=="poolNote")el.textContent=t(el.dataset.i18n);});$$("[data-i18n-html]").forEach(el=>{el.innerHTML=t(el.dataset.i18nHtml);});buildChapterSelect();$("[data-i18n='poolNote']").textContent=(lang==="en"?BANK.length+" active items in the pool.":BANK.length+" aktive oppgaver i banken.");}
 $("#langSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;lang=b.dataset.lang;$$("#langSeg button").forEach(x=>x.classList.toggle("on",x===b));applyLang();if(typeof histÅpen!=="undefined"){$("#histBtn").textContent=t_(histÅpen?"histHide":"histBtn");if(histÅpen&&histData)tegnHistorikk();}});
 $("#fmtSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;state.format=b.dataset.fmt;$$("#fmtSeg button").forEach(x=>x.classList.toggle("on",x===b));visFormatvalg();});
@@ -276,6 +288,7 @@ function visFormatvalg(){
   $("#chapterWrap").classList.toggle("hide",state.format!=="chapter");
   $("#mockWrap").classList.toggle("hide",state.format!=="mock");
   $("#outputWrap").classList.toggle("hide",state.format!=="output");
+  $("#svakWrap").classList.toggle("hide",state.format!=="svak");
   const erProve=state.format==="mock";
   // prøveeksamen: fast sett, ingen vanskelighetsvalg, ingen umiddelbar tilbakemelding
   $("#diffSeg").style.opacity=erProve?.45:1;
@@ -313,7 +326,48 @@ function lastOI(){ if(OI) return Promise.resolve(OI); if(OIlaster) return OIlast
                OI=d; OIfeil=""; return d; })
     .catch(e=>{ OIlaster=null; OIfeil=String(e.message||e); throw e; });
   return OIlaster; }
+/* ---- Lokal øvingshistorikk ----------------------------------------
+   Teller hvor mange ganger denne nettleseren har besvart hver oppgave.
+   Ligger bare lokalt, inneholder ingen personopplysninger, og brukes
+   til formatet "Der du har øvd minst". */
+const HIST_KEY="psy300_ovingshistorikk";
+function lesHist(){
+  try{ return JSON.parse(localStorage.getItem(HIST_KEY)||"{}"); }catch(e){ return {}; }
+}
+function tellOpp(id){
+  try{ const H=lesHist(); H[id]=(H[id]||0)+1; localStorage.setItem(HIST_KEY,JSON.stringify(H)); }catch(e){}
+}
+function histPerKapittel(){
+  const H=lesHist(), alle=(medOI()&&OI)?BANK.concat(OI):BANK, ut={};
+  alle.forEach(it=>{ if(!ut[it.ch])ut[it.ch]={sett:0,total:0}; ut[it.ch].total++; ut[it.ch].sett+=(H[it.id]||0); });
+  return ut;
+}
+/* Velger de minst øvde oppgavene, men sprer dem over kapitler slik at
+   ett kapittel ikke kan fylle hele settet. */
+const IKKE_EKSAMEN=[4];   // kapittel 4 (JASP-milj\u00f8et) pr\u00f8ves ikke til eksamen
+function minstOvd(N){
+  const H=lesHist();
+  const pool=((medOI()&&OI)?BANK.concat(OI):BANK.slice())
+    .filter(it=>IKKE_EKSAMEN.indexOf(it.ch)<0)
+    .map(it=>({it:it, n:(H[it.id]||0), r:Math.random()}))
+    .sort((a,b)=> a.n-b.n || a.r-b.r);
+  const tak=Math.max(3,Math.ceil(N/4)), perKap={}, valgt=[];
+  for(const x of pool){
+    if(valgt.length>=N) break;
+    const k=x.it.ch;
+    if((perKap[k]||0)>=tak) continue;
+    perKap[k]=(perKap[k]||0)+1; valgt.push(x.it);
+  }
+  /* fyll opp hvis takene gjorde settet for kort */
+  if(valgt.length<N){
+    const brukt=new Set(valgt.map(v=>v.id));
+    for(const x of pool){ if(valgt.length>=N)break; if(!brukt.has(x.it.id))valgt.push(x.it); }
+  }
+  return shuffle(valgt).slice(0,N);
+}
+
 function selectQuestions(){
+  if(state.format==="svak"){ return minstOvd(20); }
   if(state.format==="mock"){const m=MOCKS[String(state.mock||1)]||[];return m.slice();}
   if(state.format==="output"){const n=state.outN||20;let p=(OI||[]).slice();
     if(state.difficulty!=="exam")p=p.filter(it=>it.difficulty===state.difficulty);
@@ -322,7 +376,14 @@ function selectQuestions(){
   /* output-tolkningene er egne oppgaver med samme skjema som resten, bare med
      et bilde i tillegg; de blandes inn i kapitlene når valget står på */
   let pool = (medOI() && OI) ? BANK.concat(OI) : BANK.slice();
-  if(state.format==="chapter")pool=pool.filter(it=>it.ch===state.chapter);const tg=diffTargets(N,state.difficulty);const used=new Set();let chosen=[];for(const d in tg){const sub=pool.filter(it=>it.difficulty===d&&!used.has(it.id));const pk=(state.format==="chapter")?pickRandom(sub,tg[d]):weightedByChapter(sub,tg[d]);pk.forEach(it=>used.add(it.id));chosen=chosen.concat(pk);}if(state.difficulty==="exam"&&chosen.length<N){const rest=pool.filter(it=>!used.has(it.id));chosen=chosen.concat((state.format==="chapter")?pickRandom(rest,N-chosen.length):weightedByChapter(rest,N-chosen.length));}return shuffle(chosen).slice(0,N);}
+  if(state.format==="chapter"){
+    /* kapittelvalg: studenten har bedt om nettopp dette kapittelet, også kap 4 */
+    pool=pool.filter(it=>Number(it.ch)===Number(state.chapter));
+  } else {
+    /* alle andre format trekker bredt, og da skal kapitler som ikke prøves
+       til eksamen (kap 4, JASP-miljøet) holdes utenfor */
+    pool=pool.filter(it=>IKKE_EKSAMEN.indexOf(Number(it.ch))<0);
+  }const tg=diffTargets(N,state.difficulty);const used=new Set();let chosen=[];for(const d in tg){const sub=pool.filter(it=>it.difficulty===d&&!used.has(it.id));const pk=(state.format==="chapter")?pickRandom(sub,tg[d]):weightedByChapter(sub,tg[d]);pk.forEach(it=>used.add(it.id));chosen=chosen.concat(pk);}if(state.difficulty==="exam"&&chosen.length<N){const rest=pool.filter(it=>!used.has(it.id));chosen=chosen.concat((state.format==="chapter")?pickRandom(rest,N-chosen.length):weightedByChapter(rest,N-chosen.length));}return shuffle(chosen).slice(0,N);}
 
 function startQuizNow(){
   showExpl=$("#explChk").checked; immediate=$("#immChk").checked;
@@ -453,7 +514,8 @@ function recordAnswer(){const it=quiz[idx];
   const rt=(qFørste===null)?null:Math.round(qFørste/100)/10;      // sek, 1 desimal — tid til første valg
   const tot=Math.round(synligMs()/100)/10;                        // sek på spørsmålet totalt
   answers[idx]={id:it.id,ch:it.ch,chapterLabel:it.chapter_en,diff:it.difficulty,
-    picked:picked||"",correct:it.correct,isCorrect:picked===it.correct,rt:rt,tot:tot};}
+    picked:picked||"",correct:it.correct,isCorrect:picked===it.correct,rt:rt,tot:tot};
+  tellOpp(it.id);}
 $("#nextBtn").addEventListener("click",()=>{if(picked===null)return;recordAnswer();picked=null;if(idx<quiz.length-1){idx++;renderQ();}else finish();});
 $("#quitBtn").addEventListener("click",()=>{if(confirm(t("quitConfirm"))){$("#quiz").classList.add("hide");$("#start").classList.remove("hide");}});
 
