@@ -106,14 +106,6 @@
     <div id="outputWrap" class="hide"><label class="fld" data-i18n="outLbl">How many output items?</label><select id="outSel"><option value="10">10</option><option value="20" selected>20</option><option value="30">30</option></select><p class="hint" style="text-align:left;margin-top:6px" data-i18n="outHelp"></p></div>
     <div id="mockWrap" class="hide"><label class="fld" data-i18n="mockLbl">Which mock exam?</label><select id="mockSel"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select><p class="hint" style="text-align:left;margin-top:6px" data-i18n="mockHelp"></p></div>
 
-    <label class="fld" data-i18n="diffLbl">Difficulty</label>
-    <div class="seg" id="diffSeg">
-      <button data-diff="exam" class="on" data-i18n="diffExam">Exam-like (20/60/20)</button>
-      <button data-diff="Easy" data-i18n="diffEasy">Easy</button>
-      <button data-diff="Moderate" data-i18n="diffMod">Moderate</button>
-      <button data-diff="Hard" data-i18n="diffHard">Hard</button>
-    </div>
-
     <label class="check" for="explChk"><input type="checkbox" id="explChk" checked>
       <span class="t" data-i18n="explToggle">Show an explanation after each answer<small data-i18n="explToggleSub">You still see correct/incorrect either way.</small></span></label>
     <label class="check" for="oiChk"><input type="checkbox" id="oiChk" checked>
@@ -156,7 +148,7 @@
 
   <section id="quiz" class="card hide">
     <div class="topbar"><div class="progress"><div id="bar"></div></div><div class="meta"><span id="timer" class="hide"></span> <span id="counter">1 / 40</span></div></div>
-    <div class="qnum"><span id="qchapter"></span> · <span id="qdiff"></span> · <span id="qid"></span></div>
+    <div class="qnum"><span id="qchapter"></span> · <span id="qid"></span></div>
     <div class="qtext" id="qtext"></div>
     <div class="jasp-wrap hide" id="qtable"></div>
     <div id="opts"></div><div id="feedback"></div>
@@ -255,7 +247,7 @@ const I18N = {
 };
 
 let lang="no";
-const state={format:"full",chapter:null,difficulty:"exam",outN:20};
+const state={format:"full",chapter:null,difficulty:"blandet",outN:20};
 let quiz=[],idx=0,answers=[],picked=null,showExpl=true,immediate=true,startTime=0,sessionId="";
 let cohort=null; // summary from backend (item pct correct)
 const opts=["A","B","C","D"];
@@ -291,19 +283,43 @@ function visFormatvalg(){
   $("#svakWrap").classList.toggle("hide",state.format!=="svak");
   const erProve=state.format==="mock";
   // prøveeksamen: fast sett, ingen vanskelighetsvalg, ingen umiddelbar tilbakemelding
-  $("#diffSeg").style.opacity=erProve?.45:1;
-  $$("#diffSeg button").forEach(b=>b.disabled=erProve);
   if(erProve){$("#immChk").checked=false;}
   $("#immChk").disabled=erProve;
 }
-$("#diffSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;state.difficulty=b.dataset.diff;$$("#diffSeg button").forEach(x=>x.classList.toggle("on",x===b));});
 $("#chapterSel").addEventListener("change",e=>{state.chapter=parseInt(e.target.value,10);});
 $("#mockSel").addEventListener("change",e=>{state.mock=e.target.value;});
 $("#outSel").addEventListener("change",e=>{state.outN=parseInt(e.target.value,10);});
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+/* --- Bankstyring, innført 28.09.2026 etter itemanalysen 27.09 ---------------
+   KAST: oppgaver som beviselig ikke kan måle noe. Fjorten av dem har p = 1.00
+   med tre døde distraktorer: hver eneste student har valgt samme alternativ.
+   KJERNE: 263 oppgaver med dokumentert diskriminering, diagnostisk verdi
+   eller nødvendig begrepsdekning. Banken krympes IKKE — men trekket vektes
+   mot kjernen, slik at den får nok data til å kunne valideres etter eksamen.
+   Vekten regnes ut fra poolen slik at kjernen får 80 % av trekkene.
+   Prøveeksamenene (MOCKS) er faste sett og røres ikke av noen av delene. */
+const KAST = new Set(["C1-002", "C1-009", "C1-010", "C1-014", "C1-020", "C1-042", "C1-044", "C2-001", "C2-002", "C2-003", "C2-005", "C2-026", "C2-027", "C3-005", "C3-022", "C3-033", "C3-036", "C6-001", "C7-001", "C7-030", "F1-5", "F3-6", "FC-033", "FL-369", "FL-447", "OI-011", "OI-037", "OI-102"]);
+const KJERNE = new Set(["C1-001", "C1-006", "C1-007", "C1-008", "C1-011", "C1-013", "C1-016", "C1-017", "C1-018", "C1-019", "C1-022", "C1-023", "C1-024", "C1-027", "C1-029", "C1-031", "C1-032", "C1-033", "C1-036", "C1-039", "C1-040", "C11-001", "C11-003", "C11-024", "C11-029", "C11-035", "C13-003", "C13-005", "C13-006", "C13-010", "C13-011", "C13-012", "C13-023", "C13-028", "C14-002", "C14-004", "C14-005", "C14-008", "C14-015", "C14-023", "C16-008", "C16-031", "C16-033", "C2-006", "C2-007", "C2-008", "C2-010", "C2-012", "C2-013", "C2-015", "C2-016", "C2-017", "C2-018", "C2-019", "C2-020", "C2-021", "C2-022", "C2-024", "C2-025", "C2-028", "C2-030", "C2-031", "C2-034", "C2-036", "C2-037", "C2-038", "C2-039", "C2-041", "C2-042", "C2-043", "C2-046", "C2-047", "C2-048", "C2-049", "C2-050", "C2-051", "C3-001", "C3-002", "C3-007", "C3-008", "C3-009", "C3-013", "C3-017", "C3-024", "C3-027", "C3-039", "C4-008", "C4-012", "C4-018", "C4-019", "C5-026", "C6-002", "C6-003", "C6-007", "C6-017", "C6-018", "C6-025", "C6-027", "C6-030", "C6-031", "C7-005", "C7-007", "C7-010", "C7-011", "C7-012", "C7-014", "C7-015", "C7-019", "C7-024", "C7-025", "C7-031", "C7-034", "C7-035", "C8-001", "C8-011", "C8-013", "C8-014", "C8-021", "C8-027", "C8-036", "C9-001", "C9-002", "C9-010", "C9-022", "C9-023", "F1-4", "F2-1", "F2-2", "F2-3", "F2-6", "F3-4", "F5-5", "F7-1", "F7-4", "F8-4", "F9-7", "F9-8", "FC-002", "FC-003", "FC-004", "FC-005", "FC-007", "FC-013", "FC-014", "FC-015", "FC-016", "FC-017", "FC-018", "FC-019", "FC-031", "FC-032", "FC-049", "FC-055", "FC-056", "FC-062", "FL-002", "FL-003", "FL-009", "FL-010", "FL-015", "FL-017", "FL-030", "FL-035", "FL-037", "FL-041", "FL-042", "FL-049", "FL-053", "FL-063", "FL-069", "FL-070", "FL-073", "FL-076", "FL-077", "FL-089", "FL-092", "FL-093", "FL-109", "FL-113", "FL-115", "FL-117", "FL-118", "FL-119", "FL-120", "FL-122", "FL-149", "FL-152", "FL-156", "FL-173", "FL-179", "FL-198", "FL-204", "FL-206", "FL-225", "FL-227", "FL-229", "FL-231", "FL-232", "FL-233", "FL-234", "FL-235", "FL-238", "FL-242", "FL-244", "FL-273", "FL-274", "FL-285", "FL-294", "FL-307", "FL-340", "FL-344", "FL-345", "FL-352", "FL-353", "FL-359", "FL-362", "FL-363", "FL-366", "FL-367", "FL-368", "FL-370", "FL-371", "FL-372", "FL-383", "FL-384", "FL-385", "FL-386", "FL-388", "FL-389", "FL-391", "FL-393", "FL-395", "FL-398", "FL-400", "FL-413", "FL-423", "FL-428", "FL-434", "FL-435", "FL-446", "FL-448", "FL-451", "FL-456", "FL-458", "FL-459", "FL-460", "FL-462", "FL-467", "FL-468", "FL-471", "FL-476", "FL-480", "FL-485", "FL-487", "FL-498", "FL-500", "FL-501", "FL-504", "FL-505", "OI-023", "OI-025", "OI-061", "OI-076", "OI-084"]);
+const KJERNEANDEL = 0.80;
+/* Vekten regnes ut fra sammensetningen i den aktuelle poolen, slik at andelen
+   blir 80 % uansett om studenten trekker bredt eller innenfor ett kapittel.
+   En fast vekt ville gitt nesten 100 % kjerne i kapittel 1-3, der kjernen er
+   tett, og under 50 % i kapitler der den er tynn. */
+function kjernevekt(pool){
+  const nk=pool.reduce((a,it)=>a+(KJERNE.has(it.id)?1:0),0), nr=pool.length-nk;
+  if(!nk||!nr) return 1;
+  return (KJERNEANDEL*nr)/((1-KJERNEANDEL)*nk);}
+const vekt = (it,w) => KJERNE.has(it.id) ? w : 1;
+/* Vektet trekk uten tilbakelegging (Efraimidis & Spirakis): gi hvert element
+   nøkkelen u^(1/vekt) og ta de k høyeste. */
+function vektetUtvalg(pool,k){
+  const w=kjernevekt(pool);
+  return pool.map(it=>[Math.pow(Math.random(),1/vekt(it,w)),it])
+             .sort((a,b)=>b[0]-a[0]).slice(0,k).map(x=>x[1]);}
+const utenKast = arr => arr.filter(it=>!KAST.has(it.id));
 function pickRandom(p,k){return shuffle(p.slice()).slice(0,k);}
-function weightedByChapter(pool,k){const byCh={};pool.forEach(it=>{(byCh[it.ch]=byCh[it.ch]||[]).push(it);});Object.values(byCh).forEach(shuffle);const res=[];while(res.length<k){const av=Object.keys(byCh).filter(c=>byCh[c].length);if(!av.length)break;const w=av.map(c=>BASE_WEIGHTS[c]||1),tot=w.reduce((a,b)=>a+b,0);let r=Math.random()*tot,pk=av[0];for(let i=0;i<av.length;i++){r-=w[i];if(r<=0){pk=av[i];break;}}res.push(byCh[pk].pop());}return res;}
+function weightedByChapter(pool,k){const byCh={};const w=kjernevekt(pool);pool.forEach(it=>{(byCh[it.ch]=byCh[it.ch]||[]).push(it);});Object.values(byCh).forEach(a=>{const n=new Map(a.map(it=>[it,Math.pow(Math.random(),1/vekt(it,w))]));a.sort((x,y)=>n.get(x)-n.get(y));});const res=[];while(res.length<k){const av=Object.keys(byCh).filter(c=>byCh[c].length);if(!av.length)break;const w=av.map(c=>BASE_WEIGHTS[c]||1),tot=w.reduce((a,b)=>a+b,0);let r=Math.random()*tot,pk=av[0];for(let i=0;i<av.length;i++){r-=w[i];if(r<=0){pk=av[i];break;}}res.push(byCh[pk].pop());}return res;}
 function diffTargets(N,m){if(m==="exam"){const e=Math.round(N*0.2),h=Math.round(N*0.2);return{Easy:e,Moderate:N-e-h,Hard:h};}const o={};o[m]=N;return o;}
 let OI=null, OIlaster=null, OIfeil="";
 /* Hentes normalt fra nettleserens cache, men uten force-cache: en gammel
@@ -369,13 +385,12 @@ function minstOvd(N){
 function selectQuestions(){
   if(state.format==="svak"){ return minstOvd(20); }
   if(state.format==="mock"){const m=MOCKS[String(state.mock||1)]||[];return m.slice();}
-  if(state.format==="output"){const n=state.outN||20;let p=(OI||[]).slice();
-    if(state.difficulty!=="exam")p=p.filter(it=>it.difficulty===state.difficulty);
-    if(!p.length)p=(OI||[]).slice(); return pickRandom(p,Math.min(n,p.length));}
+  if(state.format==="output"){const n=state.outN||20;let p=utenKast((OI||[]).slice());
+    if(!p.length)p=utenKast((OI||[]).slice()); return vektetUtvalg(p,Math.min(n,p.length));}
   const N=state.format==="full"?40:20;
   /* output-tolkningene er egne oppgaver med samme skjema som resten, bare med
      et bilde i tillegg; de blandes inn i kapitlene når valget står på */
-  let pool = (medOI() && OI) ? BANK.concat(OI) : BANK.slice();
+  let pool = utenKast((medOI() && OI) ? BANK.concat(OI) : BANK.slice());
   if(state.format==="chapter"){
     /* kapittelvalg: studenten har bedt om nettopp dette kapittelet, også kap 4 */
     pool=pool.filter(it=>Number(it.ch)===Number(state.chapter));
@@ -383,7 +398,12 @@ function selectQuestions(){
     /* alle andre format trekker bredt, og da skal kapitler som ikke prøves
        til eksamen (kap 4, JASP-miljøet) holdes utenfor */
     pool=pool.filter(it=>IKKE_EKSAMEN.indexOf(Number(it.ch))<0);
-  }const tg=diffTargets(N,state.difficulty);const used=new Set();let chosen=[];for(const d in tg){const sub=pool.filter(it=>it.difficulty===d&&!used.has(it.id));const pk=(state.format==="chapter")?pickRandom(sub,tg[d]):weightedByChapter(sub,tg[d]);pk.forEach(it=>used.add(it.id));chosen=chosen.concat(pk);}if(state.difficulty==="exam"&&chosen.length<N){const rest=pool.filter(it=>!used.has(it.id));chosen=chosen.concat((state.format==="chapter")?pickRandom(rest,N-chosen.length):weightedByChapter(rest,N-chosen.length));}return shuffle(chosen).slice(0,N);}
+  }/* Vanskegradsmerkingen (Easy/Moderate/Hard) viste seg å ikke henge sammen
+     med observert vanskegrad: itemanalysen 27.09.2026 ga p = 0.64 / 0.59 / 0.61.
+     Den styrer derfor ikke lenger trekket. Oppgavene trekkes tilfeldig fra
+     poolen, fortsatt kapittelvektet for de brede formatene. */
+  const chosen=(state.format==="chapter")?vektetUtvalg(pool,N):weightedByChapter(pool,N);
+  return shuffle(chosen).slice(0,N);}
 
 function startQuizNow(){
   showExpl=$("#explChk").checked; immediate=$("#immChk").checked;
@@ -499,7 +519,7 @@ function renderQ(){const it=quiz[idx],txt=L(it);picked=null;
   qT0=Date.now();qSkjult=0;qSkjultFra=document.hidden?Date.now():0;qFørste=null;
   $("#counter").textContent=(idx+1)+" / "+quiz.length; $("#bar").style.width=(idx/quiz.length*100)+"%";
   $("#qchapter").textContent=(lang==="no"&&it.no&&it.no.chapter)?it.no.chapter:it.chapter_en;
-  $("#qdiff").textContent=diffLabel(it.difficulty); $("#qid").textContent=it.id; $("#qtext").textContent=txt.q;
+  $("#qid").textContent=it.id; $("#qtext").textContent=txt.q;
   const tw=$("#qtable");
   if(it.img){tw.innerHTML='<img src="'+it.img+'" alt="JASP-output" style="max-width:100%;display:block;border:1px solid var(--line);border-radius:8px">';tw.classList.remove("hide");}
   else if(txt.tab){tw.innerHTML=txt.tab;tw.classList.remove("hide");}
@@ -760,9 +780,6 @@ applyLang();
   if(kap!==null&&!isNaN(+kap)){
     if(CHAPTERS.some(c=>c.ch===+kap)){state.chapter=+kap;$("#chapterSel").value=String(+kap);if(!f&&!pr)state.format="chapter";}
   }
-  const v=g("vansker","difficulty","diff");
-  if(v&&DIFF[v.toLowerCase()]){state.difficulty=DIFF[v.toLowerCase()];
-    $$("#diffSeg button").forEach(x=>x.classList.toggle("on",x.dataset.diff===state.difficulty));}
   $$("#fmtSeg button").forEach(x=>x.classList.toggle("on",x.dataset.fmt===state.format));
   visFormatvalg();
   /* ?fasit=etter  slår AV umiddelbar fasit og forklaring (bruk i forelesning:
