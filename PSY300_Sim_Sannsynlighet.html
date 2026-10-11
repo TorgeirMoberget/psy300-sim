@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY300 &middot; Sim 35 &mdash; Sannsynlighet: fra myntkast til p-verdi</title>
+<style>
+:root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--orange:#B26A00;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+/* Samme fargekode som resten av appene: marine = teststatistikk, lilla =
+   p-verdi, rød = det vi ikke vil ha, grønn = signalet. */
+:root{--sig:#1E7A3C;--sig-bg:#E7F4EA;--stoy:#C0392B;--stoy-bg:#FBEDEB;
+      --tstat:#1F3864;--pverdi:#6A3D9A;--pverdi-bg:#F1EAF8;}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
+header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:20.5px;margin:0;font-weight:700}
+header p{margin:2px 0 0;font-size:15.5px;opacity:.85}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.card h2{font-size:19px;margin:0 0 8px;color:var(--navy)}
+.card h3{font-size:16.5px;margin:14px 0 4px;color:var(--navy)}
+button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+.btn{background:var(--blue);color:#fff}
+.btn2{background:#eef1f7;color:var(--navy)}
+.fane{background:#eef1f7;color:var(--navy);font-size:16.5px}
+.fane.on{background:var(--navy);color:#fff}
+.keybox{background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:12px 14px;margin:14px 0;font-size:16.5px}
+.keybox .lbl{display:block;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--blue);margin-bottom:3px}
+.advarsel{background:#FFF6E8;border-left:5px solid var(--orange);border-radius:0 10px 10px 0;padding:12px 14px;margin:12px 0;font-size:16.5px}
+label{font-size:16px;color:var(--navy);font-weight:600}
+input[type=range]{width:180px;vertical-align:middle}
+canvas{width:100%;display:block;border-radius:8px}
+.muted{color:#62708a;font-size:15.5px}
+.ctrl{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:10px 0}
+.tall{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0}
+.tallkort{border:1px solid var(--line);border-radius:10px;padding:8px 14px;min-width:118px;background:#fbfcfe}
+.tallkort .v{font-size:27px;font-weight:700;color:var(--navy);line-height:1.1}
+.tallkort .l{font-size:13.5px;color:#62708a}
+.gitter{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;max-width:330px;margin:8px 0}
+.gitter div{aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  border-radius:5px;background:#eef1f7;font-size:13px;color:#51607d;cursor:pointer;user-select:none}
+.gitter div.tr{background:var(--sig);color:#fff;font-weight:700}
+.ikoner{display:grid;grid-template-columns:repeat(25,1fr);gap:2px;margin:10px 0}
+.ikoner i{aspect-ratio:1;border-radius:2px;background:#dfe4ee;display:block}
+.ikoner i.sykP{background:#1E7A3C}.ikoner i.sykN{background:#A9D6B6}
+.ikoner i.friskP{background:#C0392B}.ikoner i.friskN{background:#f0d9d5}
+.leg{display:flex;flex-wrap:wrap;gap:14px;font-size:14.5px;margin-top:6px}
+.leg span{display:inline-flex;align-items:center;gap:6px}
+.leg b{width:13px;height:13px;border-radius:3px;display:inline-block}
+.ovlenke{display:inline-block;margin-top:10px;font-size:15.5px}
+a{color:var(--blue)}
+
+.hvbig{font-size:20px;line-height:1.45;color:#1F3864;font-weight:600;margin:2px 0 10px}
+.hvgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.hvkort{border-radius:10px;padding:11px 13px;font-size:16px;line-height:1.5}
+.hvkort h3{margin:0 0 6px;font-size:16.5px}
+.hvkort ul{margin:0;padding-left:18px}
+.hvkort li{margin-bottom:7px}
+.hver{background:#eaf6ea;border:1px solid #bcdcbc;border-left:5px solid var(--green)}
+.hver h3{color:#1E5C22}
+.hvikke{background:#fbeceb;border:1px solid #edc9c5;border-left:5px solid var(--red)}
+.hvikke h3{color:#9B2D20}
+.eks{display:block;color:#5A6B7B;font-size:14.5px;margin-top:2px}
+.hvnaar{width:100%;border-collapse:collapse;font-size:15.5px;margin-top:8px}
+.hvnaar th{text-align:left;background:#eef2f8;border-bottom:2px solid #c7d6ec;padding:6px 8px;font-size:14.5px}
+.hvnaar td{border-bottom:1px solid var(--line);padding:6px 8px;vertical-align:top}
+.hvnaar tr.na{background:#eef3fb;font-weight:500}
+@media(max-width:760px){.hvgrid{grid-template-columns:1fr}}
+.note{background:#f6f8fa;border:1px solid #e3e7ea;border-radius:10px;padding:11px 13px;margin:10px 0;font-size:15.5px}
+.ovkort{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ovlbl{font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5A6B7B}
+.ovhint{font-size:13.5px;color:#8b949e}
+</style>
+<style id="ovbegrep-css">
+.ovkort{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f6f8fa;
+ border:1px solid #dde3e8;border-left:5px solid #C8102E;border-radius:10px;
+ padding:10px 13px;margin:14px 0;font-size:15px}
+.ovkort .ovlbl{font-weight:700;color:#5B6670;letter-spacing:.02em;
+ text-transform:uppercase;font-size:11.5px}
+.ovkort a.ovlenke{display:inline-block;background:#fff;border:1px solid #c7d6ec;
+ border-radius:999px;padding:3px 11px;color:#174A6B;text-decoration:none;font-size:14.5px}
+.ovkort a.ovlenke:hover{background:#eef3fb;border-color:#8fb0d6}
+.ovkort .ovhint{color:#6B767D;font-size:13px}
+/* --- konkrete kast: myntene og terningene --- */
+.kastbord{display:flex;flex-wrap:wrap;align-items:center;gap:18px;background:#fbfcfe;
+ border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
+.mynt{width:108px;height:108px;flex:none;perspective:600px}
+.mynt svg{width:100%;height:100%;display:block}
+.mynt.vender svg{animation:vend .6s ease-out}
+@keyframes vend{0%{transform:rotateY(0deg) scale(1)}
+ 55%{transform:rotateY(900deg) scale(1.14)}100%{transform:rotateY(1440deg) scale(1)}}
+.kastsvar{font-size:15.5px;line-height:1.5;flex:1 1 240px;min-width:220px;color:#62708a}
+.kastsvar b{font-size:21px;color:var(--navy);display:block;margin-bottom:2px}
+.kastsvar em{font-style:normal;font-weight:700;color:var(--navy)}
+.stripe{display:flex;flex-wrap:wrap;gap:3px;margin:9px 0 0}
+.stripe i{width:17px;height:17px;border-radius:50%;display:inline-block;flex:none;
+ border:1px solid #BFA23C;font-style:normal;font-size:10px;line-height:15px;
+ text-align:center;font-weight:700;color:#6B5000;background:#EFDFA8}
+.stripe i.m{background:#E3E8F1;border-color:#A3B2CB;color:#3C4A63}
+.stripe i.serie{outline:2px solid var(--red);outline-offset:1px}
+.terningrad{display:flex;flex-wrap:wrap;align-items:center;gap:9px;flex:none}
+.terningrad svg{width:64px;height:64px;flex:none}
+.terningrad .pluss{font-size:21px;color:#8C979E}
+.terningrad .sum{font-size:21px;font-weight:700;color:var(--navy);margin-left:4px}
+.gitter{max-width:432px}
+.gitter div{gap:2px;padding:3px}
+.gitter div svg{width:47%;height:auto}
+.gitter div.tr{background:var(--sig)}
+
+.bildekort{margin:14px 0}
+.bildekort img{width:100%;max-width:760px;border-radius:10px;border:1px solid var(--line);display:block}
+.bildekort figcaption{font-size:14.5px;color:#5A6B7B;margin-top:6px;line-height:1.45;max-width:760px}
+.bildekort figcaption b{color:#1F3864}
+.portretter{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:14px 0}
+.portretter figure{margin:0}
+.portretter img{width:100%;border-radius:10px;border:1px solid var(--line);display:block;
+ aspect-ratio:3/4;object-fit:cover;object-position:top}
+.portretter figcaption{font-size:13.5px;color:#5A6B7B;margin-top:5px;line-height:1.4}
+.portretter figcaption b{display:block;color:#1F3864;font-size:14.5px}
+.bildetom{border:1px dashed #c9d2dc;border-radius:10px;padding:14px;color:#8b949e;
+ font-size:14px;background:#fbfcfe;max-width:760px}
+
+.hist{background:#f7f4ee;border:1px solid #e0d6c3;border-left:5px solid #A98B55;
+ border-radius:0 10px 10px 0;padding:13px 15px;margin:13px 0;font-size:16.5px;line-height:1.55}
+.hist h3{margin:0 0 6px;font-size:16.5px;color:#6B5424}
+.hist .kilde{display:block;margin-top:7px;font-size:13.5px;color:#7A6B4F}
+.hva{background:#fbfcfe;border:1px solid var(--line);border-left:5px solid var(--blue);
+ border-radius:0 10px 10px 0;padding:12px 14px;margin:0 0 12px;font-size:16.5px;line-height:1.55}
+.hva .lbl2{display:block;font-size:12.5px;letter-spacing:.07em;text-transform:uppercase;
+ color:var(--blue);font-weight:700;margin-bottom:4px}
+.dtab{width:100%;border-collapse:collapse;font-size:15.5px;margin:8px 0}
+.dtab th{text-align:right;background:#eef2f8;border-bottom:2px solid #c7d6ec;padding:5px 8px;font-size:14.5px}
+.dtab th:first-child{text-align:left}
+.dtab td{border-bottom:1px solid var(--line);padding:5px 8px;text-align:right;
+ font-variant-numeric:tabular-nums}
+.dtab td:first-child{text-align:left}
+.dtab tr.mark{background:#fdf3f2;font-weight:600}
+</style>
+</head><body>
+<header><h1>Sim 35 &middot; Sannsynlighet: fra myntkast til p-verdi</h1>
+<p>PSY300 &middot; Forelesning 1&ndash;2 &middot; Fra ett myntkast til en <i>p</i>-verdi &mdash; samme regnestykke hele veien</p></header>
+
+<div class="wrap">
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 6px">
+<button class="fane on" data-fane="hvorfor">0 &middot; Hvorfor sannsynlighet?</button>
+<button class="fane" data-fane="mynt">1 &middot; Ett kast, mange kast</button>
+<button class="fane" data-fane="terning">2 &middot; To terninger</button>
+<button class="fane" data-fane="uavh">3 &middot; Uavhengighet</button>
+<button class="fane" data-fane="betinget">4 &middot; Betinget og basisrate</button>
+<button class="fane" data-fane="tetthet">5 &middot; N&aring;r utfallene er kontinuerlige</button>
+<button class="fane" data-fane="pverdi">6 &middot; Fra mynt til <i>p</i>-verdi</button>
+</div>
+
+<!-- ============================ FANE 1 ============================ -->
+<!-- ============================ FANE 0 ============================ -->
+<div id="fane-hvorfor">
+
+<div class="card">
+<h2>Spørsmålet sannsynlighet svarer på</h2>
+<p class="hvbig">«Hvor overrasket skal jeg være over dette?»</p>
+<p style="font-size:16.5px;line-height:1.55">Du finner en forskjell mellom to grupper. Er den
+ekte, eller er det bare slump? Spørsmålet kan ikke besvares uten at du først vet
+<b>hvor mye slump alene pleier å lage</b>. Det er sannsynlighet: regnskapet over hva tilfeldigheter
+får til når ingenting annet er på ferde.</p>
+
+<p style="font-size:16.5px;line-height:1.55">Dette er grunnen til at faget begynner her og ikke med
+testene. En <i>p</i>-verdi <b>er</b> en sannsynlighet &mdash; «hvor ofte ville slump laget noe minst så
+stort?». Et konfidensintervall <b>er</b> en sannsynlighetsuttalelse om prosedyren. Styrke, type I- og
+type II-feil, alt sammen. Forstår du ikke tallene her, blir resten utenatlæring.</p>
+
+<div class="keybox"><span class="lbl">Sagt på &eacute;<i>n</i> linje</span>
+<b>Sannsynlighet er andelen av gangene noe skjer når du gjentar mange nok ganger. Det er alt. Resten
+av faget bygger på den ene ideen.</b></div>
+
+<p style="font-size:16.5px;line-height:1.55">Og en advarsel som går igjen i hele emnet:
+<b>mennesker er systematisk dårlige til dette.</b> Vi ser mønstre i støy, vi glemmer basisraten, og vi
+tror at fire kron på rad gjør mynt «på tide». Fanene her er bygget rundt nettopp de feilene &mdash;
+ikke fordi de er morsomme, men fordi de dukker opp igjen i tolkningen av <i>p</i>-verdier.</p>
+</div>
+
+<div class="card">
+<h2>Faget ble født ved spillebordet</h2>
+<p style="font-size:16.5px;line-height:1.55">Det er ikke en kuriositet, det er en
+n&oslash;kkel. De f&oslash;rste som regnet systematisk p&aring; sannsynlighet, gjorde det fordi de
+ville vite om et spill var verdt &aring; satse p&aring; &mdash; og det sp&oslash;rsm&aring;let har
+n&oslash;yaktig samme form som sp&oslash;rsm&aring;let du skal stille om data: <b>er dette
+m&oslash;nsteret mer enn flaks?</b></p>
+
+<div class="hist">
+<h3>Tre navn, hundre &aring;r</h3>
+<p style="margin:0 0 7px"><b>Gerolamo Cardano</b> (1501&ndash;1576) var lege, matematiker og
+storspiller. Han skrev <i>Liber de ludo aleae</i> &mdash; «boka om terningspill» &mdash; dels som
+matematikk, dels som h&aring;ndbok for &aring; vinne, med et eget kapittel om juks. Den ble
+<b>f&oslash;rst trykt i 1663</b>, nesten nitti &aring;r etter hans d&oslash;d, og kom derfor for
+sent til &aring; p&aring;virke noen.</p>
+<p style="margin:0 0 7px">I <b>1654</b> skrev <b>Blaise Pascal</b> og <b>Pierre de Fermat</b>
+brev til hverandre om to problemer de hadde f&aring;tt fra <b>Antoine Gombaud, chevalier de
+M&eacute;r&eacute;</b> &mdash; en spiller som tapte penger og ikke forsto hvorfor. Det ene
+problemet handlet om hvor mange terningkast som gj&oslash;r et veddem&aring;l gunstig; det andre om
+hvordan en pott skal deles hvis spillet avbrytes. Den brevvekslingen regnes som
+<b>sannsynlighetsregningens f&oslash;dsel</b>.</p>
+<p style="margin:0"><b>Christiaan Huygens</b> trykte den f&oslash;rste l&aelig;reboka i 1657:
+<i>De ratiociniis in ludo aleae</i> &mdash; «om beregninger i terningspill». Tittelen sier alt om
+hvor faget kom fra.</p>
+<!-- SIM35-BILDER START hist0 -->
+<div class="bildetom">Portrettraden er tom. Legg <code>cardano.jpg</code>, <code>pascal.jpg</code>, <code>fermat.jpg</code> i <code>figs_sannsynlighet/</code>.</div><div class="bildetom">Bildeslott «spillebord» er tom. Legg <code>figs_sannsynlighet/spillebord.jpg</code> p&aring; plass og kj&oslash;r <code>bygg_sim35_bilder.py</code>.</div>
+<!-- SIM35-BILDER SLUTT hist0 -->
+<span class="kilde">De M&eacute;r&eacute;s eget regnestykke st&aring;r i fane 3. Terningene i fane
+2 tar opp det neste sp&oslash;rsm&aring;let spillere stilte: er terningen rigget?</span>
+</div>
+
+<div class="keybox"><span class="lbl">Hvorfor dette h&oslash;rer hjemme i et psykologiemne</span>
+<b>Spilleren spør: «taper jeg oftere enn tilfeldighetene skulle tilsi?» Forskeren spør: «skiller
+gruppene seg mer enn tilfeldighetene skulle tilsi?» Det er samme regnestykke. Nullhypotesen er
+antagelsen om at spillet er rettferdig.</b></div>
+</div>
+
+<div class="card">
+<h2>Hva sannsynlighet gir deg — og hva den ikke gir</h2>
+<div class="hvgrid">
+<div class="hvkort hver"><h3>✓ Den forteller deg</h3><ul>
+<li><b>Hva slump alene pleier å lage.</b> Hvor stor forskjell mellom to grupper du kan få selv når
+behandlingen ikke virker.
+<span class="eks">Det er nøyaktig det en nullfordeling er.</span></li>
+<li><b>Hvor sjeldent noe er på lang sikt.</b> Ikke i det neste kastet &mdash; i de neste ti tusen.</li>
+<li><b>Hvordan et testresultat skal veies mot hvor vanlig tilstanden er.</b> En positiv test på en
+sjelden sykdom betyr mye mindre enn folk tror.
+<span class="eks">Fane 4. Dette er den enkeltfeilen som koster mest i klinisk arbeid.</span></li>
+<li><b>Når to ting er uavhengige</b> &mdash; og hva det faktisk betyr å gange dem sammen.</li>
+</ul></div>
+<div class="hvkort hvikke"><h3>✗ Den forteller deg ikke</h3><ul>
+<li><b>Hva som skjer i det neste kastet.</b> En mynt med <i>p</i> = 0.5 kan gi kron ti ganger på rad.
+Sannsynlighet er en uttalelse om det lange løp, aldri om enkelttilfellet.</li>
+<li><b>At noe er «på tide».</b> Mynten husker ingenting. Den feilen har et navn &mdash;
+spillerens feilslutning &mdash; og den sitter dypt.</li>
+<li><b>Om hypotesen din er sann.</b> En <i>p</i>-verdi sier hvor rart dataene er <i>gitt</i> at
+nullhypotesen stemmer. Den snur ikke om og forteller deg hvor sannsynlig nullhypotesen er.
+<span class="eks">Dette er den mest siterte feiltolkningen i hele faget. Fane 5.</span></li>
+<li><b>Noe om årsak.</b> At to ting opptrer sammen oftere enn slump skulle tilsi, sier ingenting
+om hvorfor.</li>
+</ul></div>
+</div>
+
+<div class="note" style="margin-top:12px"><b>Den viktigste av dem:</b> <i>P</i>(data | H&#8320;) er
+ikke <i>P</i>(H&#8320; | data). Sannsynligheten for å teste positivt når du er syk, er ikke den samme
+som sannsynligheten for å være syk når du tester positivt. Fane 4 viser forskjellen med tall, og
+fane 5 viser at det er nøyaktig samme forveksling som skjer når noen sier «<i>p</i> = .03, så det er
+3 % sjanse for at jeg tar feil».</div>
+</div>
+
+<div class="card">
+<h2>Hvor dette dukker opp igjen</h2>
+<p style="font-size:16.5px;line-height:1.55">Sannsynlighet er ikke et eget tema du blir ferdig med.
+Det er maskineriet under alt som kommer etterpå:</p>
+<table class="hvnaar">
+<tr><th>Der du møter det senere</th><th>Hva det egentlig er</th><th>Hvor</th></tr>
+<tr class="na"><td><b>Reglene i denne appen</b></td><td>Andeler i det lange løp, uavhengighet, betinging</td><td>denne appen</td></tr>
+<tr><td>Utvalgsfordelingen og standardfeilen</td><td>Sannsynlighetsfordelingen til et gjennomsnitt</td><td>Sim 3</td></tr>
+<tr><td><i>P</i>-verdien</td><td>En halefrekvens i en nullfordeling</td><td>Sim 7</td></tr>
+<tr><td>Konfidensintervallet</td><td>En prosedyre som treffer i 95 % av gjentakelsene</td><td>Sim 3, Sim 16</td></tr>
+<tr><td>Statistisk styrke og type II-feil</td><td>Sannsynligheten for å oppdage noe som er der</td><td>Sim 7</td></tr>
+<tr><td>Multiple tester og familievis feilrate</td><td>Hva som skjer når du gjentar et sjeldent utfall ofte</td><td>Sim 7</td></tr>
+<tr><td>Kjikvadrat: forventede frekvenser</td><td>Produktregelen for uavhengige hendelser</td><td>Sim 29</td></tr>
+</table>
+<div class="note" style="margin-top:12px"><b>Kjenn igjen mønsteret:</b> hver gang faget sier
+«forventet under nullhypotesen», står det en sannsynlighetsmodell bak. Du trenger ikke regne den ut
+for hånd &mdash; men du må vite at den er der, ellers blir tolkningen fri fantasi.</div>
+</div>
+
+<div class="keybox"><span class="lbl">Klar for resten av appen?</span>
+<b>Ta med &eacute;<i>n</i> setning herfra: <i>sannsynlighet er hva slump pleier å lage i det lange løp.</i>
+Fane 1 viser at det stemmer når du kaster nok ganger. Fane 4 viser den feilen som koster mest.
+Fane 5 kobler det hele til <i>p</i>-verdien.</b></div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B1">B1 Sannsynlighet &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+<div id="fane-mynt" style="display:none">
+<div class="card">
+<h2>Andelen roer seg. Differansen gjør det ikke.</h2>
+
+<div class="hva"><span class="lbl2">Hva eksempelet går ut på</span>
+Du kaster en mynt mange ganger og f&oslash;lger to tall samtidig: <b>andelen</b> kron, og
+<b>differansen i antall</b> mellom kron og mynt. Intuisjonen sier at begge roer seg mot midten.
+Bare det f&oslash;rste gj&oslash;r det. Differansen vokser, typisk som &radic;<i>n</i>.</div>
+
+<p style="font-size:16.5px;line-height:1.55"><b>Hvorfor det er verdt tjue sekunder av livet
+ditt:</b> den &radic;<i>n</i> du ser i den nederste kurven er den samme &radic;<i>n</i> som
+st&aring;r i nevneren til standardfeilen, i <i>t</i>-br&oslash;ken, og i bredden p&aring; hvert
+konfidensintervall du kommer til &aring; regne ut. Her ser du hvor den kommer fra &mdash; f&oslash;r
+noen har skrevet en formel. Og den &oslash;verste kurven er grunnen til at store utvalg gir presise
+anslag: det er <i>andelen</i> som stabiliserer seg, ikke antallet.</p>
+
+<p>Kast mynten. Øverst ser du <b>andelen kron</b>, nederst <b>differansen i antall</b> mellom
+kron og mynt. De to kurvene gjør ikke det samme &mdash; og det er hele poenget med denne fanen.</p>
+<div class="ctrl">
+  <button class="btn" id="m1">Kast 1</button>
+  <button class="btn" id="m10">Kast 10</button>
+  <button class="btn" id="m1000">Kast 1 000</button>
+  <button class="btn2" id="mnull">Start på nytt</button>
+  <label>Mynten gir kron med sannsynlighet
+    <input type="range" id="mp" min="10" max="90" value="50" step="5">
+    <b id="mpv">0.50</b></label>
+</div>
+<div class="kastbord">
+  <div class="mynt" id="mmynt"></div>
+  <div class="kastsvar"><b id="msiste">Ingen kast ennå</b>
+  <span id="mtekst">Trykk «Kast 1» og se hvilken side den lander på. «Kron» er siden med
+  kronen, «mynt» er valørsiden — det er derfor spillet heter det det heter.</span>
+  <div class="stripe" id="mstripe"></div></div>
+</div>
+<div class="tall">
+  <div class="tallkort"><div class="v" id="mn">0</div><div class="l">kast</div></div>
+  <div class="tallkort"><div class="v" id="mk">0</div><div class="l">kron</div></div>
+  <div class="tallkort"><div class="v" id="mandel">—</div><div class="l">andel kron</div></div>
+  <div class="tallkort"><div class="v" id="mdiff">0</div><div class="l">kron minus mynt</div></div>
+</div>
+<canvas id="mcAndel" height="170"></canvas>
+<p class="muted" style="margin:4px 0 10px">Andel kron. Den stiplede linja er sannsynligheten mynten faktisk har.</p>
+<canvas id="mcDiff" height="150"></canvas>
+<p class="muted" style="margin:4px 0 0">Differanse i antall. Den stiplede kurven er &plusmn;&radic;<i>n</i>.</p>
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+<b>Loven om store tall gjelder andelen, ikke antallet.</b> Andelen klemmes mot 0.50, mens
+differansen i antall typisk vokser &mdash; omtrent som &radic;<i>n</i>. Det er den samme &radic;<i>n</i>
+som senere dukker opp i standardfeilen.</div>
+<div class="advarsel">Prøv dette: kast 1 000 ganger og se at andelen lander rundt 0.50 mens
+differansen er 20&ndash;40. Mynten «husker» ingenting &mdash; den jevner ikke ut noe gammelt avvik,
+den drukner det bare i flere kast.</div>
+</div>
+
+<div class="card">
+<h2>Er mynten rigget? Her er nullhypotesetesten, uten formler</h2>
+<div class="hva"><span class="lbl2">Hva du skal gj&oslash;re</span>
+Dra skyveknappen bort fra 0.50 &mdash; da har du laget en <b>jukset mynt</b>. Kast 1 000 ganger og
+se hvordan kurven legger seg et annet sted. S&aring; sett den tilbake til 0.50 og kast igjen.
+Sp&oslash;rsm&aring;let er: <b>hvis du bare fikk se resultatet, kunne du sett forskjellen?</b></div>
+
+<p style="font-size:16.5px;line-height:1.55">Det er hele nullhypotesetestingen i &eacute;n
+&oslash;velse. Du antar at mynten er rettferdig &mdash; det er <b>nullhypotesen</b> &mdash; og
+regner ut hvor langt fra 500 kron du kan havne p&aring; ren flaks. Med 1 000 kast og en
+rettferdig mynt er standardavviket til antallet &radic;(1000 &middot; 0.5 &middot; 0.5) =
+<b>15.8</b>. S&aring;:</p>
+
+<table class="dtab">
+<tr><th>Du observerer</th><th>Avvik fra 500</th><th>I antall SD</th><th>Konklusjon</th></tr>
+<tr><td>515 kron</td><td>+15</td><td>0.9</td><td>helt vanlig flaks</td></tr>
+<tr><td>530 kron</td><td>+30</td><td>1.9</td><td>p&aring; grensen</td></tr>
+<tr><td>540 kron</td><td>+40</td><td>2.5</td><td>begynner &aring; bli rart</td></tr>
+<tr class="mark"><td>600 kron</td><td>+100</td><td>6.3</td><td>mynten er rigget</td></tr>
+</table>
+
+<div class="keybox"><span class="lbl">Sagt p&aring; &eacute;n linje</span>
+<b>En nullhypotesetest er ikke noe annet enn denne tabellen: hvor rart er det jeg ser, m&aring;lt i
+hvor mye slump alene pleier &aring; lage?</b> Kolonnen «i antall SD» er en <i>z</i>-verdi, og
+<i>t</i>-br&oslash;ken i fane 6 og i Sim 16 er den samme br&oslash;ken med et anslag i nevneren.</div>
+
+<div class="advarsel"><b>Legg merke til hva som er vanskelig:</b> det er ikke &aring; oppdage 600 av
+1 000 &mdash; det ser alle. Det vanskelige er 540. En mynt som gir kron 55 % av gangene er tydelig
+rigget i det lange l&oslash;p, men du trenger likevel rundt <b>780 kast</b> for &aring; ha 80 %
+sjanse til &aring; avsl&oslash;re den. Det er statistisk styrke, og det er grunnen til at sm&aring;
+studier overser ekte effekter. Se <b>Sim 7</b>.</div>
+</div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B1">B1 Sannsynlighet &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+<!-- ============================ FANE 2 ============================ -->
+<div id="fane-terning" style="display:none">
+<div class="card">
+<h2>Hvorfor er sum 7 vanligst?</h2>
+
+<div class="hva"><span class="lbl2">Hva eksempelet går ut på</span>
+To terninger gir 36 like sannsynlige utfall. Men de 36 utfallene fordeler seg ujevnt p&aring;
+summene: sum 7 kan lages p&aring; seks m&aring;ter, sum 2 p&aring; &eacute;n. Klikk p&aring; en sum
+i rutenettet og se hvilke ruter som gir den.</div>
+
+<p style="font-size:16.5px;line-height:1.55"><b>Hvorfor det betyr noe:</b> dette er f&oslash;rste
+gang i emnet du ser en <b>sannsynlighetsfordeling bli til</b> &mdash; ikke postulert, men regnet
+fram ved &aring; telle. Og formen er ikke tilfeldig. Bytt til tre og fem terninger: histogrammet
+blir klokkeformet, uten at noe nytt er lagt til. Det er sentralgrenseteoremet, sett f&oslash;r
+formelen, og det er grunnen til at normalfordelingen dukker opp overalt senere. Summer og
+gjennomsnitt av mange sm&aring; uavhengige bidrag blir klokkeformede nesten uansett hva de enkelte
+bidragene ser ut som.</p>
+
+<p>Kast to terninger og legg sammen. Klikk på en sum i rutenettet for å se <b>hvilke</b> utfall
+som gir den. Alle 36 rutene er like sannsynlige &mdash; det er antallet veier til en sum som
+varierer.</p>
+<div class="ctrl">
+  <button class="btn" id="t1">Kast 1</button>
+  <button class="btn" id="t100">Kast 100</button>
+  <button class="btn" id="t5000">Kast 5 000</button>
+  <button class="btn2" id="tnull">Start på nytt</button>
+  <label>Antall terninger
+    <select id="tant"><option value="2" selected>2</option><option value="3">3</option><option value="5">5</option></select>
+  </label>
+</div>
+<div class="kastbord">
+  <div class="terningrad" id="tsiste"></div>
+  <div class="kastsvar"><b id="tsistesum">Ingen kast ennå</b>
+  <span id="ttekst">Trykk «Kast 1». Terningene over er det faktiske kastet — det er disse
+  to tallene som havner i én søyle i histogrammet under.</span></div>
+</div>
+<canvas id="tc" height="230"></canvas>
+<p class="muted" style="margin:4px 0 10px">Fordeling av summen. Den marineblå kurven er den
+teoretiske fordelingen &mdash; andelen av alle mulige utfall som gir hver sum.</p>
+<div id="tgitterwrap">
+<h3>De 36 utfallene</h3>
+<p class="muted" style="margin:0 0 6px">Klikk på en sum under for å markere rutene som gir den.</p>
+<div class="gitter" id="tgitter"></div>
+<div class="ctrl" id="tsummer" style="gap:4px"></div>
+</div>
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+<b>Sannsynligheten for en sum er en telling av veier.</b> Sum 7 kan lages på seks måter,
+sum 2 på én. Ingen av utfallene er mer «spesielle» enn de andre &mdash; det er bare flere som
+fører til midten.</div>
+<div class="advarsel">Bytt til 3 og så 5 terninger. Histogrammet blir mer og mer klokkeformet,
+uten at noe nytt er lagt til: det er fortsatt bare telling av veier. Det er sentralgrense&shy;teoremet,
+sett før formelen. Fortsett i <b>Sim 3</b> der det samme skjer med gjennomsnitt i stedet for summer.</div>
+</div>
+
+<div class="card">
+<h2>Er terningen rigget? En 130 &aring;r gammel historie med et overraskende svar</h2>
+
+<div class="hva"><span class="lbl2">Hva saken gikk ut p&aring;</span>
+Alt over hviler p&aring; at terningen er <b>rettferdig</b> &mdash; at hver side har sannsynlighet
+1/6. Det er en antagelse, og den kan testes. Noen gjorde det grundig, og svaret er bedre enn
+historien de fleste kjenner.</div>
+
+<div class="hist">
+<h3>Weldons terninger, 1894</h3>
+<p style="margin:0 0 7px">Zoologen <b>W. F. R. Weldon</b> &mdash; en av grunnleggerne av
+biometrien, og senere medredakt&oslash;r av <i>Biometrika</i> sammen med Galton og Pearson &mdash;
+kastet <b>12 terninger 26 306 ganger</b> og telte hvor mange som viste fem eller seks. Han ville
+vite om avvikene fra teorien kunne forklares av tilfeldig variasjon. Det kunne de ikke: femmere og
+seksere kom <b>oftere</b> enn de skulle.</p>
+<p style="margin:0 0 7px"><b>Karl Pearson</b> brukte disse dataene i 1900 da han innf&oslash;rte
+<b>kjikvadrattesten</b> &mdash; den samme testen du m&oslash;ter i Sim 29. Og han hadde en
+forklaring p&aring; skjevheten: p&aring; billige terninger er &oslash;ynene <b>borede hull</b>.
+Motst&aring;ende sider summerer til sju, s&aring; siden med seks hull er lettere enn siden med
+&eacute;n &mdash; og en lettere side havner opp.</p>
+<p style="margin:0">Den forklaringen st&aring;r i l&aelig;reb&oslash;ker den dag i dag. Den er
+sannsynligvis gal.</p>
+</div>
+
+<div class="hist">
+<h3>Labbys maskin, 2009</h3>
+<p style="margin:0 0 7px"><b>Zacariah Labby</b> ved University of Chicago bygde en maskin som
+kastet terningene, fotograferte dem og telte &oslash;ynene automatisk &mdash; omtrent tjue sekunder
+per kast, cirka 150 bilder &aring; behandle hver dag. Han gjentok Weldons eksperiment n&oslash;yaktig:
+12 terninger, 26 306 kast, <b>315 672 enkeltkast</b>. Forskjellen var at maskinen kunne registrere
+<i>hvilken</i> side hver terning viste, ikke bare «fem eller seks, ja eller nei».</p>
+<table class="dtab">
+<tr><th>Side</th><th>Observert</th><th>Forventet</th><th>Avvik</th><th>Bidrag til &chi;&sup2;</th></tr>
+<tr class="mark"><td>1</td><td>53 222</td><td>52 612</td><td>+610</td><td>7.07</td></tr>
+<tr><td>2</td><td>52 118</td><td>52 612</td><td>&minus;494</td><td>4.64</td></tr>
+<tr><td>3</td><td>52 465</td><td>52 612</td><td>&minus;147</td><td>0.41</td></tr>
+<tr><td>4</td><td>52 338</td><td>52 612</td><td>&minus;274</td><td>1.43</td></tr>
+<tr><td>5</td><td>52 244</td><td>52 612</td><td>&minus;368</td><td>2.57</td></tr>
+<tr class="mark"><td>6</td><td>53 285</td><td>52 612</td><td>+673</td><td>8.61</td></tr>
+<tr><td><b>Sum</b></td><td><b>315 672</b></td><td><b>315 672</b></td><td>&mdash;</td><td><b>24.73</b></td></tr>
+</table>
+<p style="margin:0">&chi;&sup2;(5) = 24.73, <i>p</i> = .00016. <b>Terningene var rigget.</b> Men se
+p&aring; <i>hvilke</i> sider: overskuddet ligger p&aring; <b>&eacute;n og seks</b>, ikke p&aring;
+fem og seks. Labby m&aring;lte terningene og fant at aksen fra 1 til 6 var kortere enn de to andre
+&mdash; alts&aring; er 1- og 6-flatene <b>st&oslash;rre</b> enn de fire andre. Det er geometri, ikke
+borede hull. Pearsons forklaring holdt ikke.</p>
+<!-- SIM35-BILDER START hist2 -->
+<div class="bildetom">Bildeslott «terninger» er tom. Legg <code>figs_sannsynlighet/terninger.jpg</code> p&aring; plass og kj&oslash;r <code>bygg_sim35_bilder.py</code>.</div>
+<!-- SIM35-BILDER SLUTT hist2 -->
+<span class="kilde">Labby, Z. (2009). Weldon&rsquo;s dice, automated. <i>CHANCE</i>, 22(4).
+Tallene over er regnet ut p&aring; nytt fra de seks observerte frekvensene. Kasinoterninger
+l&oslash;ser problemet ved &aring; fylle hullene med plast av samme tetthet som terningen og
+balansere dem presist.</span>
+</div>
+
+<div class="keybox"><span class="lbl">De tre tingene &aring; ta med</span>
+<b>1 · Testen virker.</b> Med nok kast avsl&oslash;rer kjikvadrat et avvik p&aring; under 1.3 % per
+side. <b>2 · «Signifikant» er ikke «jeg vet hvorfor».</b> Pearson hadde rett i at terningene var
+skjeve og feil om &aring;rsaken &mdash; og det tok 109 &aring;r &aring; finne ut.
+<b>3 · Se p&aring; residualene, ikke bare p&aring; <i>p</i>.</b> Hele poenget l&aring; i
+<i>hvilke</i> ruter som avvek. Det er standardiserte residualer, og de st&aring;r i
+<b>Sim 29 fane 1</b>.</div>
+
+<div class="advarsel"><b>Broen til resten av emnet:</b> «er terningen rettferdig?» er en
+kjikvadrattest for tilpasning. Forventet frekvens er 315 672/6 = 52 612 under nullhypotesen om at
+alle sider er like sannsynlige &mdash; alts&aring; sannsynlighet ganget med antall, produktregelen
+fra fane 3. N&aring;r du senere regner forventede frekvenser i en krysstabell, gj&oslash;r du
+n&oslash;yaktig det samme. Se <b>Sim 29</b>.</div>
+</div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B1">B1 Sannsynlighet &rarr;</a> <a class="ovlenke" data-begrep="B2">B2 Utvalgsfordeling og standardfeil &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+<!-- ============================ FANE 3 ============================ -->
+<div id="fane-uavh" style="display:none">
+<div class="card">
+<h2>Mynten husker ikke</h2>
+
+<div class="hva"><span class="lbl2">Hva eksempelet går ut på</span>
+Fem kron p&aring; rad. Gjett f&oslash;rst hva som er mest sannsynlig p&aring; kast nummer seks,
+og se s&aring; hva simuleringen sier. Nesten alle kjenner det riktige svaret og f&oslash;ler
+likevel det motsatte &mdash; og den f&oslash;lelsen har et navn.</div>
+
+<p style="font-size:16.5px;line-height:1.55"><b>Hvorfor en psykologistudent skal bry seg:</b>
+spillerens feilslutning er ikke en kuriositet fra kasinoet. Den har en tvilling i forskning, og
+den heter «det blir nok signifikant med litt mer data». Begge hviler p&aring; den samme feilen:
+at tilfeldigheter har en slags gjeld de m&aring; betale tilbake. De har ikke det. &Aring; samle mer
+data flytter ikke et resultat mot signifikans &mdash; det gj&oslash;r anslaget mer presist, og
+presisjonen kan peke begge veier.</p>
+
+<div class="hist">
+<h3>Monte Carlo, 18. august 1913</h3>
+<p style="margin:0 0 7px">Feilslutningen har navn etter en kveld ved rulettbordet i
+Casino de Monte-Carlo. Kula falt på <b>svart 26 ganger på rad</b>. Spillerne rundt bordet
+gjorde nøyaktig det navnet beskriver: de satset stadig mer på rødt, fordi rødt nå
+«måtte» komme. Rødt kom til slutt — men ikke fordi det hadde en gjeld å betale.</p>
+<p style="margin:0 0 7px">Et europeisk hjul har 37 ruter, 18 av dem svarte. Så:</p>
+<p style="margin:0 0 7px;font-size:17px">(18/37)<sup>26</sup> = 1 av <b>137 millioner</b>
+&mdash; for 26 <i>svarte</i> på rad.</p>
+<p style="margin:0 0 7px">Vil du bare ha 26 på rad av <i>samme farge</i>, svart eller rødt,
+er det 1 av 68 millioner. Omtrent det samme som 26 kron på rad med en mynt, som er
+1 av 67 millioner. Serien var altså sjelden — men den sa ingenting om kast nummer 27.</p>
+<p style="margin:0">Og legg merke til hva som er rart her: serien var ekstremt uvanlig
+<i>sett på forhånd</i>. Men hjulet spinner tusenvis av ganger i døgnet, år etter år, over
+mange kasinoer. Noe ekstremt skjer et eller annet sted hele tiden. Det er samme problem
+som multiple tester: nok forsøk, og det usannsynlige blir forventet.</p>
+<span class="kilde">Forbehold: datoen, kasinoet og de 26 svarte er kildene enige om.
+Hvor i serien spillerne begynte å satse mot, og hvor mye som gikk tapt, varierer fra
+framstilling til framstilling &mdash; de tallene er anekdote, ikke arkiv.</span>
+</div>
+
+<p>En mynt har gitt <b>kron fem ganger på rad</b>. Hva er mest sannsynlig på neste kast?</p>
+<div class="ctrl">
+  <button class="btn2" id="g-mynt">Mynt er mest sannsynlig</button>
+  <button class="btn2" id="g-kron">Kron er mest sannsynlig</button>
+  <button class="btn2" id="g-likt">Like sannsynlig</button>
+</div>
+<div id="gsvar" style="display:none">
+  <div class="tall">
+    <div class="tallkort"><div class="v" id="gserier">0</div><div class="l">serier med fem kron</div></div>
+    <div class="tallkort"><div class="v" id="gneste">—</div><div class="l">andel kron på kast 6</div></div>
+  </div>
+  <div class="keybox"><span class="lbl">Fasit</span>
+  <b id="gtekst"></b></div>
+  <div class="advarsel">Det som derimot <i>er</i> sant: blant serier som starter med fem kron,
+  ligger totalandelen kron fortsatt over 0.50 etter 100 kast. Ikke fordi mynten husker, men fordi
+  de fem kronene blir liggende i summen. Det er regresjon mot gjennomsnittet, ikke hukommelse.</div>
+</div>
+</div>
+
+<div class="card">
+<h2>Hvor lange serier lager flaks helt alene?</h2>
+
+<div class="hva"><span class="lbl2">Hva eksempelet går ut på</span>
+Fem kron på rad <i>føles</i> som et mønster. Her kaster du 200 ganger og ser hvor lang
+den lengste serien faktisk ble. Gjett først: hvor mange like på rad tror du du får?</div>
+
+<p style="font-size:16.5px;line-height:1.55">Dette er den praktiske grunnen til at
+feilslutningen er så seig: <b>serier er ikke sjeldne, de er normalen.</b> Og det er samme
+feil som når vi ser et mønster i en figur, en pasientjournal eller en behandlingsrespons
+og konkluderer at det må ha en årsak. Spørsmålet er alltid det samme: hvor ofte lager
+slumpen alene noe som ser slik ut?</p>
+
+<div class="ctrl">
+  <button class="btn" id="sserie">Kast 200 ganger</button>
+  <button class="btn2" id="sserie2">Kjør 2 000 runder à 200 kast</button>
+</div>
+<div class="stripe" id="sstripe"></div>
+<div class="tall">
+  <div class="tallkort"><div class="v" id="slengst">—</div><div class="l">lengste serie i denne runden</div></div>
+  <div class="tallkort"><div class="v" id="stypisk">—</div><div class="l">typisk lengste serie (median)</div></div>
+  <div class="tallkort"><div class="v" id="sandel5">—</div><div class="l">runder med serie ≥ 5</div></div>
+  <div class="tallkort"><div class="v" id="sandel8">—</div><div class="l">runder med serie ≥ 8</div></div>
+</div>
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+<b>Fem like på rad er ikke et varsel om noe — det er det du skal forvente.</b>
+I 200 kast er den lengste serien typisk rundt åtte, og nesten hver eneste runde har en
+serie på minst fem.</div>
+<div class="advarsel">Serien er markert med rød ring i stripa over. Kjør noen runder og
+se at ringen flytter seg og skifter lengde &mdash; det er ikke mynten som endrer seg.</div>
+</div>
+
+<div class="card">
+<h2>Minst én sekser — spørsmålet som startet faget</h2>
+
+<div class="hva"><span class="lbl2">Hva eksempelet går ut på</span>
+Du velger antall kast og ser hvor ofte <b>minst &eacute;n sekser</b> dukker opp. Poenget er
+regnem&aring;ten: «minst &eacute;n» regnes <i>aldri</i> ved &aring; legge sammen 1/6 per kast, men
+som 1 minus sannsynligheten for <b>ingen</b>.</div>
+
+<div class="hist">
+<h3>De M&eacute;r&eacute;s problem, 1654</h3>
+<p style="margin:0 0 7px">Dette er ikke et konstruert skoleeksempel. Det er veddem&aring;let som
+fikk Pascal og Fermat til &aring; begynne &aring; regne. Chevalier de M&eacute;r&eacute; satset
+jevnt p&aring; &aring; f&aring; <b>minst &eacute;n sekser i fire kast</b> med &eacute;n terning,
+og tjente penger p&aring; det:</p>
+<p style="margin:0 0 7px;font-size:17px">1 &minus; (5/6)<sup>4</sup> = <b>0.5177</b>
+&mdash; litt over halvparten, s&aring; veddem&aring;let er gunstig.</p>
+<p style="margin:0 0 7px">S&aring; pr&oslash;vde han det samme med to terninger og
+<b>dobbel sekser i 24 kast</b>. Resonnementet hans var en enkel proporsjon: &eacute;n terning har
+6 utfall og krever 4 kast, to terninger har 36 utfall og burde kreve 24. Men:</p>
+<p style="margin:0 0 7px;font-size:17px">1 &minus; (35/36)<sup>24</sup> = <b>0.4914</b>
+&mdash; litt <i>under</i> halvparten. Han tapte penger.</p>
+<p style="margin:0">Det tok <b>25</b> kast &aring; vippe det over: 1 &minus; (35/36)<sup>25</sup>
+= 0.5055. Forskjellen mellom 0.4914 og 0.5055 er liten nok til at ingen ser den ved bordet, men
+stor nok til at en spiller merker den over tid. De M&eacute;r&eacute; merket den, forsto den ikke,
+og spurte Pascal.</p>
+<span class="kilde">Pr&oslash;v det selv: sett skyveknappen til 4 og simuler. Den observerte andelen
+skal legge seg rundt 0.52.</span>
+</div>
+
+<p>Hvor mange kast trengs for at sannsynligheten for <b>minst én sekser</b> skal passere 50 %?
+Gjett først, så simulerer vi.</p>
+<div class="ctrl">
+  <label>Antall kast <input type="range" id="un" min="1" max="20" value="4"> <b id="unv">4</b></label>
+  <button class="btn" id="usim">Simuler 5 000 serier</button>
+</div>
+<div class="tall">
+  <div class="tallkort"><div class="v" id="uobs">—</div><div class="l">simulert andel</div></div>
+  <div class="tallkort"><div class="v" id="uteori">—</div><div class="l">1 − (5/6)<sup>n</sup></div></div>
+</div>
+<canvas id="uc" height="170"></canvas>
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+<b>«Minst én» regnes via komplementet:</b> 1 minus sannsynligheten for ingen. Å legge sammen
+1/6 per kast overteller alle utfallene med mer enn én sekser &mdash; og gir over 100 % ved
+sju kast.</div>
+<div class="advarsel">Dette er nøyaktig samme formel som <b>familievis feilrate</b>:
+1 − (1 − α)<sup>k</sup>. Kjører du 20 tester ved α = .05, er sannsynligheten for minst én
+falsk positiv 64 %. Se <b>Sim 7</b>, fanen om multiple tester.</div>
+</div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B1">B1 Sannsynlighet &rarr;</a> <a class="ovlenke" data-begrep="B5">B5 Type I-feil, alfa og multiple tester &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+<!-- ============================ FANE 4 ============================ -->
+<div id="fane-betinget" style="display:none">
+<div class="card">
+<h2>Testen treffer 95 %. Hvorfor er du likevel sannsynligvis frisk?</h2>
+
+<div class="hva"><span class="lbl2">Hva eksempelet går ut på</span>
+Tusen personer, &eacute;n rute hver. Du styrer tre tall: hvor vanlig tilstanden er, hvor stor
+andel av de syke testen fanger opp, og hvor ofte den sl&aring;r ut hos friske. Se p&aring; de
+r&oslash;de rutene &mdash; friske med utslag &mdash; og hvordan de overd&oslash;ver de
+m&oslash;rkegr&oslash;nne n&aring;r tilstanden er sjelden.</div>
+
+<p style="font-size:16.5px;line-height:1.55"><b>Hvorfor dette er den dyreste enkeltfeilen i
+klinisk arbeid:</b> en test som «treffer 95 %» lyder p&aring;litelig, og den <i>er</i>
+p&aring;litelig &mdash; p&aring; det sp&oslash;rsm&aring;let den faktisk svarer p&aring;. Den
+sier hvor ofte den sl&aring;r ut <i>gitt at du er syk</i>. Pasienten vil vite noe annet: hvor ofte
+man er syk <i>gitt at den slo ut</i>. Er tilstanden sjelden, finnes det s&aring; mange friske at
+selv en liten falsk-positiv-rate produserer flere falske utslag enn ekte. Skyv forekomsten ned til
+1 % og se hva som skjer med tallet nede til venstre.</p>
+
+<div class="hist">
+<h3>Aktoratets feilslutning &mdash; en ekte sak</h3>
+<p style="margin:0 0 7px">I 1999 ble Sally Clark dømt i England for å ha drept sine to
+barn. Barnelegen Roy Meadow vitnet om at sjansen for to krybbedødsfall i en familie som
+hennes var <b>1 av 73 millioner</b>. Tallet fikk han ved å ta 1 av 8 543 for ett dødsfall
+og kvadrere det: 8 543² = 72 982 849.</p>
+<p style="margin:0 0 7px">Det er to feil her, og den andre er den denne fanen handler om:</p>
+<p style="margin:0 0 5px"><b>1 &middot; Kvadreringen antar uavhengighet.</b> Å gange
+sannsynlighetene krever at de to dødsfallene er uavhengige hendelser. Finnes det en
+arvelig eller felles årsak i familien, er de ikke det &mdash; og da er tallet for lite.</p>
+<p style="margin:0 0 7px"><b>2 &middot; Tallet ble lest som sannsynligheten for at hun var
+uskyldig.</b> Det er det ikke. Det er P(dataene | uskyldig): hvor sjeldent to naturlige
+dødsfall er. Retten skulle svart på P(uskyldig | dataene) &mdash; og til det trengs også
+hvor sjeldent det er at en mor dreper to barn. Også <i>det</i> er sjeldent. Uten den
+basisraten sier 1 av 73 millioner ingenting om skyld.</p>
+<p style="margin:0">Royal Statistical Society uttalte offentlig at det ikke fanst noe
+statistisk grunnlag for tallet. Dommen ble opphevet i 2003 &mdash; formelt fordi
+patologens funn var holdt tilbake, ikke på grunn av statistikken.</p>
+<span class="kilde">Samme forveksling som i figuren under: bytt «har tilstanden» med
+«uskyldig» og «får utslag» med «to dødsfall», og det er samme regnestykke.</span>
+</div>
+
+<p>Hver rute er én person av 1 000. Skyv på forekomsten og se hva som skjer med andelen av de
+positive som faktisk har tilstanden.</p>
+<div class="ctrl">
+  <label>Forekomst i befolkningen <input type="range" id="bprev" min="1" max="300" value="20"> <b id="bprevv">2.0 %</b></label>
+  <label>Testen fanger opp <input type="range" id="bsens" min="50" max="100" value="95"> <b id="bsensv">95 %</b></label>
+  <label>Falskt utslag hos friske <input type="range" id="bfp" min="1" max="40" value="10"> <b id="bfpv">10 %</b></label>
+</div>
+<div class="ikoner" id="bikoner"></div>
+<div class="leg">
+  <span><b style="background:#1E7A3C"></b> har tilstanden, får utslag</span>
+  <span><b style="background:#A9D6B6"></b> har tilstanden, intet utslag</span>
+  <span><b style="background:#C0392B"></b> frisk, får utslag</span>
+  <span><b style="background:#f0d9d5"></b> frisk, intet utslag</span>
+</div>
+<div class="tall">
+  <div class="tallkort"><div class="v" id="bppv">—</div><div class="l">P(tilstand | utslag)</div></div>
+  <div class="tallkort"><div class="v" id="bpos">—</div><div class="l">av 1 000 får utslag</div></div>
+  <div class="tallkort"><div class="v" id="bsyk">—</div><div class="l">av dem har tilstanden</div></div>
+</div>
+<h3 style="margin:16px 0 0">De samme 1 000 personene som tabell</h3>
+<p class="muted" style="margin:2px 0 6px">Dette er en krysstabell &mdash; nøyaktig formen
+du møter igjen i kjikvadrattesten. De to prosentene nederst er de to betingede
+sannsynlighetene som blir forvekslet.</p>
+<table class="dtab" id="btab"></table>
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+<b>P(A | B) er ikke P(B | A).</b> Testen sier hvor mange av de syke den fanger opp. Du vil vite
+hvor mange av de positive som er syke. Når tilstanden er sjelden, er de to tallene vidt forskjellige
+&mdash; fordi de friske er så mange flere.</div>
+<div class="advarsel">Bytt ut ordene, og du har neste fane:
+<b>«har tilstanden» → «H₀ er usann»</b> og <b>«får utslag» → «p &lt; .05»</b>.
+En lav <i>p</i>-verdi forteller deg hvor ofte testen slår ut når H₀ er sann. Den forteller deg
+ikke hvor sannsynlig H₀ er &mdash; til det trenger du basisraten, og den har du sjelden.</div>
+</div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B1">B1 Sannsynlighet &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+<!-- ============================ FANE 5 ============================ -->
+<div id="fane-tetthet" class="hide">
+
+<div class="card">
+<h2>Et sp&oslash;rsm&aring;l uten et fornuftig svar</h2>
+
+<div class="hva"><span class="lbl2">Hva denne fanen går ut på</span>
+Fane 1&ndash;4 kunne <b>telle</b>: kron eller mynt, sekser eller ikke, 15 av 20 som ble bedre.
+Men en depresjonsskala kan ikke telles slik. Denne fanen viser hva som skjer med
+sannsynlighetsbegrepet n&aring;r utfallene blir kontinuerlige &mdash; og hvorfor
+h&oslash;yden p&aring; en normalfordelingskurve <b>ikke</b> er en sannsynlighet.</div>
+
+<p style="font-size:16.5px;line-height:1.55"><b>Hvorfor det ikke er en spissfindighet:</b> det er
+grunnen til at hver <i>p</i>-verdi du m&oslash;ter er et <b>haleareal</b> og aldri «sannsynligheten
+for akkurat dette resultatet». Den sannsynligheten er null. N&aring;r noen sier
+«<i>p</i> = .03 er sjansen for &aring; f&aring; dette resultatet», er feilen ikke bare upresis
+&mdash; den gjelder en st&oslash;rrelse som er eksakt null. Skillet mellom h&oslash;yde og areal
+er ogs&aring; grunnen til at <i>z</i>-tabeller gir arealer, og at et histogram og en tetthetskurve
+kan ha ulik h&oslash;yde p&aring; samme data.</p>
+
+<p>Alt hittil i denne appen har hatt <b>tellbare</b> utfall: kron eller mynt, en sekser
+eller ikke, 15 av 20 som ble bedre. Da er sannsynligheten en andel, og vi kan telle den.</p>
+<p>Men depresjonsskalaen i terapistudien er ikke tellbar p&aring; den m&aring;ten. S&aring;:
+<b>hva er sannsynligheten for at en tilfeldig person skårer nøyaktig 30?</b></p>
+<div class="keybox"><span class="lbl">Svaret</span>
+<b>Null. Ikke «omtrent null» &mdash; eksakt null.</b></div>
+<p style="margin-top:10px">Og det er ikke et triks. Skårer man <i>n&oslash;yaktig</i> 30, eller
+30.0000001? For en st&oslash;rrelse som kan ta uendelig mange verdier, har hver enkelt verdi
+sannsynlighet null. Det er bare <b>intervaller</b> som har sannsynlighet.</p>
+</div>
+
+<div class="card">
+<h2>Se det skje: krymp intervallet mot null</h2>
+
+<div class="hva"><span class="lbl2">Hva du skal gjøre</span>
+Kurven er depresjonsskåren ved oppstart i terapistudien &mdash; ekte data,
+<i>N</i> = 86, <i>M</i> = 30.23, <i>SD</i> = 4.16. Det blå feltet er intervallet rundt 30.
+Dra skyveknappen og gjør intervallet smalere. Følg med på <b>P(intervallet)</b> mens du
+gjør det, og se hva det går mot.</div>
+
+<p style="font-size:16.5px;line-height:1.55">Dette er hele poenget i fanen, gjort synlig:
+arealet er omtrent <b>høyden ganger bredden</b>. Høyden står stille &mdash; tettheten i 30
+er 0.0958 uansett hva du gjør med intervallet. Bredden er det som krymper. Og et tall ganget
+med noe som går mot null, går mot null. «Sannsynligheten for å skåre nøyaktig 30» er
+grensen av denne krympingen, og den er null.</p>
+
+<div class="ctrl">
+  <label>Intervall rundt 30
+    <input type="range" id="dw" min="0" max="9" value="1" step="1">
+    <b id="dwv">30 &plusmn; 2.5</b></label>
+</div>
+<canvas id="dc" height="260"></canvas>
+<div class="tall">
+  <div class="tallkort"><div class="v" id="dp">—</div><div class="l">P(intervallet)</div></div>
+  <div class="tallkort"><div class="v" id="dbredde">—</div><div class="l">bredde på intervallet</div></div>
+  <div class="tallkort"><div class="v" id="dtett">—</div><div class="l">tetthet i 30 (høyden)</div></div>
+  <div class="tallkort"><div class="v" id="dprod">—</div><div class="l">høyde &times; bredde</div></div>
+</div>
+<div class="keybox"><span class="lbl">Legg merke til</span>
+<b>Når intervallet halveres, halveres sannsynligheten.</b> Høyden endrer seg ikke &mdash;
+bare bredden. Og «nøyaktig 30» er bredde null.</div>
+<div class="advarsel">Det siste kortet, <b>høyde &times; bredde</b>, nærmer seg
+P(intervallet) jo smalere intervallet blir. Det er hele integralregningen bak en
+<i>z</i>-tabell, sagt med to tall: et smalt nok stykke av en kurve er et rektangel.</div>
+</div>
+
+<div class="card">
+<h2>Derfor er h&oslash;yden p&aring; kurven ikke en sannsynlighet</h2>
+<p>N&aring;r du ser en normalfordeling, er det fristende &aring; lese av h&oslash;yden over 30
+og tenke «s&aring; sannsynlig er 30». Det er feil. H&oslash;yden heter <b>tetthet</b>
+(<i>density</i>), og sannsynligheten ligger i <b>arealet under kurven</b>.</p>
+<table class="hvnaar">
+<tr><th></th><th>Diskret (fane 1&ndash;4)</th><th>Kontinuerlig</th></tr>
+<tr><td>Eksempel</td><td>antall kron av 10 kast</td><td>skåre p&aring; en depresjonsskala</td></tr>
+<tr><td>Figuren</td><td>s&oslash;yler</td><td>en glatt kurve</td></tr>
+<tr class="na"><td>H&oslash;yden er</td><td><b>sannsynligheten</b> for den verdien</td>
+    <td><b>tettheten</b> &mdash; ikke en sannsynlighet</td></tr>
+<tr><td><i>P</i>(X = 30)</td><td>kan v&aelig;re 0.21</td><td>alltid 0</td></tr>
+<tr><td>Det som gir mening</td><td><i>P</i>(X = 7)</td>
+    <td><i>P</i>(29.5 &lt; X &lt; 30.5), eller <i>P</i>(X &gt; 30)</td></tr>
+<tr><td>Summen / arealet</td><td>s&oslash;ylene summerer til 1</td>
+    <td>hele arealet er 1</td></tr>
+</table>
+<div class="note" style="margin-top:12px">Tetthet kan til og med v&aelig;re <b>st&oslash;rre
+enn 1</b>, hvis fordelingen er smal nok. En sannsynlighet kan aldri det. Det alene viser at
+de to ikke er samme st&oslash;rrelse.</div>
+</div>
+
+<div class="card">
+<h2>Hvorfor det betyr noe for deg</h2>
+<div class="hvgrid">
+<div class="hvkort hver"><h3>Dette forklarer</h3><ul>
+<li><b>Hvorfor en <i>p</i>-verdi alltid er et hale&shy;areal.</b> Den er aldri «sannsynligheten
+for akkurat denne <i>t</i>-verdien» &mdash; den er alltid «minst s&aring; ekstremt».
+<span class="eks">Nettopp fordi «akkurat denne» har sannsynlighet null.</span></li>
+<li><b>Hvorfor histogrammet og tetthetskurven kan ha ulik h&oslash;yde.</b> Et histogram
+viser antall, en tetthetskurve viser tetthet. De er samme data p&aring; to skalaer.</li>
+<li><b>Hvorfor <i>z</i>-tabeller gir arealer</b>, ikke h&oslash;yder.</li>
+</ul></div>
+<div class="hvkort hvikke"><h3>Vanlige feilsetninger</h3><ul>
+<li><b>«Kurven er h&oslash;yest ved 30, s&aring; 30 er mest sannsynlig.»</b>
+Si heller: <i>verdier n&aelig;r 30 er vanligst</i>. Det er det tettheten faktisk sier.</li>
+<li><b>«<i>p</i> = .03 er sannsynligheten for &aring; f&aring; akkurat dette resultatet.»</b>
+Den sannsynligheten er null. <i>p</i> er arealet fra resultatet og utover.</li>
+<li><b>«Tetthet er bare et annet ord for sannsynlighet.»</b> Det er det ikke &mdash;
+tetthet er sannsynlighet <i>per enhet p&aring; x-aksen</i>.</li>
+</ul></div>
+</div>
+<div class="keybox" style="margin-top:14px"><span class="lbl">Sagt p&aring; &eacute;n linje</span>
+<b>For kontinuerlige st&oslash;rrelser bor sannsynligheten i arealet, ikke i h&oslash;yden.
+Derfor sp&oslash;r vi alltid «hvor ofte minst s&aring; mye?», aldri «hvor ofte akkurat
+dette?».</b></div>
+</div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B1">B1 Sannsynlighet &rarr;</a> <a class="ovlenke" data-begrep="B4">B4 p-verdien &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+
+</div><!-- /fane-tetthet -->
+
+<div id="fane-pverdi" style="display:none">
+<div class="card">
+<h2>Nullhypotesen er en mynt</h2>
+
+<div class="hva"><span class="lbl2">Hva eksempelet går ut på</span>
+Du har en studie: <i>n</i> pasienter, og et antall som ble bedre. Spørsmålet er om det antallet er
+mer enn flaks. Simuleringen antar at behandlingen <b>ikke</b> virker &mdash; da er «ble bedre» et
+myntkast &mdash; og kj&oslash;rer studien 5 000 ganger i den verdenen. Fordelingen du ser er
+<b>nullfordelingen</b>, og <i>p</i>-verdien er andelen av de 5 000 som er minst s&aring; ekstreme
+som det du observerte.</div>
+
+<p style="font-size:16.5px;line-height:1.55"><b>Hvorfor dette er appens sluttpoeng:</b> det er
+n&oslash;yaktig den samme &oslash;velsen som i fane 1, der du spurte om mynten var rigget. Der var
+nullhypotesen «mynten er rettferdig» og dataene var kron. Her er nullhypotesen «behandlingen virker
+ikke» og dataene er pasienter som ble bedre. Regnestykket er identisk. Og det er grunnen til at
+emnet begynner med sannsynlighet: n&aring;r du f&oslash;rst har sett at en <i>p</i>-verdi er en
+andel i en simulert verden der ingenting virket, blir resten av faget varianter av det samme
+&mdash; med <i>t</i>, <i>F</i> eller &chi;&sup2; i stedet for et antall.</p>
+
+<p>Anta at behandlingen ikke virker. Da er «ble bedre» et myntkast. Vi kaster mynten for hver
+pasient, teller hvor mange som ble bedre, og gjentar det mange ganger. Det vi får, er
+<b>nullfordelingen</b> &mdash; og <i>p</i>-verdien er en haleandel i den.</p>
+<div class="ctrl">
+  <label>Antall pasienter <input type="range" id="pn" min="10" max="60" value="20"> <b id="pnv">20</b></label>
+  <label>Observert antall bedre <input type="range" id="pobs" min="0" max="60" value="15"> <b id="pobsv">15</b></label>
+  <button class="btn" id="psim">Simuler 5 000 studier</button>
+</div>
+<div class="kastbord">
+  <div class="kastsvar" style="flex:1 1 100%"><b id="pstripetittel">—</b>
+  <span>Hver sirkel er én pasient. Gull er «ble bedre». Under nullhypotesen er dette
+  bildet ikke annet enn resultatet av like mange myntkast &mdash; og hele spørsmålet er om
+  det er for mange gull.</span>
+  <div class="stripe" id="pstripe"></div></div>
+</div>
+<canvas id="pc" height="230"></canvas>
+<div class="tall">
+  <div class="tallkort"><div class="v" id="pp">—</div><div class="l"><i>p</i> (tosidig)</div></div>
+  <div class="tallkort"><div class="v" id="pandel">—</div><div class="l">observert andel bedre</div></div>
+  <div class="tallkort"><div class="v" id="pn2">—</div><div class="l">studier simulert</div></div>
+</div>
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+<b>En <i>p</i>-verdi er en andel av en simulert verden der ingenting virket.</b> Den er regnet ut
+på nøyaktig samme måte som andelen kron i fane 1 &mdash; bare at vi teller studier i stedet for kast.</div>
+<div class="advarsel">Legg merke til hva <i>p</i> <b>ikke</b> er: sannsynligheten for at H₀ er
+sann. Hele nullfordelingen er bygget under antagelsen om at H₀ <i>er</i> sann. Fanen foran viser
+hvorfor det er to ulike spørsmål. Se også <b>Sim 7</b>, der nullfordelingen bygges for t i stedet
+for antall.</div>
+<p class="ovlenke">Øv på begrepet i oppgavebanken:
+<a class="ovlenke" data-begrep="B1">B1 Sannsynlighet &rarr;</a></p>
+</div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B4">B4 p-verdien &rarr;</a> <a class="ovlenke" data-begrep="B1">B1 Sannsynlighet &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+</div>
+<script>
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+const FARGE={navy:'#1F3864',blue:'#2E5496',gronn:'#1E7A3C',rod:'#C0392B',
+             lilla:'#6A3D9A',gra:'#8C979E',lys:'#DCE6F1'};
+
+/* Felles tegnehjelp. Alle fanene bruker samme oppsett for akser og marger, slik
+   at en student som har lest én figur kan lese de andre. */
+function lerret(cv){
+  const r=window.devicePixelRatio||1, w=cv.clientWidth||880,
+        h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r; cv.height=h*r; cv.style.height=h+'px';
+  const c=cv.getContext('2d'); c.setTransform(r,0,0,r,0,0); c.clearRect(0,0,w,h);
+  return {c:c,w:w,h:h};
+}
+function akser(c,w,h,xl,yl,ymin,ymax,steg){
+  const L=52,R=14,T=12,B=30;
+  c.strokeStyle='#e9ecee'; c.lineWidth=1; c.fillStyle='#62708a';
+  c.font='11.5px sans-serif'; c.textAlign='right'; c.textBaseline='middle';
+  for(let v=ymin; v<=ymax+1e-9; v+=steg){
+    const y=T+(h-T-B)*(1-(v-ymin)/(ymax-ymin));
+    c.beginPath(); c.moveTo(L,y); c.lineTo(w-R,y); c.stroke();
+    /* Ekte minustegn (U+2212) i figurer — CLAUDE.md §2. */
+    c.fillText(String(yl(v)).replace(/-/g,'\u2212'), L-6, y);
+  }
+  return {L:L,R:R,T:T,B:B,
+          X:(t)=>L+(w-L-R)*t,
+          Y:(v)=>T+(h-T-B)*(1-(v-ymin)/(ymax-ymin))};
+}
+
+
+/* ============ Konkrete kast: mynt og terning som SVG ============
+   Tegnet som SVG og ikke på canvas, fordi de skal kunne skaleres opp på
+   lerretet i auditoriet uten å bli uskarpe, og fordi stripene blir enklere
+   å legge om når det er DOM-noder. */
+function myntSVG(kron){
+  const gull = kron ? '#E8C547' : '#CBD5E4',
+        kant = kron ? '#A8821A' : '#8FA0BA',
+        blekk= kron ? '#6B5000' : '#38465C';
+  const motiv = kron
+    /* kronen: tre spir med kuler, og en bøyle under */
+    ? '<path d="M27 63 L23 34 L37.5 46 L50 26 L62.5 46 L77 34 L73 63 Z" fill="'+blekk+'"/>'
+      + '<circle cx="23" cy="31" r="4" fill="'+blekk+'"/>'
+      + '<circle cx="50" cy="23" r="4.5" fill="'+blekk+'"/>'
+      + '<circle cx="77" cy="31" r="4" fill="'+blekk+'"/>'
+      + '<rect x="25" y="67" width="50" height="7" rx="3" fill="'+blekk+'"/>'
+    /* valørsiden */
+    : '<text x="50" y="59" text-anchor="middle" font-size="36" font-weight="700" '
+      + 'fill="'+blekk+'" font-family="Georgia,serif">10</text>'
+      + '<text x="50" y="76" text-anchor="middle" font-size="11.5" letter-spacing="1.5" '
+      + 'fill="'+blekk+'" font-family="Georgia,serif">KRONER</text>';
+  return '<svg viewBox="0 0 100 100" role="img" aria-label="'+(kron?'kron':'mynt')+'">'
+    + '<circle cx="50" cy="50" r="47" fill="'+gull+'" stroke="'+kant+'" stroke-width="3"/>'
+    + '<circle cx="50" cy="50" r="40.5" fill="none" stroke="'+kant+'" stroke-width="1.3" opacity=".65"/>'
+    + motiv + '</svg>';
+}
+const OYNE={1:[[50,50]],2:[[31,31],[69,69]],3:[[31,31],[50,50],[69,69]],
+  4:[[31,31],[69,31],[31,69],[69,69]],
+  5:[[31,31],[69,31],[50,50],[31,69],[69,69]],
+  6:[[31,28],[69,28],[31,50],[69,50],[31,72],[69,72]]};
+function terningSVG(v,mork){
+  const bg = mork?'#1F3864':'#ffffff', pip = mork?'#ffffff':'#1F3864',
+        kant= mork?'#16294a':'#AEBACD';
+  let p='';
+  OYNE[v].forEach(o=>{ p+='<circle cx="'+o[0]+'" cy="'+o[1]+'" r="9.5" fill="'+pip+'"/>'; });
+  return '<svg viewBox="0 0 100 100" role="img" aria-label="terning som viser '+v+'">'
+    + '<rect x="4" y="4" width="92" height="92" rx="17" fill="'+bg+'" stroke="'+kant+'" stroke-width="3"/>'
+    + p + '</svg>';
+}
+/* Stripe av myntutfall. serie = [fra, til] markeres med rød ring. */
+function stripeHTML(utfall, serie){
+  let h='';
+  utfall.forEach((k,i)=>{
+    const iS = serie && i>=serie[0] && i<=serie[1];
+    h += '<i class="'+(k?'':'m')+(iS?' serie':'')+'">'+(k?'K':'M')+'</i>';
+  });
+  return h;
+}
+/* Lengste serie av like utfall. Returnerer [fra, til, lengde]. */
+function lengsteSerie(a){
+  let bl=0,bf=0,cl=0,cf=0;
+  for(let i=0;i<a.length;i++){
+    if(i && a[i]===a[i-1]){ cl++; } else { cl=1; cf=i; }
+    if(cl>bl){ bl=cl; bf=cf; }
+  }
+  return [bf, bf+bl-1, bl];
+}
+
+/* ====================== FANE 1 · mynt ====================== */
+let M={n:0,k:0,andel:[],diff:[],p:0.5,siste:null,hist:[]};
+function mTegn(){
+  $('#mn').textContent=M.n.toLocaleString('no');
+  $('#mk').textContent=M.k.toLocaleString('no');
+  $('#mandel').textContent=M.n?(M.k/M.n).toFixed(3):'—';
+  const d=2*M.k-M.n;
+  /* Ekte minustegn (U+2212), ikke bindestrek — CLAUDE.md §2. */
+  $('#mdiff').textContent=(d>=0?'+':'\u2212')+Math.abs(d);
+  mKonkret();
+
+  let g=lerret($('#mcAndel'));
+  let A=akser(g.c,g.w,g.h,'kast',v=>v.toFixed(2),0,1,0.25);
+  g.c.strokeStyle=FARGE.gra; g.c.setLineDash([5,3]); g.c.lineWidth=1.4;
+  g.c.beginPath(); g.c.moveTo(A.X(0),A.Y(M.p)); g.c.lineTo(A.X(1),A.Y(M.p)); g.c.stroke();
+  g.c.setLineDash([]);
+  if(M.andel.length>1){
+    g.c.strokeStyle=FARGE.navy; g.c.lineWidth=2.2; g.c.beginPath();
+    M.andel.forEach((v,i)=>{ const x=A.X(i/(M.andel.length-1)), y=A.Y(v);
+      i?g.c.lineTo(x,y):g.c.moveTo(x,y); });
+    g.c.stroke();
+  }
+  g=lerret($('#mcDiff'));
+  const m=Math.max(12, Math.ceil(Math.max(...M.diff.map(Math.abs),10)*1.15));
+  A=akser(g.c,g.w,g.h,'kast',v=>String(Math.round(v)),-m,m,Math.max(5,Math.round(m/2)));
+  if(M.diff.length>1){
+    g.c.strokeStyle=FARGE.gra; g.c.setLineDash([4,3]); g.c.lineWidth=1.2;
+    [1,-1].forEach(s=>{ g.c.beginPath();
+      M.diff.forEach((_,i)=>{ const n=Math.round((i/(M.diff.length-1))*M.n);
+        const x=A.X(i/(M.diff.length-1)), y=A.Y(s*Math.sqrt(Math.max(n,0)));
+        i?g.c.lineTo(x,y):g.c.moveTo(x,y); });
+      g.c.stroke(); });
+    g.c.setLineDash([]);
+    g.c.strokeStyle=FARGE.rod; g.c.lineWidth=2.2; g.c.beginPath();
+    M.diff.forEach((v,i)=>{ const x=A.X(i/(M.diff.length-1)), y=A.Y(v);
+      i?g.c.lineTo(x,y):g.c.moveTo(x,y); });
+    g.c.stroke();
+  }
+}
+
+function mKonkret(vend){
+  const boks=$('#mmynt'), tit=$('#msiste'), st=$('#mstripe');
+  if(!boks) return;
+  if(M.siste===null){
+    boks.innerHTML=myntSVG(true); boks.style.opacity='.35';
+    tit.textContent='Ingen kast ennå'; st.innerHTML=''; return;
+  }
+  boks.style.opacity='1';
+  boks.innerHTML=myntSVG(M.siste);
+  if(vend){ boks.classList.remove('vender'); void boks.offsetWidth; boks.classList.add('vender'); }
+  tit.textContent = M.siste ? 'Kron' : 'Mynt';
+  st.innerHTML = stripeHTML(M.hist);
+  $('#mtekst').innerHTML = M.n>M.hist.length
+    ? 'Stripa viser de siste ' + M.hist.length + ' av ' + M.n.toLocaleString('no')
+      + ' kast. «Kron» er siden med kronen, «mynt» er valørsiden.'
+    : 'Stripa viser alle kastene så langt. «Kron» er siden med kronen, «mynt» er valørsiden.';
+}
+function mKast(antall){
+  for(let i=0;i<antall;i++){
+    M.n++;
+    const kron = Math.random()<M.p;
+    if(kron) M.k++;
+    M.siste=kron; M.hist.push(kron);
+    /* Stripa holder bare de siste 80 — lenger enn det blir den uleselig,
+       og poenget er det siste kastet, ikke et arkiv. */
+    if(M.hist.length>80) M.hist.shift();
+    /* Vi lagrer ikke ett punkt per kast ved 1 000 kast — kurven ville blitt
+       tyngre å tegne enn å lese. Hvert 5. punkt holder formen. */
+    if(M.n<=50 || M.n%5===0){ M.andel.push(M.k/M.n); M.diff.push(2*M.k-M.n); }
+  }
+  mTegn(); mKonkret(true);
+}
+const mNull=()=>{ M.n=0;M.k=0;M.andel=[];M.diff=[];M.siste=null;M.hist=[]; mTegn(); };
+$('#m1').onclick=()=>mKast(1); $('#m10').onclick=()=>mKast(10);
+$('#m1000').onclick=()=>mKast(1000);
+$('#mnull').onclick=mNull;
+$('#mp').oninput=e=>{ M.p=+e.target.value/100; $('#mpv').textContent=M.p.toFixed(2);
+  mNull(); };
+
+/* ====================== FANE 2 · terninger ====================== */
+let T={tell:{},n:0,ant:2,valgt:null,siste:null};
+function tTeori(ant){
+  /* Foldning: fordelingen av summen av «ant» terninger. */
+  let f={0:1};
+  for(let d=0; d<ant; d++){
+    const g={};
+    for(const s in f) for(let v=1; v<=6; v++) g[+s+v]=(g[+s+v]||0)+f[s];
+    f=g;
+  }
+  const tot=Math.pow(6,ant), ut={};
+  for(const s in f) ut[s]=f[s]/tot;
+  return ut;
+}
+function tTegn(){
+  const g=lerret($('#tc')), ant=T.ant;
+  const teori=tTeori(ant), summer=Object.keys(teori).map(Number).sort((a,b)=>a-b);
+  const maks=Math.max(Math.max(...Object.values(teori)),
+                      ...summer.map(s=>T.n?(T.tell[s]||0)/T.n:0), 0.02);
+  const A=akser(g.c,g.w,g.h,'sum',v=>(100*v).toFixed(0)+' %',0,maks*1.1,maks/3);
+  const bw=(g.w-A.L-A.R)/summer.length;
+  summer.forEach((s,i)=>{
+    const x=A.L+i*bw, obs=T.n?(T.tell[s]||0)/T.n:0;
+    g.c.fillStyle = (T.valgt===s) ? FARGE.gronn : FARGE.blue;
+    g.c.globalAlpha=.85;
+    g.c.fillRect(x+bw*0.12, A.Y(obs), bw*0.76, A.Y(0)-A.Y(obs));
+    g.c.globalAlpha=1;
+    g.c.fillStyle='#62708a'; g.c.font='11.5px sans-serif';
+    g.c.textAlign='center'; g.c.textBaseline='top';
+    if(summer.length<=13 || i%2===0) g.c.fillText(String(s), x+bw/2, A.Y(0)+7);
+  });
+  g.c.strokeStyle=FARGE.navy; g.c.lineWidth=2.4; g.c.beginPath();
+  summer.forEach((s,i)=>{ const x=A.L+i*bw+bw/2, y=A.Y(teori[s]);
+    i?g.c.lineTo(x,y):g.c.moveTo(x,y); });
+  g.c.stroke();
+  summer.forEach((s,i)=>{ const x=A.L+i*bw+bw/2, y=A.Y(teori[s]);
+    g.c.beginPath(); g.c.arc(x,y,3,0,7); g.c.fillStyle='#fff'; g.c.fill();
+    g.c.strokeStyle=FARGE.navy; g.c.lineWidth=1.6; g.c.stroke(); });
+  $('#tgitterwrap').style.display = ant===2 ? '' : 'none';
+  if(ant===2) tGitter();
+  tKonkret();
+}
+function tKonkret(){
+  const rad=$('#tsiste'), tit=$('#tsistesum');
+  if(!rad) return;
+  if(!T.siste){
+    rad.innerHTML = terningSVG(1,false) + '<span class="pluss">+</span>' + terningSVG(1,false);
+    rad.style.opacity='.3'; tit.textContent='Ingen kast ennå'; return;
+  }
+  rad.style.opacity='1';
+  const sum=T.siste.reduce((a,b)=>a+b,0);
+  rad.innerHTML = T.siste.map(v=>terningSVG(v,false))
+                    .join('<span class="pluss">+</span>')
+                  + '<span class="sum">= ' + sum + '</span>';
+  tit.textContent = T.siste.join(' + ') + ' = ' + sum;
+  $('#ttekst').innerHTML = 'Dette kastet la én til i søylen for sum <em>' + sum
+    + '</em>. Totalt ' + T.n.toLocaleString('no') + ' kast så langt.';
+}
+function tGitter(){
+  const G=$('#tgitter'); G.innerHTML='';
+  for(let a=1;a<=6;a++) for(let b=1;b<=6;b++){
+    const d=document.createElement('div');
+    /* Rutene viser de faktiske terningene, ikke «a+b». Markerte ruter får
+       mørke terninger, slik at de leses også når bakgrunnen er grønn. */
+    d.className='par';
+    const mork = T.valgt===a+b;
+    d.innerHTML = terningSVG(a,mork) + terningSVG(b,mork);
+    d.title = a + ' + ' + b + ' = ' + (a+b);
+    if(mork) d.className='par tr';
+    d.onclick=()=>{ T.valgt=(T.valgt===a+b)?null:a+b; tTegn(); tSummer(); };
+    G.appendChild(d);
+  }
+}
+function tSummer(){
+  const S=$('#tsummer'); S.innerHTML='';
+  const teori=tTeori(2);
+  for(let s=2;s<=12;s++){
+    const b=document.createElement('button');
+    b.className=(T.valgt===s)?'btn':'btn2';
+    b.style.padding='6px 10px'; b.style.fontSize='15px';
+    b.textContent=s+' ('+Math.round(teori[s]*36)+'/36)';
+    b.onclick=()=>{ T.valgt=(T.valgt===s)?null:s; tTegn(); tSummer(); };
+    S.appendChild(b);
+  }
+}
+function tKast(antall){
+  for(let i=0;i<antall;i++){
+    const kast=[];
+    for(let d=0;d<T.ant;d++) kast.push(1+Math.floor(Math.random()*6));
+    const s=kast.reduce((a,b)=>a+b,0);
+    T.tell[s]=(T.tell[s]||0)+1; T.n++; T.siste=kast;
+  }
+  tTegn();
+}
+$('#t1').onclick=()=>tKast(1); $('#t100').onclick=()=>tKast(100);
+$('#t5000').onclick=()=>tKast(5000);
+$('#tnull').onclick=()=>{ T.tell={};T.n=0;T.siste=null; tTegn(); };
+$('#tant').onchange=e=>{ T.ant=+e.target.value; T.tell={};T.n=0;T.valgt=null;T.siste=null;
+  tTegn(); tSummer(); };
+
+/* ====================== FANE 3 · uavhengighet ====================== */
+function gjett(){
+  /* Vi simulerer serier og beholder dem som FAKTISK startet med fem kron.
+     Det er den betingede sannsynligheten studenten tror hun endrer. */
+  let serier=0, kron=0;
+  for(let i=0;i<200000 && serier<20000;i++){
+    let fem=true;
+    for(let k=0;k<5;k++) if(Math.random()>=0.5){ fem=false; break; }
+    if(!fem) continue;
+    serier++; if(Math.random()<0.5) kron++;
+  }
+  $('#gserier').textContent=serier.toLocaleString('no');
+  $('#gneste').textContent=(kron/serier).toFixed(3);
+  $('#gtekst').textContent='Like sannsynlig. Blant '+serier.toLocaleString('no')+
+    ' serier som startet med fem kron, ga '+(100*kron/serier).toFixed(1)+
+    ' % kron på kast nummer seks. Kastet vet ingenting om de fem foran.';
+  $('#gsvar').style.display='';
+}
+['g-mynt','g-kron','g-likt'].forEach(id=>{ const b=$('#'+id); if(b) b.onclick=gjett; });
+
+
+/* --- Hvor lange serier lager flaks alene? --- */
+let S={runder:[]};
+function sKast(){
+  const a=[]; for(let i=0;i<200;i++) a.push(Math.random()<0.5);
+  const L=lengsteSerie(a);
+  $('#sstripe').innerHTML=stripeHTML(a,[L[0],L[1]]);
+  $('#slengst').textContent=L[2];
+  sOppsummer();
+}
+function sMange(){
+  /* 2 000 runder à 200 kast = 400 000 kast. Det går på noen titalls
+     millisekunder, så det er ingen grunn til å gjøre det i bakgrunnen. */
+  S.runder=[];
+  for(let r=0;r<2000;r++){
+    let best=0,cl=0,prev=null;
+    for(let i=0;i<200;i++){
+      const x=Math.random()<0.5;
+      cl = (x===prev) ? cl+1 : 1;
+      prev=x; if(cl>best) best=cl;
+    }
+    S.runder.push(best);
+  }
+  sKast();
+}
+function sOppsummer(){
+  if(!S.runder.length) return;
+  const r=S.runder.slice().sort((a,b)=>a-b), n=r.length;
+  const med = n%2 ? r[(n-1)/2] : (r[n/2-1]+r[n/2])/2;
+  $('#stypisk').textContent=med;
+  $('#sandel5').textContent=Math.round(1000*r.filter(x=>x>=5).length/n)/10+' %';
+  $('#sandel8').textContent=Math.round(1000*r.filter(x=>x>=8).length/n)/10+' %';
+}
+{ const b=$('#sserie'); if(b) b.onclick=sKast;
+  const b2=$('#sserie2'); if(b2) b2.onclick=sMange; }
+
+function uSim(){
+  const n=+$('#un').value, serier=5000;
+  let minstEn=0;
+  for(let i=0;i<serier;i++){
+    let traff=false;
+    for(let k=0;k<n;k++) if(Math.floor(Math.random()*6)===5){ traff=true; break; }
+    if(traff) minstEn++;
+  }
+  $('#uobs').textContent=(100*minstEn/serier).toFixed(1)+' %';
+  $('#uteori').textContent=(100*(1-Math.pow(5/6,n))).toFixed(1)+' %';
+  uTegn(n);
+}
+function uTegn(markerN){
+  const g=lerret($('#uc'));
+  const A=akser(g.c,g.w,g.h,'kast',v=>(100*v).toFixed(0)+' %',0,1,0.25);
+  g.c.strokeStyle=FARGE.gra; g.c.setLineDash([5,3]); g.c.lineWidth=1.3;
+  g.c.beginPath(); g.c.moveTo(A.X(0),A.Y(0.5)); g.c.lineTo(A.X(1),A.Y(0.5)); g.c.stroke();
+  g.c.setLineDash([]);
+  g.c.strokeStyle=FARGE.navy; g.c.lineWidth=2.4; g.c.beginPath();
+  for(let n=1;n<=20;n++){ const x=A.X((n-1)/19), y=A.Y(1-Math.pow(5/6,n));
+    n===1?g.c.moveTo(x,y):g.c.lineTo(x,y); }
+  g.c.stroke();
+  if(markerN){
+    const x=A.X((markerN-1)/19), y=A.Y(1-Math.pow(5/6,markerN));
+    g.c.beginPath(); g.c.arc(x,y,5,0,7); g.c.fillStyle=FARGE.gronn; g.c.fill();
+  }
+  g.c.fillStyle='#62708a'; g.c.font='11.5px sans-serif'; g.c.textAlign='center';
+  g.c.textBaseline='top';
+  [1,5,10,15,20].forEach(n=>g.c.fillText(String(n), A.X((n-1)/19), A.Y(0)+7));
+}
+$('#un').oninput=e=>{ $('#unv').textContent=e.target.value; uTegn(+e.target.value); };
+$('#usim').onclick=uSim;
+
+/* ====================== FANE 4 · betinget ====================== */
+function bTegn(){
+  const prev=+$('#bprev').value/1000, sens=+$('#bsens').value/100, fp=+$('#bfp').value/100;
+  $('#bprevv').textContent=(100*prev).toFixed(1)+' %';
+  $('#bsensv').textContent=(100*sens).toFixed(0)+' %';
+  $('#bfpv').textContent=(100*fp).toFixed(0)+' %';
+  const N=1000, syke=Math.round(N*prev), friske=N-syke;
+  const sykP=Math.round(syke*sens), friskP=Math.round(friske*fp);
+  const pos=sykP+friskP;
+  $('#bppv').textContent = pos ? Math.round(100*sykP/pos)+' %' : '—';
+  $('#bpos').textContent = pos;
+  $('#bsyk').textContent = sykP;
+  const G=$('#bikoner');
+  /* 1 000 ruter ville vært uleselige. Hver rute er fire personer, og rutene
+     sorteres i de fire gruppene slik at feltene blir sammenlignbare. */
+  const R=250, per=N/R;
+  const ant=[Math.round(sykP/per), Math.round((syke-sykP)/per),
+             Math.round(friskP/per), 0];
+  ant[3]=R-ant[0]-ant[1]-ant[2];
+  const kl=['sykP','sykN','friskP','friskN'];
+  let html='';
+  ant.forEach((a,i)=>{ for(let k=0;k<Math.max(0,a);k++) html+='<i class="'+kl[i]+'"></i>'; });
+  G.innerHTML=html;
+
+  /* Samme fire tall som rutene, men som krysstabell — formen de møter igjen
+     i kjikvadrattesten (Sim 29). De to prosentene nederst er de to betingede
+     sannsynlighetene som blir forvekslet. */
+  const tb=$('#btab'); if(!tb) return;
+  const sykN=syke-sykP, friskN=friske-friskP, neg=sykN+friskN;
+  const pr=(a,b)=>b ? Math.round(100*a/b)+' %' : '—';
+  tb.innerHTML =
+    '<tr><th>av 1 000 personer</th><th>får utslag</th><th>intet utslag</th><th>til sammen</th></tr>'
+   +'<tr><td>har tilstanden</td><td>'+sykP+'</td><td>'+sykN+'</td><td>'+syke+'</td></tr>'
+   +'<tr><td>frisk</td><td>'+friskP+'</td><td>'+friskN+'</td><td>'+friske+'</td></tr>'
+   +'<tr><td>til sammen</td><td>'+pos+'</td><td>'+neg+'</td><td>1 000</td></tr>'
+   +'<tr class="mark"><td>P(utslag | har tilstanden) &mdash; det testen lover</td>'
+     +'<td colspan="3">'+pr(sykP,syke)+' &nbsp; ('+sykP+' av '+syke+')</td></tr>'
+   +'<tr class="mark"><td>P(har tilstanden | utslag) &mdash; det pasienten spør om</td>'
+     +'<td colspan="3">'+pr(sykP,pos)+' &nbsp; ('+sykP+' av '+pos+')</td></tr>';
+}
+['bprev','bsens','bfp'].forEach(id=>{ const e=$('#'+id); if(e) e.oninput=bTegn; });
+
+
+/* ====================== FANE 5 · tetthet ======================
+   Depression ved oppstart i terapi-RCT-en: N = 86, M = 30.23, SD = 4.16.
+   Tallene er regnet ut fra Psykoterapi_RCT_data_real_N86_full.csv. */
+const D5={m:30.23, sd:4.16, midt:30,
+          halv:[5,2.5,1,0.5,0.25,0.1,0.05,0.01,0.005,0.001]};
+function dTett(x){
+  const z=(x-D5.m)/D5.sd;
+  return Math.exp(-z*z/2)/(D5.sd*Math.sqrt(2*Math.PI));
+}
+function dKum(x){
+  /* Normalfordelingens kumulative, via en rasjonal tilnærming til erf.
+     Abramowitz & Stegun 7.1.26 — nøyaktig til ~1e-7, mer enn nok her. */
+  const z=(x-D5.m)/(D5.sd*Math.SQRT2), t=1/(1+0.3275911*Math.abs(z));
+  const e=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t
+            +0.254829592)*t*Math.exp(-z*z);
+  return 0.5*(1+(z<0?-e:e));
+}
+function dFmt(p){
+  if(p>=0.0005) return p.toFixed(3);
+  return p.toPrecision(3);
+}
+function dTegn(){
+  const i=+($('#dw')||{value:1}).value, halv=D5.halv[i];
+  const a=D5.midt-halv, b=D5.midt+halv;
+  const P=dKum(b)-dKum(a), h=dTett(D5.midt);
+  const vis = halv>=0.05 ? halv.toFixed(2).replace(/0$/,'').replace(/\.$/,'')
+                         : String(halv);
+  $('#dwv').innerHTML='30 &plusmn; '+vis;
+  $('#dp').textContent=dFmt(P);
+  $('#dbredde').textContent=String(2*halv);
+  $('#dtett').textContent=h.toFixed(4);
+  $('#dprod').textContent=dFmt(h*2*halv);
+
+  const g=lerret($('#dc'));
+  const x0=D5.m-4*D5.sd, x1=D5.m+4*D5.sd, maks=dTett(D5.m);
+  const A=akser(g.c,g.w,g.h,'skåre',v=>v.toFixed(3),0,maks*1.16,maks/3);
+  const X=v=>A.L+(g.w-A.L-A.R)*(v-x0)/(x1-x0);
+
+  /* Det skraverte feltet. Når intervallet er smalere enn en piksel, tegnes
+     det likevel som en tynn strek — poenget er at det forsvinner. */
+  g.c.fillStyle='#CBDAF0';
+  const xa=X(a), xb=X(b);
+  g.c.beginPath(); g.c.moveTo(Math.max(xa,A.L), A.Y(0));
+  for(let x=Math.max(xa,x0); x<=Math.min(xb,x1); x+=(b-a)/60)
+    g.c.lineTo(X(x), A.Y(dTett(x)));
+  g.c.lineTo(X(b), A.Y(dTett(b))); g.c.lineTo(xb, A.Y(0)); g.c.closePath(); g.c.fill();
+  if(xb-xa<1.5){ g.c.fillRect(xa-0.6, A.Y(dTett(D5.midt)), 1.6, A.Y(0)-A.Y(dTett(D5.midt))); }
+
+  /* Kurven */
+  g.c.strokeStyle=FARGE.navy; g.c.lineWidth=2.4; g.c.beginPath();
+  for(let k=0;k<=240;k++){ const x=x0+(x1-x0)*k/240, px=X(x), py=A.Y(dTett(x));
+    k?g.c.lineTo(px,py):g.c.moveTo(px,py); }
+  g.c.stroke();
+
+  /* Høyden i 30: stiplet opp til kurven, med etikett */
+  g.c.strokeStyle=FARGE.rod; g.c.setLineDash([5,3]); g.c.lineWidth=1.6;
+  g.c.beginPath(); g.c.moveTo(X(30),A.Y(0)); g.c.lineTo(X(30),A.Y(h)); g.c.stroke();
+  g.c.setLineDash([]);
+  g.c.fillStyle=FARGE.rod; g.c.font='12.5px sans-serif'; g.c.textAlign='left';
+  g.c.textBaseline='bottom';
+  g.c.fillText('høyde = tetthet = '+h.toFixed(4), X(30)+7, A.Y(h)-3);
+
+  /* x-akse */
+  g.c.fillStyle='#62708a'; g.c.font='11.5px sans-serif'; g.c.textAlign='center';
+  g.c.textBaseline='top';
+  [16,20,24,28,30,32,36,40,44].forEach(v=>{
+    if(v>=x0&&v<=x1) g.c.fillText(String(v), X(v), A.Y(0)+7); });
+  g.c.textAlign='right'; g.c.fillStyle='#62708a';
+  g.c.fillText('tetthet', A.L-6, A.T-2);
+}
+{ const e=$('#dw'); if(e) e.oninput=dTegn; }
+
+/* ====================== FANE 6 · p-verdi ====================== */
+let P={fordeling:null,n:0};
+function pSim(){
+  const n=+$('#pn').value, serier=5000, tell=new Array(n+1).fill(0);
+  for(let i=0;i<serier;i++){
+    let b=0; for(let k=0;k<n;k++) if(Math.random()<0.5) b++;
+    tell[b]++;
+  }
+  P.fordeling=tell; P.n=serier;
+  pTegn();
+}
+function pTegn(){
+  const n=+$('#pn').value, obs=Math.min(+$('#pobs').value,n);
+  $('#pnv').textContent=n; $('#pobsv').textContent=obs;
+  $('#pandel').textContent=(obs/n).toFixed(2);
+  /* Studien som faktiske myntkast. Gull = ble bedre. Rekkefølgen er
+     vilkårlig; det er antallet som er dataene. */
+  const ps=$('#pstripe');
+  if(ps){
+    const u=[]; for(let k=0;k<n;k++) u.push(k<obs);
+    ps.innerHTML=stripeHTML(u);
+    $('#pstripetittel').textContent=obs+' av '+n+' pasienter ble bedre';
+  }
+  $('#pn2').textContent=P.n?P.n.toLocaleString('no'):'—';
+  const g=lerret($('#pc'));
+  if(!P.fordeling || P.fordeling.length!==n+1){
+    g.c.fillStyle='#62708a'; g.c.font='15px sans-serif'; g.c.textAlign='center';
+    g.c.fillText('Trykk «Simuler 5 000 studier»', g.w/2, g.h/2);
+    $('#pp').textContent='—'; return;
+  }
+  const f=P.fordeling, maks=Math.max(...f)/P.n;
+  const A=akser(g.c,g.w,g.h,'antall bedre',v=>(100*v).toFixed(0)+' %',0,maks*1.12,maks/3);
+  const bw=(g.w-A.L-A.R)/(n+1);
+  /* Tosidig hale: like ekstremt eller mer, målt som avstand fra n/2. */
+  const avst=Math.abs(obs-n/2);
+  let hale=0;
+  for(let k=0;k<=n;k++) if(Math.abs(k-n/2)>=avst-1e-9) hale+=f[k];
+  for(let k=0;k<=n;k++){
+    const x=A.L+k*bw, y=A.Y(f[k]/P.n), iHale=Math.abs(k-n/2)>=avst-1e-9;
+    g.c.fillStyle = iHale ? FARGE.lilla : FARGE.lys;
+    g.c.fillRect(x+bw*0.1, y, bw*0.8, A.Y(0)-y);
+  }
+  g.c.strokeStyle=FARGE.rod; g.c.lineWidth=2.2;
+  g.c.beginPath(); g.c.moveTo(A.L+obs*bw+bw/2,A.T); g.c.lineTo(A.L+obs*bw+bw/2,A.Y(0)); g.c.stroke();
+  g.c.fillStyle='#62708a'; g.c.font='11.5px sans-serif'; g.c.textAlign='center'; g.c.textBaseline='top';
+  for(let k=0;k<=n;k+=Math.max(1,Math.round(n/10))) g.c.fillText(String(k), A.L+k*bw+bw/2, A.Y(0)+7);
+  /* APA 7, CLAUDE.md §2: p kan ikke overstige 1, så ingen innledende null. */
+  $('#pp').textContent=(hale/P.n).toFixed(3).replace(/^0\./,'.');
+}
+['pn','pobs'].forEach(id=>{ const e=$('#'+id); if(e) e.oninput=()=>{
+  const n=+$('#pn').value; $('#pobs').max=n;
+  if(+$('#pobs').value>n) $('#pobs').value=n;
+  if(id==='pn') P.fordeling=null;
+  pTegn(); }; });
+$('#psim').onclick=pSim;
+
+/* ====================== faner ====================== */
+const FANER=['hvorfor','mynt','terning','uavh','betinget','tetthet','pverdi'];
+function visFane(f){
+  FANER.forEach(x=>{ const e=$('#fane-'+x); if(e) e.style.display = (x===f)?'':'none'; });
+  $$('.fane').forEach(b=>b.classList.toggle('on', b.dataset.fane===f));
+  if(f==='mynt') mTegn();
+  if(f==='terning'){ tTegn(); tSummer(); }
+  if(f==='uavh') uTegn(+$('#un').value);
+  if(f==='betinget') bTegn();
+  if(f==='tetthet') dTegn();
+  if(f==='pverdi') pTegn();
+  try{ history.replaceState(null,'','#fane='+f); }catch(e){}
+}
+$$('.fane').forEach(b=>b.onclick=()=>visFane(b.dataset.fane));
+window.addEventListener('resize',()=>{
+  const paa=FANER.find(x=>{ const e=$('#fane-'+x); return e && e.style.display!=='none'; });
+  if(paa) visFane(paa);
+});
+(function start(){
+  const m=/fane=(\w+)/.exec(location.hash||'');
+  visFane(m && FANER.indexOf(m[1])>=0 ? m[1] : 'hvorfor');
+})();
+</script>
+
+<script id="ovbegrep-js">
+(function(){
+  // Lokalt: appene ligger i PSY300_Sim_Apps/, MCQ-appen i PSY300_online/.
+  // Publisert: alt ligger flatt. Velg prefiks ut fra adressen.
+  var p = location.pathname.indexOf('/PSY300_Sim_Apps/') >= 0
+        ? '../PSY300_online/' : './';
+  var a = document.querySelectorAll('a.ovlenke[data-begrep]');
+  for (var i=0;i<a.length;i++){
+    a[i].href = p + 'PSY300_MCQ_Online.html?begrep=' + a[i].getAttribute('data-begrep');
+    a[i].target = '_blank'; a[i].rel = 'noopener';
+  }
+})();
+</script>
+</body></html>

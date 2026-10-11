@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PSY300 · Sim 25 — Kraften i innen-person-design</title>
+<title>PSY300 · Sim 25 — Gjentatte målinger og blandet ANOVA</title>
 <style>
 :root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
 /* =====================================================================
@@ -391,6 +391,53 @@ body.fmodus.oversikt #foversikt{display:grid;position:fixed;inset:0;z-index:70;
   letter-spacing:.08em;text-transform:uppercase;margin:14px 0 2px}
 #foversikt .tittelrad:first-child{margin-top:0}
 
+
+
+/* TRYKK-CSS-START */
+/* ===== TRYKKMODUS =========================================================
+   ?modus=trykk legger alle slidene under hverandre som ferdige ark, med
+   alle klikk-trinn utfoldet og figurene frosset til bilder. Da kan
+   nettleseren skrive dem ut: Cmd/Ctrl + P -> Lagre som PDF.
+
+   Hvorfor bilder og ikke levende canvas: en canvas som ikke er tegnet paa
+   nytt etter at utskriftsdialogen endret sidebredden, kommer ut blank.
+   Et <img> gjoer ikke det.
+
+   Maalene: A4 liggende med 6 mm marg gir 285 x 198 mm trykkflate. 285 mm
+   er 1077 px ved 96 dpi; skalaen regnes ut i JS og settes som --k.      */
+body.trykk{overflow:auto;background:#e9edf4}
+body.trykk>header,body.trykk>.wrap,body.trykk>.presbtn{display:none}
+body.trykk #scene,body.trykk #fnav,body.trykk #fbar,body.trykk #fnotat,
+body.trykk #foversikt,body.trykk #modusBtn{display:none!important}
+#trykkark{padding:20px 0 40px}
+.trykkside{position:relative;width:var(--sb,1280px);height:720px;margin:0 auto 20px;
+  background:#fff;box-shadow:0 2px 16px rgba(20,30,60,.18);overflow:hidden}
+.trykkside .skala{position:absolute;left:0;top:0;
+  width:var(--sb,1280px);height:720px;transform-origin:top left}
+.trykkside .slide{position:absolute;inset:0}
+.trykknr{position:absolute;right:16px;bottom:9px;z-index:5;
+  font-size:13px;font-weight:700;color:#93a2bd}
+.trykkfeil{position:absolute;left:40px;right:40px;bottom:40px;z-index:6;
+  padding:14px 16px;background:#fdecea;border-left:5px solid #C0392B;
+  font:600 15px/1.5 sans-serif;color:#8c2b20}
+.trykkhode{max-width:1280px;margin:0 auto 18px;padding:14px 18px;background:#fff;
+  border-left:5px solid #1E7A3C;box-shadow:0 2px 16px rgba(20,30,60,.18);
+  font-size:15px;line-height:1.5;color:#3F4E63}
+.trykkhode b{color:#1F3864}
+/* .skjul lar en slide ta bort en enkelt del av en LAANT blokk. */
+.skjul{display:none!important}
+@media print{
+  @page{size:A4 landscape;margin:6mm}
+  body.trykk{background:#fff}
+  #trykkark{padding:0}
+  .trykkhode{display:none}
+  .trykkside{width:285mm;height:198mm;margin:0;box-shadow:none;
+    page-break-after:always;break-after:page}
+  .trykkside:last-child{page-break-after:auto;break-after:auto}
+  .trykkside .skala{transform:scale(var(--k,0.841))}
+}
+/* TRYKK-CSS-SLUTT */
+
 /* ===== modusbryter =====
    Samme knapp begge veier. I appmodus ligger den nede til hoyre som en
    diskret pille; i forelesningsmodus flytter den seg til venstre side og
@@ -403,18 +450,130 @@ body.fmodus.oversikt #foversikt{display:grid;position:fixed;inset:0;z-index:70;
 body.fmodus #modusBtn{left:14px;right:auto;bottom:11px;
   background:rgba(255,255,255,.10);color:#cfdaeb;
   border:1px solid rgba(255,255,255,.20);box-shadow:none;font-weight:600}
-</style></head><body>
+
+.hvgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.hvkort{border-radius:10px;padding:11px 13px;font-size:16px;line-height:1.5}
+.hvkort h3{margin:0 0 6px;font-size:16.5px}
+.hvkort ul{margin:0;padding-left:18px}
+.hvkort li{margin-bottom:7px}
+.hver{background:#eaf6ea;border:1px solid #bcdcbc;border-left:5px solid #2E7D32}
+.hver h3{color:#1E5C22}
+.hvikke{background:#fbeceb;border:1px solid #edc9c5;border-left:5px solid #C0392B}
+.hvikke h3{color:#9B2D20}
+.eks{display:block;color:#5A6B7B;font-size:14.5px;margin-top:2px}
+.hvnaar{width:100%;border-collapse:collapse;font-size:15.5px;margin-top:8px}
+.hvnaar th{text-align:left;background:#eef2f8;border-bottom:2px solid #c7d6ec;padding:6px 8px;font-size:14.5px}
+.hvnaar td{border-bottom:1px solid #d9dee8;padding:6px 8px;vertical-align:top}
+.hvnaar tr.na{background:#eef3fb;font-weight:500}
+@media(max-width:760px){.hvgrid{grid-template-columns:1fr}}
+.ovkort{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ovlbl{font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5A6B7B}
+.ovhint{font-size:13.5px;color:#8b949e}
+.ovlenke{color:#2E5496;font-weight:600;cursor:pointer;text-decoration:underline}
+</style><style>#blSpm .btn2.on{background:var(--navy,#1F3864);color:#fff}</style><style>
+/* ---- innlemmet: rmg ---- */
+#fane-rmg .k-sig{color:var(--sig);font-weight:600}
+#fane-rmg .k-stoy{color:var(--stoy);font-weight:600}
+#fane-rmg .k-tstat{color:var(--tstat);font-weight:700}
+#fane-rmg .k-p{color:var(--pverdi);font-weight:600}
+#fane-rmg .k-eff{color:var(--eff);font-weight:600}
+#fane-rmg .k-ki{color:var(--ki);font-weight:600}
+#fane-rmg .m-sig,#fane-rmg .m-stoy,#fane-rmg .m-tstat,#fane-rmg .m-p,#fane-rmg .m-eff,#fane-rmg .m-ki{border-radius:5px;padding:1px 5px;font-weight:600}
+#fane-rmg .m-sig{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+#fane-rmg .m-stoy{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+#fane-rmg .m-tstat{background:var(--tstat-bg);color:var(--tstat);box-shadow:inset 0 0 0 1px var(--tstat-kant)}
+#fane-rmg .m-p{background:var(--pverdi-bg);color:var(--pverdi);box-shadow:inset 0 0 0 1px var(--pverdi-kant)}
+#fane-rmg .m-eff{background:var(--eff-bg);color:var(--eff);box-shadow:inset 0 0 0 1px var(--eff-kant)}
+#fane-rmg .m-ki{background:var(--ki-bg);color:var(--ki);box-shadow:inset 0 0 0 1px var(--ki-kant)}
+#fane-rmg .brokfig{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 18px;
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 14px;margin:12px 0}
+#fane-rmg .brokfig .brk{text-align:center;min-width:250px;flex:0 1 auto}
+#fane-rmg .brokfig .tell,#fane-rmg .brokfig .nevn{border-radius:8px;padding:8px 13px;font-size:15.5px;line-height:1.28}
+#fane-rmg .brokfig .tell{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+#fane-rmg .brokfig .nevn{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+#fane-rmg .brokfig .strek{height:3px;background:#16203A;border-radius:2px;margin:6px 0}
+#fane-rmg .brokfig .tall{display:block;font-size:23px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+#fane-rmg .brokfig .lik{font-size:27px;color:#16203A;font-weight:600}
+#fane-rmg .brokfig .res{font-size:17px;color:var(--tstat);text-align:center;line-height:1.3}
+#fane-rmg .brokfig .res b{display:block;font-size:31px;font-weight:700;font-variant-numeric:tabular-nums}
+#fane-rmg .brokfig .res .n{display:block;font-size:13.5px;color:#5C6A80;font-weight:400;margin-top:3px}
+#fane-rmg .brokfig.smal .brk{min-width:210px}
+#fane-rmg .brokfig.smal .tall{font-size:19px}
+#fane-rmg .brokfig.smal .res b{font-size:25px}
+#fane-rmg .stat.s-sig{background:var(--sig-bg);color:var(--sig)}
+#fane-rmg .stat.s-stoy{background:var(--stoy-bg);color:var(--stoy)}
+#fane-rmg .stat.s-tstat{background:var(--tstat-bg);color:var(--tstat)}
+#fane-rmg .stat.s-p{background:var(--pverdi-bg);color:var(--pverdi)}
+#fane-rmg .stat.s-eff{background:var(--eff-bg);color:var(--eff)}
+#fane-rmg table.anova td.c-sig,#fane-rmg table.tt td.c-sig{color:var(--sig);font-weight:700}
+#fane-rmg table.anova td.c-stoy,#fane-rmg table.tt td.c-stoy{color:var(--stoy);font-weight:700}
+#fane-rmg table.anova td.c-tstat,#fane-rmg table.tt td.c-tstat{color:var(--tstat);font-weight:700}
+#fane-rmg table.anova td.c-p,#fane-rmg table.tt td.c-p{color:var(--pverdi);font-weight:700}
+#fane-rmg table.anova td.c-eff,#fane-rmg table.tt td.c-eff{color:var(--eff);font-weight:700}
+#fane-rmg .fargeliste{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:8px;margin-top:8px}
+#fane-rmg .fargeliste div{border-radius:8px;padding:7px 11px;font-size:15px;line-height:1.35}
+#fane-rmg .fargeliste b{display:block;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+#fane-rmg table.anova tr.r-sig td,#fane-rmg table.tt tr.r-sig td{background:var(--sig-bg)}
+#fane-rmg table.anova tr.r-stoy td,#fane-rmg table.tt tr.r-stoy td{background:var(--stoy-bg)}
+#fane-rmg table.anova tr.r-total td,#fane-rmg table.tt tr.r-total td{color:#5F6A7E}
+#fane-rmg table.anova tr.r-total td:first-child{font-weight:700}
+#fane-rmg table.anova tr.r-sig td:first-child{color:var(--sig);font-weight:700}
+#fane-rmg table.anova tr.r-stoy td:first-child{color:var(--stoy);font-weight:700}
+#fane-rmg *{box-sizing:border-box}
+#fane-rmg .wrap{max-width:1000px;margin:0 auto;padding:16px}
+#fane-rmg .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+#fane-rmg h2{color:var(--navy);margin:.2em 0 .5em;font-size:19px}
+#fane-rmg button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+#fane-rmg .btn{background:var(--blue);color:#fff}
+#fane-rmg .btn:hover{background:var(--navy)}
+#fane-rmg .btn2{background:#eef1f7;color:var(--navy)}
+#fane-rmg .btn2:hover{background:var(--light)}
+#fane-rmg .muted{color:#62708a;font-size:16px}
+#fane-rmg canvas{width:100%;display:block}
+#fane-rmg .stat{display:inline-block;background:var(--light);color:var(--navy);border-radius:8px;padding:3px 10px;font-size:15.5px;font-weight:600;margin:3px 4px 3px 0;font-variant-numeric:tabular-nums}
+#fane-rmg .stat.red{background:#fbeceb;color:var(--red)}
+#fane-rmg .stat.green{background:#eaf6ea;color:var(--green)}
+#fane-rmg .sl{display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap}
+#fane-rmg .sl label{min-width:250px;font-weight:600;font-size:16px;color:var(--navy)}
+#fane-rmg .sl input[type=range]{flex:1;min-width:140px}
+#fane-rmg .sl output{min-width:44px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--navy);font-size:17px}
+#fane-rmg .note{background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px;margin-top:10px}
+#fane-rmg .gloss{font-size:15.5px}
+#fane-rmg .gloss b{color:var(--navy)}
+#fane-rmg .keybox{background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:12px 14px;margin:14px 0;font-size:16.5px}
+#fane-rmg .keybox .lbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:4px}
+#fane-rmg .presbtn{position:fixed;right:12px;bottom:12px;z-index:50;background:#fff;color:var(--navy);
+  border:1px solid var(--line);border-radius:20px;padding:7px 14px;font-size:14px;font-weight:700;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer;opacity:.75}
+#fane-rmg .presbtn:hover{opacity:1}
+</style><style>#fane-blandet table.tt td,#fane-blandet table.tt th{padding:5px 10px}#fane-blandet table.tt td:not(:first-child),#fane-blandet table.tt th:not(:first-child){text-align:right}</style>
+<style id="ovbegrep-css">
+.ovkort{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f6f8fa;
+ border:1px solid #dde3e8;border-left:5px solid #C8102E;border-radius:10px;
+ padding:10px 13px;margin:14px 0;font-size:15px}
+.ovkort .ovlbl{font-weight:700;color:#5B6670;letter-spacing:.02em;
+ text-transform:uppercase;font-size:11.5px}
+.ovkort a.ovlenke{display:inline-block;background:#fff;border:1px solid #c7d6ec;
+ border-radius:999px;padding:3px 11px;color:#174A6B;text-decoration:none;font-size:14.5px}
+.ovkort a.ovlenke:hover{background:#eef3fb;border-color:#8fb0d6}
+.ovkort .ovhint{color:#6B767D;font-size:13px}
+</style>
+</head><body>
 <header><h1>Sim 25 · Gjentatte målinger — de samme personene, flere ganger</h1>
-<p>PSY300 · Forelesning 7 · ANOVA for gjentatte målinger: tre eller flere målinger av de samme personene</p></header>
+<p>PSY300 · Forelesning 7 · ANOVA for gjentatte målinger, blandet ANOVA (tid × gruppe) og regresjon mot gjennomsnittet: tre eller flere målinger av de samme personene</p></header>
 <div class="wrap">
 <div class="rad" style="display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 6px">
 <button class="fane on" data-fane="hvorfor">1 · Hvorfor gjentatte målinger?</button>
 <button class="fane" data-fane="sim">2 · Gevinsten: innen mot mellom personer</button>
 <button class="fane" data-fane="tre">3 · Tre tidspunkt: RM-ANOVA</button>
-<button class="fane" data-fane="sfare">4 · Sfærisitet</button>
-<button class="fane" data-fane="posthoc">5 · Post hoc over tid</button>
-<button class="fane" data-fane="ekte">6 · Ekte forløpsdata</button>
-<button class="fane" data-fane="feller">7 · Feller og forutsetninger</button>
+<button class="fane" data-fane="regnskap">4 &middot; Variansregnskapet og effektst&oslash;rrelsen</button>
+<button class="fane" data-fane="sfare">5 · Sfærisitet</button>
+<button class="fane" data-fane="posthoc">6 · Post hoc over tid</button>
+<button class="fane" data-fane="ekte">7 · Ekte forløpsdata</button>
+<button class="fane" data-fane="blandet">8 · Blandet ANOVA: tid × gruppe</button>
+<button class="fane" data-fane="feller">9 · Feller og forutsetninger</button>
+<button class="fane" data-fane="rmg">10 · Regresjon mot gjennomsnittet</button>
+<button class="fane" data-fane="rapport">11 &middot; Slik rapporteres det</button>
 </div>
 <div id="fane-hvorfor">
 <div class="card">
@@ -480,6 +639,36 @@ poenget &mdash; ikke om du traff.</p>
 </div>
 
 <div class="keybox"><span class="lbl">Klar for simuleringen?</span><b>To spørsmål avgjør: er det de samme personene hver gang, og hvor mange målinger er det? Samme personer og tre eller flere målinger — da er det RM-ANOVA.</b></div>
+
+<div class="card" id="kort-modellfeil">
+<h2>&Eacute;n ligning, hele emnet</h2>
+<p>Hver eneste analyse i PSY300 er den samme setningen. Bare modellen vokser.</p>
+<div style="text-align:center;font-size:25px;line-height:1.5;margin:14px 0 6px">
+utfall<sub>i</sub> &nbsp;=&nbsp; <span class="m-sig">modell<sub>i</sub></span>
+&nbsp;+&nbsp; <span class="m-stoy">feil<sub>i</sub></span>
+</div>
+<p style="text-align:center;color:#62708a;font-size:15px;margin:0 0 14px">
+Det modellen treffer, og det den bommer med.</p>
+<p>Det nye her er at modellen f&aring;r vite <b>hvem</b> personen er. Den gjetter tidspunktets gjennomsnitt <i>pluss</i> personens eget niv&aring;. Da forsvinner individforskjellene ut av <span class="m-stoy">feilen</span> &mdash; og det er hele grunnen til at gjentatte m&aring;linger gir mer presise svar.</p>
+<table style="border-collapse:collapse;width:100%;font-size:15.5px;margin-top:10px">
+<tr><th style="border-bottom:1px solid #e2e6ee;padding:5px 8px;text-align:left;color:#4a5568;font-weight:600">Analyse</th>
+<th style="border-bottom:1px solid #e2e6ee;padding:5px 8px;text-align:left;color:#4a5568;font-weight:600">Hva <span class="m-sig">modellen</span> gjetter for hver person</th></tr>
+<tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px"><i>t</i>-test (Sim 16)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">gjennomsnittet i personens gruppe</td></tr>
+<tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Enveis ANOVA (Sim 22)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">gjennomsnittet i personens gruppe</td></tr>
+<tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Faktoriell ANOVA (Sim 24)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">totalgjennomsnitt (grand mean) + rad + kolonne + samspill</td></tr>
+<tr style="background:#eef3fb"><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px"><b>Gjentatte målinger (Sim 25)</b></td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px"><b>tidspunktets snitt + personens eget nivå</b></td></tr>
+<tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Regresjon (Sim 5, Sim 15)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px"><i>b</i><sub>0</sub> + <i>b</i><sub>1</sub><i>x</i><sub>1</sub> + …</td></tr>
+<tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Korrelasjon (Sim 11)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">den rette linja gjennom punktskyen</td></tr>
+</table>
+<p style="color:#62708a;font-size:15px;margin-top:10px">
+I alle seks er <span class="m-stoy">feilen</span> det samme: observert verdi &minus; det modellen gjettet.
+Det er residualen, og det er den vi kvadrerer og summerer n&aring;r vi regner ut
+<i>SS</i><sub>feil</sub>.</p>
+<div class="keybox"><span class="lbl">Sagt p&aring; &eacute;n linje</span>
+<b>Gjentatte m&aring;linger gj&oslash;r ikke modellen sterkere. Den gj&oslash;r feilen mindre.</b></div>
+</div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C10">C10 ANOVA med gjentatte målinger &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-hvorfor -->
 <div id="fane-sim" class="hide">
 
@@ -526,12 +715,15 @@ måletidspunkt, der RM-ANOVA er det eneste alternativet.</p>
 <div class="card docs" id="ordforklaringer">
 <h2>Ordforklaringer</h2>
 <div class="gloss">
+<b>Generalisert eta&sup2; (&eta;<sub>G</sub>&sup2;)</b> &mdash; effektst&oslash;rrelse med <i>SS</i><sub>total</sub> i nevneren, slik at den kan sammenlignes p&aring; tvers av design (fane 4).
+<b>Mellom personer / innen person</b> &mdash; de to delene variasjonen f&oslash;rst splittes i ved gjentatte m&aring;linger (fane 4).
+
 <p><b>ISTDP</b> — intensiv dynamisk korttidsterapi, behandlingen i emnets terapi-RCT (<i>N</i> = 86).<br>
 <b><i>M</i></b> — gjennomsnittet i et utvalg (skrives også x̄). <b>Median</b> = midtverdien når verdiene sorteres. <b>Modus</b> = den hyppigste verdien.<br>
 <b><i>SE</i></b> — standardfeil: hvor mye et estimat ville variert mellom gjentatte utvalg. For et gjennomsnitt: <i>SE</i> = σ/√n.<br>
 <b><i>p</i>-verdi</b> — sannsynligheten for et resultat minst så ekstremt som ditt, <i>gitt at H₀ er sann</i>. Ikke sannsynligheten for at H₀ er sann.<br>
-<b>Statistisk styrke</b> — sannsynligheten for å oppdage en effekt som faktisk finnes (1 − type II-risikoen). Se Sim 20.<br>
-<b><i>t</i></b> — testobservator for gjennomsnitt: forskjell delt på standardfeil. <b><i>t</i>-fordelingen</b> er litt tyngre i halene enn normalfordelingen ved lav <i>df</i>.<br>
+<b>Statistisk styrke</b> — sannsynligheten for å oppdage en effekt som faktisk finnes (1 − type II-risikoen). Se Sim 7, fane 2.<br>
+<b><i>t</i></b> — teststatistikk for gjennomsnitt: forskjell delt på standardfeil. <b><i>t</i>-fordelingen</b> er litt tyngre i halene enn normalfordelingen ved lav <i>df</i>.<br>
 <b><i>r</i></b> — Pearsons korrelasjon: styrken på den <i>lineære</i> sammenhengen mellom to variabler (−1 til +1). <b>Spearmans rho</b> gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.<br>
 <b>Innen-person-design (gjentatte målinger)</b> — samme personer måles flere ganger, slik at hver person er sin egen kontroll. Med to målinger: paret <i>t</i>-test (Sim 16, fane 10). Med tre eller flere: <b>RM-ANOVA</b> (repeated measures) — denne appen.<br>
 <b>partiell η²</b> — andelen av variasjonen som blir igjen når personleddet er trukket ut, som henger sammen med tid. Den er derfor ikke sammenlignbar med η² fra en analyse med uavhengige grupper.<br>
@@ -540,6 +732,8 @@ måletidspunkt, der RM-ANOVA er det eneste alternativet.</p>
 </div>
 
 
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C10">C10 ANOVA med gjentatte målinger &rarr;</a> <a class="ovlenke" data-begrep="B2">B2 Utvalgsfordeling og standardfeil &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-sim -->
 
 <div id="fane-tre" class="hide">
@@ -589,7 +783,121 @@ Kjører du det som tre <i>uavhengige</i> grupper, havner SS<sub>person</sub> i f
 <div class="n"><b><i>F</i> faller fra 127.6 til 59.8</b> &mdash; under halvparten. Konklusjonen
 overlever her fordi effekten er enorm. Med en typisk psykologieffekt ville den ikke gjort det.</div></div>
 </div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C10">C10 ANOVA med gjentatte målinger &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-tre -->
+
+<div id="fane-regnskap" class="hide">
+
+<div class="card">
+<h2>Hvor ble variasjonen av?</h2>
+<p>Enveis ANOVA deler variasjonen i <b>to</b>: modell og feil. RM-ANOVA deler den i
+<b>tre</b> &mdash; og det ekstra trinnet er hele grunnen til at designet er sterkere.</p>
+<canvas id="rgCv" height="300"></canvas>
+<div class="rad" style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 2px">
+<button class="btn2" id="rgTrinn">Neste trinn</button>
+<button class="btn2" id="rgNull">Start forfra</button>
+</div>
+<div class="note" id="rgTekst"></div>
+<p class="muted" style="font-size:14.5px;margin-top:8px">
+ISTDP-gruppa, <i>Depression</i> ved oppstart, etter behandling og tre m&aring;neder senere.
+<i>n</i> = 36 med komplette data p&aring; alle tre tidspunkt. Alle kvadratsummene er regnet ut
+fra r&aring;fila i koden under figuren, ikke skrevet inn.</p>
+</div>
+
+<div class="card">
+<h2>Det samme i tall</h2>
+<table class="hvnaar">
+<tr><th>Kilde</th><th><i>SS</i></th><th><i>df</i></th><th><i>MS</i></th><th>Hva det er</th></tr>
+<tr><td><b>Totalt</b></td><td>5842.92</td><td>107</td><td></td>
+    <td>All variasjon i de 108 m&aring;lingene</td></tr>
+<tr><td>&nbsp;&nbsp;Mellom personer</td><td>1876.92</td><td>35</td><td>53.63</td>
+    <td>At noen gjennomg&aring;ende er mer deprimerte enn andre</td></tr>
+<tr><td>&nbsp;&nbsp;Innen person</td><td>3966.00</td><td>72</td><td></td>
+    <td>At den enkelte endrer seg over tid</td></tr>
+<tr class="na"><td>&nbsp;&nbsp;&nbsp;&nbsp;Tid (modell)</td><td>3112.06</td><td>2</td><td>1556.03</td>
+    <td>Endringen som er felles for alle</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Residual (feil)</td><td>853.94</td><td>70</td><td>12.20</td>
+    <td>At de ikke endrer seg helt likt</td></tr>
+</table>
+<div class="formula" style="margin-top:12px">
+<i>F</i> = <i>MS</i><sub>tid</sub> / <i>MS</i><sub>residual</sub> =
+1556.03 / 12.20 = <b>127.55</b> &nbsp;&middot;&nbsp; <i>F</i>(2, 70), <i>p</i> &lt; .001
+</div>
+<div class="keybox"><span class="lbl">Legg merke til nevneren</span>
+<b>De 1876.92 som skiller personene fra hverandre, er <i>ikke med</i> i feilleddet.
+I et mellomgruppedesign ville de ligget der og gjort <i>F</i> mye mindre.
+Det er gevinsten, i &eacute;tt tall.</b></div>
+</div>
+
+<div class="card">
+<h2>Effektst&oslash;rrelse: tre tall, og bare to av dem er til &aring; stole p&aring;</h2>
+<p>Her ligger en felle som er lett &aring; g&aring; i, fordi JASP tilbyr knappene uten &aring;
+advare.</p>
+<table class="hvnaar">
+<tr><th>M&aring;l</th><th>Formel</th><th>Her</th><th>Problemet</th></tr>
+<tr><td><b>&eta;<sub>p</sub>&sup2;</b><br><span class="muted" style="font-size:14px">partiell eta&sup2;</span></td>
+    <td><i>SS</i><sub>tid</sub> / (<i>SS</i><sub>tid</sub> + <i>SS</i><sub>res</sub>)</td>
+    <td><span class="stat red">.785</span></td>
+    <td>Lar som om personforskjellene ikke finnes. Blir kunstig h&oslash;y i
+        akkurat dette designet, og kan <b>ikke</b> sammenlignes med &eta;<sub>p</sub>&sup2;
+        fra en mellomgruppestudie.</td></tr>
+<tr><td><b>&eta;<sub>G</sub>&sup2;</b><br><span class="muted" style="font-size:14px">generalisert eta&sup2;</span></td>
+    <td><i>SS</i><sub>tid</sub> / <i>SS</i><sub>total</sub></td>
+    <td><span class="stat green">.533</span></td>
+    <td>Beholder personforskjellene i nevneren, og er derfor sammenlignbar
+        p&aring; tvers av design. Det er den Olejnik og Algina anbefaler.</td></tr>
+<tr class="na"><td><b>&omega;&sup2;</b><br><span class="muted" style="font-size:14px">omega&sup2;</span></td>
+    <td colspan="2">egen formel for gjentatte m&aring;linger &mdash; se under:
+        <span class="stat green">.524</span></td>
+    <td>Minst skjevt av de tre, men formelen er <b>ikke</b> den du l&aelig;rte i Sim 22.</td></tr>
+</table>
+
+<div class="formula" style="margin-top:12px">
+&omega;&sup2; = (<i>SS</i><sub>tid</sub> &minus; <i>df</i><sub>tid</sub> &middot; <i>MS</i><sub>res</sub>)
+&nbsp;/&nbsp; (<i>SS</i><sub>total</sub> + <i>MS</i><sub>mellom personer</sub>)<br>
+<span class="muted" style="font-size:15px">
+= (3112.06 &minus; 2 &middot; 12.20) / (5842.92 + 53.63) = <b>.524</b></span>
+</div>
+<p style="margin-top:10px">Nevneren er det som skiller: i enveis ANOVA st&aring;r det
+<i>SS</i><sub>total</sub> + <i>MS</i><sub>feil</sub>, her st&aring;r det
+<i>SS</i><sub>total</sub> + <i>MS</i><sub>mellom personer</sub>. Bruker du
+mellomgruppeformelen p&aring; RM-data, regner du p&aring; feil varianskilde &mdash; selv
+om tallet tilfeldigvis kan havne n&aelig;r det riktige.</p>
+
+<div class="keybox"><span class="lbl">Sagt p&aring; &eacute;n linje</span>
+<b>&eta;<sub>p</sub>&sup2; = .785 og &eta;<sub>G</sub>&sup2; = .533 beskriver den samme
+effekten. Forskjellen er bare hva som st&aring;r i nevneren &mdash; og derfor m&aring; du
+alltid skrive hvilket m&aring;l du har brukt.</b></div>
+</div>
+
+<div class="card">
+<h2>Hva du gj&oslash;r med det</h2>
+<div class="hvgrid">
+<div class="hvkort hver"><h3>&#10003; Alltid</h3><ul>
+<li><b>Skriv hvilket effektm&aring;l du bruker.</b> «&eta;<sub>p</sub>&sup2; = .79» uten
+merkelapp er ikke tolkbart.
+<span class="eks">JASP kaller det «&eta;&sup2;» i menyen, men regner partiell &eta;&sup2;.</span></li>
+<li><b>Se p&aring; <i>MS</i><sub>mellom personer</sub> f&oslash;r du gleder deg.</b> Er den stor,
+kommer mye av den store <i>F</i>-en fra designet, ikke fra tiltaket.</li>
+<li><b>Bruk &eta;<sub>G</sub>&sup2; n&aring;r du skal sammenligne</b> med en studie som
+hadde et annet design.</li>
+</ul></div>
+<div class="hvkort hvikke"><h3>&#10007; Aldri</h3><ul>
+<li><b>Sammenligne &eta;<sub>p</sub>&sup2; p&aring; tvers av design.</b> .79 her og .79 i en
+mellomgruppestudie er ikke samme st&oslash;rrelse.</li>
+<li><b>Bruke &omega;&sup2;-formelen fra enveis ANOVA.</b> Nevneren er en annen.</li>
+<li><b>Lese en stor <i>F</i> som «stor effekt».</b> <i>F</i> avhenger av designet.
+Effektst&oslash;rrelsen er der nettopp fordi <i>F</i> ikke holder.</li>
+</ul></div>
+</div>
+<p class="muted" style="font-size:14.5px;margin-top:10px">
+Field, van Doorn &amp; Wagenmakers, kapittel 14 &middot;
+Olejnik, S. &amp; Algina, J. (2003). Generalized eta and omega squared statistics.
+<i>Psychological Methods</i>, 8, 434&ndash;447.</p>
+</div>
+
+</div><!-- /fane-regnskap -->
 
 <div id="fane-sfare" class="hide">
 <div class="card">
@@ -625,18 +933,42 @@ mellom 0 og 1</b> &mdash; epsilon (ε). Jo verre bruddet, jo mindre ε, jo stren
 <tr><th>Korreksjon</th><th>Når</th><th>I terapidataene</th></tr>
 <tr class="na"><td><b>Greenhouse-Geisser</b></td><td>standardvalget, litt konservativ</td>
 <td>ε = <b>.877</b> → <i>F</i>(1.75, 61.4)</td></tr>
-<tr><td>Huynh-Feldt</td><td>mindre konservativ; brukes når ε &gt; .75</td><td>litt høyere ε</td></tr>
-<tr><td>Ingen</td><td>bare når Mauchly er klart ikke-signifikant</td><td><i>F</i>(2, 70)</td></tr>
+<tr><td><b>Huynh-Feldt</b></td><td>mindre konservativ; anbefales når GG-ε &gt; .75, fordi GG da straffer for hardt</td>
+<td>ε = <b>.920</b> → <i>F</i>(1.84, 64.4)</td></tr>
+<tr><td>Ingen</td><td>bare med to tidspunkt &mdash; da finnes det ingenting å bryte</td><td><i>F</i>(2, 70)</td></tr>
 </table>
 
 <div class="note" style="margin-top:12px">Her endrer korreksjonen ingenting i konklusjonen
 (<i>p</i> &lt; .001 begge veier). <b>Det er det normale.</b> Korreksjonen betyr noe når
 <i>p</i> ligger nær .05 &mdash; og da betyr den alt.</div>
 
+<div class="boks gul" style="margin-top:12px">
+<h3>Den praktiske regelen: ikke la Mauchly bestemme</h3>
+<p style="font-size:16.5px;line-height:1.55;margin:4px 0 0">
+Framgangsmåten i mange lærebøker &mdash; «kjør Mauchly, korriger bare hvis den er
+signifikant» &mdash; er dårlig råd, og grunnen er at <b>Mauchlys test har samme svakhet
+som alle forutsetningstester</b>: ved lite utvalg oppdager den ikke brudd som faktisk
+finnes, og ved stort utvalg flagger den brudd som ikke betyr noe.</p>
+<p style="font-size:16.5px;line-height:1.55;margin:8px 0 0">
+Rapporter den gjerne, men <b>korriger uansett</b>. Korreksjonen koster nesten ingenting når
+sfærisiteten holder (da er ε nær 1, og frihetsgradene knapt endres), og redder deg når den
+ikke gjør det. Her: ε = .877 flytter <i>p</i> fra 4.5 &middot; 10<sup>&minus;24</sup> til
+2.1 &middot; 10<sup>&minus;21</sup>. Begge er <i>p</i> &lt; .001.</p>
+<p style="font-size:16.5px;line-height:1.55;margin:8px 0 0">
+<b>Og med bare to tidspunkt:</b> da finnes det én differanse, &eacute;n varians, og
+sfærisitet er ikke et spørsmål. JASP viser ingen Mauchly-tabell, og det er riktig.</p>
+</div>
+
+<div class="note" style="margin-top:12px">Frihetsgradene som korrigeres, er de du så i
+<b>fane 4</b>: <i>df</i><sub>tid</sub> = 2 og <i>df</i><sub>residual</sub> = 70. Begge
+ganges med ε &mdash; 2 &middot; .877 = 1.75 og 70 &middot; .877 = 61.4.</div>
+
 <div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
 <b>Sfærisitet handler om differansene, ikke om målingene. Er den brutt, er <i>F</i>-testen for
 snill mot deg &mdash; og Greenhouse-Geisser strammer den inn ved å ta frihetsgrader.</b></div>
 </div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C10">C10 ANOVA med gjentatte målinger &rarr;</a> <a class="ovlenke" data-begrep="C13">C13 Forutsetninger og residualer &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-sfare -->
 
 <div id="fane-posthoc" class="hide">
@@ -664,6 +996,8 @@ måletidspunkt.</p>
 Tukey ikke tilbys her &mdash; den forutsetter uavhengige grupper. Bruk <b>Bonferroni</b> eller
 <b>Holm</b>.</div>
 </div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C10">C10 ANOVA med gjentatte målinger &rarr;</a> <a class="ovlenke" data-begrep="B5">B5 Type I-feil, alfa og multiple tester &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-posthoc -->
 
 <div id="fane-ekte" class="hide">
@@ -694,7 +1028,7 @@ kontrollgruppa finnes: uten den ville ISTDP-gruppas 13 poeng sett ut som mer enn
 <p style="font-size:16.5px;line-height:1.55;margin-top:12px">Det riktige svaret på «virker
 terapien?» er ikke noen av de to analysene alene. Det er <b>forskjellen mellom dem</b> &mdash;
 en <b>blandet ANOVA</b> med tid innen person og gruppe mellom personer, der interaksjonen
-tid × gruppe er hele funnet.</p>
+tid × gruppe er hele funnet. Den bygges opp i <b>fane 7</b>.</p>
 </div>
 
 <div class="card">
@@ -703,7 +1037,85 @@ tid × gruppe er hele funnet.</p>
 signifikante. Det er en styrke når du leter etter små effekter, og en felle når du skal tolke
 dem.</b></div>
 </div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C10">C10 ANOVA med gjentatte målinger &rarr;</a> <a class="ovlenke" data-begrep="D2">D2 Å lese JASP-output &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-ekte -->
+
+<div id="fane-blandet" class="hide">
+<div class="card">
+<h2>Tre spørsmål i ett design</h2>
+<p class="muted">Terapistudien har <b>både</b> et innen-person-ledd (tid: oppstart, etter, 3 måneder) og et mellom-person-ledd (gruppe: ISTDP eller venteliste). Da heter analysen <b>blandet ANOVA</b> (<i>mixed ANOVA</i>, eller <i>split-plot</i>). Den stiller tre spørsmål samtidig — men bare ett av dem svarer på «virker terapien?». Trykk deg gjennom dem.</p>
+<div class="rad" style="gap:6px;flex-wrap:wrap" id="blSpm">
+<button class="btn2 on" data-s="data">Dataene</button>
+<button class="btn2" data-s="tid">Hovedeffekt: tid</button>
+<button class="btn2" data-s="gruppe">Hovedeffekt: gruppe</button>
+<button class="btn2" data-s="int">Interaksjonen tid × gruppe</button>
+</div>
+<label class="chk" style="margin-left:0"><input type="checkbox" id="blIndiv"> vis hver pasient som en tynn linje</label>
+<canvas id="blCv" height="330"></canvas>
+<div id="blLes" class="note"></div>
+</div>
+
+<div class="card">
+<h2>Tabellen JASP gir deg</h2>
+<p class="muted"><code>Psykoterapi_RCT_data_real_N75_completers</code> · de 75 som har alle tre målingene (36 ISTDP, 39 venteliste). Regnet her i appen, med type III-kvadratsummer som i JASP. Fargene er de samme som i resten av emnet: <span class="k-sig">grønt</span> er effektene, <span class="k-stoy">rødt</span> er feilleddene de måles mot.</p>
+<div class="rad" style="gap:12px;flex-wrap:wrap">
+<label class="chk" style="margin-left:0"><input type="checkbox" id="blGG" checked> Greenhouse-Geisser-korreksjon</label>
+</div>
+<div id="blTab"></div>
+<div id="blTabLes" class="note"></div>
+</div>
+
+<div class="card">
+<h2>Bygg interaksjonen selv</h2>
+<p class="muted">Nå bestemmer du hva som er sant. Samme design — 36 og 39 pasienter, tre målinger — men simulert. Legg merke til at <b>tid</b> kan bli svært signifikant uten at terapien gjør noe som helst, bare fordi <i>alle</i> blir bedre.</p>
+<div class="rad" style="gap:14px;flex-wrap:wrap">
+<label class="chk" style="margin-left:0">Fall i <b>begge</b> grupper (tid, naturlig bedring): <output id="blTidUt" class="stat">2</output>
+<input type="range" id="blTid" min="0" max="10" step="0.5" value="2" style="width:150px;vertical-align:middle"></label>
+<label class="chk">Ekstra fall i ISTDP (terapieffekt): <output id="blBehUt" class="stat">8</output>
+<input type="range" id="blBeh" min="0" max="15" step="0.5" value="8" style="width:150px;vertical-align:middle"></label>
+<label class="chk">Forskjell ved oppstart: <output id="blStartUt" class="stat">0</output>
+<input type="range" id="blStart" min="-6" max="6" step="0.5" value="0" style="width:130px;vertical-align:middle"></label>
+</div>
+<div class="rad" style="gap:8px;flex-wrap:wrap">
+<button class="btn" id="blSimNy">Trekk nye pasienter</button>
+<button class="btn2" data-bp="0,0,0">Ingenting skjer</button>
+<button class="btn2" data-bp="5,0,0">Alle blir bedre, terapien gjør ingenting</button>
+<button class="btn2" data-bp="0,0,5">Gruppene var ulike fra start</button>
+<button class="btn2" data-bp="1,9,0">Terapien virker</button>
+</div>
+<canvas id="blSimCv" height="260"></canvas>
+<div id="blSimTab"></div>
+<div id="blSimLes" class="note"></div>
+</div>
+
+<div class="card">
+<h2>Samme svar, enklere analyse: endringsskåren</h2>
+<p class="muted">Med bare to måletidspunkter finnes en snarvei som gir <i>nøyaktig</i> samme svar på interaksjonen: regn ut hver pasients endring (etter minus før), og sammenlign endringen mellom gruppene med en uavhengig <i>t</i>-test. Det er denne tanken arbeidskravet bruker når endringsskåren er avhengig variabel.</p>
+<div class="rad" style="gap:12px;flex-wrap:wrap">
+<label class="chk" style="margin-left:0">Sammenlign
+<select id="blPar">
+<option value="0,1" selected>oppstart og etter behandling</option>
+<option value="0,2">oppstart og 3 måneder</option>
+<option value="1,2">etter behandling og 3 måneder</option>
+</select></label>
+</div>
+<div id="blEndr"></div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>I en blandet ANOVA er det interaksjonen tid × gruppe som svarer på «virker behandlingen?». Hovedeffekten av tid blander behandlingen sammen med alt annet som skjer over tid, og hovedeffekten av gruppe blander inn forskjeller som fantes før behandlingen startet.</b>
+<details class="mer"><summary>Mer om dette: forutsetninger, rapportering og lenken til faktoriell ANOVA</summary><div>
+<b>Samme logikk som faktoriell ANOVA.</b> En blandet ANOVA er et 2 × 3-design der den ene faktoren er målt på de samme personene. Å lese interaksjonsplottet er nøyaktig som i Sim 24: parallelle linjer betyr ingen interaksjon, linjer som sprikes betyr at effekten av tid avhenger av gruppe.
+<div style="margin-top:8px"><b>To feilledd, ikke ett.</b> Gruppe testes mot variasjonen <i>mellom personer</i> innen gruppene (samme som en vanlig enveis-ANOVA på personenes gjennomsnitt). Tid og interaksjonen testes mot variasjonen <i>innen personer</i> — det er her gevinsten fra fane 2 hentes ut, fordi de stabile forskjellene mellom pasientene er trukket ut.</div>
+<div style="margin-top:8px"><b>Forutsetninger:</b> sfærisitet for innen-leddet (fane 4, med Greenhouse-Geisser som løsning), lik varians mellom gruppene på hvert tidspunkt (Levenes test i JASP), og normalfordelte residualer. Og frafall: bare de 75 som har alle tre målingene er med — de 11 som falt fra, er borte fra hele analysen (se Sim 32, fane 2).</div>
+<div style="margin-top:8px"><b>I JASP:</b> ANOVA &rarr; Repeated Measures ANOVA. Definer tid som innen-faktor med tre nivåer, legg de tre depresjonsvariablene inn i cellene, og legg gruppe inn som <i>Between Subject Factor</i>.</div>
+<div style="margin-top:8px" id="blRapport"></div>
+</div></details></div></div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C10">C10 ANOVA med gjentatte målinger &rarr;</a> <a class="ovlenke" data-begrep="C9">C9 Interaksjon og faktorielle design &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div><!-- /fane-blandet -->
+
 
 <div id="fane-feller" class="hide">
 <div class="card">
@@ -718,7 +1130,11 @@ Den nye. Mauchlys test, og Greenhouse-Geisser som løsning. Se fane 4.</div>
 
 <div class="steg" style="border-left-color:#2E7D32"><div class="tit">3 · Normalfordelte differanser</div>
 Som i paret <i>t</i>-test: det er <b>differansene</b> som skal være tilnærmet normalfordelte,
-ikke målingene. Rangbasert reserve: <b>Friedman</b>.</div>
+ikke målingene. Rangbasert reserve: <b>Friedman</b>.
+<div class="n" style="margin-top:6px">Bytter du til Friedman, må oppfølgingen også være
+rangbasert: <b>Conovers post hoc</b>, som ligger rett under avkrysningsboksen i JASP.
+Effektstørrelsen bytter samtidig &mdash; Friedman gir <b>Kendalls <i>W</i></b>, ikke η².
+Se <a href="PSY300_Sim_Tiltakslaben.html#fane=rang">Sim 33 fane 4</a>.</div></div>
 </div>
 
 <div class="card">
@@ -740,14 +1156,150 @@ ikke &mdash; der er tid tid, og du trenger en kontrollgruppe i stedet.</div></di
 <div class="steg"><div class="tit">Regresjon mot gjennomsnittet</div>
 Rekrutterer du folk fordi de skårer høyt, vil de skåre lavere neste gang uansett hva du gjør.
 <div class="n">Det er ikke en effekt av behandlingen. Det er den eneste grunnen til at
-ventelistegruppa i tabellen over falt 1.2 poeng. Se <b>Sim 26 · Regresjon mot gjennomsnittet</b>.</div></div>
+ventelistegruppa i tabellen over falt 1.2 poeng. Se <b>fane 9 · Regresjon mot gjennomsnittet</b>.</div></div>
 
 <div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
 <b>Gjentatte målinger kjøper deg styrke, og betaler med nye trusler: sfærisitet, frafall,
 rekkefølge og regresjon mot gjennomsnittet. Ingen av dem er statistiske problemer &mdash; alle
 fire er designproblemer.</b></div>
 </div>
-</div><!-- /fane-feller -->
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C13">C13 Forutsetninger og residualer &rarr;</a> <a class="ovlenke" data-begrep="C10">C10 ANOVA med gjentatte målinger &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+<div id="fane-rmg" class="hide">
+<div class="card innlemmet"><div class="muted" style="font-size:14px">Tidligere egen app (Sim 26 · Regresjon mot gjennomsnittet). Den tredje fellen fra fane 8, simulert med ekte ventelistepasienter.</div></div>
+
+
+<div class="card">
+<h2>Oppsett</h2>
+<p class="muted">200 personer måles to ganger <b>uten tiltak imellom</b>. Vi «rekrutterer» de sykeste ved pre (slik en klinisk studie gjør) og følger akkurat dem.</p>
+<div class="sl"><label>Datakilde</label>
+<select id="rmg_src" style="flex:1;min-width:230px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:16px;font-family:inherit">
+<option value="real" selected>Ekte ventelistepasienter (<i>N</i> = 5 000): Depresjon pre → 3 mnd (ingen behandling)</option>
+<option value="sim">Simulert (velg reliabilitet selv)</option>
+</select></div>
+<div class="sl" id="rmg_relRow" style="display:none"><label>Test–retest-korrelasjon (reliabilitet)</label><input type="range" id="rmg_rel" min="0.2" max="0.95" step="0.05" value="0.7"><output id="rmg_relOut">0.70</output></div>
+<div id="rmg_realInfo" class="note">Ventelistearmen i populasjonen (<i>N</i> = 5 000): ingen behandling mellom pre og 3 måneder. Test–retest-korrelasjonen i de ekte dataene er <i>r</i> = .51, og hele gruppen driver bare −1.2 poeng. Alt utover det hos de «rekrutterte» er regresjon mot gjennomsnittet.</div>
+<div class="sl"><label>Rekruttér de sykeste …</label><input type="range" id="rmg_cut" min="10" max="50" step="5" value="25"><output id="rmg_cutOut">25 %</output></div>
+<button class="btn" id="rmg_run">Trekk nye personer og vis</button>
+<div id="rmg_out"></div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>Velger du ut de mest ekstreme ved første måling, vil de i snitt ligge nærmere gjennomsnittet ved neste, helt uten behandling. Uten kontrollgruppe kan du ikke skille denne effekten fra at tiltaket virker.</b></div></div>
+
+<div class="card">
+<h2>Fra pre til post (uthevet: de som ble «rekruttert»)</h2>
+<canvas id="rmg_cv" height="330"></canvas>
+<div class="note"><b>Poenget:</b> en ekstrem pre-skår er dels sant nivå, dels uflaks i målingen, og uflaksen gjentar seg ikke. Gruppen som velges fordi den er ekstrem, flytter seg derfor mot gjennomsnittet helt uten tiltak. Jo lavere test–retest-korrelasjon, desto større «spøkelsesbedring». Med de <b>ekte ventelistepasientene</b> ser du det direkte: de sykeste 25 % «bedres» med ~3 poeng på 3 måneder helt uten behandling. Det er derfor et pre–post-design <b>uten kontrollgruppe</b> ikke kan skille behandling fra artefakt.</div>
+</div>
+
+<div class="card docs" id="rmg_ordforklaringer">
+<h2>Ordforklaringer</h2>
+<div class="gloss">
+<p><b><i>M</i></b> — gjennomsnittet i et utvalg (skrives også x̄). <b>Median</b> = midtverdien når verdiene sorteres. <b>Modus</b> = den hyppigste verdien.<br>
+<b><i>p</i>-verdi</b> — sannsynligheten for et resultat minst så ekstremt som ditt, <i>gitt at H₀ er sann</i>. Ikke sannsynligheten for at H₀ er sann.<br>
+<b><i>r</i></b> — Pearsons korrelasjon: styrken på den <i>lineære</i> sammenhengen mellom to variabler (−1 til +1). <b>Spearmans rho</b> gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.<br>
+<b>Reliabilitet</b> — hvor stor andel av den målte variansen som er sann variasjon og ikke målefeil (0–1).<br>
+<b>Regresjon mot gjennomsnittet</b> — at ekstreme skårer ved første måling i snitt ligger nærmere gjennomsnittet ved neste måling, helt uten behandling.</p>
+</div>
+</div>
+
+
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="A6">A6 Artefakter: regresjon mot snittet og områdebegrensning &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+<div id="fane-rapport" class="hide">
+<div class="card">
+<h2>Rekkefølgen i en rapport om gjentatte målinger</h2>
+<div class="note"><b>1 &middot; Si hva designet er, før tallene.</b> «Depresjon ble målt ved tre
+tidspunkt (før, etter, oppfølging) hos de samme 60 deltakerne.» Antall tidspunkt, antall personer,
+og om det også er en gruppefaktor.</div>
+<div class="note"><b>2 &middot; Sfærisitet først.</b> Mauchlys test, og hvilken korreksjon du brukte
+hvis den var brutt. Greenhouse&ndash;Geisser gir desimale frihetsgrader &mdash; oppgi dem som de er,
+<i>F</i>(1.62, 95.6).</div>
+<div class="note"><b>3 &middot; Hovedeffekten av tid:</b> <i>F</i> med frihetsgrader, eksakt
+<i>p</i>, og partiell &eta;². Si hvilken korreksjon tallene gjelder.</div>
+<div class="note"><b>4 &middot; Er det en gruppefaktor: interaksjonen er hovedresultatet.</b>
+«Virker behandlingen?» er <b>tid &times; gruppe</b>, ikke hovedeffekten av tid. Begge gruppene blir
+som regel bedre over tid uansett.</div>
+<div class="note"><b>5 &middot; Post hoc over tid</b> med korrigerte <i>p</i>-verdier, og si hvilken
+korreksjon. Oppgi gjennomsnitt og <i>SD</i> ved hvert tidspunkt, slik at leseren ser retningen.</div>
+<div class="note"><b>6 &middot; Nevn regresjon mot gjennomsnittet</b> hvis deltakerne ble valgt ut
+på høye skårer. Da vil skårene falle ved neste måling uansett hva du gjør.</div>
+</div>
+
+<div class="card">
+<h2>To ferdige setninger, i APA-stil</h2>
+<p class="muted">Først ren RM-ANOVA, så blandet design med gruppe. Tallene er eksempler &mdash;
+formen er det du skal kopiere.</p>
+
+<div class="note" style="font-size:16.5px;background:#fff"><b>Ren RM-ANOVA (ett utvalg, tre tidspunkt)</b><br>
+Mauchlys test indikerte brudd på sfærisitetsantakelsen, &chi;²(2) = 9.41, <i>p</i> = .009, så
+frihetsgradene ble korrigert med Greenhouse&ndash;Geisser (&epsilon; = .81). Depresjonsskåren endret
+seg signifikant over de tre tidspunktene, <i>F</i>(1.62, 95.6) = 18.34, <i>p</i> &lt; .001,
+partiell &eta;² = .24. Parvise sammenligninger med Holm-korreksjon viste nedgang fra før
+(<i>M</i> = 24.1, <i>SD</i> = 6.2) til etter (<i>M</i> = 18.7, <i>SD</i> = 5.9), <i>p</i> &lt; .001,
+mens forskjellen fra etter til oppfølging (<i>M</i> = 18.1, <i>SD</i> = 6.1) ikke var signifikant,
+<i>p</i> = .42.</div>
+
+<div class="note" style="font-size:16.5px;background:#fff"><b>Blandet ANOVA (tid &times; gruppe)</b><br>
+En blandet ANOVA med tid (tre nivåer, innen) og betingelse (terapi mot venteliste, mellom) viste en
+signifikant hovedeffekt av tid, <i>F</i>(1.71, 99.2) = 21.06, <i>p</i> &lt; .001, partiell
+&eta;² = .27, og en signifikant interaksjon mellom tid og betingelse,
+<i>F</i>(1.71, 99.2) = 7.88, <i>p</i> = .001, partiell &eta;² = .12. Begge gruppene bedret seg, men
+terapigruppen falt mer enn ventelistegruppen. Hovedeffekten av betingelse var ikke signifikant,
+<i>F</i>(1, 58) = 2.11, <i>p</i> = .15.</div>
+
+<div class="note"><b>Legg merke til:</b> i den blandede modellen er det <b>interaksjonen</b> som
+svarer på om behandlingen virket. Hovedeffekten av tid sier bare at alle ble bedre &mdash; noe som
+skjer i nesten enhver forløpsstudie, behandling eller ei.</div>
+</div>
+
+<div class="card">
+<h2>De vanligste feilene</h2>
+<div class="hvgrid">
+<div class="hvkort hvikke"><h3>✗ Dette trekker ned</h3><ul>
+<li><b>Hovedeffekten av tid presentert som behandlingseffekt.</b> Den vanligste feilen i
+forløpsstudier. Svaret ligger i interaksjonen.</li>
+<li><b>Sfærisitet ikke nevnt.</b> Med tre eller flere tidspunkt må den omtales, uansett utfall.</li>
+<li><b>Ukorrigerte frihetsgrader oppgitt etter en korreksjon.</b> Bruker du
+Greenhouse&ndash;Geisser, skal de desimale frihetsgradene stå.</li>
+<li><b>Mange parede <i>t</i>-tester uten korreksjon</b> i stedet for post hoc.</li>
+<li><b>Regresjon mot gjennomsnittet oversett</b> når utvalget ble valgt på ekstremskårer.</li>
+</ul></div>
+<div class="hvkort hver"><h3>✓ Dette løfter</h3><ul>
+<li><b>Et forløpsplott med alle tidspunktene</b> og feilstolper.</li>
+<li><b><i>M</i> og <i>SD</i> ved hvert tidspunkt</b>, ikke bare testresultatet.</li>
+<li><b>Partiell &eta;²</b> for hver effekt, med en setning om hva den betyr.</li>
+<li><b>Frafall oppgitt</b> &mdash; hvor mange som manglet ved hvert tidspunkt, og hvordan det ble
+håndtert.</li>
+<li><b>En setning om designets begrensning</b>: uten randomisering er interaksjonen heller ikke
+årsak.</li>
+</ul></div>
+</div>
+</div>
+
+<div class="card">
+<h2>Hvor dette hører hjemme i de andre appene</h2>
+<p class="muted">
+<a href="PSY300_Sim_Anova.html#fane=rapport">Sim 22 &middot; Enveis-ANOVA, fane 8</a> er
+grunnformen: &eacute;n faktor, uavhengige grupper.
+<a href="PSY300_Sim_Ttesten.html#fane=paret">Sim 16 &middot; fane 10</a> er to tidspunkt &mdash;
+paret <i>t</i>-test er RM-ANOVA med to nivåer.
+<a href="PSY300_Sim_Faktoriell.html#fane=rapport">Sim 24 &middot; fane 13</a> viser
+interaksjonsrapportering når begge faktorene er mellom personer.
+<a href="PSY300_Sim_Tiltakslaben.html">Sim 33</a> er hva du skriver når sfærisiteten ryker.</p>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>I et forløpsdesign med kontrollgruppe er behandlingseffekten <b>interaksjonen</b> tid &times;
+gruppe. Hovedeffekten av tid viser bare at alle endret seg &mdash; og det gjør de nesten
+alltid.</b></div></div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="D4">D4 Å lese en resultatdel (APA) &rarr;</a><a class="ovlenke" data-begrep="D2">D2 Å lese JASP-output &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div><!-- /fane-rmg -->
+<!-- /fane-feller -->
 
 
 </div>
@@ -809,7 +1361,7 @@ function tests(pre,post){
    Tilsvarende er enveis ANOVA paa to grupper F = t^2 med df (1, 2n-2). Vi rapporterer
    derfor det samme regnestykket paa F-form, saa fane 2 og fane 3 snakker samme spraak. */
 function rapport(t,tittel){
-  const chip=(p)=>'<span class="stat '+(p<0.05?'green':'red')+'">p = '+(p<0.001?'&lt; 0.001':fmt(p,3))+(p<0.05?' ✓':' (ikke sig.)')+'</span>';
+  const chip=(p)=>'<span class="stat '+(p<0.05?'green':'red')+'">p = '+(p<0.001?'&lt; .001':fmt(p,3).replace(/^0/,''))+(p<0.05?' ✓':' (ikke sig.)')+'</span>';
   const rad=(lab,farge,Fv,df2,p,tv)=>
     '<b style="color:'+farge+'">'+lab+'</b><br>'+
     '<span class="stat"><i>F</i>(1, '+df2+') = '+fmt(Fv)+'</span>'+chip(p)+
@@ -901,7 +1453,7 @@ function showReal(){
   $('tests').innerHTML=rapport(t,'<b>EKTE DATA · ISTDP, <i>n</i> = 36</b>');
   const rr=0.5;
   const seD=Math.sqrt((t.s1**2+t.s2**2-2*rr*t.s1*t.s2)/36), seI=Math.sqrt((t.s1**2+t.s2**2)/36);
-  $('formula').innerHTML='<i>SE</i><sub>innen person</sub> = <b>'+fmt(seD)+'</b> &nbsp;·&nbsp; <i>SE</i><sub>mellom personer</sub> = '+fmt(seI)+' &nbsp;→&nbsp; med r = 0.50 krymper feilleddet med '+fmt(100*(1-seD/seI),0)+' %';
+  $('formula').innerHTML='<i>SE</i><sub>innen person</sub> = <b>'+fmt(seD)+'</b> &nbsp;·&nbsp; <i>SE</i><sub>mellom personer</sub> = '+fmt(seI)+' &nbsp;→&nbsp; med r = .50 krymper feilleddet med '+fmt(100*(1-seD/seI),0)+' %';
   $('realNote').style.display='block';
 }
 $('realBtn').onclick=showReal;
@@ -997,7 +1549,7 @@ const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA0
    den dyplenken). Simuleringen tegner seg selv på nytt via resize.
    ===================================================================== */
 (function(){
-const FANER=['hvorfor','sim','tre','sfare','posthoc','ekte','feller'];
+const FANER=['hvorfor','sim','tre','regnskap','sfare','posthoc','ekte','blandet','feller','rmg','rapport'];
 function visFane(f){
   if(FANER.indexOf(f)<0) f='hvorfor';
   FANER.forEach(function(x){
@@ -1020,7 +1572,7 @@ const f=q.get('fane'); if(f&&FANER.indexOf(f)>=0) visFane(f);
 
 /* ---- fane 0: gjenkjenningsøvelsen ---- */
 (function(){
-const SP=[{"q": "«Endret depresjonsskåren seg hos de samme 36 pasientene over tre måletidspunkt?»", "ja": true, "f": "Ja. Samme personer, tre målinger — det er RM-ANOVA. Dette er dagens hovedeksempel."}, {"q": "«Falt selvtilliten hos de samme studentene fra før til etter prøven?»", "ja": false, "f": "Nei — bare to målinger. Da er paret <i>t</i>-test det enkleste svaret (<b>Sim 16, fane 10</b>). RM-ANOVA ville gitt nøyaktig samme <i>p</i>-verdi, siden <i>F</i> = <i>t</i>²."}, {"q": "«Skårer terapigruppen lavere enn ventelisten ved oppstart?»", "ja": false, "f": "Nei. To ulike sett med mennesker, én måling — uavhengig <i>t</i>-test (Sim 16)."}, {"q": "«Hver deltaker løste oppgaver i tre betingelser: stille, musikk og støy. Skiller betingelsene seg?»", "ja": true, "f": "Ja. Det er ikke tid, men det er de <i>samme</i> personene i tre betingelser — og da gjelder nøyaktig samme analyse. Her kan du dessuten motbalansere rekkefølgen."}, {"q": "«Pasientene ble bedre over de tre målingene. Virket behandlingen?»", "ja": false, "f": "Ikke uten videre. RM-ANOVA viser at de <i>endret seg</i>, ikke hvorfor. Ventelistegruppa i emnets egen terapistudie endret seg også signifikant — 1.2 poeng (fane 6)."}, {"q": "«Falt depresjonen mer i ISTDP-gruppa enn i ventelistegruppa over de tre målingene?»", "ja": false, "f": "Ikke med RM-ANOVA alene. Her er det <i>både</i> tid innen person og gruppe mellom personer — det er en <b>blandet ANOVA</b>, og funnet ligger i interaksjonen tid × gruppe (Sim 28)."}];
+const SP=[{"q": "«Endret depresjonsskåren seg hos de samme 36 pasientene over tre måletidspunkt?»", "ja": true, "f": "Ja. Samme personer, tre målinger — det er RM-ANOVA. Dette er dagens hovedeksempel."}, {"q": "«Falt selvtilliten hos de samme studentene fra før til etter prøven?»", "ja": false, "f": "Nei — bare to målinger. Da er paret <i>t</i>-test det enkleste svaret (<b>Sim 16, fane 10</b>). RM-ANOVA ville gitt nøyaktig samme <i>p</i>-verdi, siden <i>F</i> = <i>t</i>²."}, {"q": "«Skårer terapigruppen lavere enn ventelisten ved oppstart?»", "ja": false, "f": "Nei. To ulike sett med mennesker, én måling — uavhengig <i>t</i>-test (Sim 16)."}, {"q": "«Hver deltaker løste oppgaver i tre betingelser: stille, musikk og støy. Skiller betingelsene seg?»", "ja": true, "f": "Ja. Det er ikke tid, men det er de <i>samme</i> personene i tre betingelser — og da gjelder nøyaktig samme analyse. Her kan du dessuten motbalansere rekkefølgen."}, {"q": "«Pasientene ble bedre over de tre målingene. Virket behandlingen?»", "ja": false, "f": "Ikke uten videre. RM-ANOVA viser at de <i>endret seg</i>, ikke hvorfor. Ventelistegruppa i emnets egen terapistudie endret seg også signifikant — 1.2 poeng (fane 6)."}, {"q": "«Falt depresjonen mer i ISTDP-gruppa enn i ventelistegruppa over de tre målingene?»", "ja": false, "f": "Ikke med RM-ANOVA alene. Her er det <i>både</i> tid innen person og gruppe mellom personer — det er en <b>blandet ANOVA</b>, og funnet ligger i interaksjonen tid × gruppe (fane 7)."}];
 const vert=document.getElementById('hvQuiz'); if(!vert) return;
 let svart=0,rett=0;
 SP.forEach(function(s,i){
@@ -1055,7 +1607,11 @@ window.__rmTegn = function(){ if(typeof __fsRedraw==='function') __fsRedraw(); }
 
 (function(){
 const QR = {};
-function sett(id,v){ const e=$(id); if(e){ e.value=v; e.dispatchEvent(new Event('input')); } }
+/* Bade input OG change: et <select> lytter paa change, en range paa input.
+   Sendte vi bare input, gjorde «sett:r2Vis:sse» ingenting — figuren ble
+   staaende tom, ogsaa i salen. */
+function sett(id,v){ const e=$(id); if(e){ e.value=v;
+  e.dispatchEvent(new Event('input')); e.dispatchEvent(new Event('change')); } }
 function klikk(id){ const e=$(id); if(e) e.click(); }
 function kryss(id,paa){ const e=$(id); if(e && e.checked!==paa){ e.checked=paa;
   e.dispatchEvent(new Event('change')); } }
@@ -1322,7 +1878,7 @@ slide({t:'Felle 3 · regresjon mot gjennomsnittet', klasse:'tett', html:
  'gjennomsnittet</b>, og den forklarer store deler av de 1.2 poengene.</p>'+
  '<div class="note avslor">Og den er den tredje grunnen til at kontrollgruppa må være der: '+
  'den regresserer like mye.</div>',
- notat:'Sim 26 har hele simuleringen hvis noen vil se den. Her holder poenget.'});
+ notat:'Fane 9 har hele simuleringen hvis noen vil se den. Her holder poenget.'});
 
 slide({t:'Forutsetningene', klasse:'tett', html:
  '<h1>Tre, hvorav én er ny</h1>'+
@@ -1816,6 +2372,120 @@ document.addEventListener('keydown',function(e){
 /* eksporter for oppstartsblokken nederst */
 window.__startForelesning=start;
 window.__F4slides=S;          /* for testharnessen og spraaklaget */
+/* TRYKK-JS-START */
+/* ===================== TRYKKMODUS =====================================
+   Bygger hele dekket som statiske ark ved aa kjoere appens EGEN settSlide()
+   for hver slide, folde ut alle klikk-trinn med appens egen fram(), og
+   fryse resultatet. Da ser arket ut som lerretet — samme layout, samme
+   figurer, samme tall — og trykkmodusen trenger ikke vite noe om hvordan
+   den enkelte appen monterer blokkene sine.
+
+   Bygget gaar ett bilde om gangen (requestAnimationFrame), fordi
+   settSlide() maaler hoeyder og det krever at nettleseren har lagt ut
+   sliden foerst. Du ser slidene bla forbi mens det staar paa; det er
+   framdriftsindikatoren.
+
+   ?modus=trykk            hele dekket
+   ?modus=trykk&fasit=nei  uten fasitslidene                            */
+let trykkark=null;
+function trykkFrys(kilde){
+  const orig=[].slice.call(kilde.querySelectorAll('canvas'));
+  const klon=kilde.cloneNode(true);
+  const kopi=[].slice.call(klon.querySelectorAll('canvas'));
+  kopi.forEach(function(c,i){
+    const o=orig[i]; if(!o||!c.parentNode) return;
+    const img=document.createElement('img');
+    try{ img.src=o.toDataURL('image/png'); }catch(e){ return; }
+    img.style.width=o.style.width||'100%';
+    img.style.height=o.style.height||(o.clientHeight+'px');
+    img.style.display='block';
+    c.parentNode.replaceChild(img,c);
+  });
+  return klon;
+}
+/* Simuleringer som maa kjoeres for aa vise noe. I salen trykker du paa
+   knappen; her gjoeres det for deg. En slide som VIL vise den tomme
+   tilstanden, sier trykkfyll:false. */
+function trykkFyll(){
+  [].slice.call(scene.querySelectorAll('[data-trykk="kjor"]'))
+    .forEach(function(b){ try{ b.click(); }catch(e){} });
+}
+function trykkErFasit(s){
+  return /^Fasit/.test(s.t||'')||/fasitsvar/.test(s.klasse||'');
+}
+function trykk(utenFasit){
+  const gammelt=trykkark||document.getElementById('trykkark');
+  if(gammelt&&gammelt.remove) gammelt.remove();
+  const ark=document.createElement('div'); ark.id='trykkark'; trykkark=ark;
+  ark.style.display='none';
+  const hode=document.createElement('div'); hode.className='trykkhode';
+  hode.innerHTML='<b>Trykkmodus.</b> Alle slidene ligger under hverandre, ferdig '+
+    'utfoldet. Skriv ut med <b>Cmd/Ctrl + P</b> og velg <b>Lagre som PDF</b> — '+
+    'A4 liggende, og slå på bakgrunnsgrafikk. '+
+    (utenFasit ? '<b>Fasitslidene er utelatt</b> (studentversjon).'
+               : 'Fasitslidene er med. Vil du ha versjonen uten, legg til '+
+                 '<code>&amp;fasit=nei</code> i adressen.')+
+    ' <a href="'+location.pathname+'" style="color:#2E5496;font-weight:700">'+
+    'Tilbake til appen</a>';
+  ark.appendChild(hode);
+  document.body.appendChild(ark);
+
+  /* Bygges i forelesningsmodus: scenen maa vaere synlig og utlagt, ellers
+     er alle bredder null og figurene kommer ut tomme. */
+  document.body.classList.remove('trykk','oversikt','notat');
+  document.body.classList.add('fmodus');
+  window.__aksefont=19;
+
+  const BREDDE=1280;                 // fast, uavhengig av vindusformatet
+  const liste=[];
+  S.forEach(function(s,i){ if(!(utenFasit&&trykkErFasit(s))) liste.push(i); });
+  let k=0, feilet=0;
+
+  function ferdig(){
+    try{ lever(); }catch(e){}
+    ark.style.setProperty('--sb', BREDDE+'px');
+    ark.style.setProperty('--k', (1077/BREDDE).toFixed(4));
+    ark.style.display='';
+    document.body.classList.remove('fmodus');
+    document.body.classList.add('trykk');
+    window.scrollTo(0,0);
+    if(feilet&&window.console) console.error('trykkmodus: '+feilet+' slide(r) feilet');
+  }
+  function neste(){
+    if(k>=liste.length){ ferdig(); return; }
+    const i=liste[k++];
+    const side=document.createElement('div'); side.className='trykkside';
+    const nr=document.createElement('div'); nr.className='trykknr';
+    nr.textContent='Slide '+(i+1);
+    ark.appendChild(side); side.appendChild(nr);
+    /* Én slide som kaster skal koste én slide — ikke resten av dekket. */
+    try{
+      settSlide(i);
+      scene.style.width=BREDDE+'px';          // samme bredde paa alle ark
+      let vakt=0; while(fram() && ++vakt<300){}
+      if(S[i].trykkfyll!==false) trykkFyll();
+      const tegn=(typeof sisteTegn==='function')?sisteTegn:null;
+      if(tegn) tegn();
+      tilpassBlokk(tegn);
+      const kilde=scene.querySelector('.slide');
+      if(kilde){
+        const skala=document.createElement('div'); skala.className='skala';
+        skala.appendChild(trykkFrys(kilde));
+        side.insertBefore(skala,nr);
+      }
+    }catch(e){
+      feilet++;
+      const boks=document.createElement('div'); boks.className='trykkfeil';
+      boks.textContent='Slide '+(i+1)+' kunne ikke bygges: '+((e&&e.message)||e);
+      side.appendChild(boks);
+      if(window.console) console.error('trykkmodus · slide '+(i+1), e);
+    }
+    requestAnimationFrame(function(){ requestAnimationFrame(neste); });
+  }
+  neste();
+}
+window.__trykkModus=trykk;
+/* TRYKK-JS-SLUTT */
 window.__avsluttForelesning=avslutt;
 })();
 
@@ -1836,8 +2506,496 @@ window.__avsluttForelesning=avslutt;
 (function(){
   const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+
                               (location.hash||'').replace(/^#/,''));
+  if(q.get('modus')==='trykk' && window.__trykkModus){
+    window.__trykkModus(q.get('fasit')==='nei');
+  }
   if(q.get('modus')==='forelesning' && window.__startForelesning){ window.__startForelesning(); }
 })();
 
 </script>
+<script>
+/* ===== Fane 7 · Blandet ANOVA (tid × gruppe) ===== */
+(function(){
+"use strict";
+var $=document.getElementById.bind(document);
+var RAD=[[0,34,25,21],[0,33,24,19],[0,29,20,16],[0,30,21,22],[0,27,26,23],[0,28,22,21],[0,32,31,32],[0,33,32,19],[0,35,25,17],[0,28,20,15],[0,23,22,18],[0,21,16,11],[0,34,20,21],[0,35,22,17],[0,35,21,18],[0,35,32,28],[0,33,34,16],[0,20,21,17],[0,23,13,9],[0,18,10,10],[0,31,22,21],[0,29,15,10],[0,33,23,16],[0,27,20,16],[0,34,20,14],[0,33,24,13],[0,35,20,16],[0,28,22,15],[0,35,29,31],[0,29,20,20],[0,29,21,16],[0,26,17,10],[0,33,20,12],[0,32,21,14],[0,35,16,15],[0,35,18,15],[1,35,34,30],[1,31,30,31],[1,33,32,31],[1,32,31,29],[1,35,30,31],[1,34,33,33],[1,24,21,23],[1,21,22,24],[1,29,26,26],[1,29,29,28],[1,27,26,25],[1,33,29,28],[1,32,31,32],[1,35,32,35],[1,27,29,27],[1,29,32,35],[1,28,28,25],[1,31,30,31],[1,32,31,31],[1,31,26,27],[1,34,30,28],[1,35,33,35],[1,31,32,29],[1,31,31,33],[1,32,30,29],[1,31,26,28],[1,24,23,25],[1,22,22,17],[1,21,20,21],[1,35,33,32],[1,32,30,30],[1,34,35,35],[1,33,33,33],[1,29,29,28],[1,34,33,32],[1,31,31,33],[1,30,29,25],[1,31,32,35],[1,30,30,30]];   /* [gruppe (0 = ISTDP, 1 = venteliste), oppstart, etter, 3 mnd] for de 75 som fullførte */
+var GN=['ISTDP','Venteliste'], GF=['#2C6FBB','#C97B1E'], TN=['Oppstart','Etter','3 mnd'];
+function nf(v,d){ return (v==null||!isFinite(v))?'–':v.toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:false}); }
+function pf(p){ return p<0.001?'&lt; .001':nf(p,3).replace(/^0/,''); }
+function lerret(cv){
+  var r=window.devicePixelRatio||1, w=cv.clientWidth, h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r; cv.height=h*r; cv.style.height=h+'px';
+  var c=cv.getContext('2d'); c.setTransform(r,0,0,r,0,0); c.clearRect(0,0,w,h); return [c,w,h];
+}
+function nrm(){ var u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+/* regularisert ufullstendig betafunksjon (Numerical Recipes) */
+function lgam(x){ var c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
+  var y=x, t=x+5.5; t-=(x+0.5)*Math.log(t); var s=1.000000000190015; for(var j=0;j<6;j++) s+=c[j]/++y; return -t+Math.log(2.5066282746310005*s/x); }
+function bcf(a,b,x){ var qab=a+b,qap=a+1,qam=a-1,c=1,d=1-qab*x/qap,m,m2,aa,del,h; if(Math.abs(d)<1e-30)d=1e-30; d=1/d; h=d;
+  for(m=1;m<=300;m++){ m2=2*m; aa=m*(b-m)*x/((qam+m2)*(a+m2)); d=1+aa*d; if(Math.abs(d)<1e-30)d=1e-30; c=1+aa/c; if(Math.abs(c)<1e-30)c=1e-30; d=1/d; h*=d*c;
+    aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2)); d=1+aa*d; if(Math.abs(d)<1e-30)d=1e-30; c=1+aa/c; if(Math.abs(c)<1e-30)c=1e-30; d=1/d; del=d*c; h*=del; if(Math.abs(del-1)<3e-12) break; }
+  return h; }
+function ibeta(x,a,b){ if(x<=0) return 0; if(x>=1) return 1;
+  var bt=Math.exp(lgam(a+b)-lgam(a)-lgam(b)+a*Math.log(x)+b*Math.log(1-x));
+  return (x<(a+1)/(a+b+2)) ? bt*bcf(a,b,x)/a : 1-bt*bcf(b,a,1-x)/b; }
+function pF(F,d1,d2){ if(!(F>0)) return 1; return ibeta(d2/(d2+d1*F),d2/2,d1/2); }
+
+/* ---------- blandet ANOVA: én mellomfaktor, én innenfaktor, type III ---------- */
+function analyse(rader,tider){
+  tider=tider||[0,1,2];
+  var k=tider.length, G=[[],[]];
+  rader.forEach(function(r){ G[r[0]].push(tider.map(function(t){return r[1+t];})); });
+  var N=G[0].length+G[1].length, alle=[], i, j, g;
+  G.forEach(function(a){ a.forEach(function(p){ alle=alle.concat(p); }); });
+  var gm=alle.reduce(function(s,x){return s+x;},0)/alle.length;
+  var gmean=G.map(function(a){ var s=0; a.forEach(function(p){ p.forEach(function(x){s+=x;}); }); return s/(a.length*k); });
+  var cell=G.map(function(a){ return tider.map(function(_,t){ return a.reduce(function(s,p){return s+p[t];},0)/a.length; }); });
+  var cellsd=G.map(function(a,gi){ return tider.map(function(_,t){ var m=cell[gi][t]; return Math.sqrt(a.reduce(function(s,p){return s+(p[t]-m)*(p[t]-m);},0)/(a.length-1)); }); });
+  var SSg=0, SSs=0;
+  G.forEach(function(a,gi){ SSg+=k*a.length*(gmean[gi]-gm)*(gmean[gi]-gm);
+    a.forEach(function(p){ var sm=p.reduce(function(s,x){return s+x;},0)/k; SSs+=k*(sm-gmean[gi])*(sm-gmean[gi]); }); });
+  /* ortonormale kontraster for innen-leddet */
+  var C=[];
+  if(k===2) C=[[1/Math.SQRT2,-1/Math.SQRT2]];
+  else C=[[1/Math.SQRT2,-1/Math.SQRT2,0],[1/Math.sqrt(6),1/Math.sqrt(6),-2/Math.sqrt(6)]];
+  var SSt=0, SSi=0, SSe=0, E=C.map(function(){return C.map(function(){return 0;});});
+  var dsc=C.map(function(c){ return G.map(function(a){ return a.map(function(p){ var s=0; for(var t=0;t<k;t++) s+=c[t]*p[t]; return s; }); }); });
+  var dmean=dsc.map(function(dc){ return dc.map(function(v){ return v.reduce(function(s,x){return s+x;},0)/v.length; }); });
+  dsc.forEach(function(dc,ci){
+    var mG=dmean[ci], m=(mG[0]+mG[1])/2, harm=(1/G[0].length+1/G[1].length)/4;
+    SSt+=m*m/harm;
+    var wm=(mG[0]*G[0].length+mG[1]*G[1].length)/N;
+    SSi+=G[0].length*(mG[0]-wm)*(mG[0]-wm)+G[1].length*(mG[1]-wm)*(mG[1]-wm);
+    dc.forEach(function(v,gi){ v.forEach(function(x){ SSe+=(x-mG[gi])*(x-mG[gi]); }); });
+  });
+  /* feilmatrisen (for Greenhouse-Geisser) */
+  for(var a1=0;a1<C.length;a1++) for(var b1=0;b1<C.length;b1++){
+    var s=0; for(g=0;g<2;g++) for(i=0;i<G[g].length;i++) s+=(dsc[a1][g][i]-dmean[a1][g])*(dsc[b1][g][i]-dmean[b1][g]);
+    E[a1][b1]=s/(N-2); }
+  var tr=0, tr2=0; for(i=0;i<C.length;i++){ tr+=E[i][i]; for(j=0;j<C.length;j++) tr2+=E[i][j]*E[j][i]; }
+  var eps=Math.min(1,tr*tr/((k-1)*tr2));
+  var dfg=1, dfs=N-2, dft=k-1, dfe=(N-2)*(k-1);
+  var MSs=SSs/dfs, MSe=SSe/dfe;
+  var R={N:N,n:[G[0].length,G[1].length],cell:cell,cellsd:cellsd,gmean:gmean,gm:gm,eps:eps,G:G,k:k,
+    gruppe:{SS:SSg,df:dfg,MS:SSg,F:SSg/MSs}, sub:{SS:SSs,df:dfs,MS:MSs},
+    tid:{SS:SSt,df:dft,MS:SSt/dft,F:(SSt/dft)/MSe}, int:{SS:SSi,df:dft,MS:SSi/dft,F:(SSi/dft)/MSe}, err:{SS:SSe,df:dfe,MS:MSe}};
+  R.gruppe.p=pF(R.gruppe.F,dfg,dfs); R.tid.p=pF(R.tid.F,dft,dfe); R.int.p=pF(R.int.F,dft,dfe);
+  R.tid.pGG=pF(R.tid.F,dft*eps,dfe*eps); R.int.pGG=pF(R.int.F,dft*eps,dfe*eps);
+  R.gruppe.pes=SSg/(SSg+SSs); R.tid.pes=SSt/(SSt+SSe); R.int.pes=SSi/(SSi+SSe);
+  return R;
+}
+var EKTE=analyse(RAD);
+
+/* ---------- figur ---------- */
+var MODUS='data';
+function plott(cv,R,modus,indiv){
+  var res=lerret(cv), c=res[0], W=res[1], H=res[2], L=48, Rr=W<560?16:130, T=18, B=40, basis=H-B;
+  var alle=[]; R.cell.forEach(function(r){ alle=alle.concat(r); });
+  var lo=indiv?8:Math.min.apply(null,alle)-3, hi=indiv?40:Math.max.apply(null,alle)+3;
+  lo=Math.floor(lo/2)*2; hi=Math.ceil(hi/2)*2;
+  var X=function(t){ return L+(W-L-Rr)*(0.12+0.76*t/(R.k-1)); };
+  var Y=function(v){ return basis-(v-lo)/(hi-lo)*(basis-T); };
+  c.strokeStyle='#EDF2F7'; c.lineWidth=1; c.fillStyle='#5A6B7B'; c.font='12px system-ui,sans-serif'; c.textAlign='right';
+  var st=(hi-lo)>20?5:2;
+  for(var v=Math.ceil(lo/st)*st; v<=hi; v+=st){ c.beginPath(); c.moveTo(L,Y(v)); c.lineTo(W-Rr,Y(v)); c.stroke(); c.fillText(String(v),L-6,Y(v)+4); }
+  c.save(); c.translate(13,(T+basis)/2); c.rotate(-Math.PI/2); c.textAlign='center'; c.fillText('depresjon (lavere er bedre)',0,0); c.restore();
+  c.textAlign='center'; for(var t=0;t<R.k;t++) c.fillText(TN[t],X(t),basis+18);
+  var svak=(modus!=='data'&&modus!=='int');
+  if(indiv){
+    R.G.forEach(function(a,gi){ c.strokeStyle=GF[gi]; c.globalAlpha=0.13; c.lineWidth=1;
+      a.forEach(function(p){ c.beginPath(); p.forEach(function(x,t){ var jx=X(t)+(gi?4:-4); if(t) c.lineTo(jx,Y(x)); else c.moveTo(jx,Y(x)); }); c.stroke(); }); });
+    c.globalAlpha=1;
+  }
+  /* gruppelinjene med ±1 SE */
+  R.cell.forEach(function(m,gi){
+    c.globalAlpha=svak?0.3:1; c.strokeStyle=GF[gi]; c.fillStyle=GF[gi]; c.lineWidth=3;
+    c.beginPath(); m.forEach(function(x,t){ if(t) c.lineTo(X(t),Y(x)); else c.moveTo(X(t),Y(x)); }); c.stroke();
+    m.forEach(function(x,t){ var se=R.cellsd[gi][t]/Math.sqrt(R.n[gi]); c.lineWidth=1.5;
+      c.beginPath(); c.moveTo(X(t),Y(x-se)); c.lineTo(X(t),Y(x+se)); c.stroke();
+      c.beginPath(); c.arc(X(t),Y(x),5,0,7); c.fill(); });
+    c.globalAlpha=1;
+    c.font='bold 12.5px system-ui,sans-serif'; c.textAlign='left';
+    if(Rr>60) c.fillText(GN[gi]+' (n = '+R.n[gi]+')',X(R.k-1)+10,Y(m[R.k-1])+4);
+  });
+  if(modus==='tid'){
+    var tm=[]; for(t=0;t<R.k;t++) tm.push((R.cell[0][t]+R.cell[1][t])/2);
+    c.strokeStyle='#1B2A4A'; c.lineWidth=3.5; c.setLineDash([8,5]);
+    c.beginPath(); tm.forEach(function(x,t){ if(t) c.lineTo(X(t),Y(x)); else c.moveTo(X(t),Y(x)); }); c.stroke(); c.setLineDash([]);
+    c.fillStyle='#1B2A4A'; c.font='bold 12.5px system-ui,sans-serif'; c.textAlign='left';
+    if(Rr>60) c.fillText('snittet av gruppene',X(R.k-1)+10,Y(tm[R.k-1])+4);
+  }
+  if(modus==='gruppe'){
+    R.gmean.forEach(function(m,gi){ c.strokeStyle=GF[gi]; c.lineWidth=3.5; c.setLineDash([8,5]);
+      c.beginPath(); c.moveTo(X(0)-30,Y(m)); c.lineTo(X(R.k-1)+30,Y(m)); c.stroke(); c.setLineDash([]);
+      c.fillStyle=GF[gi]; c.font='bold 12px system-ui,sans-serif'; c.textAlign='right'; c.fillText('snitt over tid: '+nf(m,1),X(0)-34,Y(m)+4); });
+  }
+  if(modus==='int'){
+    /* «hvis ISTDP hadde fulgt ventelistens forløp» */
+    var start=R.cell[0][0], kontra=R.cell[1].map(function(x){ return start+(x-R.cell[1][0]); });
+    c.strokeStyle='#2C6FBB'; c.globalAlpha=0.6; c.lineWidth=2; c.setLineDash([5,5]);
+    c.beginPath(); kontra.forEach(function(x,t){ if(t) c.lineTo(X(t),Y(x)); else c.moveTo(X(t),Y(x)); }); c.stroke(); c.setLineDash([]); c.globalAlpha=1;
+    c.fillStyle='rgba(46,125,79,.16)'; c.beginPath();
+    kontra.forEach(function(x,t){ if(t) c.lineTo(X(t),Y(x)); else c.moveTo(X(t),Y(x)); });
+    for(t=R.k-1;t>=0;t--) c.lineTo(X(t),Y(R.cell[0][t]));
+    c.closePath(); c.fill();
+    var gap=kontra[R.k-1]-R.cell[0][R.k-1];
+    c.fillStyle='#1E7A3C'; c.font='bold 12.5px system-ui,sans-serif'; c.textAlign='right';
+    c.fillText('interaksjonen: '+nf(gap,1)+' poeng',X(R.k-1)-8,(Y(kontra[R.k-1])+Y(R.cell[0][R.k-1]))/2+4);
+    c.fillStyle='#2C6FBB'; c.font='11.5px system-ui,sans-serif'; c.textAlign='left';
+    c.fillText('ISTDP hvis den fulgte ventelistens forløp',X(0)+8,Y(kontra[0])-8);
+  }
+}
+var SPM={
+ data:function(R){ return '<b>Dataene:</b> gjennomsnittene med &plusmn;1 standardfeil. Begge gruppene startet på omtrent 30. ISTDP-gruppa falt til '+nf(R.cell[0][2],1)+' etter tre måneder, ventelistegruppa til '+nf(R.cell[1][2],1)+'.'; },
+ tid:function(R){ return '<b>Hovedeffekten av tid</b> spør: endrer depresjonen seg over tid, <i>i snitt over begge gruppene</i>? Den stiplede linja er dette snittet. Svaret er ja, <i>F</i>('+R.tid.df+', '+R.err.df+') = '+nf(R.tid.F,2)+'. Men den forteller ikke <i>hvorfor</i>: alt som skjer med tiden — naturlig bedring, regresjon mot gjennomsnittet, behandling — er blandet sammen. Og her drives den nesten bare av én av gruppene.'; },
+ gruppe:function(R){ return '<b>Hovedeffekten av gruppe</b> spør: skiller gruppene seg <i>i snitt over alle tre tidspunktene</i>? De stiplede linjene er snittene ('+nf(R.gmean[0],1)+' mot '+nf(R.gmean[1],1)+'), <i>F</i>(1, '+R.sub.df+') = '+nf(R.gruppe.F,2)+'. Men snittet tar med oppstartsmålingen, der gruppene var like — og ville blitt «signifikant» også om gruppene bare var ulike fra start.'; },
+ int:function(R){ return '<b>Interaksjonen tid × gruppe</b> spør: <i>endrer</i> gruppene seg forskjellig? Den stiplede blå linja viser hvor ISTDP-gruppa ville endt om den hadde fulgt ventelistens forløp. Det grønne feltet er forskjellen — og den er terapieffekten. <i>F</i>('+R.int.df+', '+R.err.df+') = '+nf(R.int.F,2)+', partiell &eta;&sup2; = '+nf(R.int.pes,2).replace(/^0/,'')+'. <b>Dette er svaret på «virker terapien?»</b>'; }
+};
+function tegnHoved(){
+  var cv=$('blCv'); if(!cv||!cv.clientWidth) return;
+  plott(cv,EKTE,MODUS,$('blIndiv').checked);
+  $('blLes').innerHTML=SPM[MODUS](EKTE);
+}
+
+/* ---------- tabellen ---------- */
+function tabell(R,gg,id,kort){
+  var e=R.eps, fmt=function(x){return nf(x,2);};
+  var dft=gg?R.tid.df*e:R.tid.df, dfe=gg?R.err.df*e:R.err.df;
+  var h='<table class="tt" style="margin-top:8px"><tr><th>Innen personer</th><th>Kvadratsum</th><th><i>df</i></th><th>Gj.sn. kvadrat</th><th><i>F</i></th><th><i>p</i></th><th>partiell η²</th></tr>'
+   +'<tr class="r-sig"><td>Tid</td><td>'+fmt(R.tid.SS)+'</td><td>'+nf(dft,gg?2:0)+'</td><td>'+fmt(R.tid.SS/dft)+'</td><td class="c-tstat">'+fmt(R.tid.F)+'</td><td class="c-p">'+pf(gg?R.tid.pGG:R.tid.p)+'</td><td class="c-eff">'+nf(R.tid.pes,3)+'</td></tr>'
+   +'<tr class="r-sig"><td>Tid × Gruppe</td><td>'+fmt(R.int.SS)+'</td><td>'+nf(dft,gg?2:0)+'</td><td>'+fmt(R.int.SS/dft)+'</td><td class="c-tstat">'+fmt(R.int.F)+'</td><td class="c-p">'+pf(gg?R.int.pGG:R.int.p)+'</td><td class="c-eff">'+nf(R.int.pes,3)+'</td></tr>'
+   +'<tr class="r-stoy"><td>Residual (innen)</td><td>'+fmt(R.err.SS)+'</td><td>'+nf(dfe,gg?2:0)+'</td><td>'+fmt(R.err.SS/dfe)+'</td><td></td><td></td><td></td></tr>'
+   +'<tr><th>Mellom personer</th><th></th><th></th><th></th><th></th><th></th><th></th></tr>'
+   +'<tr class="r-sig"><td>Gruppe</td><td>'+fmt(R.gruppe.SS)+'</td><td>1</td><td>'+fmt(R.gruppe.MS)+'</td><td class="c-tstat">'+fmt(R.gruppe.F)+'</td><td class="c-p">'+pf(R.gruppe.p)+'</td><td class="c-eff">'+nf(R.gruppe.pes,3)+'</td></tr>'
+   +'<tr class="r-stoy"><td>Residual (mellom)</td><td>'+fmt(R.sub.SS)+'</td><td>'+R.sub.df+'</td><td>'+fmt(R.sub.MS)+'</td><td></td><td></td><td></td></tr></table>';
+  $(id).innerHTML='<div style="overflow-x:auto">'+h+'</div>';
+}
+function tabellTekst(){
+  var R=EKTE, gg=$('blGG').checked, e=R.eps;
+  var t='<b>Les tabellen nedenfra og opp.</b> Gruppe testes mot <span class="k-stoy">variasjonen mellom personer</span> ('+R.sub.df+' <i>df</i>), tid og interaksjonen mot <span class="k-stoy">variasjonen innen personer</span>. '
+    +'Greenhouse-Geisser-&epsilon; = <b>'+nf(e,3)+'</b>: sfærisiteten er ikke perfekt, så frihetsgradene ganges med '+nf(e,3)+(gg?' (se kolonnen <i>df</i>)':'')+'. <i>F</i> endrer seg ikke, bare <i>p</i>.'
+    +'<div style="margin-top:6px">Alle tre effektene er signifikante. Men bare interaksjonen, <i>F</i>('+nf(gg?2*e:2,2)+', '+nf(gg?R.err.df*e:R.err.df,gg?2:0)+') = '+nf(R.int.F,2)+', svarer på om terapien virket. Tid er signifikant fordi ISTDP-gruppa trekker snittet ned, og gruppe er signifikant fordi gruppene skilte lag etter oppstart — begge er følger av interaksjonen, ikke selvstendige funn.</div>';
+  $('blTabLes').innerHTML=t;
+  $('blRapport').innerHTML='<b>Slik kan det rapporteres:</b> <span style="font-family:Georgia,serif">En blandet ANOVA med tid (oppstart, etter behandling, 3 måneder) som innen-faktor og gruppe (ISTDP, venteliste) som mellom-faktor viste en signifikant interaksjon mellom tid og gruppe, <i>F</i>('+nf(2*e,2).replace('.',',')+', '+nf(R.err.df*e,2).replace('.',',')+') = '+nf(R.int.F,2).replace('.',',')+', <i>p</i> &lt; ,001, &eta;²<sub>p</sub> = '+nf(R.int.pes,2).replace('0.',',')+' (Greenhouse-Geisser-korrigert). ISTDP-gruppa falt fra <i>M</i> = '+nf(R.cell[0][0],2).replace('.',',')+' til '+nf(R.cell[0][2],2).replace('.',',')+', mens ventelistegruppa var nær uendret ('+nf(R.cell[1][0],2).replace('.',',')+' til '+nf(R.cell[1][2],2).replace('.',',')+').</span>';
+}
+
+/* ---------- simulering ---------- */
+var SIM=null;
+function simuler(){
+  var tid=+$('blTid').value, beh=+$('blBeh').value, start=+$('blStart').value, rad=[], g, i;
+  var mont=[0,0.6,1];                 /* forløpets form: mest av fallet kommer tidlig */
+  for(g=0;g<2;g++) for(i=0;i<(g?39:36);i++){
+    var p=30+(g===0?start:0)+3.6*nrm();
+    rad.push([g].concat([0,1,2].map(function(t){ return p - tid*mont[t] - (g===0?beh*mont[t]:0) + 3.2*nrm(); })));
+  }
+  SIM=analyse(rad); tegnSim();
+}
+function tegnSim(){
+  if(!SIM) return;
+  var cv=$('blSimCv'); if(cv.clientWidth) plott(cv,SIM,'data',false);
+  tabell(SIM,false,'blSimTab');
+  var s=function(x){ return x.p<.05?'<b style="color:#1E7A3C">signifikant</b>':'ikke signifikant'; };
+  var beh=+$('blBeh').value, tid=+$('blTid').value, start=+$('blStart').value;
+  var t='Tid er '+s(SIM.tid)+', gruppe er '+s(SIM.gruppe)+', interaksjonen er '+s(SIM.int)+'.';
+  if(beh===0 && tid>0 && SIM.tid.p<.05) t+=' <b>Legg merke til:</b> tid er signifikant selv om terapien ikke gjør noe. En studie uten kontrollgruppe ville kalt dette en behandlingseffekt.';
+  if(beh===0 && start!==0 && SIM.gruppe.p<.05) t+=' <b>Legg merke til:</b> gruppe er signifikant bare fordi gruppene var ulike ved oppstart. Det sier ingenting om behandlingen.';
+  if(beh>0 && SIM.int.p>=.05) t+=' Terapien har en effekt i simuleringen, men interaksjonen ble ikke signifikant denne gangen — det er type II-feil. Trekk nye pasienter.';
+  if(beh>0 && SIM.int.p<.05) t+=' Interaksjonen fanger opp terapieffekten, uavhengig av hvor mye alle blir bedre og hvor gruppene startet.';
+  $('blSimLes').innerHTML=t;
+}
+
+/* ---------- endringsskåren ---------- */
+function endring(){
+  var par=$('blPar').value.split(',').map(Number), a=par[0], b=par[1];
+  var ch=[[],[]]; RAD.forEach(function(r){ ch[r[0]].push(r[1+b]-r[1+a]); });
+  var st=ch.map(function(v){ var m=v.reduce(function(s,x){return s+x;},0)/v.length; var ss=v.reduce(function(s,x){return s+(x-m)*(x-m);},0); return {n:v.length,m:m,ss:ss,sd:Math.sqrt(ss/(v.length-1))}; });
+  var df=st[0].n+st[1].n-2, sp=Math.sqrt((st[0].ss+st[1].ss)/df), se=sp*Math.sqrt(1/st[0].n+1/st[1].n), t=(st[0].m-st[1].m)/se;
+  var p=pF(t*t,1,df), R2=analyse(RAD,[a,b]);
+  var h='<div style="overflow-x:auto"><table class="tt" style="margin-top:8px"><tr><th>Gruppe</th><th><i>n</i></th><th>Gj.sn. endring</th><th><i>SD</i></th></tr>'
+    +st.map(function(x,g){ return '<tr><td>'+GN[g]+'</td><td>'+x.n+'</td><td>'+nf(x.m,2)+'</td><td>'+nf(x.sd,2)+'</td></tr>'; }).join('')+'</table></div>'
+    +'<div class="note"><b>Uavhengig <i>t</i>-test på endringen:</b> <i>t</i>('+df+') = '+nf(t,3)+', <i>p</i> '+(p<0.001?'&lt; .001':'= '+nf(p,3))+'. &nbsp;<i>t</i>² = <b>'+nf(t*t,2)+'</b>.'
+    +'<div style="margin-top:6px"><b>Blandet ANOVA på de samme to tidspunktene:</b> interaksjonen tid × gruppe gir <i>F</i>(1, '+R2.err.df+') = <b>'+nf(R2.int.F,2)+'</b>.</div>'
+    +'<div style="margin-top:6px">Tallene er like: <i>t</i>² = <i>F</i>. Med to tidspunkter <i>er</i> interaksjonen en sammenligning av endringsskårer mellom gruppene. Med tre tidspunkter trenger du den blandede ANOVA-en — eller du må velge hvilke to du vil sammenligne.</div></div>';
+  $('blEndr').innerHTML=h;
+}
+
+/* ---------- oppsett ---------- */
+Array.prototype.forEach.call(document.querySelectorAll('#blSpm [data-s]'),function(b){
+  b.onclick=function(){ MODUS=b.getAttribute('data-s');
+    Array.prototype.forEach.call(document.querySelectorAll('#blSpm [data-s]'),function(x){ x.classList.toggle('on',x===b); });
+    tegnHoved(); };
+});
+$('blIndiv').onchange=tegnHoved;
+$('blGG').onchange=function(){ tabell(EKTE,$('blGG').checked,'blTab'); tabellTekst(); };
+['blTid','blBeh','blStart'].forEach(function(id){ $(id).oninput=function(){ $(id+'Ut').textContent=this.value; simuler(); }; });
+$('blSimNy').onclick=simuler;
+Array.prototype.forEach.call(document.querySelectorAll('[data-bp]'),function(b){
+  b.onclick=function(){ var v=b.getAttribute('data-bp').split(',');
+    $('blTid').value=v[0]; $('blBeh').value=v[1]; $('blStart').value=v[2];
+    ['blTid','blBeh','blStart'].forEach(function(id){ $(id+'Ut').textContent=$(id).value; });
+    simuler(); };
+});
+$('blPar').onchange=endring;
+function alt(){ try{ tegnHoved(); tegnSim(); }catch(e){ if(window.console) console.error(e); } }
+window.addEventListener('resize',alt);
+document.querySelectorAll('.fane[data-fane="blandet"]').forEach(function(b){ b.addEventListener('click',function(){ setTimeout(alt,30); }); });
+tabell(EKTE,true,'blTab'); tabellTekst(); endring(); simuler();
+{ var q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'')).get('fane'); if(q==='blandet') setTimeout(alt,60); }
+})();
+</script>
+
+<script>
+/* ===== Innlemmet fane «rmg» — tidligere egen app. Egen lukking, egne id-er (rmg_…). ===== */
+(function(){
+const __ROT=document.getElementById('fane-rmg');
+const __G=id=>document.getElementById('rmg_'+id);
+
+const $=id=>__G(id);
+function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function fmt(x,d=1){return x.toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:false});}
+function fit(cv){const r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);c.clearRect(0,0,w,h);return [c,w,h];}
+// ---------- ekte ventelistepasienter: 2 tegn per pasient [Depr_pre-14][Depr_3mnd-9], base62 ----------
+const A62="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const WL_ENC="glfilqlnlqkleaekgdlnghjpcblldjiaclko8aipjpkqkhjjkqkpcj8fhelqelchfhhffggjllhlfnfklkifaefleobdlofqcjemlnclflbfjkbqhqkmlqknbeknhghncdknhejjlobgaelnhhcleigicflpglghinhg7bgmgphelllqhjhlbkdplmfeiijlejgdlnhejp9jeeakdaadfggpgolpkidagpfigmlqbcljlqgngbjhfgfldkaoheejdllqimlpkpdjcegqcdgqeekk78jklnb6lqeogfcka9lqjkhojecfkolqkqgmgnhiijlojpenfofhhikqlnhfhmhqffeijhdgaighbhejlnellpcjicfoiigocg4big98eelnlqlqdfliaidcelfqcbfk9bejjmlljmjmlqljjjdlhhhfjpkqhkbflnkqemkilkbhenekiojgfoelkigijqiglqffciidlqll9llnhieiekloehgkhqjjgmjoikgjephm8kjllijogngjcgdignlfgqbikklhfgfo9cjldjdieihn7idmkkdicdjqflghjokmcigmkqcjfghmagloeqhpfedmfojhlp9cdjlidndmgmdklhklgkedhlffkkadgkgpbnlmjngldkkqfmhlgmclcjihgoigjpkqhnfkeldhghghjmdkhqbjdglodkggljcljqcellgbhqheikjncjagamejehjfiphcloihkqiklpgddkagijdihfgfdkcfbdecagflfi8fcqkmlohigohjgklnhjlqimbniqfjdfe8kgimlkljjfim9ilqdllnddhoaqhlfflliqklkqkmhlbplllqllfflqkoeffmloiobflqeqgifgjjlmdfcg9ldiiqgogdfolqhkilgkalim8gedil9o8dljdibcfm9hiqcjeihekjlqlojelnincifljlgiklgebeealpckgilqd9ficlfljlfhellnehhlhglqlqlokqaeiolnlo7o8gdhjlehhn9k9olqhkcjahgqifbignfiajdecgc8jqeflqlqljggfglqloljijejlnimjmfjipfjfhbcikghlqlqhmgqlmgdbmdifilllgjo7ehjgcgffnlnef8adigqlkie6cjnlogkelilhklcliaiaplpkofdeq8hadkm7hdggifhdmadjfklekjo8ahjhfgm6ekqenhgepc7iqb9ellflqdiahfnjifh7cllckhgehhllihqcjffjolqbjhmafjolkgnlogqg9hljnbdeeekikiiljhodhhkfleidlkqlmlihnkn7ihnfilqjnfklklnhqhofplqcc7acidff9jlicgo8bhmboijdlipggjklqkqlqgolkdf77gginlilqgalqjlafillkiplqei9j7c6aailnfqhfajkmfhjjlfdgbgejfdlqgplqfkknlmlnjlgolqhqbghmfnlmlqeglqhhabflcjhllililqehfcdidjlkcijfhkillqeegjgqhpgmkoinilcgjmcjgblmfngniqckfklqjiehel9blpjj91hqhqcajncedkgialjlch5lejhnbl7akk7eccijdblo7hlbegchchbm77dllnfdegjlielklqgjgelqgklkhqffifgkjpgjebhgfghmlehnlmllgfdmjqjkgjcflplngnejakdicmlnghiignlpkqlgddlkkoiqdbkkfqlqcikphneqgohmlhdheqibchhqlolllhkjjqjohggijmde9fkqgdlq9l8hf88fcekofjcjeeellqkmhlbhfhdjhlegimlplqjhfnilbjabhqfpfflqbmjqfkjmdhfmglhllqfjdklq7jjjfqli8jlmhmfgholp9kaeecahgoagcmfkefdgknfnfldj9gkgeqkmkkimdfeqbhijikgkebfhdmdobhdljldhbifgjghoknfmimfeaekmgoihijlqlqiccjdndjinhkeilfdplnbndjlm8gjmjiemlqhgiilmgahjlqlnjqbfengkcpegloiolqfbekbhfqhqigjqcllqlpgmdglnfjjljplqdhbflplq99flcfcjlqfljqcklo8chngjjldekq9ajqfllqgolofglgfqlqhggngjfflnlphgjnljhkld9bbehobglqcmkqifjpjliqlqaklolqdmlqbklglpllcfehiqfbbnliiihlhhfkljbhfngjin9hfilqlmchkh7kdgiqjqggholgkmhicfffbllqkidlfkiofkdjkqdlbkhhcdlngncflkdklqilihadjob9khhqdiimiediahikjk9dfoaclqkjcfgejqlnhjifiqkjfhlkfglnlnkohhgllq9h7jlnlijqlplmklilifgm6hkflqfblh8glgfhlqegeoijff9kcqjqlqlod9bdlq9hllcfkkg8lqfolqaf8a86kqiilhikefhqjjhjadehe9jnlleadmkllm6gkjdklpeadbilcijpgjdjjodjkkhhjkfd9kllhqcjgob8djkheainlqfnceiijigijmcihmcllmfahqfhgggoljcllqlqfplplhjljigololndnhmlffnlljqiqkmhjlobdcifpeddekjcefqhllilqkncdegjplo5ffjhlcoihaejmiqemjfikglbgcqjocjcfeqgh8dbhec5a9keld9hmhigecdkljf9bkllqglimhoilhjjnfjcgkicheokqlqdleglqflbceneoknbkholnjllpdahqllfflochhnemjkkiakgcelbdgqfpcgknfglpgqlp8biekilqjkfqlqiphmihemgolqclegfmiphjciklallqihlq3ilqlqhngmhilpikfmfibice8clmjgjklq49jnlhhi9hjmlnhkbckohllogmkflqlo8edieqikflgijjlphhlnagjqjjeaglem9dejkncldhfhhgjpfniqcngfinci57ijljdilqao9k7mepgndhjidc8fbffojc9geladkilmlekoklioihlnjllqgohmhnloijfgimdggkgpae8ajolqecakejgkgcipgflljpcgbgdiinlqljckllhmiqgmimdglpadgkcicdcdehhkdklnholpgnlqlqdebekpg9lpgpklhclqgjiqlplidieqkqeecfkhkqipjqlnlqlilqijjhjp9hikifkqijgafdd8hlimjg9hiigmlqegghedlifielahejkhgn8ggiidlnejgilmihejeljfkkkploffipdjhcjpgm6ecgafbffgdgadgpjnaebkllhoeijlgjhkfjkqlmjjjqedlqik9cgeakkihkeceiljd7ak9jdnhmfladaflneqchlqckebcjbfepiqaqchhlgikmaalnhddjlpbifilpfnfhjefojqhq9dbmfbfkgjlqcjbilpclcf9f8jiplmielneajofk8iihbl9glqhlfjhjdmlqgjiklqgolm8iacephqipegfblkkbkqgicgjhglknjifcipkqlqdhehlqhfdneigilqjpdnfmfqiqkjfgdccfajgfhnlndifkfaagikf9ljflbhjmgkcjdkkma7dklqbmdplogfdjiojiageffjfifjkpeghnc98hlqil8ecfilkfhodkdiilfhdofkhllqhnjojjbfdjfjlhfolqffhjgjligjdgjkfpjjhedfeijq9edflpllipfjjmlqffhi9jgkhelqdflkchemfqghccijglkjjmckfikjaeijjkfjemlgjmcajn9ifqjlkoindllqfdaehgajgnlqii5aimikejbfeheebdfpdnecgqflefhqbjkng9lolqlojlhnlqlilmlq7cgkiilfiljmkojqajflghhqlkdhlqiqgkdjgdkjlhjqgjll9ijnfnlqfgijeflq6eejbehoenahfgeijeglgebfgmlpbhddlqbigfhhideiij9ibkailqlnlikgjmelgechinemgnlpfihjfqdflqhojoblkqlqiolqcllqgnhmgjbkhmlqckjlakggfkin59fhckfmhmekdh9bffljgp7glmllkngflqfjggdkfihklhjjefkidekqi5lqjoiidkgfeo8gggjqeicleclnjqjmlnlqbglqboajagiklqdllqhneleefpebkglqfjlqfoeg7gggenfn8blpiilojqlqlidf9hhhhjjqlmjihidhilhigidpfjfjfilolqaldgjhcqfihhdmdlahhpeqhmfpgjabkhffdgijgmlm9aipehlkfqjnlqkklpcjaegnjhgmggdl8flqimdhjnlllojpdfgifhbdklckch68em8cloffgqcilklqllifciiohnhnfkhc8eceljfoiqkpljhlgoildfjkfjlqglhqcjdigmdchfillqfpchhnbecbeebkcjhilqbekfdlelemiogmkqhndheqfiilfodnepgijpdkllgijjanjqcmgflqljepfmflcjlicllm8gfpkiiqllbcgdhkhhkqjphhhgbghnincijilmfnbelqfplqlmlqfokicfcbio9ejqikdjiohjlnfgijiflqhegpdhhkkqepekhklqlqlphq9dbjbjklejgqcj8dijkljojqgickiqaihmlqhhdfhabfdbdaffhkgiigfjiqjjbijmbgjhfdgqchhklpihljlllqfhlmbbillqfmjnllcljqeqkqkqiqkqdiiqfibmgqekdflm8h6ffnejko9hgjknlmlplphfjohklnkohoal8dilhf89dqeg7geglohklq9djhlobecheljqfkgqfqbjlqlqlmlqilkhkqiqdjebjllqlnlelpiilleflkkkahcc9ihfknlqcgeneplm8giihqiogqkpekejlmiklngigjjkaihneijpdjfgbhhqemenjnkplnef9nenecfmihemlqknhp9cihcdloghigecikcocgbhhlllahfkbhliknhqijhhfmihfolqakijlmcjjecdcglqghjngjbcgmi9ikefiqjilllqfliljflllmjgdclqcfllegcclmkkljgqbfdqihjlfefihifhejhjfhejjkfofpb9jifjlqfqikgclqhkbmkkhgljdmcfkjhmlqhllololqhodacnhobgcgik7melcc9bcilqkgaehqhmjqlihk8agg9gkgghgjkhhkgkcoglaglhlmlq8klqjqf7ah7ckfdcbkeninehbkcfgmgqlieeljadcg8gkm9mbljlchbhgeclcqlifqcgjbhqhellefinknfikmiqdgajfihplqlkichlfjdofilpjniohodlllgklq8hgklofkhfjjfkgkclllheklghhjhfeicijmcnjqlmgqknlpgjlqhlclgiillkkhljgqhklpfninjpljlpehlqgqbfgnaddhlmefjmkphihi7hemlq6lfldhjqfelqjplnlgkjhlfibngnbgjldndfiodkbc7mfoclemlogqimanai9flmcdaikmlqjohnekgidfkicbeililq7bgk9hlmikejkqkldilnegblffjqhjlqcigglnfkfplmhqcdcdhqgkliakhnincjjgglik9cgglnejgocmdjfkllchlqdleq8fcmhdfklmcdgiehijfllnhglojflqfghpjpjj8efnjljkimlklqiqfhkjhmjnlq89lpadjlfekicklpddlqlnlndnljinikejflkcfqiieh9nhdfljqbkemigilkpjqcedm39abieca8eioabacggiphkjqfmlqamiqlljqdfiflqkkdbjojphjiqileoclighlhpefefdigpjiclklll6ffgjqihejhljleqlqlofhgjgicjfplqd9lqcbiqaolq79cmemfi9dbmimcndilqlghncifkhhhnfmikdmcfcifnejlqlolqlqlqfffeillqgjlilqgqijeo7kjofkllhojjbgcegpcfcklhlmbajhjlgkdhbblq7gblghlleqadlkcglqgfgjgqbjjoackpaihkkocclpiqjkdhbjejhnekhggegkellqcihnclbgcjlqlqfejoipkejnknig7ecdkpipgbhjaiengklhekaflqghiefqjnbme9aq95imflliln9chlfgeojmhdaegggnalgqgkkffllkaijkkqdege9m4icicfgngjhqefjlgpgdkfcchjih8giqfkcjipepgnfmgkhngnhmjqjnidkqlqjmllgmemdhdk9echgllpdlealq9qfhljimlqlqflglcjljfglkeghmdgihjqbflphohljljd9jikcljlbiekimbhljekbklqkqdiallqgoajkibmkpdhbglqemghlmjlgmlnejlljjllbicglikqhoekhilndljogidchqjmlqhidhlq6eemihljloakd8gkkolqjnjohglqgh7hhkjiflfbhmcmgkeahp9hhqeokkiqik9gdglllqjnhdlqlqekciihfihklpbmdgjjfpjqllglhclolq9gdkfjimfihhgdfiaj7kkgljdkcfhmlqlkbndggijoljcgejlj4dgeejll9fdkhplp8hfaaclqfqcjbdck8fflkm9i7h8afqfgkkjkaclp9ndifnjklpiolmimkmjpjlcijololkkpde7ijlikjmelflhjcidiggcnlqlmhl8kllhlfklqbmfihaemhihq8ihodkfjkmeqlohigceclegndflpcadflnibflchfladlphjlqee9jdqknhkllhflollihhmlqlkelepaehidg5h9feliqdgbbfklqlplplqdmgqdikpfhijijhhef6eccdigidibeaohlgqbmfihfkpllbeeibckqadhpillpbqdhlqikalikgk87ikcnhnejloblbagjfi6hlnfojhfkdibjeflpjmejbjfmjgjjhhejfmchlqgjgkfilqaafplqjlfelqembehpekikdheikldphfighlgqdjdflkljhkejeejkekbjblgjelhklmgjghaifjfkelhkkqailnhd8fklidkmdihllladcdhifggdcp6dlk9hjkjpclilgmjmhhlhlkhngqil68hm8hegcm7dikhmjqkdlplojefjlqjilpcehlehlqdpbclqlelqcidhijhikkdehgiodliklmlnkgailohogkfiamgflkeigjlmhnlmbhgjfjfhhfbmeqjigijqckikkmgkdgehkqkilq9dgq8cgicmagghkcdqlpbdfgdmfmbehhgicmemjn6ajqkqlqhngjjogdjmamlkfheq9dcjffelbnijlpijfe7aadgmdeemkpahejbgilfhdieqflaklmimgecidcdkdpcjlnfqkffhchjoljlpdfbmdalq8gjlcklllhchfjdlffgqjninaglqllfhjjloieilfo9bdhlmghhc8hlmeogmbddifljqcoaneflhlqihefhohqfmhilqgihngddddgdqkkjjdggqlqiplphidjelhgckenjicgjqffcjjmcbkqendmbjgehhehilkm7bligmgodpkldhjdjeclhqklfjdqlkemdjfjholhifhplqhmig8jkmikjqlpaklpkq9mffhmlidgaghgalijcndijmfelnkpipkjkpcihgfqiilqimllcijljqholmdehmlodfcjjj8hcb9meglqkjgjkogmgghplnfiiqhq7bhlheabdj8alp9acailfkiplkinjkeglqijkiljchdjeadkiqdgciiqlqemipljlnagemkqgn7bciefejikljdilqfkjqghillkejijeediigfjfgfkjlemcdlqiqilemiq9giihllncejqlqfjghlohnipkoddgmbiej7alqgolklqiqfmkfikkljmdidnenbqhkfjcjdcdcfqeohdljaighgdjqchcdgohichdocpenjqgqgf9olqgjjfligmidgfimkmfjklgpihfffjdfhlgeedkggpfqlmiifllm8clpigbafijqeiillnlmaj8h9f8glqekblbfjkinlklplnldlpjmlljnfggniohnhjkqhohmhochlqeoillnkqdmkmholkgigmfj8mikkhejlq8kdkjqiqldafcliliq9dgjflkqgh3daelqdllilqljdl7c8ddieaellpeaieg9dpineo9blpcobmdldedkedhllkgjehaffikpeha9b9fncjehlmil5glmgdlqeolqdljlchenkmdpkhfojqkocj7klobhenlqcibdfilpkgchdlfpcmlglnfigmjqlnekejgkfegmccjnhleiihlpjlkkedbgegipdgapdk6ilqgjemkndkailqjianlkinjkkpfob9cm8dkpjgiogfdqghchhokqfihiffcdfm9jfkckdhbhfigifbkkhjaccfdhiqfnlqinlnkmlkjqgne9hllnlqfndhdqeegjgggqigcmekiogqjofkhjgjgohndnbgjoeelqcjekefggjjflfhlk9cbgfqclhognenholldpgicjielnjkffipljeicekilqddlnln9eaebdjjgjhmcqajlqefhlhgfijokmdicelhfgfghojpllaqlkkkfjlkcehfjnjmdgbklmdmgllqgleq9bkqc6dm7dkglo9djmlk9hlobnlqlpln9ckhhllodnlqcilpgpldlpcgbgelfoelkpjkllfh7clqlilqdjkkbddlllbi9ifn5edlgidiefgngkkiln9jhikjcjbjjcjqfedqlnjjddajeiceeflmdkgfcmlqdge9kndhgiiq9lgjhglqlohgemgecbgdlldikqklhhlqlqjhchkmbdilelfjijjkjihqfh8hlk8pdlglclfphnjjd7chlohollhnep7edhcm9hfflqfhlqgebghkbmkqlq6jkqholjebimfkdecdlkjmadkkgfcidfiplpaeihgfbhlqjpcljohqjqbechejejflepldiqhpgqejlmfhjmgmgognhpdkfndhlqjodchqlglmhnlpggiqgjlnll9meiloflhogkhk8bkdkigniieiknjqbjeihgil7hdiiqfhcelpfkdfadkdikfmlnhmgggekqgbhkgqgheqfediiqemehcbgqfmlmlqfhailplnidejiqligkipekjnllhmfkfdlmkfglamgqfdbidkheaahgapcjlqgqchlqfiglkjlklqfhhjkmbefmjmhklmbnbceefglkajfifgbgljagaielhdak9ikqlhaphiflllhfhkejlkgmcdek58dobhh7ikdngajqhqhfhibofkigeeefllijck5fdflqejel4cgkfokilpegbh9flqkhclfkfkkhaehledkilpiadikq7d9bgkbflk9iekjmjnhjhmlkapiolkkleg8nigeickei9kekfgjoipchlnecenlqiekpeejkbigllqfdgm15di79glcab6goenkllqlhbpdmhhdigkjpeklkeda7hnlqkofhlnlqjlflgqchlpgjdglqhkcmbjajbelqglglebfhlqkmggcqjiffifhmcihollhp9clklncgfnfngmimiohgiqglhjloemfhjmkqdcholjlnlmhclqkl8alllqilamlqaeahiglqcklqbicnlqaqjf9ggcdmghaijlknjllkgnlphfggeoknloglcfakdhhfachilpkghagolglqiqfjgg8jeljlhnlqlflpfliolqllbikpdllqaahnfpihgifmljgidfghlqbd8ihlloijeilqfhkoln9gdefnfglolofmkjehjffjfnlqfkhhgejp";
+const WL=[];
+for(let i=0;i<WL_ENC.length;i+=2)WL.push({pre:14+A62.indexOf(WL_ENC[i]),post:9+A62.indexOf(WL_ENC[i+1])});
+const WL_R=(()=>{ // r(pre,3mnd) og gjennomsnitt i hele venteliste-populasjonen
+  const n=WL.length;let mx=0,my=0;
+  WL.forEach(p=>{mx+=p.pre;my+=p.post;});mx/=n;my/=n;
+  let sxy=0,sxx=0,syy=0;
+  WL.forEach(p=>{sxy+=(p.pre-mx)*(p.post-my);sxx+=(p.pre-mx)**2;syy+=(p.post-my)**2;});
+  return {r:sxy/Math.sqrt(sxx*syy),mPre:mx,mPost:my};
+})();
+let data=null;
+function run(){
+  const src=$('src').value, cutp=+$('cut').value/100;
+  const pers=[];
+  if(src==='real'){
+    const seen={};
+    while(pers.length<200){
+      const i=Math.floor(Math.random()*WL.length);
+      if(seen[i])continue;seen[i]=1;
+      pers.push({pre:WL[i].pre+(Math.random()-0.5)*0.5, post:WL[i].post+(Math.random()-0.5)*0.5}); // mikrojitter kun for visning/sortering
+    }
+    // «sykest» = HØYEST depresjonsskår ved pre
+    const sorted=[...pers].sort((a,b)=>b.pre-a.pre);
+    const k=Math.round(200*cutp);
+    data={pers,sel:new Set(sorted.slice(0,k)),rel:WL_R.r,mode:'real'};
+  } else {
+    const rel=+$('rel').value;
+    // sann skår T ~ N(50, 10*sqrt(rel)); målestøy ~ N(0, 10*sqrt(1-rel)) → SD(obs)=10, r(pre,post)=rel
+    const sT=10*Math.sqrt(rel), sE=10*Math.sqrt(1-rel);
+    for(let i=0;i<200;i++){
+      const T=50+sT*rnorm();
+      pers.push({pre:T+sE*rnorm(), post:T+sE*rnorm()});
+    }
+    const sorted=[...pers].sort((a,b)=>a.pre-b.pre);
+    const k=Math.round(200*cutp);
+    data={pers,sel:new Set(sorted.slice(0,k)),rel,mode:'sim'};
+  }
+  draw();
+}
+function draw(){
+  if(!data){run();return;}
+  const [c,w,h]=fit($('cv'));
+  const real=data.mode==='real';
+  const ymin=real?8:15,ymax=real?38:85;
+  const mid=real?WL_R.mPre:50;
+  const Y=v=>h-30-(v-ymin)/(ymax-ymin)*(h-55);
+  const x1=w*0.24,x2=w*0.76;
+  c.fillStyle='#62708a';c.font='bold 17px sans-serif';c.textAlign='center';
+  c.fillText('PRE',x1,h-8);c.fillText(real?'3 måneder (ingen behandling!)':'POST (ingen tiltak!)',x2,h-8);
+  // y-ticks
+  c.font='bold 16px sans-serif';c.textAlign='right';
+  const step=real?5:10;
+  for(let v=Math.ceil(ymin/step)*step;v<=ymax;v+=step)c.fillText(v,26,Y(v)+4);
+  // populasjonssnitt-linje
+  c.strokeStyle='#d9dee8';c.setLineDash([4,4]);c.beginPath();c.moveTo(30,Y(mid));c.lineTo(w-20,Y(mid));c.stroke();c.setLineDash([]);
+  c.fillStyle='#8894ad';c.font='bold 16px sans-serif';c.textAlign='left';c.fillText('populasjonssnittet ('+fmt(mid,real?1:0)+')',34,Y(mid)-5);
+  // spaghetti
+  let selPre=0,selPost=0,nSel=0;
+  data.pers.forEach(p=>{
+    const s=data.sel.has(p);
+    c.strokeStyle=s?'rgba(192,57,43,.55)':'rgba(150,160,180,.16)';
+    c.lineWidth=s?1.6:1;
+    c.beginPath();c.moveTo(x1,Y(p.pre));c.lineTo(x2,Y(p.post));c.stroke();
+    if(s){selPre+=p.pre;selPost+=p.post;nSel++;}
+  });
+  selPre/=nSel;selPost/=nSel;
+  // gruppesnitt-markører
+  c.strokeStyle='#C0392B';c.lineWidth=4;
+  c.beginPath();c.moveTo(x1-18,Y(selPre));c.lineTo(x1+18,Y(selPre));c.stroke();
+  c.beginPath();c.moveTo(x2-18,Y(selPost));c.lineTo(x2+18,Y(selPost));c.stroke();
+  c.fillStyle='#C0392B';c.font='bold 17px sans-serif';c.textAlign='right';
+  c.fillText('M = '+fmt(selPre),x1-24,Y(selPre)+4);
+  c.textAlign='left';c.fillText('M = '+fmt(selPost),x2+24,Y(selPost)+4);
+  const gain=selPost-selPre;
+  if(data.mode==='real'){
+    const drift=WL_R.mPost-WL_R.mPre;
+    $('out').innerHTML='<span class="stat red">de rekrutterte ved pre: <i>M</i> = '+fmt(selPre)+'</span>'+
+     '<span class="stat red">samme pasienter etter 3 mnd: <i>M</i> = '+fmt(selPost)+'</span>'+
+     '<span class="stat">«bedring» uten behandling: '+fmt(gain)+' poeng</span>'+
+     '<span class="stat">hele ventelistepopulasjonen: '+fmt(drift)+' poeng</span>'+
+     '<span class="stat green">differansen ('+fmt(gain-drift)+') = regresjon mot gjennomsnittet</span>';
+  } else {
+    $('out').innerHTML='<span class="stat red">de valgte ved pre: <i>M</i> = '+fmt(selPre)+'</span>'+
+     '<span class="stat red">samme personer ved post: <i>M</i> = '+fmt(selPost)+'</span>'+
+     '<span class="stat">«bedring» uten tiltak: '+fmt(gain)+' poeng</span>'+
+     '<span class="stat green">teori: (50 − <i>M</i><sub>pre</sub>) × (1 − <i>r</i>) = '+fmt((50-selPre)*(1-data.rel))+'</span>';
+  }
+}
+$('rel').oninput=()=>$('relOut').textContent=fmt(+$('rel').value,2);
+$('cut').oninput=()=>$('cutOut').textContent=$('cut').value+' %';
+$('run').onclick=run;
+$('src').onchange=()=>{
+  const real=$('src').value==='real';
+  $('relRow').style.display=real?'none':'flex';
+  $('realInfo').style.display=real?'block':'none';
+  run();
+};
+const __fsRedraw=()=>{draw();};
+(function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
+const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
+window.addEventListener('resize',kick);
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{kick();setTimeout(safe,600);}));
+let __mis=0;
+setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
+ __ROT.querySelectorAll('canvas').forEach(c=>{if(c.clientWidth>0&&c.width>0&&Math.abs(c.width-Math.round(c.clientWidth*r))>2)bad=true;});
+ __mis=bad?__mis+1:0;
+ if(__mis>=2){__mis=0;safe();}},700);})();
+run();
+
+
+/* hidden-fanen har bredde 0: tegn på nytt når den åpnes */
+document.querySelectorAll('.fane[data-fane="rmg"]').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>window.dispatchEvent(new Event('resize')),30)));
+{ const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'')).get('fane');
+  if(q==='rmg') setTimeout(()=>window.dispatchEvent(new Event('resize')),60); }
+})();
+</script>
+
+<script id="ovbegrep-js">
+(function(){
+  // Lokalt: appene ligger i PSY300_Sim_Apps/, MCQ-appen i PSY300_online/.
+  // Publisert: alt ligger flatt. Velg prefiks ut fra adressen.
+  var p = location.pathname.indexOf('/PSY300_Sim_Apps/') >= 0
+        ? '../PSY300_online/' : './';
+  var a = document.querySelectorAll('a.ovlenke[data-begrep]');
+  for (var i=0;i<a.length;i++){
+    a[i].href = p + 'PSY300_MCQ_Online.html?begrep=' + a[i].getAttribute('data-begrep');
+    a[i].target = '_blank'; a[i].rel = 'noopener';
+  }
+})();
+</script>
+
+<script>
+/* ===== fane: variansregnskapet ==============================================
+   Kvadratsummene regnes ut fra de 36 komplette ISTDP-radene, ikke skrevet inn,
+   slik at figuren og tabellen ikke kan komme i utakt.                        */
+(function(){
+  var $=function(i){ return document.getElementById(i); };
+  if(!$('rgCv')) return;
+  // Depression ved oppstart, etter behandling, tre maaneder — ISTDP, komplette rader
+  var D=[[34,25,21],[33,24,19],[29,20,16],[30,21,22],
+         [27,26,23],[28,22,21],[32,31,32],[33,32,19],
+         [35,25,17],[28,20,15],[23,22,18],[21,16,11],
+         [34,20,21],[35,22,17],[35,21,18],[35,32,28],
+         [33,34,16],[20,21,17],[23,13,9],[18,10,10],
+         [31,22,21],[29,15,10],[33,23,16],[27,20,16],
+         [34,20,14],[33,24,13],[35,20,16],[28,22,15],
+         [35,29,31],[29,20,20],[29,21,16],[26,17,10],
+         [33,20,12],[32,21,14],[35,16,15],[35,18,15]];
+  var n=D.length, k=3;
+  function snitt(a){ var s=0,i; for(i=0;i<a.length;i++) s+=a[i]; return s/a.length; }
+  var alle=[]; D.forEach(function(r){ alle=alle.concat(r); });
+  var G=snitt(alle);
+  var Mt=[0,1,2].map(function(j){ return snitt(D.map(function(r){ return r[j]; })); });
+  var Mp=D.map(snitt);
+  var SST=0; alle.forEach(function(v){ SST+=(v-G)*(v-G); });
+  var SSB=0; Mp.forEach(function(m){ SSB+=k*(m-G)*(m-G); });
+  var SSW=SST-SSB;
+  var SSM=0; Mt.forEach(function(m){ SSM+=n*(m-G)*(m-G); });
+  var SSR=SSW-SSM;
+  var trinn=0, MAKS=3;
+  var NAVY="#1F3864", BLA="#2E5496", GRONN="#1E7A3C", ROD="#C0392B", GRA="#9aa7bd";
+
+  function bjelke(c,x,y,w,h,farge,tekst,und){
+    c.fillStyle=farge; c.beginPath();
+    if(c.roundRect) c.roundRect(x,y,w,h,6); else c.rect(x,y,w,h);
+    c.fill();
+    c.fillStyle="#fff"; c.textAlign="center"; c.textBaseline="middle";
+    c.font="600 14px -apple-system,Segoe UI,Roboto,Arial";
+    if(w>110){ c.fillText(tekst, x+w/2, y+h/2-8);
+               c.font="13px -apple-system,Segoe UI,Roboto,Arial";
+               c.fillText(und, x+w/2, y+h/2+10); }
+    else if(w>52){ c.font="600 12px -apple-system,Segoe UI,Roboto,Arial";
+                   c.fillText(tekst, x+w/2, y+h/2-7);
+                   c.font="11px -apple-system,Segoe UI,Roboto,Arial";
+                   c.fillText(und.replace(/^=\s*/,''), x+w/2, y+h/2+8); }
+    else { c.fillStyle=farge; c.font="600 11.5px -apple-system,Segoe UI,Roboto,Arial";
+           c.textBaseline="top"; c.fillText(tekst+" "+und, x+w/2, y+h+3); }
+  }
+  function tegn(){
+    var cv=$('rgCv'), ratio=window.devicePixelRatio||1;
+    var w=cv.clientWidth||860, h=300;
+    cv.width=Math.round(w*ratio); cv.height=Math.round(h*ratio); cv.style.height=h+'px';
+    var c=cv.getContext('2d'); c.setTransform(ratio,0,0,ratio,0,0);
+    c.clearRect(0,0,w,h);
+    var L=14, R=w-14, BR=R-L, BH=56, GAP=28;
+    var y=14;
+    bjelke(c,L,y,BR,BH,NAVY,"SS totalt = "+SST.toFixed(2),
+           "all variasjon i de "+(n*k)+" målingene");
+    if(trinn>=1){
+      y+=BH+GAP;
+      var wB=BR*SSB/SST;
+      bjelke(c,L,y,wB,BH,GRA,"SS mellom personer","= "+SSB.toFixed(2));
+      bjelke(c,L+wB,y,BR-wB,BH,BLA,"SS innen person","= "+SSW.toFixed(2));
+      if(trinn<2){
+        c.fillStyle=GRA; c.textAlign="left"; c.font="13px -apple-system,Segoe UI,Roboto,Arial";
+      }
+    }
+    if(trinn>=2){
+      y+=BH+GAP;
+      var wB2=BR*SSB/SST, inn=BR-wB2;
+      c.fillStyle="#eef1f6"; c.beginPath();
+      if(c.roundRect) c.roundRect(L,y,wB2,BH,6); else c.rect(L,y,wB2,BH); c.fill();
+      c.fillStyle=GRA; c.textAlign="center"; c.textBaseline="middle";
+      c.font="13px -apple-system,Segoe UI,Roboto,Arial";
+      if(wB2>90) c.fillText("tatt ut av regnestykket", L+wB2/2, y+BH/2);
+      var wM=inn*SSM/SSW;
+      bjelke(c,L+wB2,y,wM,BH,GRONN,"SS tid (modell)","= "+SSM.toFixed(2));
+      bjelke(c,L+wB2+wM,y,inn-wM,BH,ROD,"SS residual","= "+SSR.toFixed(2));
+    }
+    if(trinn>=3){
+      y+=BH+22;
+      c.fillStyle=NAVY; c.textAlign="center"; c.textBaseline="top";
+      c.font="600 16px -apple-system,Segoe UI,Roboto,Arial";
+      c.fillText("F = (" + SSM.toFixed(2) + " / 2)  ÷  (" + SSR.toFixed(2) +
+                 " / 70)  =  " + ((SSM/2)/(SSR/70)).toFixed(2), w/2, y);
+    }
+  }
+  var TEKST=[
+    "<b>Trinn 0.</b> Alt vi har er 108 målinger som spriker. Spørsmålet er hvorfor.",
+    "<b>Trinn 1 — det RM-ANOVA gjør som enveis ANOVA ikke kan.</b> Først skilles "+
+      "variasjonen <i>mellom</i> personer fra variasjonen <i>innen</i> hver person. "+
+      "Her er "+(100*SSB/SST).toFixed(0)+" % av all variasjon bare «noen er mer deprimerte "+
+      "enn andre» — og det er ikke det vi spør om.",
+    "<b>Trinn 2.</b> Personforskjellene legges til side. Bare variasjonen innen person "+
+      "deles videre, i den delen som er felles for alle (tid) og den delen som ikke er det "+
+      "(residual).",
+    "<b>Trinn 3.</b> <i>F</i> regnes ut av de to siste. Legg merke til at de "+
+      SSB.toFixed(2)+" fra trinn 1 aldri kommer inn i nevneren. I et mellomgruppedesign "+
+      "ville de ligget der."
+  ];
+  function oppdater(){ tegn(); $('rgTekst').innerHTML=TEKST[trinn];
+    $('rgTrinn').disabled = trinn>=MAKS; }
+  var b;
+  b=$('rgTrinn'); if(b) b.addEventListener('click',function(){
+      if(trinn<MAKS){ trinn++; oppdater(); } });
+  b=$('rgNull');  if(b) b.addEventListener('click',function(){ trinn=0; oppdater(); });
+  window.addEventListener('resize',function(){ setTimeout(tegn,60); });
+  window.__rgTegn = oppdater;
+  oppdater();
+})();
+</script>
+
 </body></html>

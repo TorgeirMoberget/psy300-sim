@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY300 &middot; Sim 37 &mdash; Fra teori til variabel: det statistikken aldri kan fikse</title>
+<style>
+:root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--orange:#B26A00;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+:root{--sig:#1E7A3C;--sig-bg:#E7F4EA;--stoy:#C0392B;--stoy-bg:#FBEDEB;
+      --tstat:#1F3864;--pverdi:#6A3D9A;--pverdi-bg:#F1EAF8;}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
+header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:20.5px;margin:0;font-weight:700}
+header p{margin:2px 0 0;font-size:15.5px;opacity:.85}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.card h2{font-size:19px;margin:0 0 8px;color:var(--navy)}
+.card h3{font-size:16.5px;margin:14px 0 4px;color:var(--navy)}
+button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+.btn{background:var(--blue);color:#fff}
+.btn2{background:#eef1f7;color:var(--navy)}
+.btn2.on{background:var(--navy);color:#fff}
+.fane{background:#eef1f7;color:var(--navy);font-size:16.5px}
+.fane.on{background:var(--navy);color:#fff}
+.keybox{background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:12px 14px;margin:14px 0;font-size:16.5px}
+.keybox .lbl{display:block;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--blue);margin-bottom:3px}
+.advarsel{background:#FFF6E8;border-left:5px solid var(--orange);border-radius:0 10px 10px 0;padding:12px 14px;margin:12px 0;font-size:16.5px}
+.note{background:#f6f8fa;border:1px solid #e3e7ea;border-radius:10px;padding:11px 13px;margin:10px 0;font-size:15.5px}
+.muted{color:#62708a;font-size:15.5px}
+table{border-collapse:collapse;width:100%;font-size:15.5px;margin:8px 0}
+th,td{border-bottom:1px solid #e3e7ea;padding:7px 9px;text-align:left;vertical-align:top}
+thead th{color:var(--navy);border-bottom:2px solid #c7d6ec}
+.tabrull{overflow-x:auto}
+details.mer{margin-top:8px;font-size:15.5px}
+details.mer summary{cursor:pointer;color:var(--blue);font-weight:600}
+details.mer>div{padding:8px 0 0}
+.ovkort{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f6f8fa;
+ border:1px solid #dde3e8;border-left:5px solid #C8102E;border-radius:10px;padding:10px 13px;margin:14px 0;font-size:15px}
+.ovkort .ovlbl{font-weight:700;color:#5B6670;letter-spacing:.02em;text-transform:uppercase;font-size:11.5px}
+.ovkort a.ovlenke{display:inline-block;background:#fff;border:1px solid #c7d6ec;border-radius:999px;
+ padding:3px 11px;color:#174A6B;text-decoration:none;font-size:14.5px}
+.ovkort a.ovlenke:hover{background:#eef3fb;border-color:#8fb0d6}
+.ovkort .ovhint{color:#6B767D;font-size:13px}
+a{color:var(--blue)}
+.hide{display:none}
+.toko{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.treko{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media(max-width:760px){.toko,.treko{grid-template-columns:1fr}}
+.trinn{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fbfcfe;margin:9px 0;
+ border-left:5px solid var(--blue)}
+.trinn b{color:var(--navy);font-size:17px}
+.trinn .ex{display:block;margin-top:5px;font-size:15px;color:#2c3338;font-style:italic}
+.kort{border:1px solid var(--line);border-radius:9px;padding:9px 12px;margin:7px 0;background:#fff;
+ display:flex;gap:10px;align-items:flex-start;font-size:15.5px}
+.kort .sv{margin-left:auto;display:flex;gap:4px;flex-shrink:0}
+.kort.rett{background:var(--sig-bg);border-color:#9fd2b1}
+.kort.feil{background:var(--stoy-bg);border-color:#e3b4ae}
+.kort .fas{display:none;font-size:14.5px;color:#41505e;margin-top:6px;width:100%}
+.kort.svart .fas{display:block}
+.mini{font-size:13px;padding:5px 10px;border-radius:7px}
+.teller{font-weight:700;color:var(--navy)}
+.vtag{display:inline-block;border-radius:5px;padding:1px 7px;font-size:13.5px;font-weight:600;margin-right:4px}
+.vt-uav{background:#E7F0FA;color:#1F3864}.vt-avh{background:#E7F4EA;color:#1E7A3C}
+.vt-kon{background:#FBEDEB;color:#C0392B}.vt-mod{background:#F1EAF8;color:#6A3D9A}
+
+.hvbig{font-size:20px;line-height:1.45;color:#1F3864;font-weight:600;margin:2px 0 10px}
+.hvgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.hvkort{border-radius:10px;padding:11px 13px;font-size:16px;line-height:1.5}
+.hvkort h3{margin:0 0 6px;font-size:16.5px}
+.hvkort ul{margin:0;padding-left:18px}
+.hvkort li{margin-bottom:7px}
+.hver{background:#eaf6ea;border:1px solid #bcdcbc;border-left:5px solid var(--green)}
+.hver h3{color:#1E5C22}
+.hvikke{background:#fbeceb;border:1px solid #edc9c5;border-left:5px solid var(--red)}
+.hvikke h3{color:#9B2D20}
+.eks{display:block;color:#5A6B7B;font-size:14.5px;margin-top:2px}
+.hvnaar{width:100%;border-collapse:collapse;font-size:15.5px;margin-top:8px}
+.hvnaar th{text-align:left;background:#eef2f8;border-bottom:2px solid #c7d6ec;padding:6px 8px;font-size:14.5px}
+.hvnaar td{border-bottom:1px solid var(--line);padding:6px 8px;vertical-align:top}
+.hvnaar tr.na{background:#eef3fb;font-weight:500}
+@media(max-width:760px){.hvgrid{grid-template-columns:1fr}}
+</style>
+</head><body>
+<header>
+<h1>Sim 37 &middot; Fra teori til variabel: det statistikken aldri kan fikse</h1>
+<p>PSY300 &middot; Forelesning 1 og 9 &middot; Hypotese, teori og variabler &mdash; oppsummeringen av det som må være på plass f&oslash;r en eneste analyse kj&oslash;res</p>
+</header>
+<div class="wrap">
+<div class="faner">
+<button class="fane on" data-fane="hvorfor">0 &middot; Hvorfor dette?</button>
+<button class="fane" data-fane="stigen">1 &middot; Teori, hypotese, prediksjon</button>
+<button class="fane" data-fane="variabler">2 &middot; Variablenes roller</button>
+<button class="fane" data-fane="operasjon">3 &middot; Operasjonalisering</button>
+<button class="fane" data-fane="nullhyp">4 &middot; H&#8320; og H&#8321;</button>
+<button class="fane" data-fane="rekkefolge">5 &middot; Rekkefølgen binder</button>
+<button class="fane" data-fane="ov">6 &middot; Øv</button>
+</div>
+
+<div id="fane-hvorfor">
+
+<div class="card">
+<h2>Spørsmålet denne appen svarer på</h2>
+<p class="hvbig">«Hva er det egentlig jeg undersøker?»</p>
+<p style="font-size:16.5px;line-height:1.55">Resten av emnet handler om hva du gjør <b>etter</b> at
+dataene er samlet inn: hvilken test, hvilken <i>p</i>-verdi, hvordan det rapporteres. Denne appen
+handler om det som skjer <b>før</b> &mdash; og det er der de fleste prosjekter går i stykker.</p>
+
+<p style="font-size:16.5px;line-height:1.55">En teori er en påstand om verden. En hypotese er en
+spissing av den. En prediksjon er hva du da må se i dataene. Operasjonaliseringen er hvordan du
+faktisk måler det. Hvert ledd må henge i det forrige, ellers tester du til slutt noe annet enn det
+du trodde &mdash; og ingen statistikk kan redde det.</p>
+
+<div class="keybox"><span class="lbl">Sagt på &eacute;<i>n</i> linje</span>
+<b>En hypotese som ikke kan vise seg å være feil, er ikke en hypotese. Og en test du velger etter
+at du har sett dataene, tester ikke lenger det den ser ut til å teste.</b></div>
+
+<div class="note" style="border-left:4px solid var(--blue)"><b>Mye av dette har du vært gjennom før.</b> Teori og hypotese, variabelroller, operasjonalisering, reliabilitet og validitet &mdash; dette er stoff fra <b>PSY104</b> og <b>PSY202</b>, ikke nytt i PSY300. Appen er en oppfriskning, ikke en innføring. Og det er en grunn til å ta den seriøst: i svardataene fra PSY300 ligger kullet på <b>69 % riktig</b> på begreper som PSY104 eller PSY202 nevner ved navn, mot <b>45 %</b> der de ikke gjør det &mdash; målt i de to første ukene, før PSY300 har undervist noe. Det som er repetisjon, sitter. Det er den beste delen av grunnmuren din.</div>
+
+<p style="font-size:16.5px;line-height:1.55">Det er derfor denne appen ikke har simuleringer. Det er
+ingenting å trekke tilfeldig her. Det eneste som hjelper, er å se mange eksempler og øve på å kjenne
+igjen forskjellen &mdash; mellom en teori og en hypotese, mellom et begrep og målet på begrepet, mellom
+en uavhengig og en avhengig variabel.</p>
+</div>
+
+<div class="card">
+<h2>Hvorfor dette er mer enn ordkløveri</h2>
+<div class="hvgrid">
+<div class="hvkort hver"><h3>✓ Det løser</h3><ul>
+<li><b>Hvilken test du skal bruke.</b> Testen følger av designet, og designet følger av hypotesen.
+Vet du hva som er uavhengig og hva som er avhengig variabel, er halve testvalget gjort.
+<span class="eks">Sim 34 er beslutningstreet. Det starter her.</span></li>
+<li><b>Hva en <i>p</i>-verdi betyr i ditt tilfelle.</b> H&#8320; er ikke et rituale &mdash; det er den
+konkrete påstanden om at det du leter etter, ikke finnes.</li>
+<li><b>Hvor sterk konklusjonen kan bli.</b> Et eksperiment med randomisering tåler ordet «fører til».
+En tverrsnittsstudie gjør det ikke, uansett hvor liten <i>p</i> blir.</li>
+<li><b>Hva du faktisk har målt.</b> «Stress» er et begrep. Skåren på en skala er et mål. Avstanden
+mellom dem er validitetsspørsmålet.</li>
+</ul></div>
+<div class="hvkort hvikke"><h3>✗ Det som går galt uten</h3><ul>
+<li><b>Hypotesen formuleres etter at dataene er sett.</b> Da er <i>p</i>-verdien ikke lenger
+tolkbar &mdash; du har plukket den beste av mange mulige analyser.
+<span class="eks">Kalles HARKing. Sim 7 viser hva det gjør med feilraten.</span></li>
+<li><b>Retningen snus underveis.</b> En hypotese som «virker begge veier» kan ikke motbevises, og da
+har den heller ingen informasjonsverdi.</li>
+<li><b>Målet forveksles med begrepet.</b> «Deltakerne ble mer intelligente» når det du målte var
+antall riktige på en bestemt test.</li>
+<li><b>Rollene blandes.</b> Hva er manipulert, hva er målt, hva er en tredjevariabel? Blander du
+dette, velger du feil analyse &mdash; og oppdager det ikke.
+<span class="eks">Fane 2 sorterer rollene.</span></li>
+</ul></div>
+</div>
+
+<div class="note" style="margin-top:12px"><b>Den viktigste av dem:</b> rekkefølgen er ikke en
+formalitet. Hypotesen skal stå <i>før</i> dataene, fordi det er det som gjør <i>p</i>-verdien til et
+tall med mening. Formulerer du den etterpå, har du forklart dataene &mdash; ikke testet noe. Fane 5
+viser hvorfor.</div>
+</div>
+
+<div class="card">
+<h2>Hvor dette dukker opp igjen</h2>
+<p style="font-size:16.5px;line-height:1.55">Dette er det første leddet i kjeden, og det bestemmer
+alt som kommer etter:</p>
+<table class="hvnaar">
+<tr><th>Der du møter det</th><th>Hva som avgjøres her</th><th>Hvor</th></tr>
+<tr class="na"><td><b>Teori → hypotese → prediksjon → mål</b></td><td>Hva du faktisk undersøker</td><td>denne appen</td></tr>
+<tr><td>Valg av test</td><td>Antall og type variabler, uavhengige eller avhengige observasjoner</td><td>Sim 34</td></tr>
+<tr><td>H&#8320;, H&#8321; og <i>p</i>-verdien</td><td>Hva nullhypotesen faktisk påstår</td><td>Sim 7</td></tr>
+<tr><td>Årsak eller samvariasjon</td><td>Om designet tåler et årsaksord</td><td>Sim 11, Sim 15</td></tr>
+<tr><td>Tredjevariabler og kontroll</td><td>Hvilke variabler som må med i modellen</td><td>Sim 15</td></tr>
+<tr><td>Måling, reliabilitet og validitet</td><td>Om målet fanger begrepet</td><td>Sim 11, fane 9</td></tr>
+<tr><td>Arbeidskravet og eksamens fritekstdel</td><td>Å skrive hypotesen presist nok til å kunne testes</td><td>begge</td></tr>
+</table>
+<div class="note" style="margin-top:12px"><b>Kjenn igjen mønsteret:</b> når du står fast på «hvilken
+test skal jeg bruke?», er svaret nesten alltid at hypotesen ikke er spisset nok ennå. Gå tilbake hit,
+skriv den som &eacute;<i>n</i> setning med en retning, og testen gir nesten seg selv.</div>
+</div>
+
+<div class="keybox"><span class="lbl">Klar for resten av appen?</span>
+<b>Ta med &eacute;<i>n</i> setning herfra: <i>en hypotese er en påstand som kan vise seg å være feil, formulert
+før du ser dataene.</i> Fane 1 bygger kjeden fra teori til prediksjon. Fane 2 sorterer variabelrollene.
+Fane 6 er øving &mdash; det er den som fester det.</b></div>
+
+<div class="note" style="font-size:14px;color:#5A6B7B"><b>Kilder:</b> emnebeskrivelser for PSY104 og PSY202, Høyskolen Kristiania · egne svardata fra PSY300 høsten 2026, førsteforsøk per begrep (95 % KI [66, 72] mot [38, 52]).</div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="A1">A1 Hypotese, teori og variabler &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+<div id="fane-stigen" class="hide">
+<div class="card">
+<h2>Tre ord som ofte brukes om hverandre &mdash; og ikke bør det</h2>
+<p class="muted">Dette er den eneste appen i samlingen uten en simulering, og grunnen er at
+innholdet ikke er et tall som oppfører seg. Det er et sett skiller som avgjør om tallene i det
+hele tatt betyr noe. Alt det andre i emnet forutsetter at disse er på plass.</p>
+
+<div class="trinn"><b>Teori</b> — en generell forklaring på hvorfor noe henger sammen. Den er
+bredere enn én studie, den kan ikke testes direkte i sin helhet, og den overlever at en enkelt
+studie slår feil.
+<span class="ex">«Sårbarhet–stress-modellen: psykiske plager oppstår når belastning møter en
+underliggende sårbarhet.»</span></div>
+
+<div class="trinn" style="border-left-color:var(--green)"><b>Hypotese</b> — et <i>testbart</i>
+utsagn utledet av teorien, om en sammenheng mellom bestemte variabler. Den er spesifikk nok til
+at den kan vise seg å være gal.
+<span class="ex">«Effekten av en vanskelig prøve på statistikk-selvtillit er større for studenter
+høyere i perfeksjonisme.»</span></div>
+
+<div class="trinn" style="border-left-color:var(--orange)"><b>Prediksjon</b> — hva du konkret
+forventer å se i <i>disse</i> dataene, med <i>disse</i> målene, hvis hypotesen stemmer. Først her
+er noe målbart.
+<span class="ex">«Interaksjonsleddet betingelse × perfeksjonisme vil være negativt i en regresjon
+av selvtillit etter prøven.»</span></div>
+
+<div class="advarsel"><b>Hvorfor skillet er verdt noe:</b> når prediksjonen slår feil, er det
+<i>minst</i> fire ting som kan være galt — teorien, utledningen fra teori til hypotese, målene,
+eller designet. Et nullfunn feller ikke teorien alene. Omvendt: et treff på prediksjonen er
+heller ikke bevis for teorien, bare for at den overlevde ett forsøk på å ta feil.</div>
+</div>
+
+<div class="card">
+<h2>Hvor den vanligste feilen sitter</h2>
+<div class="toko">
+<div class="note"><b>«Vi tester hypotesen om at det er en sammenheng.»</b> Nesten. Du tester en
+<i>prediksjon</i> om en bestemt sammenheng, mellom to bestemte operasjonaliseringer, i ett
+bestemt utvalg. Alt det er valg du har tatt, og alle kan være feil uten at teorien er det.</div>
+<div class="note"><b>«Dataene viser at teorien stemmer.»</b> Nei. Dataene er forenlige med
+prediksjonen. Det er en mye svakere påstand, og den er den eneste statistikken kan hjelpe deg
+med. Forskjellen er ikke en formalitet — det er forskjellen mellom å rapportere og å overselge.</div>
+</div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>Teorien forklarer, hypotesen er det utledede utsagnet som kan være galt, og prediksjonen er
+det du faktisk kan se i dataene. Statistikken arbeider bare på det nederste trinnet — den kan
+ikke redde en hypotese som ikke følger av teorien, eller mål som ikke måler det de heter.</b>
+</div></div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="A1">A1 Hypotese, teori og variabler &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+<div id="fane-variabler" class="hide">
+<div class="card">
+<h2>Fire roller, ikke fire variabeltyper</h2>
+<p class="muted">En variabel er ikke «en moderator» på samme måte som den er «ordinal».
+Rollen kommer fra <b>hypotesen din</b>, ikke fra variabelen. Alder er uavhengig variabel i én
+studie, kontrollvariabel i den neste og utfall i en tredje.</p>
+<div class="tabrull"><table>
+<thead><tr><th>Rolle</th><th>Spørsmålet den svarer på</th><th>I arbeidskravets studie</th></tr></thead>
+<tbody>
+<tr><td><span class="vtag vt-uav">Uavhengig</span></td>
+ <td>Hva antas å virke? Den manipuleres eller måles som årsakskandidat.</td>
+ <td>Vanskelighetsgrad på prøven — <b>manipulert</b>, derfor den eneste som bærer årsakspåstander.</td></tr>
+<tr><td><span class="vtag vt-avh">Avhengig</span></td>
+ <td>Hva antas å bli påvirket? Utfallet du måler.</td>
+ <td>Statistikk-selvtillit etter prøven.</td></tr>
+<tr><td><span class="vtag vt-kon">Konfunderende</span></td>
+ <td>Hva kan skape en falsk sammenheng ved å påvirke begge?</td>
+ <td>Selvtillit <i>før</i> prøven: den påvirker etter-skåren, og ville forstyrret om tildelingen ikke var tilfeldig.</td></tr>
+<tr><td><span class="vtag vt-mod">Modererende</span></td>
+ <td>For hvem, eller under hvilke betingelser, er effekten størst?</td>
+ <td>Perfeksjonisme og kjønn — <b>målt</b>, ikke manipulert, så de sier «for hvem», ikke «fordi».</td></tr>
+</tbody></table></div>
+<div class="note"><b>Mediator er en femte rolle, og hører til «hvordan».</b> En mediator er et
+mellomledd i årsakskjeden: nederlag → selvkritiske tanker → lavere selvtillit. Den forveksles
+lett med en moderator, men svarer på et helt annet spørsmål. Se
+<a href="PSY300_Sim_Moderasjon.html#fane=hvorfor">Sim 36 fane 1</a>.</div>
+</div>
+
+<div class="card">
+<h2>Manipulert eller målt — skillet som avgjør hva du har lov til å skrive</h2>
+<div class="toko">
+<div class="note" style="border-left:5px solid var(--sig)"><b>Manipulert.</b> Du bestemte verdien,
+helst ved loddtrekning. Da er variabelen uavhengig av alt annet i verden, også det du ikke har
+målt, og en forskjell kan tilskrives den. <span class="muted">Se
+<a href="PSY300_Sim_Kontrollmaskinen.html#fane=rand">Sim 15 fane 2</a> for hvorfor loddtrekningen
+er så mye sterkere enn statistisk kontroll.</span></div>
+<div class="note" style="border-left:5px solid var(--stoy)"><b>Målt.</b> Verdien fulgte med
+personen. Da henger den sammen med alt mulig annet — og uansett hvor mange kontrollvariabler du
+legger inn, har du kontrollert for det du kom på, ikke for alt.</div>
+</div>
+<div class="advarsel">I arbeidskravet er dette skillet eksplisitt: bare vanskelighetsgrad er
+manipulert. Kjønn, fagfelt og perfeksjonisme er målt. En interaksjon med dem forteller <i>for
+hvem</i> effekten var størst — ikke at egenskapen forårsaket noe.</div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>Rollen til en variabel kommer fra hypotesen, ikke fra variabelen selv. Og det som avgjør hvor
+sterkt du kan uttale deg, er ikke hvilken analyse du kjører, men om variabelen ble manipulert
+eller bare målt.</b></div></div>
+</div>
+
+<div id="fane-operasjon" class="hide">
+<div class="card">
+<h2>Fra begrep til kolonne i datasettet</h2>
+<p class="muted">Et <b>konstrukt</b> er det du er interessert i: perfeksjonisme, selvtillit,
+statistikkforståelse. Ingen av dem finnes som tall. <b>Operasjonaliseringen</b> er regelen du
+velger for å gjøre konstruktet til noe målbart — og den regelen er et <i>valg</i> som kan være
+mer eller mindre god, aldri noe som følger av seg selv.</p>
+<div class="treko">
+<div class="note"><b>Konstruktet</b><br>statistikk-selvtillit<br>
+<span class="muted">en indre tilstand, ikke observerbar</span></div>
+<div class="note"><b>Operasjonaliseringen</b><br>snittet av seks utsagn besvart på en 1–5-skala<br>
+<span class="muted">et valg: hvilke utsagn, hvilken skala, snitt eller sum</span></div>
+<div class="note"><b>Variabelen</b><br><code>Selvtillit_post</code>, et tall mellom 1 og 5<br>
+<span class="muted">det analysen faktisk ser</span></div>
+</div>
+<div class="note"><b>Alt som skjer etter dette steget, gjelder kolonnen — ikke konstruktet.</b>
+Hvis de seks utsagnene egentlig måler noe annet, vil en aldri så elegant regresjon beskrive det
+andre like presist. Det er grunnen til at validitet ikke kan repareres i analysen, og grunnen
+til at <a href="PSY300_Sim_Korrelasjonsdansen.html#fane=maalefeil">Sim 11 fane 9</a> hører med
+her.</div>
+</div>
+
+<div class="card">
+<h2>Tre spørsmål å stille til en hvilken som helst operasjonalisering</h2>
+<div class="trinn"><b>1 · Måler den konstruktet, eller noe i nærheten?</b>
+<span class="ex">Måler «antall øvingsoppgaver besvart» forståelse, eller flid? Begge deler kan
+være interessante — men bare den ene er det du skrev i hypotesen.</span></div>
+<div class="trinn" style="border-left-color:var(--green)"><b>2 · Måler den likt for alle?</b>
+<span class="ex">Et spørsmål om «hvor ofte føler du deg nervøs» kan bety noe ulikt på tvers av
+språk, alder eller fagbakgrunn. Da er ikke tallene sammenlignbare, uansett hvor like de ser ut.</span></div>
+<div class="trinn" style="border-left-color:var(--orange)"><b>3 · Hvilket målenivå gir den?</b>
+<span class="ex">Operasjonaliseringen bestemmer målenivået, og målenivået avgrenser hvilke
+analyser som gir mening. Se <a href="PSY300_Sim_Sentralmaal.html#fane=maalenivaa">Sim 32
+fane 1</a>.</span></div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>Operasjonaliseringen er broen mellom spørsmålet ditt og tallene dine, og den er et valg du
+må kunne forsvare. Analysen beskriver kolonnen, ikke konstruktet — og hvis de to ikke er samme
+sak, beskriver den feil ting med stor presisjon.</b></div></div>
+</div>
+
+<div id="fane-nullhyp" class="hide">
+<div class="card">
+<h2>Hva som faktisk testes</h2>
+<p class="muted">Den statistiske testen arbeider ikke på hypotesen din. Den arbeider på et par
+av utsagn som er konstruert for å kunne avgjøres med tall:</p>
+<div class="toko">
+<div class="note" style="border-left:5px solid #5B6670"><b>H&#8320; &mdash; nullhypotesen</b><br>
+«Det er ingen effekt / ingen sammenheng i populasjonen.» Dette er utsagnet testen regner
+sannsynligheter <i>under</i>. Det er en regneforutsetning, ikke en påstand noen tror på.</div>
+<div class="note" style="border-left:5px solid var(--sig)"><b>H&#8321; &mdash; alternativhypotesen</b><br>
+«Det er en effekt.» Dette er det forskningshypotesen din oversettes til — og legg merke til hvor
+mye fattigere den er enn hypotesen du startet med.</div>
+</div>
+<div class="advarsel"><b>Tre ting H&#8320; <i>ikke</i> er.</b> Den er ikke det du tror.
+Den er ikke noe du kan bevise — en ikke-signifikant test betyr at dataene ikke kunne skille
+effekten fra null, ikke at den er null. Og den er ikke knyttet til retningen i hypotesen din:
+en tosidig test sier bare «ikke null», mens hypotesen din antagelig sa hvilken vei.</div>
+<div class="note">Hele maskineriet bak dette — hva en <i>p</i>-verdi er, hva den ikke er, og hva
+som truer den — ligger i <a href="PSY300_Sim_Pverdimaskinen.html">Sim 7</a>. Her gjelder bare
+oversettelsen: fra et faglig utsagn til et par hypoteser en test kan arbeide på.</div>
+</div>
+
+<div class="card">
+<h2>Retning: én- eller tosidig?</h2>
+<p class="muted">Hypotesen din har som regel en retning («større for perfeksjonister»), mens
+standardtesten er tosidig. Det er ikke en feil, men det er et valg som skal tas <b>før</b> du
+ser dataene — og i praksis rapporteres tosidig nesten alltid.</p>
+<div class="note"><b>Regelen som holder:</b> en ensidig test kan bare forsvares når den andre
+retningen ville vært uinteressant <i>eller</i> teoretisk umulig, og når valget er gjort og
+skrevet ned på forhånd. Å bytte til ensidig etter at <i>p</i> = .08 er en av de klassiske
+formene for <i>p</i>-hacking — se <a href="PSY300_Sim_Pverdimaskinen.html#fane=mange">Sim 7
+fane 3</a>.</div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>H&#8320; er en regneforutsetning, ikke en tro. Testen svarer på «hvor rart er dette hvis det
+ikke er noen effekt?» — og det er et mye smalere spørsmål enn det hypotesen din stilte.</b>
+</div></div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="A1">A1 Hypotese, teori og variabler &rarr;</a> <a class="ovlenke" data-begrep="B4">B4 p-verdien &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+<div id="fane-rekkefolge" class="hide">
+<div class="card">
+<h2>Hypotese &rarr; design &rarr; analyse. Aldri motsatt vei.</h2>
+<p class="muted">Rekkefølgen er ikke en formalitet i en mal. Hvert steg låser det neste, og
+det er nettopp fordi de er låst at resultatet betyr noe.</p>
+<div class="trinn"><b>1 · Hypotesen bestemmer designet.</b> Vil du si <i>årsak</i>, må noe
+manipuleres. Vil du si <i>for hvem</i>, må moderatoren måles og utvalget være stort nok.
+<span class="ex">Du kan ikke gjøre en tverrsnittsundersøkelse om til et eksperiment i
+analysefasen, uansett hvor mange kontrollvariabler du legger inn.</span></div>
+<div class="trinn" style="border-left-color:var(--green)"><b>2 · Designet bestemmer analysen.</b>
+To grupper målt én gang, de samme personene målt flere ganger, og en kontinuerlig prediktor gir
+tre ulike analyser.
+<span class="ex">Beslutningstreet i <a href="PSY300_Sim_Testvalg.html">Sim 34</a> er i
+realiteten bare designet lest baklengs.</span></div>
+<div class="trinn" style="border-left-color:var(--orange)"><b>3 · Analysen svarer bare på det
+hypotesen spurte om.</b> Alt annet du finner underveis er nye hypoteser, ikke testede funn.
+<span class="ex">Det er lov, og ofte nyttig, å utforske. Det er ikke lov å rapportere det som om
+det var planlagt.</span></div>
+<div class="advarsel"><b>HARKing</b> (<i>hypothesizing after results are known</i>) er å skrive
+hypotesen etter at du har sett svaret. Det føles ryddig — fortellingen blir jo bedre — men det
+ødelegger nettopp det <i>p</i>-verdien skulle bety, fordi hypotesen da ikke lenger sto i fare for
+å bli motbevist. Dette er samme problem som multiple tester, bare i en annen forkledning:
+<a href="PSY300_Sim_Pverdimaskinen.html#fane=mange">Sim 7 fane 3</a>.</div>
+</div>
+
+<div class="card">
+<h2>Hvordan rekkefølgen holdes</h2>
+<div class="toko">
+<div class="note"><b>Skriv ned hypotesene først.</b> I arbeidskravet er H1, H2 og H3 oppgitt på
+forhånd nettopp av denne grunn — da er det ingen tvil om hva som var planlagt.</div>
+<div class="note"><b>Skill konfirmatorisk fra eksplorativt i teksten.</b> To avsnitt, to
+overskrifter. Et eksplorativt funn som er merket som eksplorativt er en styrke i en oppgave;
+det samme funnet presentert som planlagt er en svakhet.</div>
+</div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>Hypotesen låser designet, designet låser analysen, og analysen svarer bare på det hypotesen
+spurte om. Det meste av det som går galt i en metodeoppgave, er at ett av de tre leddene er
+snudd.</b></div></div>
+</div>
+
+<div id="fane-ov" class="hide">
+<div class="card">
+<h2>1. Teori, hypotese eller prediksjon?</h2>
+<p class="muted">Avgjør hva hvert utsagn er. Fasiten kommer med en begrunnelse.</p>
+<div id="ov1"></div>
+<div class="note"><b>Resultat:</b> <span class="teller" id="t1">0 av 0</span></div>
+</div>
+
+<div class="card">
+<h2>2. Hvilken rolle har variabelen?</h2>
+<p class="muted">Samme studie som i arbeidskravet: studenter fordeles tilfeldig til en lett eller
+vanskelig statistikkprøve, og selvtillit måles før og etter.</p>
+<div id="ov2"></div>
+<div class="note"><b>Resultat:</b> <span class="teller" id="t2">0 av 0</span></div>
+</div>
+
+<div class="card">
+<h2>3. Hva er galt her?</h2>
+<p class="muted">Hvert av disse er hentet fra noe en student faktisk kan komme til å skrive.</p>
+<div id="ov3"></div>
+<div class="note"><b>Resultat:</b> <span class="teller" id="t3">0 av 0</span></div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i hele appen</span>
+<b>Statistikken arbeider på kolonner i et datasett. Hvorvidt de kolonnene svarer på spørsmålet
+du stilte, avgjøres før analysen — i utledningen fra teori til hypotese, i operasjonaliseringen,
+og i designet. Ingen test kan rette opp et valg som ble tatt feil der.</b></div></div>
+
+<details class="mer" style="margin:14px 0"><summary>Ordforklaringer</summary><div class="note">
+<b>Eksplorativ analyse</b> &mdash; analyse uten hypotese formulert på forhånd. Lovlig og nyttig, men skal merkes som det.<br>
+<b>HARKing</b> &mdash; å formulere hypotesen etter at resultatet er kjent, og presentere den som om den kom først.<br>
+<b>H&#8320; / H&#8321;</b> &mdash; nullhypotesen og alternativhypotesen; det paret den statistiske testen faktisk arbeider på.<br>
+<b>Konfunder</b> &mdash; en tredjevariabel som påvirker både prediktor og utfall og dermed skaper en falsk sammenheng.<br>
+<b>Konstrukt</b> &mdash; det teoretiske begrepet du er interessert i, og som ikke finnes som tall før du operasjonaliserer det.<br>
+<b>Mediator</b> &mdash; et mellomledd i årsakskjeden; svarer på «hvordan».<br>
+<b>Moderator</b> &mdash; en variabel som endrer effektens styrke eller retning; svarer på «for hvem».<br>
+<b>Operasjonalisering</b> &mdash; regelen som gjør et konstrukt om til en målbar variabel.<br>
+<b>Prediksjon</b> &mdash; hva du konkret forventer å se i dine data hvis hypotesen stemmer.<br>
+</div></details>
+
+</div>
+</div>
+
+<script>
+/* =====================================================================
+   Sim 37 · A1 Hypotese, teori og variabler.
+   Appen har ingen simulering, fordi innholdet ikke er et tall som
+   oppfører seg — det er et sett skiller som avgjør om tallene betyr noe.
+   Øvingsfanen er derfor det eneste interaktive: tre sett med påstander
+   som skal klassifiseres, med begrunnelse i fasiten.
+   ===================================================================== */
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const $$=s=>Array.prototype.slice.call(document.querySelectorAll(s));
+
+/* ---------- faner ---------- */
+const FANER=['hvorfor','stigen','variabler','operasjon','nullhyp','rekkefolge','ov'];
+function visFane(f){
+  if(FANER.indexOf(f)<0)f='hvorfor';
+  FANER.forEach(x=>{const e=$('fane-'+x); if(e)e.classList.toggle('hide',x!==f);});
+  $$('.fane').forEach(b=>b.classList.toggle('on',b.dataset.fane===f));
+  try{history.replaceState(null,'','#fane='+f);}catch(e){}
+}
+$$('.fane').forEach(b=>b.addEventListener('click',()=>visFane(b.dataset.fane)));
+
+/* ---------- øvingsmotor ---------- */
+function byggSett(vert, teller, valg, sp){
+  const v=$(vert); if(!v) return;
+  let svart=0, rett=0;
+  sp.forEach((s,i)=>{
+    const d=document.createElement('div'); d.className='kort';
+    d.innerHTML='<span><b>'+(i+1)+'.</b> '+s.q+'</span>'+
+      '<span class="sv">'+valg.map(x=>'<button class="btn2 mini" data-v="'+x[0]+'">'+x[1]+'</button>').join("")+'</span>'+
+      '<span class="fas"></span>';
+    d.querySelectorAll('button').forEach(b=>{
+      b.addEventListener('click',function(){
+        if(d.classList.contains('svart')) return;
+        const ok=b.dataset.v===s.f;
+        d.classList.add('svart', ok?'rett':'feil');
+        d.querySelector('.fas').innerHTML='<b>'+(ok?'Riktig':'Ikke helt')+' — '+
+          valg.find(x=>x[0]===s.f)[1]+'.</b> '+s.b;
+        d.querySelectorAll('button').forEach(x=>{x.disabled=true;
+          if(x.dataset.v===s.f) x.classList.add('on');});
+        svart++; if(ok)rett++;
+        $(teller).textContent=rett+' av '+svart+' riktig'+(svart===sp.length?' — ferdig':'');
+      });
+    });
+    v.appendChild(d);
+  });
+  $(teller).textContent='0 av 0';
+}
+
+byggSett('ov1','t1',[['T','Teori'],['H','Hypotese'],['P','Prediksjon']],[
+ {q:'«Mennesker søker å opprettholde et konsistent selvbilde.»',f:'T',
+  b:'Et generelt forklaringsprinsipp som ikke peker på bestemte variabler, og som ingen enkeltstudie kan avgjøre.'},
+ {q:'«Studenter som skårer høyt på perfeksjonisme vil reagere sterkere på et nederlag enn studenter som skårer lavt.»',f:'H',
+  b:'Testbart og spesifikt om en sammenheng mellom to navngitte variabler — men ennå ikke knyttet til bestemte mål eller tall.'},
+ {q:'«Interaksjonsleddet betingelse × perfeksjonisme vil ha negativt fortegn.»',f:'P',
+  b:'Et utsagn om hva som vil stå i <i>denne</i> analysen, med <i>disse</i> målene. Det er her noe kan telles.'},
+ {q:'«Gjennomsnittlig selvtillit etter prøven vil være lavere i den vanskelige betingelsen enn i den lette.»',f:'P',
+  b:'Konkret om to gruppegjennomsnitt i det innsamlede datasettet — altså en prediksjon, ikke hypotesen den følger av.'},
+ {q:'«Belastning fører til plager bare hos dem som har en underliggende sårbarhet.»',f:'T',
+  b:'Sårbarhet–stress-modellen i generell form. Den overlever at én studie ikke finner interaksjonen.'},
+ {q:'«Kjønn modererer effekten av vanskelighetsgrad på statistikk-selvtillit.»',f:'H',
+  b:'Testbart og navngir variablene, men sier ikke hvilken analyse eller hvilket utfallsmål — det kommer i prediksjonen.'}
+]);
+
+byggSett('ov2','t2',
+ [['U','Uavhengig'],['A','Avhengig'],['K','Konfunder'],['M','Moderator']],[
+ {q:'Vanskelighetsgrad på prøven (lett eller vanskelig), tilfeldig tildelt.',f:'U',
+  b:'Manipulert og tilfeldig tildelt. Dette er den eneste variabelen i studien som bærer en årsakspåstand.'},
+ {q:'Statistikk-selvtillit målt etter prøven.',f:'A',
+  b:'Utfallet hypotesene handler om.'},
+ {q:'Statistikk-selvtillit målt <i>før</i> prøven.',f:'K',
+  b:'Den påvirker etter-skåren sterkt. Randomiseringen gjør at den er balansert mellom gruppene, men den tas likevel med i modellen fordi den reduserer støyen betraktelig.'},
+ {q:'Selvkritisk perfeksjonisme, målt før prøven.',f:'M',
+  b:'Hypotesen sier at effekten av manipulasjonen avhenger av den. Siden den er målt og ikke manipulert, sier et funn «for hvem», ikke «fordi».'},
+ {q:'Kjønn.',f:'M',
+  b:'Samme rolle som perfeksjonisme i H3 — og samme forbehold: den er en markør for noe annet, ikke nødvendigvis en årsak.'},
+ {q:'Antall timer studenten har brukt på statistikk i forkant, hvis den hadde vært målt i en studie uten loddtrekning.',f:'K',
+  b:'Den ville påvirket både hvem som havnet hvor og hvordan de presterte. Nettopp slike variabler er grunnen til at randomisering er så mye sterkere enn kontroll.'}
+]);
+
+byggSett('ov3','t3',[['J','Noe er galt'],['N','Dette er greit']],[
+ {q:'«Resultatene bekrefter sårbarhet–stress-modellen.»',f:'J',
+  b:'Ett datasett kan ikke bekrefte en teori. Det riktige er at funnet er forenlig med prediksjonen teorien ga — og at prediksjonen overlevde ett forsøk på å ta feil.'},
+ {q:'«Vi fant ingen interaksjon, så perfeksjonisme modererer ikke effekten.»',f:'J',
+  b:'Fravær av signifikans er ikke evidens for fravær av effekt. Oppgi estimatet og konfidensintervallet, og si noe om studiens styrke.'},
+ {q:'«Vi undersøkte også om fagfelt hadde betydning. Dette var en eksplorativ analyse og må bekreftes i en ny studie.»',f:'N',
+  b:'Dette er akkurat slik det skal gjøres: funnet er med, men merket som eksplorativt.'},
+ {q:'«Kvinner reagerte sterkere på nederlaget, noe som viser at kjønn gjør studenter mer sårbare.»',f:'J',
+  b:'Kjønn er målt, ikke manipulert. Interaksjonen sier for hvem effekten var størst, ikke at kjønn forårsaket sårbarheten — mellomliggende forhold er ikke undersøkt.'},
+ {q:'«Vi delte perfeksjonisme ved medianen for å gjøre tolkningen enklere.»',f:'J',
+  b:'Å dikotomisere en kontinuerlig moderator kaster bort informasjon og svekker testen, og grensen settes der medianen tilfeldigvis falt. Se Sim 36 fane 6.'},
+ {q:'«Hypotesene H1–H3 ble formulert før datainnsamlingen og er gjengitt i innledningen.»',f:'N',
+  b:'Dette er hele poenget med rekkefølgen: hypotesen sto i fare for å bli motbevist, og det er det som gjør testen meningsfull.'}
+]);
+
+/* ---------- start ---------- */
+const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,''));
+const f0=q.get('fane'); if(f0) visFane(f0);
+})();
+</script>
+
+<script id="ovbegrep-js">
+(function(){
+  var p = location.pathname.indexOf('/PSY300_Sim_Apps/') >= 0 ? '../PSY300_online/' : './';
+  var a = document.querySelectorAll('a.ovlenke[data-begrep]');
+  for (var i=0;i<a.length;i++){
+    a[i].href = p + 'PSY300_MCQ_Online.html?begrep=' + a[i].getAttribute('data-begrep');
+    a[i].target = '_blank'; a[i].rel = 'noopener';
+  }
+})();
+</script>
+</body></html>

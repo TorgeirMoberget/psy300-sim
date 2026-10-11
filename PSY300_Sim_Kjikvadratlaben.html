@@ -1,8 +1,82 @@
 <!DOCTYPE html>
 <html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PSY300 &middot; Sim 29 &mdash; Kji-kvadratlaben</title>
+<title>PSY300 &middot; Sim 29 &mdash; Kjikvadrat: fra krysstabell til p-verdi</title>
 <style>
 :root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--orange:#B26A00;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+/* =====================================================================
+   PSY300 FARGEKODE — én betydning per farge, den samme i alle appene.
+   Poenget er at en student som har sett grønt over rødt i figuren, skal
+   kjenne igjen de samme fargene i JASP-tabellen og i den ferdige
+   setningen — og dermed se hvor hvert tall kommer fra.
+     grønn   variasjon MELLOM grupper · signal · det vi leter etter
+     rød     variasjon INNEN grupper · støy · residual
+     marine  teststatistikken (F, t, χ²) og frihetsgradene
+     lilla   p-verdien
+     rav     effektstørrelsen (η², ω², d, R²)
+     turkis  konfidensintervallet
+   ===================================================================== */
+:root{
+  --sig:#1E7A3C;    --sig-bg:#E7F4EA;    --sig-kant:#A9D6B6;
+  --stoy:#C0392B;   --stoy-bg:#FBEDEB;   --stoy-kant:#EEC3BD;
+  --tstat:#1F3864;  --tstat-bg:#E7ECF6;  --tstat-kant:#B9C8E2;
+  --pverdi:#7B3FA0; --pverdi-bg:#F3EAF8; --pverdi-kant:#D3BCE4;
+  --eff:#B26A00;    --eff-bg:#FDF2E2;    --eff-kant:#EBD0A6;
+  --ki:#0F6E7B;     --ki-bg:#E4F1F3;     --ki-kant:#AAD3D9;
+}
+.k-sig{color:var(--sig);font-weight:600}
+.k-stoy{color:var(--stoy);font-weight:600}
+.k-tstat{color:var(--tstat);font-weight:700}
+.k-p{color:var(--pverdi);font-weight:600}
+.k-eff{color:var(--eff);font-weight:600}
+.k-ki{color:var(--ki);font-weight:600}
+/* markert variant — brukes der et tall skal kunne spores fra tabell til setning */
+.m-sig,.m-stoy,.m-tstat,.m-p,.m-eff,.m-ki{border-radius:5px;padding:1px 5px;font-weight:600}
+.m-sig{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+.m-stoy{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+.m-tstat{background:var(--tstat-bg);color:var(--tstat);box-shadow:inset 0 0 0 1px var(--tstat-kant)}
+.m-p{background:var(--pverdi-bg);color:var(--pverdi);box-shadow:inset 0 0 0 1px var(--pverdi-kant)}
+.m-eff{background:var(--eff-bg);color:var(--eff);box-shadow:inset 0 0 0 1px var(--eff-kant)}
+.m-ki{background:var(--ki-bg);color:var(--ki);box-shadow:inset 0 0 0 1px var(--ki-kant)}
+
+/* ---- brøkfiguren: teller over streken, nevner under ---- */
+.brokfig{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 18px;
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 14px;margin:12px 0}
+.brokfig .brk{text-align:center;min-width:250px;flex:0 1 auto}
+.brokfig .tell,.brokfig .nevn{border-radius:8px;padding:8px 13px;font-size:15.5px;line-height:1.28}
+.brokfig .tell{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+.brokfig .nevn{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+.brokfig .strek{height:3px;background:#16203A;border-radius:2px;margin:6px 0}
+.brokfig .tall{display:block;font-size:23px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+.brokfig .lik{font-size:27px;color:#16203A;font-weight:600}
+.brokfig .res{font-size:17px;color:var(--tstat);text-align:center;line-height:1.3}
+.brokfig .res b{display:block;font-size:31px;font-weight:700;font-variant-numeric:tabular-nums}
+.brokfig .res .n{display:block;font-size:13.5px;color:#5C6A80;font-weight:400;margin-top:3px}
+.brokfig.smal .brk{min-width:210px}
+.brokfig.smal .tall{font-size:19px}
+.brokfig.smal .res b{font-size:25px}
+
+.stat.s-sig{background:var(--sig-bg);color:var(--sig)}
+.stat.s-stoy{background:var(--stoy-bg);color:var(--stoy)}
+.stat.s-tstat{background:var(--tstat-bg);color:var(--tstat)}
+.stat.s-p{background:var(--pverdi-bg);color:var(--pverdi)}
+.stat.s-eff{background:var(--eff-bg);color:var(--eff)}
+table.anova td.c-sig,table.tt td.c-sig{color:var(--sig);font-weight:700}
+table.anova td.c-stoy,table.tt td.c-stoy{color:var(--stoy);font-weight:700}
+table.anova td.c-tstat,table.tt td.c-tstat{color:var(--tstat);font-weight:700}
+table.anova td.c-p,table.tt td.c-p{color:var(--pverdi);font-weight:700}
+table.anova td.c-eff,table.tt td.c-eff{color:var(--eff);font-weight:700}
+/* ---- fargeforklaring ---- */
+.fargeliste{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:8px;margin-top:8px}
+.fargeliste div{border-radius:8px;padding:7px 11px;font-size:15px;line-height:1.35}
+.fargeliste b{display:block;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+
+/* ---- ANOVA-tabellen med fargede rader ---- */
+table.anova tr.r-sig td,table.tt tr.r-sig td{background:var(--sig-bg)}
+table.anova tr.r-stoy td,table.tt tr.r-stoy td{background:var(--stoy-bg)}
+table.anova tr.r-total td,table.tt tr.r-total td{color:#5F6A7E}
+table.anova tr.r-total td:first-child{font-weight:700}
+table.anova tr.r-sig td:first-child{color:var(--sig);font-weight:700}
+table.anova tr.r-stoy td:first-child{color:var(--stoy);font-weight:700}
 *{box-sizing:border-box}
 body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
 .wrap{max-width:1000px;margin:0 auto;padding:16px}
@@ -123,6 +197,9 @@ details.ordbok[open]>summary::before{content:"▾ "}
 .hvnaar th,.hvnaar td{border-bottom:1px solid #e2e6ee;padding:7px 8px;text-align:left;vertical-align:top}
 .hvnaar th{color:#4a5568;font-weight:600;font-size:14.5px}
 .hvnaar tr.na{background:rgba(46,84,150,.10)}
+.tabnavn{font-size:16px;font-weight:600;color:#1F3864;margin:14px 0 2px;font-style:italic}
+table.tt tr.na td{background:rgba(46,84,150,.10)}
+table.tt tr.na td:first-child{color:#1F3864}
 .hvnaar tr.na td{font-weight:700;color:#1F3864}
 .hvq{border:1px solid #d9dee8;border-radius:10px;padding:10px 12px;margin:0 0 9px;
   background:#fff;font-size:16.5px;line-height:1.45}
@@ -134,13 +211,47 @@ details.ordbok[open]>summary::before{content:"▾ "}
 .hvq.rett{border-color:#8fc38f;background:#f6fbf6}
 .hvq.feil{border-color:#e3aaa4;background:#fdf6f5}
 .hvfasit{font-weight:700}.hvfasit.ja{color:#2E7D32}.hvfasit.nei{color:#C0392B}
-</style></head><body>
-<header><h1>Sim 29 &middot; Kji-kvadratlaben</h1>
+
+.hvgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.hvkort{border-radius:10px;padding:11px 13px;font-size:16px;line-height:1.5}
+.hvkort h3{margin:0 0 6px;font-size:16.5px}
+.hvkort ul{margin:0;padding-left:18px}
+.hvkort li{margin-bottom:7px}
+.hver{background:#eaf6ea;border:1px solid #bcdcbc;border-left:5px solid #2E7D32}
+.hver h3{color:#1E5C22}
+.hvikke{background:#fbeceb;border:1px solid #edc9c5;border-left:5px solid #C0392B}
+.hvikke h3{color:#9B2D20}
+.eks{display:block;color:#5A6B7B;font-size:14.5px;margin-top:2px}
+.hvnaar{width:100%;border-collapse:collapse;font-size:15.5px;margin-top:8px}
+.hvnaar th{text-align:left;background:#eef2f8;border-bottom:2px solid #c7d6ec;padding:6px 8px;font-size:14.5px}
+.hvnaar td{border-bottom:1px solid #d9dee8;padding:6px 8px;vertical-align:top}
+.hvnaar tr.na{background:#eef3fb;font-weight:500}
+@media(max-width:760px){.hvgrid{grid-template-columns:1fr}}
+.ovkort{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ovlbl{font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5A6B7B}
+.ovhint{font-size:13.5px;color:#8b949e}
+.ovlenke{color:#2E5496;font-weight:600;cursor:pointer;text-decoration:underline}
+</style>
+<style id="ovbegrep-css">
+.ovkort{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f6f8fa;
+ border:1px solid #dde3e8;border-left:5px solid #C8102E;border-radius:10px;
+ padding:10px 13px;margin:14px 0;font-size:15px}
+.ovkort .ovlbl{font-weight:700;color:#5B6670;letter-spacing:.02em;
+ text-transform:uppercase;font-size:11.5px}
+.ovkort a.ovlenke{display:inline-block;background:#fff;border:1px solid #c7d6ec;
+ border-radius:999px;padding:3px 11px;color:#174A6B;text-decoration:none;font-size:14.5px}
+.ovkort a.ovlenke:hover{background:#eef3fb;border-color:#8fb0d6}
+.ovkort .ovhint{color:#6B767D;font-size:13px}
+</style>
+</head><body>
+<header><h1>Sim 29 &middot; Kjikvadrat: fra krysstabell til p-verdi</h1>
 <p>PSY300 &middot; Forelesning 8 &middot; Fra en krysstabell til en <i>p</i>-verdi &mdash; og en test av om &chi;&sup2;-fordelingen faktisk beskriver virkeligheten</p></header>
 <div class="wrap">
 <div class="rad" style="display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 6px">
 <button class="fane on" data-fane="hvorfor">0 · Hvorfor kjikvadrat?</button>
 <button class="fane" data-fane="sim">1 · Simuleringen</button>
+<button class="fane" data-fane="odds">2 &middot; Oddsforhold</button>
+<button class="fane" data-fane="rapport">3 &middot; Slik rapporteres det</button>
 </div>
 <div id="fane-hvorfor">
 <div class="card">
@@ -202,7 +313,33 @@ poenget &mdash; ikke om du traff.</p>
 <div id="hvSum" class="note" style="display:none"></div>
 </div>
 
-<div class="keybox"><span class="lbl">Klar for simuleringen?</span><b>Kjikvadrat er den ene testen i emnet som teller i stedet for å måle.</b></div>
+<div class="card">
+<div class="keybox"><span class="lbl">Klar for simuleringen?</span>
+<b>Kjikvadrat er den ene testen i emnet som teller i stedet for å måle.</b>
+<details class="mer"><summary>For den som vil grave: er dette <i>også</i> den lineære modellen?</summary><div>
+Ja. Og det er verdt å se, fordi det lukker den siste luka i påstanden om at alt i dette emnet
+er samme modell.<br><br>
+Hindringen er at utfallet her er et <b>antall</b>, ikke en måling, og antall kan ikke være
+negative. Løsningen er å modellere <b>logaritmen</b> av antallet i stedet. Da blir modellen
+den samme som for et faktorielt design (Sim 24), med to kategoriske prediktorer og et
+produktledd:
+<div class="formel" style="font-size:18px;margin:10px 0">
+ln(antall) = <i>b</i>₀ + <i>b</i>₁·A + <i>b</i>₂·B + <i>b</i>₃·AB</div>
+Og nå kommer poenget. <b>Produktleddet <i>b</i>₃ <i>er</i> avhengigheten.</b> To variabler er
+uavhengige nettopp når det ikke finnes noen interaksjon mellom dem.<br><br>
+Så: ta produktleddet ut av modellen. Passer modellen fortsatt like godt, bidro interaksjonen
+ingenting, og variablene er uavhengige. Kollapser tilpasningen, bar interaksjonen mye, og de
+er avhengige. <b>Det tapet i tilpasning er χ².</b><br><br>
+Det er nøyaktig samme logikk som Δ<i>R</i>² i regresjon: du tar ut et ledd og måler hva du
+mistet. Og residualene blir, som alltid, observert minus forventet &mdash; akkurat det du regner
+med i fane 1.<br><br>
+<b>Navnet på metoden</b> når du har tre eller flere kategoriske variabler og vil modellere alle
+interaksjonene, er <b>loglineær analyse</b>. Den ligger utenfor dette emnet, men nå vet du hva
+ordet betyr og hvorfor det heter «log».
+</div></details></div>
+</div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C11">C11 Kjikvadrat og kategoriske effektmål &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-hvorfor -->
 <div id="fane-sim" class="hide">
 
@@ -235,7 +372,7 @@ poenget &mdash; ikke om du traff.</p>
 
 <div class="card">
 <h2>4. Utregningen, celle for celle</h2>
-<p class="muted">&chi;&sup2; er ikke annet enn en sum: for hver celle regner vi ut hvor langt observert ligger fra forventet, kvadrerer avstanden, og deler p&aring; forventet. Kvadreringen gj&oslash;<i>r</i> at retningen forsvinner; delingen p&aring; forventet gj&oslash;<i>r</i> at et avvik p&aring; 10 teller mer n&aring;<i>r</i> vi ventet 20 enn n&aring;<i>r</i> vi ventet 200.</p>
+<p class="muted">&chi;&sup2; er ikke annet enn en sum: for hver celle regner vi ut hvor langt observert ligger fra forventet, kvadrerer avstanden, og deler p&aring; forventet. Kvadreringen gj&oslash;r at retningen forsvinner; delingen p&aring; forventet gj&oslash;r at et avvik p&aring; 10 teller mer n&aring;r vi ventet 20 enn n&aring;r vi ventet 200.</p>
 <div id="regnTab"></div>
 <div id="resultat" class="keybox" style="margin-top:12px"></div>
 </div>
@@ -270,8 +407,8 @@ Teorien over er en <b>p&aring;stand</b>. Her tester vi den. Vi bygger en verden 
 </div>
 </div>
 <div class="rad">
-<button class="btn" id="kjor10k">Kj&oslash;<i>r</i> 10 000 nullstudier</button>
-<button class="btn2" id="kjor1k">Kj&oslash;<i>r</i> 1 000</button>
+<button class="btn" id="kjor10k">Kj&oslash;r 10 000 nullstudier</button>
+<button class="btn2" id="kjor1k">Kj&oslash;r 1 000</button>
 <button class="btn2" id="kjor1">Trekk &eacute;<i>n</i> enkelt nullstudie</button>
 <button class="btn2" id="nullstill">Nullstill</button>
 <label>Framstilling: <select id="simForm"><option value="hist" selected>histogram</option><option value="tetthet">tetthetskurve (glatt)</option></select></label>
@@ -286,35 +423,352 @@ Teorien over er en <b>p&aring;stand</b>. Her tester vi den. Vi bygger en verden 
 <div class="card">
 <div class="keybox">
 <span class="lbl">Hovedpoenget</span>
-<b>&chi;&sup2; er en avstand, og &chi;&sup2;-fordelingen er en tiln&aelig;rming til hvordan den avstanden oppf&oslash;rer seg n&aring;<i>r</i> ingenting foreg&aring;<i>r</i>.</b>
-Testen sammenligner det du telte med det du ville ventet hvis H&#8320; var sann, og gj&oslash;<i>r</i> forskjellen om til ett tall. <i>p</i>-verdien er arealet i halen: hvor ofte ren tilfeldighet ville gitt et minst like stort avvik.<details class="mer"><summary>Mer om dette</summary><div>Tiln&aelig;rmingen er god n&aring;<i>r</i> cellene er romslige. Blir de forventede frekvensene sm&aring;, svikter den &mdash; som regel ved at testen blir <i>konservativ</i> og forkaster sjeldnere enn den lover, fordi antall er hele tall og en glatt kurve ikke klarer &aring; treffe en trappetrinnsfordeling. Prøv en tabell med E rundt 1: simuleringen kan lande p&aring; under 1 % forkastninger der testen lovet 5 %. Da er Fishers eksakte test svaret, ikke et st&oslash;rre &chi;&sup2;. Og husk hva testen <i>ikke</i> sier: den sier ingenting om hvor sterk sammenhengen er. Det er derfor Cram&eacute;rs V st&aring;<i>r</i> ved siden av.</div></details></div>
+<b>&chi;&sup2; er en avstand, og &chi;&sup2;-fordelingen er en tiln&aelig;rming til hvordan den avstanden oppf&oslash;rer seg n&aring;r ingenting foreg&aring;r.</b>
+Testen sammenligner det du telte med det du ville ventet hvis H&#8320; var sann, og gj&oslash;r forskjellen om til ett tall. <i>p</i>-verdien er arealet i halen: hvor ofte ren tilfeldighet ville gitt et minst like stort avvik.<details class="mer"><summary>Mer om dette</summary><div>Tiln&aelig;rmingen er god n&aring;r cellene er romslige. Blir de forventede frekvensene sm&aring;, svikter den &mdash; som regel ved at testen blir <i>konservativ</i> og forkaster sjeldnere enn den lover, fordi antall er hele tall og en glatt kurve ikke klarer &aring; treffe en trappetrinnsfordeling. Prøv en tabell med E rundt 1: simuleringen kan lande p&aring; under 1 % forkastninger der testen lovet 5 %. Da er Fishers eksakte test svaret, ikke et st&oslash;rre &chi;&sup2;. Og husk hva testen <i>ikke</i> sier: den sier ingenting om hvor sterk sammenhengen er. Det er derfor Cram&eacute;rs V st&aring;r ved siden av.</div></details></div>
 </div>
+
+<div class="card">
+<h2>Hvor i tabellen ligger forskjellen?</h2>
+<p class="muted">En signifikant &chi;&sup2; sier at tabellen avviker fra uavhengighet &mdash;
+ikke <b>hvor</b>. Det er samme situasjon som en signifikant omnibus-<i>F</i> i ANOVA, og den
+krever samme type oppbryting. Verktøyet heter <b>standardiserte residualer</b>, og JASP gir
+dem under <code>Cells &rarr; Residuals &rarr; Pearson</code>.</p>
+
+<div class="formel" style="font-size:20px;margin:12px 0">
+residual = (observert &minus; forventet) / &radic;forventet</div>
+
+<div class="note"><b>Og så det som gjør dem brukbare: dette er en <i>z</i>-skåre.</b>
+Du leser den som en hvilken som helst annen <i>z</i>:
+<table class="tt" style="margin-top:8px">
+<tr><th>Residual</th><th>Betydning</th></tr>
+<tr><td>utenfor &plusmn;1.96</td><td class="c-p">ruta avviker signifikant, <i>p</i> &lt; .05</td></tr>
+<tr><td>utenfor &plusmn;2.58</td><td class="c-p"><i>p</i> &lt; .01</td></tr>
+<tr><td>utenfor &plusmn;3.29</td><td class="c-p"><i>p</i> &lt; .001</td></tr>
+</table>
+<b>Fortegnet</b> sier retningen: pluss betyr at ruta har <b>flere</b> enn forventet, minus
+<b>færre</b>.</div>
+
+<div class="note" style="margin-top:10px"><b>De er ikke et sidespor &mdash; de <i>er</i> testen.</b>
+Legg sammen alle residualene kvadrert, og du får nøyaktig &chi;&sup2; tilbake. Sammenlign
+formelen over med &chi;&sup2;-formelen: forskjellen er bare at &chi;&sup2; kvadrerer for at
+avvikene ikke skal nulle hverandre ut. Dropper du kvadreringen, beholder du retningen.</div>
+
+<h3 style="margin-top:18px;font-size:17.5px;color:#1F3864">To ekte tabeller</h3>
+<p class="muted">Begge fra terapi-RCT-en, <i>N</i> = 86. Den første er frafallstabellen.</p>
+
+<div class="tabnavn">Frafall &times; gruppe</div>
+<table class="tt">
+<tr><th></th><th>Droppet ut</th><th>Fullførte</th></tr>
+<tr><td>ISTDP &mdash; observert (forventet)</td><td>7 (5.5)</td><td>36 (37.5)</td></tr>
+<tr><td>Venteliste &mdash; observert (forventet)</td><td>4 (5.5)</td><td>39 (37.5)</td></tr>
+<tr class="na"><td><b>Standardiserte residualer</b></td>
+<td>+0.64 / &minus;0.64</td><td>&minus;0.25 / +0.25</td></tr>
+</table>
+<p class="liten"><b>&chi;&sup2;(1, <i>N</i> = 86) = 0.94, <i>p</i> = .33, &phi; = .10.</b>
+Ingen residual er i nærheten av &plusmn;1.96, og det stemmer med at testen ikke er signifikant.
+Her er det <b>ingen rute som skiller seg ut</b> &mdash; og det er et svar, ikke et manglende svar.
+<br>Legg likevel merke til at oddsforholdet er 1.90 (fane 2). Odds nesten dobbelt så høy, og
+likevel ingenting som nærmer seg signifikans: med 11 frafall totalt har tabellen rett og slett
+ikke nok å gå på.</p>
+
+<div class="tabnavn" style="margin-top:14px">Tidligere behandlinger &times; medisinbruk</div>
+<table class="tt">
+<tr><th>Tidligere behandlinger</th><th>Bruker medisin</th><th>Bruker ikke</th></tr>
+<tr><td>1 &mdash; observert (forventet)</td><td>23 (30.1)</td><td>15 (8.0)</td></tr>
+<tr><td>2 &mdash; observert (forventet)</td><td>29 (25.3)</td><td>3 (6.7)</td></tr>
+<tr><td>3 eller flere &mdash; observert (forventet)</td><td>16 (12.7)</td><td>0 (3.4)</td></tr>
+<tr class="na"><td><b>Standardiserte residualer</b></td>
+<td>&minus;1.29 / +0.74 / +0.94</td>
+<td class="c-sig"><b>+2.50</b> / &minus;1.43 / &minus;1.83</td></tr>
+</table>
+<p class="liten"><b>&chi;&sup2;(2, <i>N</i> = 86) = 14.71, <i>p</i> &lt; .001, Cram&eacute;rs
+<i>V</i> = .41.</b> Her er det <b>&eacute;n</b> rute som bærer funnet: de med bare &eacute;n
+tidligere behandling er klart overrepresentert blant dem som <b>ikke</b> bruker medisin
+(+2.50, altså <i>p</i> &lt; .05). Ingen av de andre rutene når &plusmn;1.96.
+<br>Og legg merke til forutsetningen: &eacute;n av seks ruter har forventet frekvens 3.4.
+Det er under 5, men det er &eacute;n av seks &mdash; 17 %, altså innenfor regelen om at
+høyst 20 % kan ligge under 5 så lenge ingen er under 1. Det skal stå i rapporten.</p>
+
+<div class="advarsel"><b>Uavhengighet betyr &eacute;n rute per person.</b> Hver deltaker skal
+telles &eacute;n gang, i &eacute;n celle. Det betyr at du <b>ikke</b> kan lage en krysstabell
+av de <i>samme</i> personene målt to ganger &mdash; «røykte før» &times; «røyker nå» er ikke en
+kjikvadrattabell, selv om den ser ut som en.
+<div style="margin-top:6px">Testen for den situasjonen heter <b>McNemars test</b>, og den ser
+bare på dem som <i>endret</i> seg. Dette er den nærmeste fellen i dette emnet: du kommer rett
+fra gjentatte målinger, og en før/etter-tabell ser forførende ut som en krysstabell.</div></div>
+
+<details class="mer"><summary>For den som vil grave: de to andre avkrysningsboksene i JASP</summary><div>
+Ved siden av &chi;&sup2; i <code>Contingency Tables &rarr; Statistics</code> ligger to til.
+Ingen av dem skal brukes rutinemessig, men begge dukker opp.<br><br>
+<b>Yates&rsquo; kontinuitetskorreksjon.</b> Gjelder bare 2 &times; 2-tabeller. Den trekker 0.5
+fra hvert avvik før kvadreringen, fordi antall er hele tall mens &chi;&sup2;-fordelingen er
+glatt. Resultatet blir alltid en <i>mindre</i> &chi;&sup2; og en større <i>p</i>. På
+frafallstabellen over faller &chi;&sup2; fra 0.94 til 0.42, og <i>p</i> fra .33 til .52.<br>
+Problemet er at den <b>overkorrigerer</b>: den gjør testen for konservativ. Field anbefaler
+å kjenne den og la være å bruke den. Trenger du noe ved små celler, er Fishers eksakte test
+det riktige svaret.<br><br>
+<b>Sannsynlighetsraten</b> (<i>likelihood ratio</i>, <i>G</i>²). Et alternativ til Pearsons
+&chi;&sup2;, bygget på maksimum likelihood i stedet for kvadrerte avvik. Den har samme
+frihetsgrader og tolkes likt. I store utvalg gir de nesten samme tall &mdash; på
+frafallstabellen 0.95 mot 0.94 &mdash; og den foretrekkes i små utvalg.<br>
+I praksis: rapporter Pearsons &chi;&sup2; med mindre du har en grunn til noe annet.
+</div></details>
+</div>
+
 
 <details class="ordbok" id="ordforklaringer"><summary>Ordforklaringer</summary>
 <p class="gloss">
+<b>Odds</b> &mdash; treff delt p&aring; ikke-treff. Ikke det samme som sannsynlighet, som er treff delt p&aring; alle. 10 av 50 gir sannsynlighet 0.20, men odds 0.25.
+<b>Oddsforhold (<i>OR</i>)</b> &mdash; oddsen i &eacute;n gruppe delt p&aring; oddsen i en annen. 1 betyr ingen forskjell. Regnes som <i>ad</i>/<i>bc</i> fra en 2 &times; 2-tabell. Snur du tabellen, f&aring;r du 1/<i>OR</i>.
+<b>Referansekategori</b> &mdash; gruppa de andre m&aring;les mot. M&aring; alltid oppgis n&aring;r du rapporterer et oddsforhold.
+<b>Kasus-kontroll-studie</b> &mdash; design der forskeren selv bestemmer hvor mange syke og friske som er med. Da kan risiko ikke leses ut av tabellen, men oddsforholdet gjelder likevel.
+<b>Risikoforhold</b> &mdash; andelen med utfallet i &eacute;n gruppe delt p&aring; andelen i en annen. Krever at andelene er ekte, alts&aring; kohort eller eksperiment. Ligner oddsforholdet bare n&aring;r utfallet er sjeldent.
 <b>Kategorisk variabel</b> &mdash; en variabel med kategorier, ikke tall: kj&oslash;nn, fagfelt, falt fra / fullf&oslash;rte. Kalles ogs&aring; nominal.<br>
 <b>Krysstabell</b> &mdash; opptellingen av hvor mange som havner i hver kombinasjon av to kategoriske variabler.<br>
 <b>Marginalfordeling</b> &mdash; rad- og kolonnesummene: hvor mange menn og kvinner det var totalt, uavhengig av den andre variabelen.<br>
 <b>O (observert)</b> &mdash; antallet du faktisk telte i en celle.<br>
 <b>E (forventet)</b> &mdash; antallet du ville ventet i cellen <i>hvis</i> H&#8320; var sann. Ikke et antall noen har observert, men et regnestykke.<br>
 <b>H&#8320; (nullhypotesen)</b> &mdash; i tilpasningstesten: at fordelingen f&oslash;lger bestemte andeler. I uavhengighetstesten: at de to variablene ikke henger sammen.<br>
-<b>&chi;&sup2; (kji-kvadrat)</b> &mdash; summen av (O &minus; E)&sup2;/E over alle celler. Null n&aring;<i>r</i> observert og forventet er like; vokser med avviket.<br>
+<b>&chi;&sup2; (kji-kvadrat)</b> &mdash; summen av (O &minus; E)&sup2;/E over alle celler. Null n&aring;r observert og forventet er like; vokser med avviket.<br>
 <b><i>df</i> (frihetsgrader)</b> &mdash; antall verdier som fritt kan variere. Tilpasningstest: antall kategorier &minus; 1. Uavhengighetstest: (rader &minus; 1) &middot; (kolonner &minus; 1).<br>
 <b>Kritisk verdi</b> &mdash; grensen der de &oslash;verste &alpha; av &chi;&sup2;-fordelingen begynner. Sammenlign din &chi;&sup2; med den.<br>
 <b><i>p</i>-verdi</b> &mdash; sannsynligheten for et avvik minst s&aring; stort som ditt, GITT at H&#8320; er sann. Ikke sannsynligheten for at H&#8320; er sann.<br>
 <b>Cram&eacute;rs V</b> &mdash; effektst&oslash;rrelse for krysstabeller, fra 0 til 1. Uavhengig av <i>N</i>, i motsetning til &chi;&sup2; selv.<br>
 <b>Cohens w</b> &mdash; effektst&oslash;rrelse for tilpasningstesten: &radic;(&chi;&sup2;/N).<br>
-<b>Antakelsen om forventede frekvenser</b> &mdash; tommelregelen er at alle E b&oslash;<i>r</i> v&aelig;re minst 5 (noen sier: minst 80 % av cellene over 5, ingen under 1). Er de mindre, er &chi;&sup2;-fordelingen en d&aring;rlig tiln&aelig;rming.<br>
-<b>Fishers eksakte test</b> &mdash; regner ut sannsynligheten direkte i stedet for &aring; tiln&aelig;rme den. Det riktige valget n&aring;<i>r</i> cellene er sm&aring;.<br>
+<b>Antakelsen om forventede frekvenser</b> &mdash; tommelregelen er at alle E b&oslash;r v&aelig;re minst 5 (noen sier: minst 80 % av cellene over 5, ingen under 1). Er de mindre, er &chi;&sup2;-fordelingen en d&aring;rlig tiln&aelig;rming.<br>
+<b>Fishers eksakte test</b> &mdash; regner ut sannsynligheten direkte i stedet for &aring; tiln&aelig;rme den. Det riktige valget n&aring;r cellene er sm&aring;.<br>
 <b>Nullstudie</b> &mdash; en simulert studie trukket fra en verden der H&#8320; er sann per konstruksjon. Alt vi ser av &laquo;funn&raquo; der, er falske positive.
 </p>
 </details>
 
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C11">C11 Kjikvadrat og kategoriske effektmål &rarr;</a> <a class="ovlenke" data-begrep="B7">B7 Effektstørrelse og praktisk betydning &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+<div id="fane-odds" class="hide">
+
+<div class="card">
+<h2>Hva kjikvadrat ikke kan svare på</h2>
+<p style="font-size:16.5px;line-height:1.55">&chi;&sup2; forteller deg <b>om</b> to kategorier
+henger sammen. Cram&eacute;rs <i>V</i> forteller deg <b>hvor mye av tabellen</b> sammenhengen
+forklarer. Ingen av dem forteller deg <b>hvor mye mer sannsynlig</b> utfallet er i den ene gruppen
+enn i den andre &mdash; eller hvilken vei det går. &chi;&sup2; kan ikke bli negativ.</p>
+<p style="font-size:16.5px;line-height:1.55">Det er det <b>oddsforholdet</b> gjør. Det er den
+tredje store effektstørrelsen ved siden av Cohens <i>d</i> og Pearsons <i>r</i>, og den eneste av
+dem som er bygget på opptellinger.</p>
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+<b>Oddsforholdet er oddsen for utfallet i én gruppe delt på oddsen i den andre. 1 betyr ingen
+forskjell, over 1 betyr høyere odds, under 1 betyr lavere.</b></div>
+</div>
+
+<div class="card">
+<h2>Først: odds er ikke sannsynlighet</h2>
+<p style="font-size:16.5px;line-height:1.55">Dette er forvekslingen hele resten av fanen hviler på.
+<b>Sannsynlighet</b> er antall treff delt på <b>alle</b>. <b>Odds</b> er antall treff delt på
+antall <b>ikke-treff</b>.</p>
+<div class="todelt">
+<div class="note"><b>10 av 50 faller fra</b><br>
+Sannsynlighet = 10/50 = <b>0.20</b><br>
+Odds = 10/40 = <b>0.25</b></div>
+<div class="note"><b>25 av 50 faller fra</b><br>
+Sannsynlighet = 25/50 = <b>0.50</b><br>
+Odds = 25/25 = <b>1</b></div>
+</div>
+<p class="muted" style="font-size:15.5px;margin-top:8px">Ved små andeler ligger de nær hverandre.
+Ved store gjør de ikke det: en sannsynlighet på 0.50 er odds på 1, og en sannsynlighet på 0.90 er
+odds på 9. Odds har ingen øvre grense; sannsynlighet stopper på 1.</p>
+</div>
+
+<div class="card">
+<h2>Regn det ut</h2>
+<p class="muted" style="font-size:15.5px">Skriv inn dine egne tall, eller hent et av datasettene
+fra fane 1. Oddsforholdet krever en <b>2 &times; 2</b>-tabell.</p>
+<div class="rad" style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px">
+<button class="btn2" id="orDH">Doll &amp; Hill 1952</button>
+<button class="btn2" id="orFram">Framingham: røyker nå mot aldri</button>
+<button class="btn2" id="orDrop">Terapi-RCT: frafall</button>
+<button class="btn2" id="orLap">Laptop i timen &times; eksamen</button>
+</div>
+<table class="minitab" id="orTab" style="font-size:16.5px">
+<tr><th></th><th id="orK1">Utfall ja</th><th id="orK2">Utfall nei</th><th>Odds</th></tr>
+<tr><th id="orR1">Gruppe 1</th>
+    <td><input id="orA" type="number" min="0" step="1" value="1350" style="width:92px"></td>
+    <td><input id="orB" type="number" min="0" step="1" value="1296" style="width:92px"></td>
+    <td id="orO1" class="tall"></td></tr>
+<tr><th id="orR2">Gruppe 2</th>
+    <td><input id="orC" type="number" min="0" step="1" value="7" style="width:92px"></td>
+    <td><input id="orD" type="number" min="0" step="1" value="61" style="width:92px"></td>
+    <td id="orO2" class="tall"></td></tr>
+</table>
+<div class="note" id="orSvar" style="margin-top:12px"></div>
+<div class="note" id="orKilde" style="font-size:15px"></div>
+</div>
+
+<div class="card">
+<h2>Hva tallet betyr &mdash; og hva det ikke betyr</h2>
+<div class="hvgrid">
+<div class="hvkort hver"><h3>&#10003; Det forteller deg</h3><ul>
+<li><b>Retningen.</b> Over 1: høyere odds i gruppe 1. Under 1: lavere.
+<span class="eks">&chi;&sup2; kan ikke dette &mdash; den er alltid positiv.</span></li>
+<li><b>Styrken, uavhengig av <i>N</i>.</b> Oddsforholdet endrer seg ikke når du dobler utvalget,
+slik &chi;&sup2; gjør.</li>
+<li><b>Noe tolkbart.</b> «2.5 ganger høyere odds» er en setning folk forstår.
+<span class="eks">Det kan du ikke si om <i>V</i> = .13.</span></li>
+<li><b>Det samme begge veier.</b> Snur du tabellen, får du 1 delt på oddsforholdet. Samme
+sammenheng, speilvendt.</li>
+</ul></div>
+<div class="hvkort hvikke"><h3>&#10007; Det forteller deg ikke</h3><ul>
+<li><b>Risiko.</b> Oddsforhold er ikke risikoforhold. De ligner bare når utfallet er sjeldent.
+<span class="eks">Ved vanlige utfall overdriver oddsforholdet.</span></li>
+<li><b>Om forskjellen er stor i antall.</b> En odds som femdobles fra 0.002 til 0.01 er fortsatt
+nesten ingen.</li>
+<li><b>Om den er signifikant.</b> Det gjør &chi;&sup2;, eller konfidensintervallet rundt
+oddsforholdet.</li>
+<li><b>Årsak.</b> Samme forbehold som ellers.</li>
+</ul></div>
+</div>
+</div>
+
+<div class="card">
+<h2>Når du <i>må</i> bruke oddsforhold</h2>
+<p style="font-size:16.5px;line-height:1.55">I en <b>kasus-kontroll-studie</b> bestemmer forskeren
+hvor mange syke og hvor mange friske som skal være med. Doll og Hill valgte 1&nbsp;357 i hver
+kolonne. Da er kolonnesummene menneskeskapte, og <b>andelen syke i tabellen betyr ingenting</b>
+&mdash; den er bestemt på forhånd. Risiko kan altså ikke leses ut.</p>
+<p style="font-size:16.5px;line-height:1.55">Oddsforholdet overlever dette. Det er den ene
+egenskapen som gjør det uunnværlig i epidemiologi: <b>det er det samme enten du har samlet data
+framover i tid eller bakover.</b> Det er grunnen til at Doll og Hill kunne si noe om røyking og
+lungekreft i 1952, uten å vente tretti år på en kohort.</p>
+<div class="keybox kb1"><span class="lbl">Legg merke til</span>
+<b>Framingham-tallene er en kohort, Doll og Hill er en kasus-kontroll. Oddsforholdene er likevel
+av samme størrelsesorden &mdash; 7.8 mot 9.1. To helt ulike design, sytti år fra hverandre,
+samme svar.</b></div>
+</div>
+
+<div class="card">
+<h2>Større tabeller: velg en referansekategori</h2>
+<p style="font-size:16.5px;line-height:1.55">Oddsforholdet er definert for <b>2 &times; 2</b>. Har
+du flere rader, velger du én som <b>referansekategori</b> og regner ett oddsforhold per øvrige rad
+mot den. Framingham har tre røykestatuser, og «aldri røykt» er den naturlige referansen:
+tidligere røyker 6.5, røyker nå 7.8.</p>
+<p style="font-size:16.5px;line-height:1.55">Det er samme logikk som dummykoding i regresjon
+&mdash; én kategori er nullpunktet, resten måles mot den. Og det er grunnen til at du må
+<b>oppgi hvilken kategori som er referansen</b> når du rapporterer.</p>
+<details class="mer"><summary>Mer om dette: hvorfor oddsforhold og ikke risikoforhold?</summary>
+<div>Risikoforholdet (relativ risiko) er lettere å forstå: «dobbelt så stor risiko». Men det
+krever at du kjenner de sanne andelene, og det gjør du bare i en kohort eller et eksperiment. I en
+kasus-kontroll-studie finnes de ikke. Oddsforholdet krever ikke dette, og det er dessuten
+størrelsen logistisk regresjon estimerer &mdash; en <i>e</i> opphøyd i <i>b</i> fra en logistisk
+modell <b>er</b> et oddsforhold. Prisen er at oddsforholdet overdriver når utfallet er vanlig:
+ved en risiko på 50 % mot 25 % er risikoforholdet 2, men oddsforholdet 3.</div></details>
+</div>
+
+<div class="card">
+<h2>Slik rapporteres det</h2>
+<div class="note" style="font-size:16.5px;background:#fff">
+Sammenhengen mellom røyking og lungekreft var signifikant, &chi;&sup2;(1, <i>N</i> = 2714) = 43.98,
+<i>p</i> &lt; .001, Cram&eacute;rs <i>V</i> = .13. Oddsen for lungekreft var 9.08 ganger høyere
+blant røykere enn blant ikke-røykere (<i>OR</i> = 9.08). Fordi dette er en kasus-kontroll-studie,
+kan oddsforholdet ikke tolkes som et risikoforhold.</div>
+<p style="font-size:16.5px;line-height:1.55;margin-top:10px"><b>Tre krav.</b> Si hvilken gruppe
+som er <b>referanse</b>. Oppgi <b>konfidensintervallet</b> rundt <i>OR</i> hvis du har det &mdash;
+et intervall som inneholder 1 betyr ingen sikker forskjell. Og si hvilket <b>design</b> tallene
+kommer fra, siden det avgjør om risiko i det hele tatt kan leses ut.</p>
+<div class="ovbaand"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C11">C11 Kjikvadrat og kategoriske effektmål &rarr;</a><a class="ovlenke" data-begrep="B7">B7 Effektstørrelse og praktisk betydning &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+</div>
+
+<div id="fane-rapport" class="hide">
+<div class="card">
+<h2>Rekkefølgen i en kjikvadratrapport</h2>
+<div class="note"><b>1 &middot; Si hvilken test det er.</b> Uavhengighetstest (to kategoriske
+variabler henger sammen?) eller tilpasningstest (&eacute;n variabel mot forventede andeler)? De
+heter begge kjikvadrat og tolkes ulikt.</div>
+<div class="note"><b>2 &middot; Vis krysstabellen.</b> Observerte antall, og gjerne radprosent eller
+kolonneprosent. Uten tabellen kan leseren ikke se hva sammenhengen består i.</div>
+<div class="note"><b>3 &middot; Testen:</b> &chi;²(<i>df</i>, <i>N</i> = …) = verdi, eksakt
+<i>p</i>. Legg merke til at <i>N</i> står inne i parentesen &mdash; det er særegent for kjikvadrat
+og kreves i APA.</div>
+<div class="note"><b>4 &middot; Effektstørrelse:</b> Cramérs <i>V</i> ved tabeller større enn
+2 &times; 2, &phi; ved 2 &times; 2. Med store <i>N</i> blir nesten alt signifikant, så
+effektstørrelsen er det som sier om funnet betyr noe.</div>
+<div class="note"><b>5 &middot; Forutsetningen:</b> forventet frekvens minst 5 i hver rute. Oppgi
+hvor mange ruter som eventuelt lå under, og om du brukte Fishers eksakte test i stedet.</div>
+<div class="note"><b>6 &middot; Si hvor forskjellen ligger.</b> En signifikant omnibustest sier at
+tabellen avviker fra uavhengighet &mdash; ikke hvilke ruter som driver det. Pek på de største
+standardiserte residualene.</div>
+</div>
+
+<div class="card">
+<h2>To ferdige setninger, i APA-stil</h2>
+<p class="muted">Først uavhengighetstest, så tilpasningstest. Tallene er eksempler &mdash; formen er
+det du skal kopiere.</p>
+
+<div class="note" style="font-size:16.5px;background:#fff"><b>Uavhengighetstest</b><br>
+En kjikvadrat uavhengighetstest ble brukt for å undersøke sammenhengen mellom studieprogram og
+foretrukket læringsform. Sammenhengen var signifikant, &chi;²(2, <i>N</i> = 240) = 11.42,
+<i>p</i> = .003, Cramérs <i>V</i> = .22. Studenter på bachelor i psykologi foretrakk
+seminarundervisning oftere (58 %) enn studenter på bachelor i helseledelse (36 %). Alle forventede
+frekvenser var over 5.</div>
+
+<div class="note" style="font-size:16.5px;background:#fff"><b>Tilpasningstest</b><br>
+En kjikvadrat tilpasningstest ble brukt for å undersøke om svarene fordelte seg jevnt over de fire
+alternativene. Fordelingen avvek signifikant fra lik fordeling, &chi;²(3, <i>N</i> = 180) = 14.27,
+<i>p</i> = .003. Alternativ C ble valgt oftere enn forventet (62 mot 45), og alternativ A sjeldnere
+(28 mot 45).</div>
+
+<div class="note"><b>Legg merke til:</b> <i>N</i> står inne i parentesen sammen med
+frihetsgradene &mdash; &chi;²(2, <i>N</i> = 240). Ingen andre tester skrives slik, og det er en av de
+hyppigste formfeilene i besvarelser.</div>
+</div>
+
+<div class="card">
+<h2>De vanligste feilene</h2>
+<div class="hvgrid">
+<div class="hvkort hvikke"><h3>✗ Dette trekker ned</h3><ul>
+<li><b><i>N</i> utelatt i parentesen.</b> APA krever &chi;²(<i>df</i>, <i>N</i> = …).</li>
+<li><b>Ingen effektstørrelse.</b> Med <i>N</i> = 2 000 blir trivielle avvik signifikante.</li>
+<li><b>Prosenter uten antall.</b> «60 % foretrakk A» er lite verdt når gruppen var fem personer.</li>
+<li><b>Krysstabellen utelatt.</b> Leseren kan ikke vurdere retningen på sammenhengen.</li>
+<li><b>Årsaksspråk.</b> Kjikvadrat er en sammenhengstest på kategorier &mdash; samme forbehold som
+for korrelasjon.</li>
+<li><b>Forventet frekvens under 5 ikke nevnt.</b> Da er <i>p</i>-verdien upålitelig.</li>
+</ul></div>
+<div class="hvkort hver"><h3>✓ Dette løfter</h3><ul>
+<li><b>Krysstabell med både antall og prosent</b> i samme rute.</li>
+<li><b>Cramérs <i>V</i> eller &phi;</b>, med en setning om hva størrelsen betyr.</li>
+<li><b>Standardiserte residualer</b> for å peke på hvilke ruter som avviker mest.</li>
+<li><b>Et søyleplott</b> med gruppene side om side.</li>
+<li><b>Eksplisitt forutsetningssetning:</b> «Alle forventede frekvenser var over 5.»</li>
+</ul></div>
+</div>
+</div>
+
+<div class="card">
+<h2>Hvor dette hører hjemme i de andre appene</h2>
+<p class="muted">
+<a href="PSY300_Sim_Testvalg.html#fane=ark">Sim 34 &middot; fane 3</a> viser når kjikvadrat er
+riktig test, og når det er noe annet.
+<a href="PSY300_Sim_Faktoriell.html#fane=kji">Sim 24 &middot; siste fane</a> viser at en
+kjikvadrat-sammenheng kan leses som en interaksjon.
+<a href="PSY300_Sim_Sannsynlighet.html#fane=uavh">Sim 35 &middot; fane 3</a> forklarer
+produktregelen som de forventede frekvensene bygger på.
+<a href="PSY300_Sim_Pverdimaskinen.html">Sim 7</a> forklarer hvorfor store <i>N</i> gjør nesten
+alt signifikant.</p>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>Kjikvadrat rapporteres med <i>N</i> inne i parentesen, med krysstabellen synlig, og med en
+effektstørrelse. Uten tabellen vet ikke leseren <i>hva</i> sammenhengen er &mdash; bare at det
+finnes en.</b></div></div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="D4">D4 Å lese en resultatdel (APA) &rarr;</a><a class="ovlenke" data-begrep="C11">C11 Kjikvadrat og kategoriske effektmål &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-sim -->
 </div><!-- /wrap -->
 <script>
 "use strict";
-const ANALYSER = {"ak_kjonn": {"type": "gof", "kilde": "Arbeidskravet · N = 391", "navn": "Kjønn mot 50/50", "sp": "Er kjønnsfordelingen i utvalget forenlig med at menn og kvinner rekrutteres like ofte?", "kat": ["Mann", "Kvinne"], "obs": [143, 248], "andel": [0.5, 0.5], "kom": "Fasit i løsningsforslaget: χ²(1) = 28.20, p &lt; .001. Klart flere kvinner enn menn — som ventet når utvalget er rekruttert via psykologi- og samfunnsfagsmiljøer."}, "ak_stem": {"type": "uav", "kilde": "Arbeidskravet · N = 391", "navn": "Kjønn × STEM-fag", "sp": "Henger kjønn sammen med om man studerer et realfag?", "rad": ["Mann", "Kvinne"], "kol": ["Ikke STEM", "STEM"], "obs": [[74, 69], [187, 61]], "kom": "Fasit: χ²(1) = 22.87, p &lt; .001, Cramérs V = .24. 48 % av mennene mot 25 % av kvinnene studerer et STEM-fag."}, "ak_fagfelt": {"type": "gof", "kilde": "Arbeidskravet · N = 391", "navn": "Fagfelt mot lik fordeling", "sp": "Fordeler deltakerne seg jevnt over de fem fagfeltene?", "kat": ["Økonomi, jus, adm.", "Naturvit. og teknologi", "Samfunnsfag og psykologi", "Helse og medisin", "Humaniora og kunst"], "obs": [114, 121, 70, 70, 16], "andel": [0.2, 0.2, 0.2, 0.2, 0.2], "kom": "Fem kategorier gir df = 4. Nullhypotesen «like mange i hvert fagfelt» er en påstand nesten ingen ville trodd på i utgangspunktet — legg merke til hvor lite informativt et signifikant svar da er."}, "ak_kjonn_fag": {"type": "uav", "kilde": "Arbeidskravet · N = 391", "navn": "Kjønn × Fagfelt (2×5)", "sp": "Studerer menn og kvinner ulike fagfelt?", "rad": ["Mann", "Kvinne"], "kol": ["Øk./jus", "Naturvit.", "Samf./psyk.", "Helse", "Humaniora"], "obs": [[29, 65, 18, 24, 7], [85, 56, 52, 46, 9]], "kom": "Her er den minste forventede frekvensen 5.85 — akkurat over grensa på 5. Prøv å slette noen humaniora-studenter og se antakelsen ryke."}, "ak_rand": {"type": "gof", "kilde": "Arbeidskravet · N = 391", "navn": "Randomiseringssjekk: lett vs. vanskelig quiz", "sp": "Ble omtrent like mange loddet til hver betingelse?", "kat": ["Vanskelig quiz", "Lett quiz"], "obs": [199, 192], "andel": [0.5, 0.5], "kom": "χ²(1) = 0.13, <i>p</i> = .72. Et <b>ikke-signifikant</b> resultat, og her er det gode nyheter: randomiseringen ser ut til å ha virket. Merk at dette ikke <i>beviser</i> 50/50 — det viser bare at tallene er forenlige med det."}, "ak_perf": {"type": "uav", "kilde": "Arbeidskravet · N = 391", "navn": "Selvkritisk perfeksjonisme × Angstsensitivitet (3×3)", "sp": "Henger de to trekkene sammen når begge deles i lav, middels og høy?", "rad": ["Lav selvkritisk", "Middels", "Høy selvkritisk"], "kol": ["Lav angstsens.", "Middels", "Høy angstsens."], "obs": [[77, 34, 22], [37, 54, 37], [19, 41, 70]], "kom": "En tydelig diagonal: χ²(4) = 71.94, V = .30. Dette er to kontinuerlige variabler kuttet i tre — kji-kvadrat kan brukes, men en korrelasjon ville brukt informasjonen bedre."}, "ak_quiz": {"type": "uav", "kilde": "Arbeidskravet · N = 391", "navn": "Quiz-betingelse × Quiz-resultat (manipulasjonssjekk)", "sp": "Fikk de som fikk vanskelig quiz faktisk færre riktige?", "rad": ["Vanskelig quiz", "Lett quiz"], "kol": ["0 rette", "1", "2", "3", "4", "5 rette"], "obs": [[78, 36, 6, 1, 0, 78], [5, 7, 29, 66, 84, 1]], "kom": "Manipulasjonssjekken: χ²(5) = 321, V = .91. Slik ser en effekt ut når manipulasjonen virkelig virket. Merk cellen med 0 — nullceller er lov, nullceller i <i>forventet</i> er ikke."}, "rct_kjonn": {"type": "gof", "kilde": "Terapi-RCT · N = 86", "navn": "Kjønn mot 50/50", "sp": "Er kjønnsfordelingen blant pasientene forenlig med 50/50?", "kat": ["Mann", "Kvinne"], "obs": [33, 53], "andel": [0.5, 0.5], "kom": "χ²(1) = 4.65, p = .031. Så vidt under .05 — et fint eksempel på et resultat som ville byttet side med noen få pasienter fra eller til. Blant de 75 som fullførte er fordelingen 31/44, og χ² faller til 2.25 (p = .13) — det signifikante resultatet forsvinner når elleve personer faller fra.", "obs86": [33, 53], "obs75": [31, 44]}, "rct_gr_kjonn": {"type": "uav", "kilde": "Terapi-RCT · N = 86", "navn": "Gruppe × Kjønn", "sp": "Ble kjønnene jevnt fordelt mellom terapi og venteliste?", "rad": ["ISTDP", "Venteliste"], "kol": ["Mann", "Kvinne"], "obs": [[15, 28], [18, 25]], "kom": "χ²(1) = 0.44, <i>p</i> = .51. Randomiseringen har gjort jobben sin. Balansesjekker som denne skal helst være kjedelige. Bytt mellom <b>alle 86 randomiserte</b> og <b>de 75 som fullførte</b> i velgeren over, og se hva frafallet gjør med tabellen.", "obs86": [[15, 28], [18, 25]], "obs75": [[22, 14], [22, 17]]}, "rct_dropout": {"type": "uav", "kilde": "Terapi-RCT · N = 86", "navn": "Gruppe × Frafall", "sp": "Falt flere fra i terapigruppa enn på ventelista?", "rad": ["ISTDP", "Venteliste"], "kol": ["Falt fra", "Fullførte"], "obs": [[7, 36], [4, 39]], "kom": "Minste forventede frekvens er 5.5 — nesten under grensa. Med så små tall er Fishers eksakte test et tryggere valg enn χ²."}, "rct_medisin": {"type": "uav", "kilde": "Terapi-RCT · N = 86", "navn": "Gruppe × Medisinbruk", "sp": "Brukte gruppene like mye medisiner ved oppstart?", "rad": ["ISTDP", "Venteliste"], "kol": ["Bruker medisin", "Bruker ikke"], "obs": [[33, 10], [35, 8]], "kom": "χ²(1) = 0.28, <i>p</i> = .60. Enda en balansesjekk uten funn. Bytt mellom <b>alle 86 randomiserte</b> og <b>de 75 som fullførte</b> i velgeren over, og se hva frafallet gjør med tabellen.", "obs86": [[33, 10], [35, 8]], "obs75": [[26, 10], [32, 7]]}, "rct_kj_med": {"type": "uav", "kilde": "Terapi-RCT · N = 86", "navn": "Kjønn × Medisinbruk", "sp": "Brukte kvinner og menn medisiner like ofte?", "rad": ["Kvinne", "Mann"], "kol": ["Bruker medisin", "Bruker ikke"], "obs": [[45, 8], [23, 10]], "kom": "χ²(1) = 2.84, <i>p</i> = .092. Ikke signifikant — men se på prosentene: 15 % mot 30 %. Med <i>N</i> = 86 er testen rett og slett ikke sterk nok til å skille dem. Bytt mellom <b>alle 86 randomiserte</b> og <b>de 75 som fullførte</b> i velgeren over, og se hva frafallet gjør med tabellen.", "obs86": [[45, 8], [23, 10]], "obs75": [[37, 7], [21, 10]]}, "royk_dh": {"type": "uav", "kilde": "Doll & Hill 1948–52 · N = 2 714 menn", "navn": "Røyking × lungekreft (kasus-kontroll)", "sp": "Røykte lungekreftpasientene oftere enn kontrollene?", "rad": ["Røyker", "Ikke-røyker"], "kol": ["Lungekreft (kasus)", "Kontroll"], "obs": [[1350, 1296], [7, 61]], "kildeUrl": "https://www.cdc.gov/eis/downloads/xsmoke-student-731-703.pdf", "kildeNavn": "Doll &amp; Hill (1952), BMJ 2:1271–1286 — tabell 1 og 2, gjengitt i CDC EIS Case Studies in Applied Epidemiology nr. 731-703", "kom": "χ²(1) = 43.98, <i>p</i> &lt; .001, Cramérs V = .13. Bare 7 av 1 357 lungekreftpasienter var ikke-røykere, mot 61 av 1 357 kontroller — oddsforholdet er 9.1. Legg merke til hvor liten V er (.13) i forhold til hvor dramatisk forskjellen er: når nesten alle i begge grupper røyker, blir det lite av tabellen igjen å «forklare». Studien er en <b>kasus-kontroll-studie</b>: forskerne bestemte selv at det skulle være 1 357 i hver kolonne. Kolonnesummene er altså ikke noe naturen har levert, og derfor kan du <b>ikke</b> lese risiko ut av tabellen — bare oddsforhold. χ² tester likevel uavhengighet på vanlig måte."}, "royk_dose": {"type": "uav", "kilde": "Doll & Hill 1948–52 · N = 2 714 menn", "navn": "Antall sigaretter per dag × lungekreft (4×2)", "sp": "Stiger overhyppigheten med antall sigaretter per dag?", "rad": ["0 per dag", "1–14", "15–24", "25 eller flere"], "kol": ["Lungekreft (kasus)", "Kontroll"], "obs": [[7, 61], [565, 706], [445, 408], [340, 182]], "kildeUrl": "https://www.cdc.gov/eis/downloads/xsmoke-student-731-703.pdf", "kildeNavn": "Doll &amp; Hill (1952), BMJ 2:1271–1286 — tabell 1 og 2, gjengitt i CDC EIS Case Studies in Applied Epidemiology nr. 731-703", "kom": "χ²(3) = 107.95, <i>p</i> &lt; .001, Cramérs V = .20. Oddsforholdene mot ikke-røykerne er 7.0 · 9.5 · 16.3 — en dose–respons-sammenheng, og et av Bradford Hills egne kriterier for årsak. En trendtest fanger 86 % av χ²-en, så dette er ikke fire tilfeldig ulike grupper, men en stige. Studien er en <b>kasus-kontroll-studie</b>: forskerne bestemte selv at det skulle være 1 357 i hver kolonne. Kolonnesummene er altså ikke noe naturen har levert, og derfor kan du <b>ikke</b> lese risiko ut av tabellen — bare oddsforhold. χ² tester likevel uavhengighet på vanlig måte."}, "egen_gof": {"type": "gof", "kilde": "Egne tall", "navn": "Egen tilpasningstest (goodness of fit)", "sp": "Skriv inn dine egne kategorier, observerte antall og forventede andeler.", "kat": ["Kategori 1", "Kategori 2", "Kategori 3"], "obs": [30, 45, 25], "andel": [0.3333333333333333, 0.3333333333333333, 0.3333333333333333], "kom": "Andelene under H₀ må summere til 1. Skriver du dem inn manuelt, normaliseres de automatisk hvis de ikke gjør det."}, "egen_uav": {"type": "uav", "kilde": "Egne tall", "navn": "Egen krysstabell (uavhengighetstest)", "sp": "Skriv inn din egen krysstabell.", "rad": ["Rad 1", "Rad 2"], "kol": ["Kolonne 1", "Kolonne 2"], "obs": [[20, 30], [35, 15]], "kom": "Endre ett tall om gangen og se hvordan χ² og p flytter seg. Legg særlig merke til hvor lite som skal til når N er liten."}, "royk_fram": {"type": "uav", "kilde": "Framingham Heart Study 1954–2013 · 75 805 undersøkelser", "navn": "Røykestatus × lungekreft (Framingham, moderne kohort)", "sp": "Hvordan ser den samme sammenhengen ut i en moderne kohortstudie?", "rad": ["Aldri røykt", "Tidligere røyker", "Røyker nå"], "kol": ["Lungekreft", "Ikke lungekreft"], "obs": [[25, 30822], [120, 22753], [139, 21946]], "kildeUrl": "https://doi.org/10.1093/jnci/djy041", "kildeNavn": "Tindle HA m.fl. (2018), JNCI 110(11):1201–07, tabell 2 (samlet kohort)", "kom": "χ²(2) = 123.43, <i>p</i> &lt; .001, Cramérs V = .04. Andelen med lungekreft er 0.08 % · 0.53 % · 0.63 %, og oddsforholdene mot «aldri røykt» er 6.5 og 7.8 — samme størrelsesorden som hos Doll og Hill, 70 år senere og med helt annen design. <b>To viktige forbehold.</b> (1) Radene er <i>undersøkelser</i>, ikke personer: hver deltaker møtte til mange kontroller, så observasjonene er ikke uavhengige og <i>p</i>-verdien er for optimistisk. Tabellen er tatt med nettopp fordi den ser ut som en lovlig krysstabell uten å være det. (2) V = .04 ser ut som ingenting ved siden av OR = 7.8 — når utfallet er så sjeldent, er det meste av tabellen «ikke lungekreft» uansett."}, "kuler": {"type": "gof", "kilde": "Forelesning 2 · klinkekulene", "navn": "Klinkekuler: 9 svarte og 1 hvit mot 50/50", "sp": "Du trekker 10 kuler i blinde og får 9 svarte og 1 hvit. Er det forenlig med at krukka er 50/50?", "kat": ["Svarte", "Hvite"], "obs": [9, 1], "andel": [0.5, 0.5], "kom": "Eksempelet fra forelesningen, med tall små nok til &aring; regnes for h&aring;nd: E = 5 og 5, s&aring; &chi;&sup2; = (9&minus;5)&sup2;/5 + (1&minus;5)&sup2;/5 = 3.2 + 3.2 = <b>6.4</b>, <i>df</i> = 1. Den kritiske verdien er 3.84, s&aring; vi forkaster 50/50. <b>Men legg merke til to ting.</b> (1) Den <i>eksakte</i> sannsynligheten for et minst s&aring; skjevt utvalg er 22/1024 = <b>2.1 %</b> &mdash; ikke 5 %. Med <i>n</i> = 10 kan &chi;&sup2; bare ta seks verdier (0 &middot; 0.4 &middot; 1.6 &middot; 3.6 &middot; 6.4 &middot; 10), og sprangene g&aring;<i>r</i> rett forbi 95 %-punktet. Ingen grense treffer 5 % n&oslash;yaktig, og testen blir derfor <b>konservativ</b>, ikke liberal. (2) Forventet frekvens er 5, alts&aring; akkurat p&aring; grensa i tommelfingerregelen. Kj&oslash;<i>r</i> simuleringen nederst og se det selv: forkastningsraten lander rundt 2 %, ikke 5 %. Det er hele grunnen til at kravet om forventede frekvenser &ge; 5 finnes."}};
+const ANALYSER = {"ak_kjonn": {"type": "gof", "kilde": "Arbeidskravet · N = 391", "navn": "Kjønn mot 50/50", "sp": "Er kjønnsfordelingen i utvalget forenlig med at menn og kvinner rekrutteres like ofte?", "kat": ["Mann", "Kvinne"], "obs": [143, 248], "andel": [0.5, 0.5], "kom": "Fasit i løsningsforslaget: χ²(1) = 28.20, p &lt; .001. Klart flere kvinner enn menn — som ventet når utvalget er rekruttert via psykologi- og samfunnsfagsmiljøer."}, "ak_stem": {"type": "uav", "kilde": "Arbeidskravet · N = 391", "navn": "Kjønn × STEM-fag", "sp": "Henger kjønn sammen med om man studerer et realfag?", "rad": ["Mann", "Kvinne"], "kol": ["Ikke STEM", "STEM"], "obs": [[74, 69], [187, 61]], "kom": "Fasit: χ²(1) = 22.87, p &lt; .001, Cramérs V = .24. 48 % av mennene mot 25 % av kvinnene studerer et STEM-fag."}, "ak_fagfelt": {"type": "gof", "kilde": "Arbeidskravet · N = 391", "navn": "Fagfelt mot lik fordeling", "sp": "Fordeler deltakerne seg jevnt over de fem fagfeltene?", "kat": ["Økonomi, jus, adm.", "Naturvit. og teknologi", "Samfunnsfag og psykologi", "Helse og medisin", "Humaniora og kunst"], "obs": [114, 121, 70, 70, 16], "andel": [0.2, 0.2, 0.2, 0.2, 0.2], "kom": "Fem kategorier gir df = 4. Nullhypotesen «like mange i hvert fagfelt» er en påstand nesten ingen ville trodd på i utgangspunktet — legg merke til hvor lite informativt et signifikant svar da er."}, "ak_kjonn_fag": {"type": "uav", "kilde": "Arbeidskravet · N = 391", "navn": "Kjønn × Fagfelt (2×5)", "sp": "Studerer menn og kvinner ulike fagfelt?", "rad": ["Mann", "Kvinne"], "kol": ["Øk./jus", "Naturvit.", "Samf./psyk.", "Helse", "Humaniora"], "obs": [[29, 65, 18, 24, 7], [85, 56, 52, 46, 9]], "kom": "Her er den minste forventede frekvensen 5.85 — akkurat over grensa på 5. Prøv å slette noen humaniora-studenter og se antakelsen ryke."}, "ak_rand": {"type": "gof", "kilde": "Arbeidskravet · N = 391", "navn": "Randomiseringssjekk: lett vs. vanskelig quiz", "sp": "Ble omtrent like mange loddet til hver betingelse?", "kat": ["Vanskelig quiz", "Lett quiz"], "obs": [199, 192], "andel": [0.5, 0.5], "kom": "χ²(1) = 0.13, <i>p</i> = .72. Et <b>ikke-signifikant</b> resultat, og her er det gode nyheter: randomiseringen ser ut til å ha virket. Merk at dette ikke <i>beviser</i> 50/50 — det viser bare at tallene er forenlige med det."}, "ak_perf": {"type": "uav", "kilde": "Arbeidskravet · N = 391", "navn": "Selvkritisk perfeksjonisme × Angstsensitivitet (3×3)", "sp": "Henger de to trekkene sammen når begge deles i lav, middels og høy?", "rad": ["Lav selvkritisk", "Middels", "Høy selvkritisk"], "kol": ["Lav angstsens.", "Middels", "Høy angstsens."], "obs": [[77, 34, 22], [37, 54, 37], [19, 41, 70]], "kom": "En tydelig diagonal: χ²(4) = 71.94, V = .30. Dette er to kontinuerlige variabler kuttet i tre — kji-kvadrat kan brukes, men en korrelasjon ville brukt informasjonen bedre."}, "ak_quiz": {"type": "uav", "kilde": "Arbeidskravet · N = 391", "navn": "Quiz-betingelse × Quiz-resultat (manipulasjonssjekk)", "sp": "Fikk de som fikk vanskelig quiz faktisk færre riktige?", "rad": ["Vanskelig quiz", "Lett quiz"], "kol": ["0 rette", "1", "2", "3", "4", "5 rette"], "obs": [[78, 36, 6, 1, 0, 78], [5, 7, 29, 66, 84, 1]], "kom": "Manipulasjonssjekken: χ²(5) = 321, V = .91. Slik ser en effekt ut når manipulasjonen virkelig virket. Merk cellen med 0 — nullceller er lov, nullceller i <i>forventet</i> er ikke."}, "rct_kjonn": {"type": "gof", "kilde": "Terapi-RCT · N = 86", "navn": "Kjønn mot 50/50", "sp": "Er kjønnsfordelingen blant pasientene forenlig med 50/50?", "kat": ["Mann", "Kvinne"], "obs": [33, 53], "andel": [0.5, 0.5], "kom": "χ²(1) = 4.65, p = .031. Så vidt under .05 — et fint eksempel på et resultat som ville byttet side med noen få pasienter fra eller til. Blant de 75 som fullførte er fordelingen 31/44, og χ² faller til 2.25 (p = .13) — det signifikante resultatet forsvinner når elleve personer faller fra.", "obs86": [33, 53], "obs75": [31, 44]}, "rct_gr_kjonn": {"type": "uav", "kilde": "Terapi-RCT · N = 86", "navn": "Gruppe × Kjønn", "sp": "Ble kjønnene jevnt fordelt mellom terapi og venteliste?", "rad": ["ISTDP", "Venteliste"], "kol": ["Mann", "Kvinne"], "obs": [[15, 28], [18, 25]], "kom": "χ²(1) = 0.44, <i>p</i> = .51. Randomiseringen har gjort jobben sin. Balansesjekker som denne skal helst være kjedelige. Bytt mellom <b>alle 86 randomiserte</b> og <b>de 75 som fullførte</b> i velgeren over, og se hva frafallet gjør med tabellen.", "obs86": [[15, 28], [18, 25]], "obs75": [[22, 14], [22, 17]]}, "rct_dropout": {"type": "uav", "kilde": "Terapi-RCT · N = 86", "navn": "Gruppe × Frafall", "sp": "Falt flere fra i terapigruppa enn på ventelista?", "rad": ["ISTDP", "Venteliste"], "kol": ["Falt fra", "Fullførte"], "obs": [[7, 36], [4, 39]], "kom": "Minste forventede frekvens er 5.5 — nesten under grensa. Med så små tall er Fishers eksakte test et tryggere valg enn χ²."}, "rct_medisin": {"type": "uav", "kilde": "Terapi-RCT · N = 86", "navn": "Gruppe × Medisinbruk", "sp": "Brukte gruppene like mye medisiner ved oppstart?", "rad": ["ISTDP", "Venteliste"], "kol": ["Bruker medisin", "Bruker ikke"], "obs": [[33, 10], [35, 8]], "kom": "χ²(1) = 0.28, <i>p</i> = .60. Enda en balansesjekk uten funn. Bytt mellom <b>alle 86 randomiserte</b> og <b>de 75 som fullførte</b> i velgeren over, og se hva frafallet gjør med tabellen.", "obs86": [[33, 10], [35, 8]], "obs75": [[26, 10], [32, 7]]}, "rct_kj_med": {"type": "uav", "kilde": "Terapi-RCT · N = 86", "navn": "Kjønn × Medisinbruk", "sp": "Brukte kvinner og menn medisiner like ofte?", "rad": ["Kvinne", "Mann"], "kol": ["Bruker medisin", "Bruker ikke"], "obs": [[45, 8], [23, 10]], "kom": "χ²(1) = 2.84, <i>p</i> = .092. Ikke signifikant — men se på prosentene: 15 % mot 30 %. Med <i>N</i> = 86 er testen rett og slett ikke sterk nok til å skille dem. Bytt mellom <b>alle 86 randomiserte</b> og <b>de 75 som fullførte</b> i velgeren over, og se hva frafallet gjør med tabellen.", "obs86": [[45, 8], [23, 10]], "obs75": [[37, 7], [21, 10]]}, "royk_dh": {"type": "uav", "kilde": "Doll & Hill 1948–52 · N = 2 714 menn", "navn": "Røyking × lungekreft (kasus-kontroll)", "sp": "Røykte lungekreftpasientene oftere enn kontrollene?", "rad": ["Røyker", "Ikke-røyker"], "kol": ["Lungekreft (kasus)", "Kontroll"], "obs": [[1350, 1296], [7, 61]], "kildeUrl": "https://www.cdc.gov/eis/downloads/xsmoke-student-731-703.pdf", "kildeNavn": "Doll &amp; Hill (1952), BMJ 2:1271–1286 — tabell 1 og 2, gjengitt i CDC EIS Case Studies in Applied Epidemiology nr. 731-703", "kom": "χ²(1) = 43.98, <i>p</i> &lt; .001, Cramérs V = .13. Bare 7 av 1 357 lungekreftpasienter var ikke-røykere, mot 61 av 1 357 kontroller — oddsforholdet er 9.1. Legg merke til hvor liten V er (.13) i forhold til hvor dramatisk forskjellen er: når nesten alle i begge grupper røyker, blir det lite av tabellen igjen å «forklare». Studien er en <b>kasus-kontroll-studie</b>: forskerne bestemte selv at det skulle være 1 357 i hver kolonne. Kolonnesummene er altså ikke noe naturen har levert, og derfor kan du <b>ikke</b> lese risiko ut av tabellen — bare oddsforhold. χ² tester likevel uavhengighet på vanlig måte."}, "royk_dose": {"type": "uav", "kilde": "Doll & Hill 1948–52 · N = 2 714 menn", "navn": "Antall sigaretter per dag × lungekreft (4×2)", "sp": "Stiger overhyppigheten med antall sigaretter per dag?", "rad": ["0 per dag", "1–14", "15–24", "25 eller flere"], "kol": ["Lungekreft (kasus)", "Kontroll"], "obs": [[7, 61], [565, 706], [445, 408], [340, 182]], "kildeUrl": "https://www.cdc.gov/eis/downloads/xsmoke-student-731-703.pdf", "kildeNavn": "Doll &amp; Hill (1952), BMJ 2:1271–1286 — tabell 1 og 2, gjengitt i CDC EIS Case Studies in Applied Epidemiology nr. 731-703", "kom": "χ²(3) = 107.95, <i>p</i> &lt; .001, Cramérs V = .20. Oddsforholdene mot ikke-røykerne er 7.0 · 9.5 · 16.3 — en dose–respons-sammenheng, og et av Bradford Hills egne kriterier for årsak. En trendtest fanger 86 % av χ²-en, så dette er ikke fire tilfeldig ulike grupper, men en stige. Studien er en <b>kasus-kontroll-studie</b>: forskerne bestemte selv at det skulle være 1 357 i hver kolonne. Kolonnesummene er altså ikke noe naturen har levert, og derfor kan du <b>ikke</b> lese risiko ut av tabellen — bare oddsforhold. χ² tester likevel uavhengighet på vanlig måte."}, "egen_gof": {"type": "gof", "kilde": "Egne tall", "navn": "Egen tilpasningstest (goodness of fit)", "sp": "Skriv inn dine egne kategorier, observerte antall og forventede andeler.", "kat": ["Kategori 1", "Kategori 2", "Kategori 3"], "obs": [30, 45, 25], "andel": [0.3333333333333333, 0.3333333333333333, 0.3333333333333333], "kom": "Andelene under H₀ må summere til 1. Skriver du dem inn manuelt, normaliseres de automatisk hvis de ikke gjør det."}, "egen_uav": {"type": "uav", "kilde": "Egne tall", "navn": "Egen krysstabell (uavhengighetstest)", "sp": "Skriv inn din egen krysstabell.", "rad": ["Rad 1", "Rad 2"], "kol": ["Kolonne 1", "Kolonne 2"], "obs": [[20, 30], [35, 15]], "kom": "Endre ett tall om gangen og se hvordan χ² og p flytter seg. Legg særlig merke til hvor lite som skal til når N er liten."}, "royk_fram": {"type": "uav", "kilde": "Framingham Heart Study 1954–2013 · 75 805 undersøkelser", "navn": "Røykestatus × lungekreft (Framingham, moderne kohort)", "sp": "Hvordan ser den samme sammenhengen ut i en moderne kohortstudie?", "rad": ["Aldri røykt", "Tidligere røyker", "Røyker nå"], "kol": ["Lungekreft", "Ikke lungekreft"], "obs": [[25, 30822], [120, 22753], [139, 21946]], "kildeUrl": "https://doi.org/10.1093/jnci/djy041", "kildeNavn": "Tindle HA m.fl. (2018), JNCI 110(11):1201–07, tabell 2 (samlet kohort)", "kom": "χ²(2) = 123.43, <i>p</i> &lt; .001, Cramérs V = .04. Andelen med lungekreft er 0.08 % · 0.53 % · 0.63 %, og oddsforholdene mot «aldri røykt» er 6.5 og 7.8 — samme størrelsesorden som hos Doll og Hill, 70 år senere og med helt annen design. <b>To viktige forbehold.</b> (1) Radene er <i>undersøkelser</i>, ikke personer: hver deltaker møtte til mange kontroller, så observasjonene er ikke uavhengige og <i>p</i>-verdien er for optimistisk. Tabellen er tatt med nettopp fordi den ser ut som en lovlig krysstabell uten å være det. (2) V = .04 ser ut som ingenting ved siden av OR = 7.8 — når utfallet er så sjeldent, er det meste av tabellen «ikke lungekreft» uansett."}, "kuler": {"type": "gof", "kilde": "Forelesning 2 · klinkekulene", "navn": "Klinkekuler: 9 svarte og 1 hvit mot 50/50", "sp": "Du trekker 10 kuler i blinde og får 9 svarte og 1 hvit. Er det forenlig med at krukka er 50/50?", "kat": ["Svarte", "Hvite"], "obs": [9, 1], "andel": [0.5, 0.5], "kom": "Eksempelet fra forelesningen, med tall små nok til &aring; regnes for h&aring;nd: E = 5 og 5, s&aring; &chi;&sup2; = (9&minus;5)&sup2;/5 + (1&minus;5)&sup2;/5 = 3.2 + 3.2 = <b>6.4</b>, <i>df</i> = 1. Den kritiske verdien er 3.84, s&aring; vi forkaster 50/50. <b>Men legg merke til to ting.</b> (1) Den <i>eksakte</i> sannsynligheten for et minst s&aring; skjevt utvalg er 22/1024 = <b>2.1 %</b> &mdash; ikke 5 %. Med <i>n</i> = 10 kan &chi;&sup2; bare ta seks verdier (0 &middot; 0.4 &middot; 1.6 &middot; 3.6 &middot; 6.4 &middot; 10), og sprangene g&aring;r rett forbi 95 %-punktet. Ingen grense treffer 5 % n&oslash;yaktig, og testen blir derfor <b>konservativ</b>, ikke liberal. (2) Forventet frekvens er 5, alts&aring; akkurat p&aring; grensa i tommelfingerregelen. Kj&oslash;r simuleringen nederst og se det selv: forkastningsraten lander rundt 2 %, ikke 5 %. Det er hele grunnen til at kravet om forventede frekvenser &ge; 5 finnes."}};
 const $ = s => document.getElementById(s);
 const fmt = (v,d)=> (v==null||!isFinite(v)) ? '&ndash;' :
   v.toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:false});
@@ -1072,7 +1526,7 @@ const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA0
    samme opphav. */
 (function(){
   var AVSNITT_EN = {};
-  var ORD_EN = {"Ordforklaringer": "Glossary", "Hovedpoenget": "The main point", "Oppsett": "Setup", "Oppsettet": "The setup", "Nullstill": "Reset", "Nullstill telleren": "Reset the counter", "Poenget:": "The point:", "Hva skal du se?": "What should you look for?", "Presentasjonsmodus": "Presentation mode", "Vis all tekst igjen": "Show all the text again", "Frys denne fordelingen": "Freeze this distribution", "Frys denne fordelingen (behold som bakgrunn)": "Freeze this distribution (keep it as a backdrop)", "Fjern frossen": "Remove the frozen one", "Kjør simuleringen": "Run the simulation", "Kjør simuleringen.": "Run the simulation.", "Variabel:": "Variable:", "Variabel": "Variable", "Utvalgsstørrelse n": "Sample size n", "Utvalgsstørrelse n:": "Sample size n:", "Konfidensnivå": "Confidence level", "Tabell": "Table", "Total n": "Total n", "Antall grupper k": "Number of groups k", "Ingen data ennå.": "No data yet.", "Depresjon (pre) · Terapi-RCT": "Depression (pre) · therapy trial", "Undertrykkende forsvar (pre) · Terapi-RCT": "Defensive functioning (pre) · therapy trial", "Aggresjonsundertrykking (pre) · Terapi-RCT": "Suppressed aggression (pre) · therapy trial", "Statistikk-selvtillit (pre) · arbeidskravet": "Statistics self-efficacy (pre) · assignment data", "Selvkritisk perfeksjonisme · arbeidskravet": "Self-critical perfectionism · assignment data", "Angstsensitivitet · arbeidskravet": "Anxiety sensitivity · assignment data", "Depresjon (pre)": "Depression (pre)", "Depresjon (post)": "Depression (post)", "Undertrykkende forsvar (pre)": "Defensive functioning (pre)", "Aggresjonsundertrykking (pre)": "Suppressed aggression (pre)", "Statistikk-selvtillit (pre)": "Statistics self-efficacy (pre)", "Selvkritisk perfeksjonisme (trekk)": "Self-critical perfectionism (trait)", "Angstsensitivitet (trekk)": "Anxiety sensitivity (trait)", "Rigid perfeksjonisme (trekk)": "Rigid perfectionism (trait)", "Alder": "Age", "Kjønn": "Sex", "populasjonen": "the population", "Populasjonen": "The population", "utvalget": "the sample", "Median": "Median", "Modus": "Mode", "Skjevhet": "Skewness", "Høyreskjev": "Right-skewed", "venstreskjev": "left-skewed", "skjev": "skewed", "lineære": "linear", "observerte": "observed", "eget": "own", "uten": "without", "krit": "crit", "total": "total", "sanne μ": "true μ", "prosedyren": "the procedure", "metoden": "the method", "σ (sigma)": "σ (sigma)", "x̄ (x-strek)": "x̄ (x-bar)", "t-fordelingen": "the t distribution", "Spearmans rho": "Spearman's rho", "Sentralgrenseteoremet": "The central limit theorem", "sentralgrenseteoremet": "the central limit theorem", "Utvalgsfordeling": "Sampling distribution", "utvalgsgjennomsnittet x̄": "the sample mean x̄", "tyngre i halene": "heavier in the tails", "RCT": "RCT", "ISTDP": "ISTDP", "JASP": "JASP", "SSE": "SSE", "Terapi-RCT-studie": "therapy trial", "sammenligner": "compares", "Sim 17": "Sim 17", "— gjennomsnittet i et utvalg (skrives også x̄).": "— the mean of a sample (also written x̄).", "= midtverdien når verdiene sorteres.": "= the middle value once the values are sorted.", "= den hyppigste verdien.": "= the most frequent value.", "— standardavvik: typisk avstand fra gjennomsnittet, i variabelens egen enhet. Kvadratet er variansen.": "— standard deviation: the typical distance from the mean, in the variable's own units. Its square is the variance.", "— asymmetri i fordelingen.": "— asymmetry in the distribution.", "= lang hale mot høye verdier (gjennomsnittet ligger over medianen),": "= a long tail towards high values (the mean sits above the median),", "= motsatt.": "= the other way round.", "— standardfeil: hvor mye et estimat ville variert mellom gjentatte utvalg. For et gjennomsnitt: SE = σ/√n.": "— standard error: how much an estimate would vary across repeated samples. For a mean: SE = σ/√n.", "— gjennomsnittet i": "— the mean of", ": sannheten vi prøver å treffe, og som forskeren i praksis aldri får se.": ": the truth we are trying to hit, and which a researcher never actually gets to see.", "— standardavviket i": "— the standard deviation of", ". σ² er populasjonsvariansen.": ". σ² is the population variance.", "— gjennomsnittet i utvalget, altså estimatet av μ.": "— the mean of the sample, that is, the estimate of μ.", "— utvalgsgjennomsnitt blir tilnærmet normalfordelte når n vokser, selv om populasjonen er skjev.": "— sample means become approximately normal as n grows, even when the population is skewed.", "— fordelingen av en statistikk (f.eks. gjennomsnittet) over mange tenkte gjentakelser av studien. Ikke det samme som fordelingen av rådata.": "— the distribution of a statistic (the mean, say) across many imagined repetitions of the study. Not the same thing as the distribution of the raw data.", "— regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren.": "— regression coefficient: how much ŷ changes per one-unit increase in the predictor.", "er den standardiserte varianten (i standardavvik).": "is the standardised version (in standard deviations).", "— Pearsons korrelasjon: styrken på den": "— Pearson's correlation: the strength of the", "sammenhengen mellom to variabler (−1 til +1).": "relationship between two variables (−1 to +1).", "gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.": "does the same on ranks, and suits ordinal data and curved but monotone relationships.", "— randomisert kontrollert studie. Emnets": "— randomised controlled trial. The course's", "(intensiv dynamisk korttidsterapi) med venteliste, N = 86.": "(intensive short-term dynamic psychotherapy) against a waiting list, N = 86.", "— statistikkprogrammet vi bruker i emnet (gratis og åpen kildekode).": "— the statistics package used in the course (free and open source).", "— konfidensintervall: estimat ± kritisk verdi · SE. «95 %» beskriver metoden over mange studier, ikke sannsynligheten for det ene intervallet du har.": "— confidence interval: estimate ± critical value · SE. «95 %» describes the method across many studies, not the probability for the single interval you happen to have.", "— frihetsgrader (degrees of freedom): antall verdier som fritt kan variere gitt det du allerede har estimert.": "— degrees of freedom: the number of values free to vary, given what you have already estimated.", "— kvadratsum (sum of squares): summen av kvadrerte avvik.": "— sum of squares: the sum of squared deviations.", "er kvadratsummen av feilene (residualene).": "is the sum of squares of the errors (the residuals).", "= SS/df, altså en varians.": "= SS/df, that is, a variance.", "— testobservator for gjennomsnitt: forskjell delt på standardfeil.": "— test statistic for means: a difference divided by a standard error.", "er litt tyngre i halene enn normalfordelingen ved lav df.": "has slightly heavier tails than the normal distribution when df is low.", "— p-verdi: sannsynligheten for et resultat minst så ekstremt som ditt, GITT at nullhypotesen er sann.": "— p-value: the probability of a result at least as extreme as yours, GIVEN that the null hypothesis is true.", "— effektstørrelse: forskjellen i antall standardavvik.": "— effect size: the difference expressed in standard deviations.", "— nullhypotesen: påstanden om at det ikke finnes noen effekt.": "— the null hypothesis: the claim that there is no effect.", "— statistisk styrke: sannsynligheten for å oppdage en effekt som faktisk finnes.": "— statistical power: the probability of detecting an effect that really is there.", "— type I-feil: å forkaste en sann nullhypotese (falskt funn).": "— type I error: rejecting a true null hypothesis (a false positive).", "— type II-feil: å beholde en gal nullhypotese (oversett effekt).": "— type II error: retaining a false null hypothesis (a missed effect).", "— residual: avstanden mellom observert verdi og modellens prediksjon.": "— residual: the distance between an observed value and the model's prediction.", "— heteroskedastisitet: residualspredningen endrer seg utover x-aksen (trakten).": "— heteroscedasticity: the spread of the residuals changes along the x-axis (the funnel).", "PSY300 · Sim 29 — Kji-kvadratlaben": "PSY300 · Sim 29 — The chi-square lab", "Sim 29 · Kji-kvadratlaben": "Sim 29 · The chi-square lab", "PSY300 · Forelesning 8 · Fra en krysstabell til en p-verdi — og en test av om χ²-fordelingen faktisk beskriver virkeligheten": "PSY300 · Lecture 8 · From a contingency table to a p-value — and a test of whether the χ² distribution really describes reality", "1. Velg en analyse": "1. Choose an analysis", "Analyse:": "Analysis:", "Tilbakestill tallene": "Reset the numbers", "2. Dataene — det vi faktisk telte opp": "2. The data — what we actually counted", "Alle tallene er redigerbare. Endre ett og se hva som skjer nedover siden: forventede frekvenser, χ², p-verdien, kurven og simuleringen regnes om med en gang.": "Every number is editable. Change one and watch what happens down the page: expected frequencies, χ², the p-value, the curve and the simulation are all recomputed at once.", "3. Forventede frekvenser gitt at H₀ er sann": "3. Expected frequencies if H₀ is true", "4. Utregningen, celle for celle": "4. The calculation, cell by cell", "χ² er ikke annet enn en sum: for hver celle regner vi ut hvor langt observert ligger fra forventet, kvadrerer avstanden, og deler på forventet. Kvadreringen gjør at retningen forsvinner; delingen på forventet gjør at et avvik på 10 teller mer når vi ventet 20 enn når vi ventet 200.": "χ² is nothing but a sum: for each cell we work out how far observed lies from expected, square that distance, and divide by expected. Squaring removes the direction; dividing by expected makes a discrepancy of 10 count for more when we expected 20 than when we expected 200.", "5. Den teoretiske χ²-fordelingen": "5. The theoretical χ² distribution", "Teorien sier": "Theory says", "Er H₀ sann, skal χ²-verdiene fra gjentatte studier følge en bestemt kurve. Hvilken kurve, bestemmes av": "If H₀ is true, the χ² values from repeated studies should follow a particular curve. Which curve is settled by", "én eneste ting": "one single thing", ": antall frihetsgrader.": ": the number of degrees of freedom.", "Kurven har": "The curve has", "gjennomsnitt lik df": "mean equal to df", "varians lik 2 · df": "variance equal to 2 · df", ". Det er hele beskrivelsen.": ". That is the whole description.", "Den er høyreskjev, og starter i null — χ² kan aldri bli negativ, siden vi summerer kvadrater.": "It is right-skewed and starts at zero — χ² can never be negative, since we are summing squares.", "kritiske verdien": "critical value", "er punktet der de øverste α av arealet begynner. Havner du til høyre for den, forkaster du H₀.": "is the point where the upper α of the area begins. Land to the right of it and you reject H₀.", "p-verdien er": "The p-value is", "arealet til høyre for din egen χ²": "the area to the right of your own χ²", ": andelen studier som ville gitt et minst like stort avvik hvis H₀ var sann.": ": the proportion of studies that would give a discrepancy at least as large if H₀ were true.", "6. Simuleringen — holder teorien?": "6. The simulation — does the theory hold?", "Null-verdenen vi trekker fra": "The null world we draw from", "Teorien over er en": "The theory above is a", "påstand": "claim", ". Her tester vi den. Vi bygger en verden der": ". Here we test it. We build a world in which", "— alt annet er som i tabellen din: samme N, samme marginalfordeling. Så trekker vi tusenvis av studier fra den verdenen, regner ut χ² i hver, og ser om de simulerte verdiene følger kurven teorien lovet.": "— everything else is as in your table: the same N, the same marginals. Then we draw thousands of studies from that world, compute χ² in each, and see whether the simulated values follow the curve the theory promised.", "Stemmer teorien:": "If the theory holds:", "ligger søylene under kurven, treffer den målte p-verdien formelens p, og forkastningsraten lander på α.": "the bars sit under the curve, the measured p-value matches the formula's p, and the rejection rate lands on α.", "Stemmer den ikke:": "If it does not:", "spriker de — og da er det ikke tilfeldigheter, men en test brukt utenfor sitt gyldighetsområde.": "they diverge — and that is not chance, but a test used outside the range where it is valid.", "Kjør 10 000 nullstudier": "Run 10 000 null studies", "Kjør 1 000": "Run 1 000", "Trekk én enkelt nullstudie": "Draw a single null study", "Framstilling:": "Display:", "histogram": "histogram", "tetthetskurve (glatt)": "density curve (smooth)", "Ingen simulering kjørt ennå.": "No simulation has been run yet.", "Kjører …": "Running …", "Spørsmålet:": "The question:", "Kjønn mot 50/50": "Sex against 50/50", "Kjønn × STEM-fag": "Sex × STEM subject", "Fagfelt mot lik fordeling": "Field of study against an even split", "Kjønn × Fagfelt (2×5)": "Sex × field of study (2×5)", "Randomiseringssjekk: lett vs. vanskelig quiz": "Randomisation check: easy vs. difficult quiz", "Selvkritisk perfeksjonisme × Angstsensitivitet (3×3)": "Self-critical perfectionism × anxiety sensitivity (3×3)", "Quiz-betingelse × Quiz-resultat (manipulasjonssjekk)": "Quiz condition × quiz score (manipulation check)", "Gruppe × Kjønn": "Group × sex", "Gruppe × Frafall": "Group × dropout", "Gruppe × Medisinbruk": "Group × medication", "Kjønn × Medisinbruk": "Sex × medication", "Egen tilpasningstest (goodness of fit)": "Your own goodness-of-fit test", "Egen krysstabell (uavhengighetstest)": "Your own contingency table (test of independence)", "Kategori": "Category", "Observert antall (O)": "Observed count (O)", "Andel under H₀": "Proportion under H₀", "= prosent": "= per cent", "Sum": "Total", "Sum = χ²": "Total = χ²", "Celle": "Cell", "Observert O": "Observed O", "Forventet E": "Expected E", "O − E": "O − E", "(O − E)²": "(O − E)²", "(O − E)² / E": "(O − E)² / E", "Trukket antall": "Drawn count", "Antall kategorier:": "Number of categories:", "Rader:": "Rows:", "Kolonner:": "Columns:", "Resultatet": "The result", "Kategorisk variabel": "Categorical variable", "Krysstabell": "Contingency table", "Marginalfordeling": "Marginal distribution", "O (observert)": "O (observed)", "E (forventet)": "E (expected)", "H₀ (nullhypotesen)": "H₀ (the null hypothesis)", "χ² (kji-kvadrat)": "χ² (chi-square)", "df (frihetsgrader)": "df (degrees of freedom)", "Kritisk verdi": "Critical value", "p-verdi": "p-value", "Cramérs V": "Cramér's V", "Cohens w": "Cohen's w", "Antakelsen om forventede frekvenser": "The expected-frequency assumption", "Fishers eksakte test": "Fisher's exact test", "Nullstudie": "Null study", "— en variabel med kategorier, ikke tall: kjønn, fagfelt, falt fra / fullførte. Kalles også nominal.": "— a variable with categories rather than numbers: sex, field of study, dropped out / completed. Also called nominal.", "— opptellingen av hvor mange som havner i hver kombinasjon av to kategoriske variabler.": "— the count of how many fall into each combination of two categorical variables.", "— rad- og kolonnesummene: hvor mange menn og kvinner det var totalt, uavhengig av den andre variabelen.": "— the row and column totals: how many men and women there were altogether, regardless of the other variable.", "— antallet du faktisk telte i en celle.": "— the count you actually observed in a cell.", "— antallet du ville ventet i cellen": "— the count you would expect in the cell", "hvis": "if", "H₀ var sann. Ikke et antall noen har observert, men et regnestykke.": "H₀ were true. Not a count anyone observed, but a calculation.", "— i tilpasningstesten: at fordelingen følger bestemte andeler. I uavhengighetstesten: at de to variablene ikke henger sammen.": "— in the goodness-of-fit test: that the distribution follows particular proportions. In the test of independence: that the two variables are unrelated.", "— summen av (O − E)²/E over alle celler. Null når observert og forventet er like; vokser med avviket.": "— the sum of (O − E)²/E across all cells. Zero when observed and expected agree; it grows with the discrepancy.", "— antall verdier som fritt kan variere. Tilpasningstest: antall kategorier − 1. Uavhengighetstest: (rader − 1) · (kolonner − 1).": "— the number of values free to vary. Goodness of fit: number of categories − 1. Independence: (rows − 1) · (columns − 1).", "— grensen der de øverste α av χ²-fordelingen begynner. Sammenlign din χ² med den.": "— the boundary where the upper α of the χ² distribution begins. Compare your χ² against it.", "— sannsynligheten for et avvik minst så stort som ditt, GITT at H₀ er sann. Ikke sannsynligheten for at H₀ er sann.": "— the probability of a discrepancy at least as large as yours, GIVEN that H₀ is true. Not the probability that H₀ is true.", "— effektstørrelse for krysstabeller, fra 0 til 1. Uavhengig av N, i motsetning til χ² selv.": "— an effect size for contingency tables, from 0 to 1. Independent of N, unlike χ² itself.", "— effektstørrelse for tilpasningstesten: √(χ²/N).": "— an effect size for the goodness-of-fit test: √(χ²/N).", "— regner ut sannsynligheten direkte i stedet for å tilnærme den. Det riktige valget når cellene er små.": "— computes the probability directly instead of approximating it. The right choice when the cells are small.", "— en simulert studie trukket fra en verden der H₀ er sann per konstruksjon. Alt vi ser av «funn» der, er falske positive.": "— a simulated study drawn from a world where H₀ is true by construction. Every «finding» there is a false positive.", "Lungekreft": "Lung cancer", "Røyking × lungekreft (kasus-kontroll)": "Smoking × lung cancer (case-control)", "Antall sigaretter per dag × lungekreft (4×2)": "Cigarettes per day × lung cancer (4×2)", "Røyker": "Smoker", "Ikke-røyker": "Non-smoker", "Lungekreft (kasus)": "Lung cancer (case)", "Kontroll": "Control", "0 per dag": "0 per day", "1–14": "1–14", "15–24": "15–24", "25 eller flere": "25 or more", "Kilde:": "Source:", "Klassiske eksempler": "Classic examples", "Røykestatus × lungekreft (Framingham, moderne kohort)": "Smoking status × lung cancer (Framingham, modern cohort)", "Aldri røykt": "Never smoked", "Tidligere røyker": "Former smoker", "Røyker nå": "Current smoker", "Ikke lungekreft": "No lung cancer", "Utvalg:": "Sample:", "Alle 86 randomiserte": "All 86 randomised", "De 75 som fullførte": "The 75 completers", "alle 86 randomiserte": "all 86 randomised", "bare de 75 som fullførte": "only the 75 completers", "Forelesning 2 · klinkekulene": "Lecture 2 · the marbles", "Klinkekuler: 9 svarte og 1 hvit mot 50/50": "Marbles: 9 black and 1 white against 50/50", "Svarte": "Black", "Hvite": "White", "Mer om dette": "More on this"};
+  var ORD_EN = {"Ordforklaringer": "Glossary", "Hovedpoenget": "The main point", "Oppsett": "Setup", "Oppsettet": "The setup", "Nullstill": "Reset", "Nullstill telleren": "Reset the counter", "Poenget:": "The point:", "Hva skal du se?": "What should you look for?", "Presentasjonsmodus": "Presentation mode", "Vis all tekst igjen": "Show all the text again", "Frys denne fordelingen": "Freeze this distribution", "Frys denne fordelingen (behold som bakgrunn)": "Freeze this distribution (keep it as a backdrop)", "Fjern frossen": "Remove the frozen one", "Kjør simuleringen": "Run the simulation", "Kjør simuleringen.": "Run the simulation.", "Variabel:": "Variable:", "Variabel": "Variable", "Utvalgsstørrelse n": "Sample size n", "Utvalgsstørrelse n:": "Sample size n:", "Konfidensnivå": "Confidence level", "Tabell": "Table", "Total n": "Total n", "Antall grupper k": "Number of groups k", "Ingen data ennå.": "No data yet.", "Depresjon (pre) · Terapi-RCT": "Depression (pre) · therapy trial", "Undertrykkende forsvar (pre) · Terapi-RCT": "Defensive functioning (pre) · therapy trial", "Aggresjonsundertrykking (pre) · Terapi-RCT": "Suppressed aggression (pre) · therapy trial", "Statistikk-selvtillit (pre) · arbeidskravet": "Statistics self-efficacy (pre) · assignment data", "Selvkritisk perfeksjonisme · arbeidskravet": "Self-critical perfectionism · assignment data", "Angstsensitivitet · arbeidskravet": "Anxiety sensitivity · assignment data", "Depresjon (pre)": "Depression (pre)", "Depresjon (post)": "Depression (post)", "Undertrykkende forsvar (pre)": "Defensive functioning (pre)", "Aggresjonsundertrykking (pre)": "Suppressed aggression (pre)", "Statistikk-selvtillit (pre)": "Statistics self-efficacy (pre)", "Selvkritisk perfeksjonisme (trekk)": "Self-critical perfectionism (trait)", "Angstsensitivitet (trekk)": "Anxiety sensitivity (trait)", "Rigid perfeksjonisme (trekk)": "Rigid perfectionism (trait)", "Alder": "Age", "Kjønn": "Sex", "populasjonen": "the population", "Populasjonen": "The population", "utvalget": "the sample", "Median": "Median", "Modus": "Mode", "Skjevhet": "Skewness", "Høyreskjev": "Right-skewed", "venstreskjev": "left-skewed", "skjev": "skewed", "lineære": "linear", "observerte": "observed", "eget": "own", "uten": "without", "krit": "crit", "total": "total", "sanne μ": "true μ", "prosedyren": "the procedure", "metoden": "the method", "σ (sigma)": "σ (sigma)", "x̄ (x-strek)": "x̄ (x-bar)", "t-fordelingen": "the t distribution", "Spearmans rho": "Spearman's rho", "Sentralgrenseteoremet": "The central limit theorem", "sentralgrenseteoremet": "the central limit theorem", "Utvalgsfordeling": "Sampling distribution", "utvalgsgjennomsnittet x̄": "the sample mean x̄", "tyngre i halene": "heavier in the tails", "RCT": "RCT", "ISTDP": "ISTDP", "JASP": "JASP", "SSE": "SSE", "Terapi-RCT-studie": "therapy trial", "sammenligner": "compares", "Sim 17": "Sim 17", "— gjennomsnittet i et utvalg (skrives også x̄).": "— the mean of a sample (also written x̄).", "= midtverdien når verdiene sorteres.": "= the middle value once the values are sorted.", "= den hyppigste verdien.": "= the most frequent value.", "— standardavvik: typisk avstand fra gjennomsnittet, i variabelens egen enhet. Kvadratet er variansen.": "— standard deviation: the typical distance from the mean, in the variable's own units. Its square is the variance.", "— asymmetri i fordelingen.": "— asymmetry in the distribution.", "= lang hale mot høye verdier (gjennomsnittet ligger over medianen),": "= a long tail towards high values (the mean sits above the median),", "= motsatt.": "= the other way round.", "— standardfeil: hvor mye et estimat ville variert mellom gjentatte utvalg. For et gjennomsnitt: SE = σ/√n.": "— standard error: how much an estimate would vary across repeated samples. For a mean: SE = σ/√n.", "— gjennomsnittet i": "— the mean of", ": sannheten vi prøver å treffe, og som forskeren i praksis aldri får se.": ": the truth we are trying to hit, and which a researcher never actually gets to see.", "— standardavviket i": "— the standard deviation of", ". σ² er populasjonsvariansen.": ". σ² is the population variance.", "— gjennomsnittet i utvalget, altså estimatet av μ.": "— the mean of the sample, that is, the estimate of μ.", "— utvalgsgjennomsnitt blir tilnærmet normalfordelte når n vokser, selv om populasjonen er skjev.": "— sample means become approximately normal as n grows, even when the population is skewed.", "— fordelingen av en statistikk (f.eks. gjennomsnittet) over mange tenkte gjentakelser av studien. Ikke det samme som fordelingen av rådata.": "— the distribution of a statistic (the mean, say) across many imagined repetitions of the study. Not the same thing as the distribution of the raw data.", "— regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren.": "— regression coefficient: how much ŷ changes per one-unit increase in the predictor.", "er den standardiserte varianten (i standardavvik).": "is the standardised version (in standard deviations).", "— Pearsons korrelasjon: styrken på den": "— Pearson's correlation: the strength of the", "sammenhengen mellom to variabler (−1 til +1).": "relationship between two variables (−1 to +1).", "gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.": "does the same on ranks, and suits ordinal data and curved but monotone relationships.", "— randomisert kontrollert studie. Emnets": "— randomised controlled trial. The course's", "(intensiv dynamisk korttidsterapi) med venteliste, N = 86.": "(intensive short-term dynamic psychotherapy) against a waiting list, N = 86.", "— statistikkprogrammet vi bruker i emnet (gratis og åpen kildekode).": "— the statistics package used in the course (free and open source).", "— konfidensintervall: estimat ± kritisk verdi · SE. «95 %» beskriver metoden over mange studier, ikke sannsynligheten for det ene intervallet du har.": "— confidence interval: estimate ± critical value · SE. «95 %» describes the method across many studies, not the probability for the single interval you happen to have.", "— frihetsgrader (degrees of freedom): antall verdier som fritt kan variere gitt det du allerede har estimert.": "— degrees of freedom: the number of values free to vary, given what you have already estimated.", "— kvadratsum (sum of squares): summen av kvadrerte avvik.": "— sum of squares: the sum of squared deviations.", "er kvadratsummen av feilene (residualene).": "is the sum of squares of the errors (the residuals).", "= SS/df, altså en varians.": "= SS/df, that is, a variance.", "— teststatistikk for gjennomsnitt: forskjell delt på standardfeil.": "— test statistic for means: a difference divided by a standard error.", "er litt tyngre i halene enn normalfordelingen ved lav df.": "has slightly heavier tails than the normal distribution when df is low.", "— p-verdi: sannsynligheten for et resultat minst så ekstremt som ditt, GITT at nullhypotesen er sann.": "— p-value: the probability of a result at least as extreme as yours, GIVEN that the null hypothesis is true.", "— effektstørrelse: forskjellen i antall standardavvik.": "— effect size: the difference expressed in standard deviations.", "— nullhypotesen: påstanden om at det ikke finnes noen effekt.": "— the null hypothesis: the claim that there is no effect.", "— statistisk styrke: sannsynligheten for å oppdage en effekt som faktisk finnes.": "— statistical power: the probability of detecting an effect that really is there.", "— type I-feil: å forkaste en sann nullhypotese (falskt funn).": "— type I error: rejecting a true null hypothesis (a false positive).", "— type II-feil: å beholde en gal nullhypotese (oversett effekt).": "— type II error: retaining a false null hypothesis (a missed effect).", "— residual: avstanden mellom observert verdi og modellens prediksjon.": "— residual: the distance between an observed value and the model's prediction.", "— heteroskedastisitet: residualspredningen endrer seg utover x-aksen (trakten).": "— heteroscedasticity: the spread of the residuals changes along the x-axis (the funnel).", "PSY300 · Sim 29 — Kjikvadrat: fra krysstabell til p-verdi": "PSY300 · Sim 29 — Chi-square: from a contingency table to a p-value", "Sim 29 · Kjikvadrat: fra krysstabell til p-verdi": "Sim 29 · Chi-square: from a contingency table to a p-value", "PSY300 · Forelesning 8 · Fra en krysstabell til en p-verdi — og en test av om χ²-fordelingen faktisk beskriver virkeligheten": "PSY300 · Lecture 8 · From a contingency table to a p-value — and a test of whether the χ² distribution really describes reality", "1. Velg en analyse": "1. Choose an analysis", "Analyse:": "Analysis:", "Tilbakestill tallene": "Reset the numbers", "2. Dataene — det vi faktisk telte opp": "2. The data — what we actually counted", "Alle tallene er redigerbare. Endre ett og se hva som skjer nedover siden: forventede frekvenser, χ², p-verdien, kurven og simuleringen regnes om med en gang.": "Every number is editable. Change one and watch what happens down the page: expected frequencies, χ², the p-value, the curve and the simulation are all recomputed at once.", "3. Forventede frekvenser gitt at H₀ er sann": "3. Expected frequencies if H₀ is true", "4. Utregningen, celle for celle": "4. The calculation, cell by cell", "χ² er ikke annet enn en sum: for hver celle regner vi ut hvor langt observert ligger fra forventet, kvadrerer avstanden, og deler på forventet. Kvadreringen gjør at retningen forsvinner; delingen på forventet gjør at et avvik på 10 teller mer når vi ventet 20 enn når vi ventet 200.": "χ² is nothing but a sum: for each cell we work out how far observed lies from expected, square that distance, and divide by expected. Squaring removes the direction; dividing by expected makes a discrepancy of 10 count for more when we expected 20 than when we expected 200.", "5. Den teoretiske χ²-fordelingen": "5. The theoretical χ² distribution", "Teorien sier": "Theory says", "Er H₀ sann, skal χ²-verdiene fra gjentatte studier følge en bestemt kurve. Hvilken kurve, bestemmes av": "If H₀ is true, the χ² values from repeated studies should follow a particular curve. Which curve is settled by", "én eneste ting": "one single thing", ": antall frihetsgrader.": ": the number of degrees of freedom.", "Kurven har": "The curve has", "gjennomsnitt lik df": "mean equal to df", "varians lik 2 · df": "variance equal to 2 · df", ". Det er hele beskrivelsen.": ". That is the whole description.", "Den er høyreskjev, og starter i null — χ² kan aldri bli negativ, siden vi summerer kvadrater.": "It is right-skewed and starts at zero — χ² can never be negative, since we are summing squares.", "kritiske verdien": "critical value", "er punktet der de øverste α av arealet begynner. Havner du til høyre for den, forkaster du H₀.": "is the point where the upper α of the area begins. Land to the right of it and you reject H₀.", "p-verdien er": "The p-value is", "arealet til høyre for din egen χ²": "the area to the right of your own χ²", ": andelen studier som ville gitt et minst like stort avvik hvis H₀ var sann.": ": the proportion of studies that would give a discrepancy at least as large if H₀ were true.", "6. Simuleringen — holder teorien?": "6. The simulation — does the theory hold?", "Null-verdenen vi trekker fra": "The null world we draw from", "Teorien over er en": "The theory above is a", "påstand": "claim", ". Her tester vi den. Vi bygger en verden der": ". Here we test it. We build a world in which", "— alt annet er som i tabellen din: samme N, samme marginalfordeling. Så trekker vi tusenvis av studier fra den verdenen, regner ut χ² i hver, og ser om de simulerte verdiene følger kurven teorien lovet.": "— everything else is as in your table: the same N, the same marginals. Then we draw thousands of studies from that world, compute χ² in each, and see whether the simulated values follow the curve the theory promised.", "Stemmer teorien:": "If the theory holds:", "ligger søylene under kurven, treffer den målte p-verdien formelens p, og forkastningsraten lander på α.": "the bars sit under the curve, the measured p-value matches the formula's p, and the rejection rate lands on α.", "Stemmer den ikke:": "If it does not:", "spriker de — og da er det ikke tilfeldigheter, men en test brukt utenfor sitt gyldighetsområde.": "they diverge — and that is not chance, but a test used outside the range where it is valid.", "Kjør 10 000 nullstudier": "Run 10 000 null studies", "Kjør 1 000": "Run 1 000", "Trekk én enkelt nullstudie": "Draw a single null study", "Framstilling:": "Display:", "histogram": "histogram", "tetthetskurve (glatt)": "density curve (smooth)", "Ingen simulering kjørt ennå.": "No simulation has been run yet.", "Kjører …": "Running …", "Spørsmålet:": "The question:", "Kjønn mot 50/50": "Sex against 50/50", "Kjønn × STEM-fag": "Sex × STEM subject", "Fagfelt mot lik fordeling": "Field of study against an even split", "Kjønn × Fagfelt (2×5)": "Sex × field of study (2×5)", "Randomiseringssjekk: lett vs. vanskelig quiz": "Randomisation check: easy vs. difficult quiz", "Selvkritisk perfeksjonisme × Angstsensitivitet (3×3)": "Self-critical perfectionism × anxiety sensitivity (3×3)", "Quiz-betingelse × Quiz-resultat (manipulasjonssjekk)": "Quiz condition × quiz score (manipulation check)", "Gruppe × Kjønn": "Group × sex", "Gruppe × Frafall": "Group × dropout", "Gruppe × Medisinbruk": "Group × medication", "Kjønn × Medisinbruk": "Sex × medication", "Egen tilpasningstest (goodness of fit)": "Your own goodness-of-fit test", "Egen krysstabell (uavhengighetstest)": "Your own contingency table (test of independence)", "Kategori": "Category", "Observert antall (O)": "Observed count (O)", "Andel under H₀": "Proportion under H₀", "= prosent": "= per cent", "Sum": "Total", "Sum = χ²": "Total = χ²", "Celle": "Cell", "Observert O": "Observed O", "Forventet E": "Expected E", "O − E": "O − E", "(O − E)²": "(O − E)²", "(O − E)² / E": "(O − E)² / E", "Trukket antall": "Drawn count", "Antall kategorier:": "Number of categories:", "Rader:": "Rows:", "Kolonner:": "Columns:", "Resultatet": "The result", "Kategorisk variabel": "Categorical variable", "Krysstabell": "Contingency table", "Marginalfordeling": "Marginal distribution", "O (observert)": "O (observed)", "E (forventet)": "E (expected)", "H₀ (nullhypotesen)": "H₀ (the null hypothesis)", "χ² (kji-kvadrat)": "χ² (chi-square)", "df (frihetsgrader)": "df (degrees of freedom)", "Kritisk verdi": "Critical value", "p-verdi": "p-value", "Cramérs V": "Cramér's V", "Cohens w": "Cohen's w", "Antakelsen om forventede frekvenser": "The expected-frequency assumption", "Fishers eksakte test": "Fisher's exact test", "Nullstudie": "Null study", "— en variabel med kategorier, ikke tall: kjønn, fagfelt, falt fra / fullførte. Kalles også nominal.": "— a variable with categories rather than numbers: sex, field of study, dropped out / completed. Also called nominal.", "— opptellingen av hvor mange som havner i hver kombinasjon av to kategoriske variabler.": "— the count of how many fall into each combination of two categorical variables.", "— rad- og kolonnesummene: hvor mange menn og kvinner det var totalt, uavhengig av den andre variabelen.": "— the row and column totals: how many men and women there were altogether, regardless of the other variable.", "— antallet du faktisk telte i en celle.": "— the count you actually observed in a cell.", "— antallet du ville ventet i cellen": "— the count you would expect in the cell", "hvis": "if", "H₀ var sann. Ikke et antall noen har observert, men et regnestykke.": "H₀ were true. Not a count anyone observed, but a calculation.", "— i tilpasningstesten: at fordelingen følger bestemte andeler. I uavhengighetstesten: at de to variablene ikke henger sammen.": "— in the goodness-of-fit test: that the distribution follows particular proportions. In the test of independence: that the two variables are unrelated.", "— summen av (O − E)²/E over alle celler. Null når observert og forventet er like; vokser med avviket.": "— the sum of (O − E)²/E across all cells. Zero when observed and expected agree; it grows with the discrepancy.", "— antall verdier som fritt kan variere. Tilpasningstest: antall kategorier − 1. Uavhengighetstest: (rader − 1) · (kolonner − 1).": "— the number of values free to vary. Goodness of fit: number of categories − 1. Independence: (rows − 1) · (columns − 1).", "— grensen der de øverste α av χ²-fordelingen begynner. Sammenlign din χ² med den.": "— the boundary where the upper α of the χ² distribution begins. Compare your χ² against it.", "— sannsynligheten for et avvik minst så stort som ditt, GITT at H₀ er sann. Ikke sannsynligheten for at H₀ er sann.": "— the probability of a discrepancy at least as large as yours, GIVEN that H₀ is true. Not the probability that H₀ is true.", "— effektstørrelse for krysstabeller, fra 0 til 1. Uavhengig av N, i motsetning til χ² selv.": "— an effect size for contingency tables, from 0 to 1. Independent of N, unlike χ² itself.", "— effektstørrelse for tilpasningstesten: √(χ²/N).": "— an effect size for the goodness-of-fit test: √(χ²/N).", "— regner ut sannsynligheten direkte i stedet for å tilnærme den. Det riktige valget når cellene er små.": "— computes the probability directly instead of approximating it. The right choice when the cells are small.", "— en simulert studie trukket fra en verden der H₀ er sann per konstruksjon. Alt vi ser av «funn» der, er falske positive.": "— a simulated study drawn from a world where H₀ is true by construction. Every «finding» there is a false positive.", "Lungekreft": "Lung cancer", "Røyking × lungekreft (kasus-kontroll)": "Smoking × lung cancer (case-control)", "Antall sigaretter per dag × lungekreft (4×2)": "Cigarettes per day × lung cancer (4×2)", "Røyker": "Smoker", "Ikke-røyker": "Non-smoker", "Lungekreft (kasus)": "Lung cancer (case)", "Kontroll": "Control", "0 per dag": "0 per day", "1–14": "1–14", "15–24": "15–24", "25 eller flere": "25 or more", "Kilde:": "Source:", "Klassiske eksempler": "Classic examples", "Røykestatus × lungekreft (Framingham, moderne kohort)": "Smoking status × lung cancer (Framingham, modern cohort)", "Aldri røykt": "Never smoked", "Tidligere røyker": "Former smoker", "Røyker nå": "Current smoker", "Ikke lungekreft": "No lung cancer", "Utvalg:": "Sample:", "Alle 86 randomiserte": "All 86 randomised", "De 75 som fullførte": "The 75 completers", "alle 86 randomiserte": "all 86 randomised", "bare de 75 som fullførte": "only the 75 completers", "Forelesning 2 · klinkekulene": "Lecture 2 · the marbles", "Klinkekuler: 9 svarte og 1 hvit mot 50/50": "Marbles: 9 black and 1 white against 50/50", "Svarte": "Black", "Hvite": "White", "Mer om dette": "More on this"};
   var SPRAAK = 'no';
   try { SPRAAK = localStorage.getItem('psy300_app_spraak') || 'no'; } catch(e) {}
 
@@ -1169,7 +1623,7 @@ const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA0
    den dyplenken). Simuleringen tegner seg selv på nytt via resize.
    ===================================================================== */
 (function(){
-const FANER=['hvorfor','sim'];
+const FANER=['hvorfor','sim','odds','rapport'];
 function visFane(f){
   if(FANER.indexOf(f)<0) f='hvorfor';
   FANER.forEach(function(x){
@@ -1220,4 +1674,97 @@ SP.forEach(function(s,i){
 });
 })();
 </script>
+
+<script id="ovbegrep-js">
+(function(){
+  // Lokalt: appene ligger i PSY300_Sim_Apps/, MCQ-appen i PSY300_online/.
+  // Publisert: alt ligger flatt. Velg prefiks ut fra adressen.
+  var p = location.pathname.indexOf('/PSY300_Sim_Apps/') >= 0
+        ? '../PSY300_online/' : './';
+  var a = document.querySelectorAll('a.ovlenke[data-begrep]');
+  for (var i=0;i<a.length;i++){
+    a[i].href = p + 'PSY300_MCQ_Online.html?begrep=' + a[i].getAttribute('data-begrep');
+    a[i].target = '_blank'; a[i].rel = 'noopener';
+  }
+})();
+</script>
+
+<script>
+/* ===== fane: oddsforhold =====================================================
+   Fire tall inn, oddsforholdet ut. Regner ogsaa den speilvendte verdien, fordi
+   det er den studentene oftest vil ha: «2.5 ganger hoeyere» leses lettere enn
+   «0.4 ganger saa hoey». Haldane-korreksjonen (+0.5 i alle celler) slaar inn
+   bare naar en celle er null, ellers ville brøken sprekke.                    */
+(function(){
+  var $=function(i){ return document.getElementById(i); };
+  if(!$('orA')) return;
+  var SETT = {
+    orDH:  {a:1350,b:1296,c:7,d:61, r1:'Røyker', r2:'Ikke-røyker',
+            k1:'Lungekreft (kasus)', k2:'Kontroll',
+            kilde:'Doll &amp; Hill (1952), BMJ 2:1271–1286. Kasus-kontroll, N = 2714.'},
+    orFram:{a:139,b:21946,c:25,d:30822, r1:'Røyker nå', r2:'Aldri røykt',
+            k1:'Lungekreft', k2:'Ikke lungekreft',
+            kilde:'Tindle m.fl. (2018), JNCI 110(11), tabell 2. Kohort. Radene er undersøkelser, ikke personer.'},
+    orDrop:{a:7,b:36,c:4,d:39, r1:'ISTDP', r2:'Venteliste',
+            k1:'Falt fra', k2:'Fullførte',
+            kilde:'Emnets egen terapi-RCT, N = 86. Små celler — se forbeholdet i fane 1.'},
+    orLap: {a:24,b:16,c:49,d:11, r1:'Laptop i timen', r2:'Ingen laptop',
+            k1:'Bestått', k2:'Strøk',
+            kilde:'Konstruerte tall etter Field kap. 3, oppgave 8, som etterligner Sana m.fl. (2013).'}
+  };
+  function tall(id){ var v=parseFloat($(id).value); return isFinite(v)&&v>=0 ? v : 0; }
+  function fmt(x,d){ 
+    if(!isFinite(x)) return '—';
+    var s=x.toFixed(d);
+    return s.replace(/\.?0+$/,'') || '0';
+  }
+  function regn(){
+    var a=tall('orA'), b=tall('orB'), c=tall('orC'), d=tall('orD');
+    var null0 = (a===0||b===0||c===0||d===0);
+    var A=a,B=b,C=c,D=d;
+    if(null0){ A+=0.5; B+=0.5; C+=0.5; D+=0.5; }
+    var o1 = B>0 ? A/B : NaN, o2 = D>0 ? C/D : NaN;
+    var or = (o2>0) ? o1/o2 : NaN;
+    $('orO1').textContent = isFinite(o1) ? fmt(o1,3) : '—';
+    $('orO2').textContent = isFinite(o2) ? fmt(o2,3) : '—';
+    var r1=$('orR1').textContent, r2=$('orR2').textContent, k1=$('orK1').textContent;
+    var ut='';
+    if(!isFinite(or) || or<=0){
+      ut = '<b>Kan ikke regnes ut.</b> Alle fire cellene må ha tall, og minst én per rad må være over null.';
+    } else {
+      var inv = 1/or;
+      var retning = or>1
+        ? '<b>' + r1 + '</b> har <b>' + fmt(or,2) + ' ganger høyere odds</b> for «' + k1 + '» enn ' + r2 + '.'
+        : (or<1
+          ? '<b>' + r1 + '</b> har <b>lavere</b> odds for «' + k1 + '» enn ' + r2 +
+            ' — snudd andre veien har ' + r2 + ' <b>' + fmt(inv,2) + ' ganger høyere odds</b>.'
+          : 'Oddsen er <b>den samme</b> i de to gruppene.');
+      ut = '<b><i>OR</i> = ' + fmt(or,3) + '</b> &nbsp;·&nbsp; speilvendt: 1/<i>OR</i> = ' +
+           fmt(inv,3) + '<br>' + retning +
+           '<br><span class="muted" style="font-size:15px">Regnestykket: (' + fmt(A,1) + ' × ' +
+           fmt(D,1) + ') / (' + fmt(B,1) + ' × ' + fmt(C,1) + ') = ' + fmt(or,3) + '</span>';
+      if(null0) ut += '<br><span class="muted" style="font-size:15px">En celle var null, ' +
+        'så 0.5 er lagt til i alle fire (Haldane-korreksjon). Uten den blir brøken udefinert.</span>';
+    }
+    $('orSvar').innerHTML = ut;
+  }
+  ['orA','orB','orC','orD'].forEach(function(i){
+    $(i).addEventListener('input', regn);
+  });
+  Object.keys(SETT).forEach(function(k){
+    var b=$(k); if(!b) return;
+    b.addEventListener('click', function(){
+      var o=SETT[k];
+      $('orA').value=o.a; $('orB').value=o.b; $('orC').value=o.c; $('orD').value=o.d;
+      $('orR1').textContent=o.r1; $('orR2').textContent=o.r2;
+      $('orK1').textContent=o.k1; $('orK2').textContent=o.k2;
+      $('orKilde').innerHTML='<b>Kilde:</b> '+o.kilde;
+      regn();
+    });
+  });
+  $('orKilde').innerHTML='<b>Kilde:</b> '+SETT.orDH.kilde;
+  regn();
+})();
+</script>
+
 </body></html>

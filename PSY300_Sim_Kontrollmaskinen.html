@@ -1,8 +1,82 @@
 <!DOCTYPE html>
 <html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PSY300 · Sim 15 — Kontrollmaskinen</title>
+<title>PSY300 · Sim 15 — Å kontrollere for en tredje variabel</title>
 <style>
 :root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+/* =====================================================================
+   PSY300 FARGEKODE — én betydning per farge, den samme i alle appene.
+   Poenget er at en student som har sett grønt over rødt i figuren, skal
+   kjenne igjen de samme fargene i JASP-tabellen og i den ferdige
+   setningen — og dermed se hvor hvert tall kommer fra.
+     grønn   variasjon MELLOM grupper · signal · det vi leter etter
+     rød     variasjon INNEN grupper · støy · residual
+     marine  teststatistikken (F, t, χ²) og frihetsgradene
+     lilla   p-verdien
+     rav     effektstørrelsen (η², ω², d, R²)
+     turkis  konfidensintervallet
+   ===================================================================== */
+:root{
+  --sig:#1E7A3C;    --sig-bg:#E7F4EA;    --sig-kant:#A9D6B6;
+  --stoy:#C0392B;   --stoy-bg:#FBEDEB;   --stoy-kant:#EEC3BD;
+  --tstat:#1F3864;  --tstat-bg:#E7ECF6;  --tstat-kant:#B9C8E2;
+  --pverdi:#7B3FA0; --pverdi-bg:#F3EAF8; --pverdi-kant:#D3BCE4;
+  --eff:#B26A00;    --eff-bg:#FDF2E2;    --eff-kant:#EBD0A6;
+  --ki:#0F6E7B;     --ki-bg:#E4F1F3;     --ki-kant:#AAD3D9;
+}
+.k-sig{color:var(--sig);font-weight:600}
+.k-stoy{color:var(--stoy);font-weight:600}
+.k-tstat{color:var(--tstat);font-weight:700}
+.k-p{color:var(--pverdi);font-weight:600}
+.k-eff{color:var(--eff);font-weight:600}
+.k-ki{color:var(--ki);font-weight:600}
+/* markert variant — brukes der et tall skal kunne spores fra tabell til setning */
+.m-sig,.m-stoy,.m-tstat,.m-p,.m-eff,.m-ki{border-radius:5px;padding:1px 5px;font-weight:600}
+.m-sig{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+.m-stoy{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+.m-tstat{background:var(--tstat-bg);color:var(--tstat);box-shadow:inset 0 0 0 1px var(--tstat-kant)}
+.m-p{background:var(--pverdi-bg);color:var(--pverdi);box-shadow:inset 0 0 0 1px var(--pverdi-kant)}
+.m-eff{background:var(--eff-bg);color:var(--eff);box-shadow:inset 0 0 0 1px var(--eff-kant)}
+.m-ki{background:var(--ki-bg);color:var(--ki);box-shadow:inset 0 0 0 1px var(--ki-kant)}
+
+/* ---- brøkfiguren: teller over streken, nevner under ---- */
+.brokfig{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 18px;
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 14px;margin:12px 0}
+.brokfig .brk{text-align:center;min-width:250px;flex:0 1 auto}
+.brokfig .tell,.brokfig .nevn{border-radius:8px;padding:8px 13px;font-size:15.5px;line-height:1.28}
+.brokfig .tell{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+.brokfig .nevn{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+.brokfig .strek{height:3px;background:#16203A;border-radius:2px;margin:6px 0}
+.brokfig .tall{display:block;font-size:23px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+.brokfig .lik{font-size:27px;color:#16203A;font-weight:600}
+.brokfig .res{font-size:17px;color:var(--tstat);text-align:center;line-height:1.3}
+.brokfig .res b{display:block;font-size:31px;font-weight:700;font-variant-numeric:tabular-nums}
+.brokfig .res .n{display:block;font-size:13.5px;color:#5C6A80;font-weight:400;margin-top:3px}
+.brokfig.smal .brk{min-width:210px}
+.brokfig.smal .tall{font-size:19px}
+.brokfig.smal .res b{font-size:25px}
+
+.stat.s-sig{background:var(--sig-bg);color:var(--sig)}
+.stat.s-stoy{background:var(--stoy-bg);color:var(--stoy)}
+.stat.s-tstat{background:var(--tstat-bg);color:var(--tstat)}
+.stat.s-p{background:var(--pverdi-bg);color:var(--pverdi)}
+.stat.s-eff{background:var(--eff-bg);color:var(--eff)}
+table.anova td.c-sig,table.tt td.c-sig{color:var(--sig);font-weight:700}
+table.anova td.c-stoy,table.tt td.c-stoy{color:var(--stoy);font-weight:700}
+table.anova td.c-tstat,table.tt td.c-tstat{color:var(--tstat);font-weight:700}
+table.anova td.c-p,table.tt td.c-p{color:var(--pverdi);font-weight:700}
+table.anova td.c-eff,table.tt td.c-eff{color:var(--eff);font-weight:700}
+/* ---- fargeforklaring ---- */
+.fargeliste{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:8px;margin-top:8px}
+.fargeliste div{border-radius:8px;padding:7px 11px;font-size:15px;line-height:1.35}
+.fargeliste b{display:block;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+
+/* ---- ANOVA-tabellen med fargede rader ---- */
+table.anova tr.r-sig td,table.tt tr.r-sig td{background:var(--sig-bg)}
+table.anova tr.r-stoy td,table.tt tr.r-stoy td{background:var(--stoy-bg)}
+table.anova tr.r-total td,table.tt tr.r-total td{color:#5F6A7E}
+table.anova tr.r-total td:first-child{font-weight:700}
+table.anova tr.r-sig td:first-child{color:var(--sig);font-weight:700}
+table.anova tr.r-stoy td:first-child{color:var(--stoy);font-weight:700}
 *{box-sizing:border-box}
 body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
 .wrap{max-width:1000px;margin:0 auto;padding:16px}
@@ -78,18 +152,187 @@ details.ordbok[open]>summary::before{content:"▾ "}
   font-family:inherit;cursor:pointer;color:#1F3864}
 .fane.on{background:#1F3864;color:#fff;border-color:#1F3864;font-weight:700}
 .hide{display:none}
-</style></head><body>
-<header><h1>Sim 15 · Kontrollmaskinen</h1>
+
+/* ===== Fane 0 «Hvorfor …?» — felles mal for metodeappene ================= */
+.hvbig{font-size:20px;line-height:1.45;color:#1F3864;font-weight:600;margin:2px 0 10px}
+.hvgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+@media(max-width:760px){.hvgrid{grid-template-columns:1fr}}
+.hvkort{border-radius:10px;padding:11px 13px;font-size:16px;line-height:1.5}
+.hver{background:#eaf6ea;border:1px solid #bcdcbc;border-left:5px solid #2E7D32}
+.hvikke{background:#fbeceb;border:1px solid #edc9c5;border-left:5px solid #C0392B}
+.hvkort h3{margin:0 0 6px;font-size:16.5px;color:#1F3864}
+.hvkort ul{margin:0;padding-left:19px}
+.hvkort li{margin:0 0 7px}.hvkort li:last-child{margin-bottom:0}
+.hvkort .eks{display:block;color:#5A6B7B;font-size:14.5px;margin-top:2px}
+.hvnaar{border-collapse:collapse;width:100%;font-size:16px;margin-top:4px}
+.hvnaar th,.hvnaar td{border-bottom:1px solid #e2e6ee;padding:7px 8px;text-align:left;vertical-align:top}
+.hvnaar th{color:#4a5568;font-weight:600;font-size:14.5px}
+.hvnaar tr.na{background:rgba(46,84,150,.10)}
+.hvnaar tr.na td{font-weight:700;color:#1F3864}
+.hvq{border:1px solid #d9dee8;border-radius:10px;padding:10px 12px;margin:0 0 9px;
+  background:#fff;font-size:16.5px;line-height:1.45}
+.hvq .sp{display:block;margin-bottom:7px}
+.hvq button{font-size:15px;padding:6px 15px;margin:0 6px 0 0}
+.hvq .sv{display:none;margin-top:8px;font-size:15.5px;line-height:1.45;
+  border-left:3px solid #2E5496;background:#f7f9ff;border-radius:0 8px 8px 0;padding:8px 11px}
+.hvq.svart .sv{display:block}
+.hvq.rett{border-color:#8fc38f;background:#f6fbf6}
+.hvq.feil{border-color:#e3aaa4;background:#fdf6f5}
+.hvfasit{font-weight:700}.hvfasit.ja{color:#2E7D32}.hvfasit.nei{color:#C0392B}
+</style>
+<style id="ovbegrep-css">
+.ovkort{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f6f8fa;
+ border:1px solid #dde3e8;border-left:5px solid #C8102E;border-radius:10px;
+ padding:10px 13px;margin:14px 0;font-size:15px}
+.ovkort .ovlbl{font-weight:700;color:#5B6670;letter-spacing:.02em;
+ text-transform:uppercase;font-size:11.5px}
+.ovkort a.ovlenke{display:inline-block;background:#fff;border:1px solid #c7d6ec;
+ border-radius:999px;padding:3px 11px;color:#174A6B;text-decoration:none;font-size:14.5px}
+.ovkort a.ovlenke:hover{background:#eef3fb;border-color:#8fb0d6}
+.ovkort .ovhint{color:#6B767D;font-size:13px}
+</style>
+</head><body>
+<header><h1>Sim 15 · Å kontrollere for en tredje variabel</h1>
 <p>PSY300 · Forelesning 3 · Hva «å kontrollere for» faktisk gjør med et estimat — og hva det koster når prediktorene overlapper.</p></header>
 <div class="wrap">
+<div class="rad" style="display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 6px">
+<button class="fane on" data-fane="hvorfor">0 · Hvorfor kontrollere?</button>
+<button class="fane" data-fane="sim">1 · Simuleringen</button>
+<button class="fane" data-fane="rand">2 · Randomisering mot kontroll</button>
+</div>
+<div id="fane-hvorfor">
+<div class="card">
+<h2>Spørsmålet multippel regresjon svarer på</h2>
+<p class="hvbig">«Henger disse to fortsatt sammen når jeg holder en tredje ting konstant?»</p>
+<p style="font-size:16.5px;line-height:1.55">Du har funnet en sammenheng. Så melder
+innvendingen seg: <i>ja, men det kan jo skyldes noe annet.</i> Kanskje er det ikke terapien som
+virker, men at de friskeste pasientene også var de mest motiverte.</p>
+<p style="font-size:16.5px;line-height:1.55">Å <b>kontrollere for</b> en variabel er et forsøk på å
+svare på den innvendingen. Tenk på det slik: <b>i stedet for å sammenligne alle med alle,
+sammenligner du bare folk som er like på den tredje variabelen.</b> Blant pasienter med samme
+motivasjon &mdash; virker terapien fortsatt?</p>
+<div class="keybox"><span class="lbl">Sagt på &eacute;<i>n</i> linje</span><b>Å kontrollere for noe er å spørre: gjelder sammenhengen fortsatt blant folk som er like på akkurat det?</b></div>
+</div>
+
+<div class="card">
+<h2>Hva multippel regresjon er — og hva den ikke er</h2>
+<div class="hvgrid">
+<div class="hvkort hver"><h3>✓ Den forteller deg</h3><ul>
+<li><b>Det unike bidraget</b> til hver prediktor, når de andre holdes fast.</li>
+<li><b>En måte å avsløre en konfunder på.</b> Krymper koeffisienten til null, forklarte den tredje variabelen alt.</li>
+<li><b>En advarsel om overlapp.</b> Korrelerer prediktorene sterkt, blir standardfeilene store og koeffisientene ustabile.</li>
+<li><b>Bedre prediksjon</b> — flere opplysninger gir vanligvis bedre gjetninger.</li>
+</ul></div>
+<div class="hvkort hvikke"><h3>✗ Den forteller deg ikke</h3><ul>
+<li><b>Et bevis for årsak.</b> Å kontrollere for det du kom på, er ikke det samme som å kontrollere for alt.<span class="eks">Randomisering kontrollerer for alt — også det du aldri tenkte på.</span></li>
+<li><b>Kontroll for noe du ikke målte.</b> En variabel som ikke er i datasettet, kan ikke holdes konstant.</li>
+<li><b>Alltid en god idé.</b> Kontrollerer du for et <i>mellomledd</i> — noe effekten går gjennom — fjerner du nettopp det du var ute etter.<span class="eks">Terapi → mindre grubling → mindre depresjon. Kontroller for grubling, og terapien ser virkningsløs ut.</span></li>
+<li><b>Noe som gjør en svak studie sterk.</b> Kontrollvariabler reparerer ikke et design som mangler en kontrollgruppe.</li>
+</ul></div>
+</div>
+</div>
+
+<div class="card">
+<h2>Når kan du bruke den?</h2>
+<ul style="font-size:16.5px;line-height:1.55">
+<li><b>Ett utfall</b>, som er en tallvariabel.</li>
+<li><b>To eller flere prediktorer</b>, der minst én er det du egentlig lurer på.</li>
+<li><b>En begrunnelse</b> for hver kontrollvariabel. «Vi kontrollerte for alt vi hadde» er ikke en begrunnelse.</li>
+</ul>
+<p style="font-size:16.5px;line-height:1.55;margin-top:14px"><b>Hvilket spørsmål stiller du
+egentlig?</b> Her er hele kartet over metodene i emnet. Raden i blått er den du står i nå.</p>
+<table class="hvnaar">
+<tr><th>Spørsmålet ditt</th><th>Metoden</th><th>Hvor</th></tr>
+<tr><td>Henger disse to tallvariablene sammen?</td><td>Korrelasjon</td><td>Sim 11</td></tr>
+<tr><td>Hvor mye endrer den ene seg når den andre går opp ett hakk? Og hva gjetter jeg for en ny person?</td><td>Regresjon</td><td>Sim 5</td></tr>
+<tr class="na"><td>Henger de fortsatt sammen når jeg holder en tredje ting konstant?</td><td>Multippel regresjon</td><td>denne appen</td></tr>
+<tr><td>Er <b>to grupper</b> forskjellige i gjennomsnitt?</td><td><i>t</i>-test</td><td>Sim 16</td></tr>
+<tr><td>Er <b>tre eller flere grupper</b> forskjellige?</td><td>Enveis-ANOVA</td><td>Sim 22</td></tr>
+<tr><td>Avhenger effekten av den ene faktoren av den andre?</td><td>Faktoriell ANOVA</td><td>Sim 24</td></tr>
+<tr><td>Endret <b>de samme personene</b> seg fra før til etter?</td><td>Paret <i>t</i>-test</td><td>Sim 25</td></tr>
+<tr><td>Henger to <b>kategorier</b> sammen?</td><td>Kjikvadrat</td><td>Sim 29</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h2>Prøv selv: er dette et multippel regresjon-spørsmål?</h2>
+<p class="muted">Seks påstander. Svar først, så får du begrunnelsen. Det er begrunnelsen som er
+poenget &mdash; ikke om du traff.</p>
+<div id="hvQuiz"></div>
+<div id="hvSum" class="note" style="display:none"></div>
+</div>
+
+<div class="keybox"><span class="lbl">Klar for simuleringen?</span><b>Å kontrollere for noe svarer på en bestemt innvending — ikke på alle.</b></div>
+
+<div class="card" id="kort-modellfeil">
+<h2>&Eacute;n ligning, hele emnet</h2>
+<p>Hver eneste analyse i PSY300 er den samme setningen. Bare modellen vokser.</p>
+<div style="text-align:center;font-size:25px;line-height:1.5;margin:14px 0 6px">
+utfall<sub>i</sub> &nbsp;=&nbsp; <span class="m-sig">modell<sub>i</sub></span>
+&nbsp;+&nbsp; <span class="m-stoy">feil<sub>i</sub></span>
+</div>
+<p style="text-align:center;color:#62708a;font-size:15px;margin:0 0 14px">
+Det modellen treffer, og det den bommer med.</p>
+<p>&Aring; kontrollere for en tredje variabel er bare &aring; <b>legge en term til i modellen</b>: <i>b</i><sub>0</sub> + <i>b</i><sub>1</sub><i>x</i><sub>1</sub> + <i>b</i><sub>2</sub><i>x</i><sub>2</sub>. Ingenting annet i ligningen endrer seg.</p>
+<table style="border-collapse:collapse;width:100%;font-size:15.5px;margin-top:10px">
+<tr><th style="border-bottom:1px solid #e2e6ee;padding:5px 8px;text-align:left;color:#4a5568;font-weight:600">Analyse</th>
+<th style="border-bottom:1px solid #e2e6ee;padding:5px 8px;text-align:left;color:#4a5568;font-weight:600">Hva <span class="m-sig">modellen</span> gjetter for hver person</th></tr>
+<tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px"><i>t</i>-test (Sim 16)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">gjennomsnittet i personens gruppe</td></tr>
+<tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Enveis ANOVA (Sim 22)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">gjennomsnittet i personens gruppe</td></tr>
+<tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Faktoriell ANOVA (Sim 24)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">totalgjennomsnitt (grand mean) + rad + kolonne + samspill</td></tr>
+<tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Gjentatte målinger (Sim 25)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">tidspunktets snitt + personens eget nivå</td></tr>
+<tr style="background:#eef3fb"><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px"><b>Regresjon (Sim 5, Sim 15)</b></td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px"><b><i>b</i><sub>0</sub> + <i>b</i><sub>1</sub><i>x</i><sub>1</sub> + …</b></td></tr>
+<tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Korrelasjon (Sim 11)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">den rette linja gjennom punktskyen</td></tr>
+</table>
+<p style="color:#62708a;font-size:15px;margin-top:10px">
+I alle seks er <span class="m-stoy">feilen</span> det samme: observert verdi &minus; det modellen gjettet.
+Det er residualen, og det er den vi kvadrerer og summerer n&aring;r vi regner ut
+<i>SS</i><sub>feil</sub>.</p>
+<div class="keybox"><span class="lbl">Sagt p&aring; &eacute;n linje</span>
+<b>«Kontrollert for» betyr: med den variabelen inne i <span class="m-sig">modellen</span>.</b></div>
+</div>
+
+<div class="card" id="kort-areal">
+<h2>Hvor variansen i Y faktisk blir av</h2>
+<p>Figurene over viser hva som skjer med <i>&beta;</i><sub>1</sub>. Denne viser <b>hvorfor</b>.
+Stripa er all variasjon i Y &mdash; 100 %. Dra p&aring; <i>r</i><sub>12</sub> over og se
+hvordan den deles opp.</p>
+<canvas id="cvAreal" height="188"></canvas>
+<div id="arealTekst" class="note"></div>
+<div class="keybox" id="arealPoeng"></div>
+
+<details class="mer"><summary>Hva feltene heter n&aring;r du m&oslash;ter dem igjen</summary>
+<div>Den delen av Y som <b>bare</b> X<sub>1</sub> forklarer, kalles den
+<b>semipartielle korrelasjonen</b> kvadrert (<i>sr</i>&sup2;). JASP kan vise den i
+regresjonsoutputen under navnet <i>Part</i>. Du trenger ikke rapportere den i PSY300, men
+det er den st&oslash;rrelsen <i>t</i>-testen av <i>&beta;</i><sub>1</sub> faktisk tester:
+om det gr&oslash;nne feltet er st&oslash;rre enn null.
+<br><br>
+Det er ogs&aring; forskjellen p&aring; de to m&aring;tene &aring; &laquo;kontrollere&raquo; p&aring;.
+<b>Partiell</b> korrelasjon spør: av det som er igjen i Y <i>etter</i> at X<sub>2</sub> har
+f&aring;tt sitt, hvor mye tar X<sub>1</sub>? <b>Semipartiell</b> spør: av <i>hele</i> Y, hvor
+mye tar X<sub>1</sub> alene? Samme teller, ulik nevner &mdash; derfor er den partielle alltid
+den st&oslash;rste av de to.
+<br><br>
+<b>Og det merkelige tilfellet:</b> setter du &beta;<sub>1</sub> og &beta;<sub>2</sub> med
+motsatt fortegn og skrur <i>r</i><sub>12</sub> opp, blir det delte feltet <b>negativt</b>.
+Da forklarer de to prediktorene til sammen mer enn summen av hva de gj&oslash;r hver for seg.
+Det heter <b>suppresjon</b>, det er ikke en feil, og det er grunnen til at en prediktor kan bli
+<i>sterkere</i> n&aring;r du kontrollerer for noe.</div></details>
+</div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C6">C6 Multippel regresjon og statistisk kontroll &rarr;</a> <a class="ovlenke" data-begrep="A4">A4 Kausalitet og konfundering &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div><!-- /fane-hvorfor -->
+<div id="fane-sim" class="hide">
+
 
 <div class="card">
 <h2>Verdenen du bygger</h2>
-<p class="muted">Vi predikerer <b>Y = depresjon</b> fra to prediktorer: <b>X₁ = undertrykkende forsvar</b> og <b>X₂ = aggresjonsundertrykking</b>. Du bestemmer sannheten: hvor sterkt hver prediktor virker, og hvor mye de to prediktorene overlapper med hverandre. Alle koeffisienter er <b>standardiserte</b> (β), altså i standardavvik: β = 0,30 betyr «ett standardavvik opp på X₁ gir 0,30 standardavvik opp på Y».</p>
-<div class="sl"><label>Sann effekt av X₁ (β₁)</label><input type="range" id="b1" min="0" max="0.7" step="0.05" value="0.15"><output id="b1o">0,15</output></div>
-<div class="sl"><label>Sann effekt av X₂ (β₂)</label><input type="range" id="b2" min="0" max="0.7" step="0.05" value="0.45"><output id="b2o">0,45</output></div>
-<div class="sl"><label>Korrelasjon mellom prediktorene (r₁₂)</label><input type="range" id="r12" min="0" max="0.95" step="0.05" value="0.6"><output id="r12o">0,60</output></div>
-<div class="sl"><label>Utvalgsstørrelse n</label><input type="range" id="nKM" min="20" max="400" step="10" value="86"><output id="no">86</output></div>
+<p class="muted">Vi predikerer <b>Y = depresjon</b> fra to prediktorer: <b>X₁ = undertrykkende forsvar</b> og <b>X₂ = aggresjonsundertrykking</b>. Du bestemmer sannheten: hvor sterkt hver prediktor virker, og hvor mye de to prediktorene overlapper med hverandre. Alle koeffisienter er <b>standardiserte</b> (β), altså i standardavvik: β = 0.30 betyr «ett standardavvik opp på X₁ gir 0.30 standardavvik opp på Y».</p>
+<div class="sl"><label>Sann effekt av X₁ (β₁)</label><input type="range" id="b1" min="0" max="0.7" step="0.05" value="0.15"><output id="b1o">0.15</output></div>
+<div class="sl"><label>Sann effekt av X₂ (β₂)</label><input type="range" id="b2" min="0" max="0.7" step="0.05" value="0.45"><output id="b2o">0.45</output></div>
+<div class="sl"><label>Korrelasjon mellom prediktorene (r₁₂)</label><input type="range" id="r12" min="0" max="0.95" step="0.05" value="0.6"><output id="r12o">0.60</output></div>
+<div class="sl"><label>Utvalgsstørrelse <i>n</i></label><input type="range" id="nKM" min="20" max="400" step="10" value="86"><output id="no">86</output></div>
 <button class="btn" id="draw">Trekk nytt utvalg</button>
 <button class="btn2" id="draw20">Trekk 20 utvalg (se vinglingen)</button>
 <button class="btn2" id="realRCT">Ekte eksempel: Terapi-RCT-studien</button>
@@ -107,15 +350,15 @@ details.ordbok[open]>summary::before{content:"▾ "}
 
 <div class="card">
 <h2>Prisen for overlapp: standardfeilen som funksjon av r₁₂</h2>
-<p class="muted">Jo mer prediktorene overlapper, desto mindre <b>unik</b> informasjon har hver av dem, og desto mer usikkert blir hvert estimat. Kurven viser standardfeilen (SE) til β₁ ved akkurat din n; den røde prikken er der du står nå.</p>
+<p class="muted">Jo mer prediktorene overlapper, desto mindre <b>unik</b> informasjon har hver av dem, og desto mer usikkert blir hvert estimat. Kurven viser standardfeilen (<i>SE</i>) til β₁ ved akkurat din <i>n</i>; den røde prikken er der du står nå.</p>
 <canvas id="cvBKM" height="220"></canvas>
 <div id="statsBKM"></div>
-<div class="note"><b>VIF</b> (variance inflation factor, «variansinflasjonsfaktor») = 1/(1 − r₁₂²) forteller hvor mange ganger større variansen til estimatet er blitt på grunn av overlappet. Tommelfingerregelen i litteraturen er at VIF over 5–10 er alvorlig, men merk at kollinearitet <b>ikke</b> gir gale estimater, den gjør dem <b>upresise</b>. Med r₁₂ = 0,90 er SE mer enn doblet: du trenger over fire ganger så mange deltakere for samme presisjon.</div>
+<div class="note"><b>VIF</b> (variance inflation factor, «variansinflasjonsfaktor») = 1/(1 − r₁₂²) forteller hvor mange ganger større variansen til estimatet er blitt på grunn av overlappet. Tommelfingerregelen i litteraturen er at VIF over 5–10 er alvorlig, men merk at kollinearitet <b>ikke</b> gir gale estimater, den gjør dem <b>upresise</b>. Med r₁₂ = 0.90 er <i>SE</i> mer enn doblet: du trenger over fire ganger så mange deltakere for samme presisjon.</div>
 </div>
 
 <div class="card docs">
 <h2>Slik leser du det</h2>
-<div class="note"><b>Prøv dette:</b> (1) Sett β₁ = 0 og β₂ = 0,50 med r₁₂ = 0,60, den enkle regresjonen viser en tydelig «effekt» av X₁ som er <b>ren konfundering</b>, og den forsvinner så snart du kontrollerer for X₂. Dette er hele poenget med kontrollvariabler. (2) Sett r₁₂ = 0. Da er de to estimatene identiske: uten overlapp er det ingenting å kontrollere for. (3) Behold effektene, men dra r₁₂ mot 0,95. Estimatene forblir riktige i gjennomsnitt, men konfidensintervallene blir så brede at ingen av prediktorene lenger blir signifikante, selv om de til sammen forklarer like mye. Det er kollinearitetens signatur: <b>høy R², ingen signifikante enkeltprediktorer</b>. (4) Trykk «Trekk 20 utvalg» ved høy r₁₂ og se hvor mye estimatene spretter fra utvalg til utvalg.</div>
+<div class="note"><b>Prøv dette:</b> (1) Sett β₁ = 0 og β₂ = 0.50 med r₁₂ = 0.60, den enkle regresjonen viser en tydelig «effekt» av X₁ som er <b>ren konfundering</b>, og den forsvinner så snart du kontrollerer for X₂. Dette er hele poenget med kontrollvariabler. (2) Sett r₁₂ = 0. Da er de to estimatene identiske: uten overlapp er det ingenting å kontrollere for. (3) Behold effektene, men dra r₁₂ mot 0.95. Estimatene forblir riktige i gjennomsnitt, men konfidensintervallene blir så brede at ingen av prediktorene lenger blir signifikante, selv om de til sammen forklarer like mye. Det er kollinearitetens signatur: <b>høy <i>R</i>², ingen signifikante enkeltprediktorer</b>. (4) Trykk «Trekk 20 utvalg» ved høy r₁₂ og se hvor mye estimatene spretter fra utvalg til utvalg.</div>
 <div class="note"><b>Viktig forbehold:</b> «Kontrollert for X₂» betyr bare «gitt at X₂ holdes konstant statistisk». Om det er <b>riktig</b> å kontrollere, avhenger av hva X₂ er. Er X₂ en felles årsak (konfunder), fjerner kontrollen bias. Er X₂ derimot et mellomledd på veien fra X₁ til Y (en mediator), kontrollerer du bort selve effekten du ville måle. Statistikken kan ikke skille de to tilfellene. Det må teorien din gjøre.</div>
 </div>
 
@@ -123,7 +366,7 @@ details.ordbok[open]>summary::before{content:"▾ "}
 
 <div class="card">
 <p class="muted" style="margin:0">Denne simuleringen h&oslash;rer sammen med
-<a href="PSY300_Sim_MinsteKvadrater.html">Sim 5 &middot; Regresjonsmodellen</a>, der du bygger den samme
+<a href="PSY300_Sim_MinsteKvadrater.html">Sim 5 &middot; Regresjon: fra én prediktor til flere</a>, der du bygger den samme
 typen modell p&aring; ekte data.</p>
 </div>
 <details class="ordbok" id="ordforklaringer"><summary>Ordforklaringer</summary>
@@ -131,41 +374,41 @@ typen modell p&aring; ekte data.</p>
 <p><b>Homoskedastisitet</b> — at spredningen i residualene er omtrent like stor over hele x-aksen. Brudd på dette kalles<br>
 <b>H₀</b> — nullhypotesen: «ingen effekt / ingen sammenheng».<br>
 <b>H₁</b> er alternativhypotesen.<br>
-<b>ISTDP</b> (intensiv dynamisk korttidsterapi) med venteliste, N = 86.<br>
+<b>ISTDP</b> (intensiv dynamisk korttidsterapi) med venteliste, <i>N</i> = 86.<br>
 <b>JASP</b> — statistikkprogrammet vi bruker i emnet (gratis og åpen kildekode).<br>
-<b>Justert R²</b> — R² korrigert for antall prediktorer. Vanlig R² vokser uansett når du legger til variabler, også helt tilfeldige.<br>
-<b>KI</b> — konfidensintervall; her 95 %, beregnet som estimat ± 1,96 · SE.<br>
+<b>Justert <i>R</i>²</b> — <i>R</i>² korrigert for antall prediktorer. Vanlig <i>R</i>² vokser uansett når du legger til variabler, også helt tilfeldige.<br>
+<b>KI</b> — konfidensintervall; her 95 %, beregnet som estimat ± 1.96 · <i>SE</i>.<br>
 <b>Kollinearitet</b> — at prediktorene deler informasjon (høy r₁₂).<br>
 <b>Konfunder</b> — en tredjevariabel som påvirker både prediktor og utfall og dermed skaper en falsk sammenheng.<br>
-<b>M</b> — gjennomsnittet i et utvalg (skrives også x̄).<br>
+<b><i>M</i></b> — gjennomsnittet i et utvalg (skrives også x̄).<br>
 <b>MS</b> = SS/df, altså en varians.<br>
 <b>Median</b> = midtverdien når verdiene sorteres.<br>
 <b>Mediator</b> — et mellomledd i årsakskjeden fra prediktor til utfall.<br>
 <b>Modus</b> = den hyppigste verdien.<br>
 <b>RCT</b> — randomisert kontrollert studie. Emnets<br>
 <b>Residual</b> — avviket mellom en observert verdi og modellens predikerte verdi (y − ŷ).<br>
-<b>R²</b> — andelen av variansen i Y som modellen forklarer (0–1).<br>
-<b>SD</b> — standardavvik: typisk avstand fra gjennomsnittet, i variabelens egen enhet. Kvadratet er variansen.<br>
-<b>SE</b> — standardfeil: usikkerheten i et estimat, altså hvor mye estimatet ville sprikt mellom gjentatte utvalg.<br>
+<b><i>R</i>²</b> — andelen av variansen i Y som modellen forklarer (0–1).<br>
+<b><i>SD</i></b> — standardavvik: typisk avstand fra gjennomsnittet, i variabelens egen enhet. Kvadratet er variansen.<br>
+<b><i>SE</i></b> — standardfeil: usikkerheten i et estimat, altså hvor mye estimatet ville sprikt mellom gjentatte utvalg.<br>
 <b>SS</b> — kvadratsum (sum of squares): summen av kvadrerte avvik.<br>
 <b>SSE</b> er kvadratsummen av feilene (residualene).<br>
-<b>SST, SSR og SSE</b> — total, forklart og uforklart kvadratsum. SST = SSR + SSE alltid, og R² = SSR/SST.<br>
-<b>Sentralgrenseteoremet</b> — utvalgsgjennomsnitt blir tilnærmet normalfordelte når n vokser, selv om populasjonen er skjev.<br>
+<b>SST, SSR og SSE</b> — total, forklart og uforklart kvadratsum. SST = SSR + SSE alltid, og <i>R</i>² = SSR/SST.<br>
+<b>Sentralgrenseteoremet</b> — utvalgsgjennomsnitt blir tilnærmet normalfordelte når <i>n</i> vokser, selv om populasjonen er skjev.<br>
 <b>Spearmans rho</b> gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.<br>
-<b>Statistisk styrke</b> — sannsynligheten for å oppdage en effekt som faktisk finnes (1 − type II-risikoen). Se Sim 20.<br>
+<b>Statistisk styrke</b> — sannsynligheten for å oppdage en effekt som faktisk finnes (1 − type II-risikoen). Se Sim 7, fane 2.<br>
 <b>Terapi-RCT-studie</b> sammenligner<br>
 <b>Trimmet gjennomsnitt</b> = regn ut etter å ha kuttet de mest ekstreme prosentene;<br>
 <b>Type I-feil</b> — å finne en effekt som ikke finnes (falsk positiv).<br>
 <b>Type II-feil</b> — å overse en effekt som finnes (falsk negativ).<br>
 <b>Utligger</b> — en observasjon som ligger langt fra resten.<br>
 <b>VIF</b> — variance inflation factor: hvor mye overlappet mellom prediktorene blåser opp variansen til estimatet.<br>
-<b>b</b> — regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren.<br>
+<b><i>b</i></b> — regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren.<br>
 <b>heteroskedastisitet</b> (trakten i residualplottet).<br>
-<b>p-verdi</b> — sannsynligheten for et resultat minst så ekstremt som ditt, <i>gitt at H₀ er sann</i>. Ikke sannsynligheten for at H₀ er sann.<br>
-<b>r</b> — Pearsons korrelasjon: styrken på den <i>lineære</i> sammenhengen mellom to variabler (−1 til +1).<br>
+<b><i>p</i>-verdi</b> — sannsynligheten for et resultat minst så ekstremt som ditt, <i>gitt at H₀ er sann</i>. Ikke sannsynligheten for at H₀ er sann.<br>
+<b><i>r</i></b> — Pearsons korrelasjon: styrken på den <i>lineære</i> sammenhengen mellom to variabler (−1 til +1).<br>
 <b>r₁₂</b> — korrelasjonen mellom de to prediktorene.<br>
-<b>t</b> — testobservator for gjennomsnitt: forskjell delt på standardfeil.<br>
-<b>t-fordelingen</b> er litt tyngre i halene enn normalfordelingen ved lav df.<br>
+<b><i>t</i></b> — teststatistikk for gjennomsnitt: forskjell delt på standardfeil.<br>
+<b><i>t</i>-fordelingen</b> er litt tyngre i halene enn normalfordelingen ved lav <i>df</i>.<br>
 <b>winsorisering</b> = erstatt dem med grenseverdien i stedet for å kutte.<br>
 <b>x̄ (x-strek)</b> — gjennomsnittet i utvalget, altså estimatet av μ.<br>
 <b>ŷ (y-hatt)</b> — verdien modellen predikerer for en person, i motsetning til den observerte y.<br>
@@ -173,13 +416,97 @@ typen modell p&aring; ekte data.</p>
 <b>β (beta)</b> — standardisert regresjonskoeffisient: endring i Y (i standardavvik) per ett standardavviks endring i prediktoren.<br>
 <b>μ (my)</b> — gjennomsnittet i <i>populasjonen</i>: sannheten vi prøver å treffe, og som forskeren i praksis aldri får se.</p>
 </div></details>
+
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C6">C6 Multippel regresjon og statistisk kontroll &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+<div id="fane-rand" class="hide">
+
+<div class="card">
+<h2>To måter å håndtere en tredjevariabel på</h2>
+<p class="muted">Fane 1 viste den ene: mål konfunderen og legg den inn i modellen. Her står den
+ved siden av den andre: <b>la loddtrekning bestemme hvem som får tiltaket</b>. De to ser like ut
+på papiret — begge skal fjerne konfunderingen — men de virker på helt ulike måter, og bare den
+ene av dem virker på det du ikke har målt.</p>
+<p class="muted">Verdenen: et tiltak (<b>T</b>) skal bedre et utfall (<b>Y</b>). En målt
+tredjevariabel <b>C</b> (si: motivasjon) påvirker Y, og i en observasjonsstudie påvirker den
+også <i>hvem som får tiltaket</i>. I tillegg finnes en <b>umålt</b> tredjevariabel <b>U</b> som
+du ikke har tall på. Alt er i standardavvik.</p>
+
+<div class="sl"><label>Sann effekt av tiltaket</label><input type="range" id="rdD" min="0" max="0.8" step="0.05" value="0.30"><output id="rdDo">0.30</output></div>
+<div class="sl"><label>Hvor sterkt C påvirker Y</label><input type="range" id="rdG" min="0" max="0.8" step="0.05" value="0.50"><output id="rdGo">0.50</output></div>
+<div class="sl"><label>Hvor sterkt C styrer hvem som får tiltaket</label><input type="range" id="rdS" min="0" max="0.95" step="0.05" value="0.70"><output id="rdSo">0.70</output></div>
+<div class="sl"><label>Reliabiliteten til målingen av C</label><input type="range" id="rdRel" min="0.4" max="1" step="0.05" value="1"><output id="rdRelo">1.00</output></div>
+<div class="sl"><label>Hvor sterkt den <i>umålte</i> U påvirker Y</label><input type="range" id="rdU" min="0" max="0.8" step="0.05" value="0"><output id="rdUo">0.00</output></div>
+<div class="sl"><label>Utvalgsstørrelse <i>n</i></label><input type="range" id="rdN" min="40" max="600" step="20" value="200"><output id="rdNo">200</output></div>
+<button class="btn" id="rdKjor">Kjør 500 studier</button>
+<button class="btn2" id="rdNull">Tilbake til utgangspunktet</button>
+<div class="note" id="rdSetup"></div>
+</div>
+
+<div class="card">
+<h2>Fire analyser av den samme verdenen</h2>
+<p class="muted">Hver rad er 500 gjentatte studier. Prikkene er estimatene, den grønne streken er
+<b>sannheten</b> du valgte, og tallet til høyre er hvor langt gjennomsnittsestimatet bommer —
+altså <b>skjevheten</b> (bias). Spredningen i prikkene er usikkerheten; avstanden fra den grønne
+streken er skjevheten. De to er helt forskjellige problemer.</p>
+<canvas id="rdCv" height="300"></canvas>
+<div id="rdTab"></div>
+<div class="note" id="rdLes"></div>
+</div>
+
+<div class="card docs">
+<h2>Prøv dette</h2>
+<div class="note"><b>1 · Hva seleksjon gjør.</b> Dra «hvor sterkt C styrer hvem som får tiltaket»
+fra 0 til 0.95 med reliabilitet 1 og U = 0. Rad 2 (ingen kontroll) vandrer bort fra sannheten,
+mens rad 1 (randomisert) og rad 3 (kontrollert) blir stående. Det er konfundering, og statistisk
+kontroll fikser den — <i>når</i> du har målt konfunderen perfekt.
+<div style="margin-top:8px"><b>2 · Hva målefeil gjør.</b> Behold alt, men dra reliabiliteten ned
+mot 0.6. Rad 4 glir bort fra sannheten igjen, og lander et sted mellom rad 2 og rad 3. Dette
+heter <b>residual konfundering</b>: når konfunderen er målt med feil, kontrollerer du bare for
+den delen du faktisk fanget. Resten står igjen i estimatet. Det er den vanligste grunnen til at
+en «kontrollert for alt»-analyse likevel tar feil — og det er grunnen til at reliabilitet (Sim 11
+fane 10) er et metodespørsmål og ikke bare et måleteknisk et.</div>
+<div style="margin-top:8px"><b>3 · Hva randomisering gjør som kontroll ikke kan.</b> Sett
+reliabiliteten tilbake til 1 og dra opp U. Nå bommer rad 2, 3 <i>og</i> 4 — alle de
+observasjonelle — mens rad 1 står støtt. Loddtrekningen vet ikke hva U er, og trenger det ikke:
+den balanserer alt som finnes, målt og umålt, kjent og ukjent.</div>
+<div style="margin-top:8px"><b>4 · Hva randomisering <i>ikke</i> gjør.</b> Sett U og seleksjon
+til 0 og dra <i>n</i> ned til 40. Rad 1 er fortsatt uskjev, men prikkene spriker voldsomt. En
+randomisert studie kan være helt riktig i gjennomsnitt og likevel gi deg et ubrukelig svar denne
+ene gangen. Randomisering fjerner skjevhet, ikke usikkerhet.</div></div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>Randomisering balanserer alt — også det du ikke har målt og ikke har tenkt på. Statistisk
+kontroll balanserer bare det du har målt, og bare så godt som du har målt det. Derfor er
+«vi kontrollerte for» et svakere argument enn «vi randomiserte», uansett hvor lang lista er.</b>
+<details class="mer"><summary>Mer om dette: tre ting som er lette å glemme</summary><div>
+<b>1. Randomisering virker på gruppenivå, ikke på personnivå.</b> Loddtrekningen gir deg ikke to
+identiske grupper i dette ene utvalget — den gir deg to grupper som er like <i>i gjennomsnitt
+over gjentatte studier</i>. Derfor kan en randomisert studie ha ubalanse i en bakgrunnsvariabel
+ved ren tilfeldighet, og derfor er det ikke noe galt i å rapportere en baselinetabell.
+<div style="margin-top:8px"><b>2. Å teste om randomiseringen «virket» er en feil.</b> En
+signifikanstest av baselineforskjeller tester en nullhypotese du vet er sann, siden du selv
+trakk lodd. Det du skal se på er størrelsen på ubalansen, ikke <i>p</i>-verdien til den.</div>
+<div style="margin-top:8px"><b>3. Randomisering beskytter ikke mot alt.</b> Den beskytter mot
+skjevhet i <i>hvem som fikk</i> tiltaket. Den beskytter ikke mot frafall som henger sammen med
+behandlingen, mot at deltakerne vet hvilken gruppe de er i, eller mot at utfallet måles ulikt i
+de to gruppene. Det er derfor Sim 7 fane 4 og forutsetningsfanene fortsatt gjelder.</div>
+</div></details></div></div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="A3">A3 Design: randomisering og kontroll &rarr;</a> <a class="ovlenke" data-begrep="A4">A4 Kausalitet og konfundering &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+
+</div><!-- /fane-rand -->
+<!-- /fane-sim -->
 </div><!-- /wrap -->
 <script>
 /* ===== Fane 3: å kontrollere for — fra Sim 15. Egen lukking fordi appene deler navn. */
 (function(){
 "use strict";
 const $=id=>document.getElementById(id);
-const fmt=(x,d=2)=>x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fmt=(x,d=2)=>x.toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:false});
 function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
 function fit(cv){const r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
   cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);c.clearRect(0,0,w,h);return [c,w,h];}
@@ -289,6 +616,90 @@ function drawB(){
   for(let i=0;i<=3;i++){const s=mx*i/3;c.fillText(fmt(s,3),x0-6,Y(s)+5);}
   c.save();c.translate(13,22+ph/2);c.rotate(-Math.PI/2);c.textAlign='center';c.fillText('SE for β₁',0,0);c.restore();
 }
+
+/* ---------- figur C: hvor variansen i Y blir av -----------------------------
+   Med standardiserte koeffisienter og to prediktorer:
+     r_y1 = β1 + β2·r12      r_y2 = β2 + β1·r12
+     R²   = β1² + β2² + 2·β1·β2·r12
+     sr1² = β1²(1 − r12²)    sr2² = β2²(1 − r12²)      (semipartielle)
+     delt = R² − sr1² − sr2²                            (kan bli negativ: suppresjon)
+   Alt regnes fra sannheten brukeren har valgt, ikke fra ett tilfeldig utvalg,
+   så figuren står stille når man bare trekker nye data.                      */
+function drawAreal(){
+  const cv=document.getElementById('cvAreal'); if(!cv) return;
+  const [c,w,h]=fit(cv);
+  const p=P(), r=p.R12, b1=p.B1, b2=p.B2;
+  const R2   = b1*b1 + b2*b2 + 2*b1*b2*r;
+  const sr1  = b1*b1*(1-r*r);
+  const sr2  = b2*b2*(1-r*r);
+  const delt = R2 - sr1 - sr2;
+  const rest = 1 - R2;
+  const L=14, R=w-14, BW=R-L, y=52, bh=62;
+  /* Negativ delt andel kan ikke tegnes som bredde. Da tegnes de to unike
+     feltene i full bredde og suppresjonen markeres som en egen merknad. */
+  const supp = delt < -0.0005;
+  const seg = supp
+    ? [[sr1,'#1E7A3C','bare X₁'],[sr2,'#2E5496','bare X₂'],[rest,'#dfe4ec','uforklart']]
+    : [[sr1,'#1E7A3C','bare X₁'],[delt,'#B26A00','delt'],[sr2,'#2E5496','bare X₂'],
+       [rest,'#dfe4ec','uforklart']];
+  const sum = seg.reduce((a,s)=>a+Math.max(0,s[0]),0) || 1;
+  c.fillStyle='#1F3864'; c.font='600 13.5px system-ui,sans-serif';
+  c.textAlign='left'; c.textBaseline='bottom';
+  c.fillText('All variasjon i Y (100 %)', L, y-10);
+  let x=L;
+  seg.forEach(function(s){
+    const bw = Math.max(0,s[0])/sum*BW;
+    if(bw<=0) return;
+    c.fillStyle=s[1]; c.fillRect(x,y,bw,bh);
+    if(bw>58){
+      c.fillStyle = s[1]==='#dfe4ec' ? '#62708a' : '#fff';
+      c.textAlign='center'; c.textBaseline='middle';
+      c.font='600 12.5px system-ui,sans-serif';
+      c.fillText(s[2], x+bw/2, y+bh/2-8);
+      c.font='12px system-ui,sans-serif';
+      c.fillText((100*s[0]).toFixed(1)+' %', x+bw/2, y+bh/2+9);
+    }
+    x+=bw;
+  });
+  c.strokeStyle='#c3ccda'; c.lineWidth=1; c.strokeRect(L,y,BW,bh);
+  /* forklaringsrad under */
+  c.textAlign='left'; c.textBaseline='top'; c.font='12.5px system-ui,sans-serif';
+  let lx=L;
+  seg.forEach(function(s){
+    c.fillStyle=s[1]; c.fillRect(lx,y+bh+14,11,11);
+    c.fillStyle='#39455c'; c.fillText(s[2], lx+16, y+bh+14);
+    lx += 22 + c.measureText(s[2]).width;
+  });
+  /* tekst og poeng */
+  const T=document.getElementById('arealTekst'), K=document.getElementById('arealPoeng');
+  if(T) T.innerHTML =
+     'Med <i>&beta;</i><sub>1</sub> = '+fmt(b1)+', <i>&beta;</i><sub>2</sub> = '+fmt(b2)+
+     ' og <i>r</i><sub>12</sub> = '+fmt(r)+' forklarer modellen til sammen <b>'+
+     (100*R2).toFixed(1)+' %</b> av variasjonen i Y. Av det er <b>'+(100*sr1).toFixed(1)+
+     ' %</b> noe bare X<sub>1</sub> kan forklare, <b>'+(100*sr2).toFixed(1)+
+     ' %</b> bare X<sub>2</sub>, og <b>'+(100*delt).toFixed(1)+' %</b> kan ikke tilskrives '+
+     'den ene framfor den andre.';
+  if(K){
+    let txt;
+    if(supp)
+      txt='<span class="lbl">Suppresjon</span><b>Det delte feltet er <i>negativt</i> ('+
+        (100*delt).toFixed(1)+' %). De to prediktorene forklarer til sammen mer enn summen av '+
+        'hva de gjør hver for seg — og da kan en prediktor bli <i>sterkere</i> når du '+
+        'kontrollerer for den andre. Se «Mer om dette» under.</b>';
+    else if(r<0.05)
+      txt='<span class="lbl">Ingen overlapp</span><b>Med <i>r</i><sub>12</sub> = 0 er det ikke '+
+        'noe delt felt. Hver prediktor eier hele sin bit, og <i>&beta;</i>-ene endrer seg ikke '+
+        'når du legger til den andre. Det er dette randomisering kjøper deg.</b>';
+    else
+      txt='<span class="lbl">Dette er hele poenget</span><b>Det oransje feltet er variasjon som '+
+        'passer like godt til begge forklaringene. Regresjonen nekter å dele det ut — den gir '+
+        'hver prediktor bare sitt eget felt. Derfor krymper <i>&beta;</i>-ene når du legger til '+
+        'en korrelert prediktor, og derfor blir de mer usikre: estimatet bygger på mindre '+
+        'informasjon enn det ser ut til.</b>';
+    K.innerHTML=txt;
+  }
+}
+
 function render(){
   const p=P();
   $('b1o').textContent=fmt(p.B1);$('b2o').textContent=fmt(p.B2);$('r12o').textContent=fmt(p.R12);$('no').textContent=p.n;
@@ -296,15 +707,15 @@ function render(){
   $('setup').innerHTML='<b>Sannheten i denne verdenen:</b> X₁ har effekt β₁ = '+fmt(p.B1)+' og X₂ har effekt β₂ = '+fmt(p.B2)+
     '. Fordi prediktorene korrelerer (r₁₂ = '+fmt(p.R12)+'), «arver» X₁ en del av X₂ sin effekt i en enkel regresjon: der er den forventede koeffisienten β₁ + β₂·r₁₂ = '+
     fmt(trueSimple)+', ikke '+fmt(p.B1)+'. Differansen ('+fmt(trueSimple-p.B1)+') er <b>konfunderingen</b> som kontrollen fjerner.';
-  drawA();drawB();
+  drawA();drawB();drawAreal();
   if(!cur)return;
-  const sig=x=>x<0.001?'p &lt; ,001':'p = '+fmt(x,3).replace('0,',',');
+  const sig=x=>x<0.001?'p &lt; .001':'p = '+fmt(x,3).replace('0.','.');
   $('statsAKM').innerHTML=
     '<span class="stat orange">enkel: β = '+fmt(cur.ry1)+' · SE = '+fmt(cur.seSimple,3)+' · '+sig(cur.pS)+'</span>'+
     '<span class="stat">multippel: β₁ = '+fmt(cur.B1)+' · SE = '+fmt(cur.se,3)+' · '+sig(cur.p1)+'</span>'+
     '<span class="stat">β₂ = '+fmt(cur.B2)+'</span>'+
-    '<span class="stat">R² = '+fmt(cur.R2)+'</span>'+
-    '<span class="stat">n = '+cur.n+'</span>';
+    '<span class="stat"><i>R</i>² = '+fmt(cur.R2)+'</span>'+
+    '<span class="stat"><i>n</i> = '+cur.n+'</span>';
   const skift=cur.ry1-cur.B1;
   $('verdictA').innerHTML= Math.abs(skift)<0.03
     ? '<b>Kontrollen endrer nesten ingenting</b> ('+fmt(skift)+'). Med lav r₁₂ har prediktorene lite felles informasjon. Da er det ingenting å kontrollere bort.'
@@ -313,20 +724,20 @@ function render(){
       : '<b>Kontrollen flyttet estimatet '+fmt(skift)+'</b>, fra '+fmt(cur.ry1)+' til '+fmt(cur.B1)+'. Den enkle koeffisienten inneholdt både X₁ sin egen effekt og den delen X₁ deler med X₂.');
   $('statsBKM').innerHTML=
     '<span class="stat'+(cur.vif>5?' red':'')+'">VIF = '+fmt(cur.vif)+'</span>'+
-    '<span class="stat">SE nå = '+fmt(cur.se,3)+'</span>'+
-    '<span class="stat">SE hvis r₁₂ = 0: '+fmt(Math.sqrt((1-cur.R2)/(p.n-3)),3)+'</span>'+
-    '<span class="stat">n som trengs for samme presisjon: '+Math.round(p.n*cur.vif)+'</span>';
+    '<span class="stat"><i>SE</i> nå = '+fmt(cur.se,3)+'</span>'+
+    '<span class="stat"><i>SE</i> hvis r₁₂ = 0: '+fmt(Math.sqrt((1-cur.R2)/(p.n-3)),3)+'</span>'+
+    '<span class="stat"><i>n</i> som trengs for samme presisjon: '+Math.round(p.n*cur.vif)+'</span>';
 }
 ['b1','b2','r12','nKM'].forEach(id=>$(id).oninput=()=>{newSample();});
 $('draw').onclick=newSample;
 $('draw20').onclick=many;
 $('realRCT').onclick=()=>{ // Depresjon_pre ← Undertrykkende_forsvar_pre + Aggresjonsundertrykking_pre (N = 86)
   $('b1').value=0.45;$('b2').value=0.10;$('r12').value=0;$('nKM').value=90;newSample();
-  $('setup').innerHTML='<b>Ekte tall fra Terapi-RCT-studien (N = 86):</b> r(X₁,Y) = ,46 · r(X₂,Y) = −,12 · <b>r₁₂ = ,00</b>. Prediktorene er praktisk talt ukorrelerte, og derfor er β₁ nesten identisk i enkel og multippel regresjon (,458 → ,458). VIF = 1,00: ingenting koster noe. Dette er «kjedelig» — og nettopp derfor lærerikt: kontroll er bare interessant når prediktorene overlapper.';
+  $('setup').innerHTML='<b>Ekte tall fra Terapi-RCT-studien (<i>N</i> = 86):</b> r(X₁,Y) = .46 · r(X₂,Y) = −.12 · <b>r₁₂ = .00</b>. Prediktorene er praktisk talt ukorrelerte, og derfor er β₁ nesten identisk i enkel og multippel regresjon (.458 → .458). VIF = 1.00: ingenting koster noe. Dette er «kjedelig» — og nettopp derfor lærerikt: kontroll er bare interessant når prediktorene overlapper.';
 };
 $('realARB').onclick=()=>{ // Angstsensitivitet ← Selvkritisk + Rigid perfeksjonisme (N = 390)
   $('b1').value=0.35;$('b2').value=0.20;$('r12').value=0.55;$('nKM').value=390;newSample();
-  $('setup').innerHTML='<b>Ekte tall fra arbeidskravet (N = 390):</b> angstsensitivitet predikert av selvkritisk perfeksjonisme (X₁) og rigid perfeksjonisme (X₂). Enkeltvis: r = ,49 og r = ,41. Men de to perfeksjonismeformene korrelerer <b>,57</b> med hverandre, så i den multiple modellen krymper de til β₁ = ,37 og β₂ = ,20 — hver av dem beholder bare sitt unike bidrag. R² = ,26 og VIF = 1,49: SE er 22 % større enn den ville vært uten overlappet.';
+  $('setup').innerHTML='<b>Ekte tall fra arbeidskravet (<i>N</i> = 390):</b> angstsensitivitet predikert av selvkritisk perfeksjonisme (X₁) og rigid perfeksjonisme (X₂). Enkeltvis: <i>r</i> = .49 og <i>r</i> = .41. Men de to perfeksjonismeformene korrelerer <b>,57</b> med hverandre, så i den multiple modellen krymper de til β₁ = .37 og β₂ = .20 — hver av dem beholder bare sitt unike bidrag. <i>R</i>² = .26 og VIF = 1.49: <i>SE</i> er 22 % større enn den ville vært uten overlappet.';
 };
 newSample();
 const __fsRedraw=()=>{render();};
@@ -411,6 +822,294 @@ const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA0
     if((e.key==="p"||e.key==="P")&&!/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) veksle();
   });
   document.body.appendChild(b);
+})();
+
+/* =====================================================================
+   Fane 0 «Hvorfor …?» — formelfri inngang, lagt til i ettertid.
+   Appen åpner her; simuleringen nås med #fane=sim (kjøremanusene bruker
+   den dyplenken). Simuleringen tegner seg selv på nytt via resize.
+   ===================================================================== */
+(function(){
+const FANER=['hvorfor','sim','rand'];
+function visFane(f){
+  if(FANER.indexOf(f)<0) f='hvorfor';
+  FANER.forEach(function(x){
+    const e=document.getElementById('fane-'+x);
+    if(e) e.classList.toggle('hide', x!==f);
+  });
+  document.querySelectorAll('.fane').forEach(function(b){
+    b.classList.toggle('on', b.dataset.fane===f);
+  });
+  if(f==='sim'||f==='rand') window.dispatchEvent(new Event('resize'));
+  try{ history.replaceState(null,'','#fane='+f); }catch(e){}
+}
+document.querySelectorAll('.fane').forEach(function(b){
+  b.addEventListener('click',function(){ visFane(b.dataset.fane); });
+});
+const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+
+        (location.hash||'').replace(/^#/,''));
+const f=q.get('fane'); if(f&&FANER.indexOf(f)>=0) visFane(f);
+})();
+
+/* ---- fane 0: gjenkjenningsøvelsen ---- */
+(function(){
+const SP=[{"q": "«Henger perfeksjonisme sammen med selvtillit også når vi tar hensyn til karakternivå?»", "ja": true, "f": "Ja. Dette er hva partiell korrelasjon og multippel regresjon er til for."}, {"q": "«Hvilken av de tre prediktorene er viktigst?»", "ja": false, "f": "Nei, ikke uten videre. Modellen gir deg koeffisienter, men «viktigst» avhenger av skala og av hvor mye prediktorene overlapper. Standardiserte β-er hjelper litt, men rangeringen er skjørere enn den ser ut."}, {"q": "«Beviser dette at perfeksjonisme <i>senker</i> selvtilliten?»", "ja": false, "f": "Nei. Kontrollvariabler flytter deg nærmere et årsaksutsagn, men bare randomisering tar deg dit. Du har kontrollert for det du kom på, ikke for alt."}, {"q": "«Vi kontrollerte for antall behandlingstimer. Er det lurt?»", "ja": false, "f": "Sannsynligvis ikke. Behandlingstimer er et <b>mellomledd</b> mellom terapi og bedring — kontrollerer du for det, fjerner du selve mekanismen du ville måle."}, {"q": "«Er de tre fagfeltene ulike i selvtillit?»", "ja": false, "f": "Nei, det er en <b>enveis-ANOVA</b> (Sim 22). Her sammenligner du grupper, ikke prediktorers unike bidrag."}, {"q": "«Hvorfor er standardfeilen så stor når begge prediktorene virker relevante?»", "ja": true, "f": "Ja, og det er et av appens hovedpoenger: når prediktorene korrelerer sterkt, kan modellen ikke skille bidragene fra hverandre. Det heter multikollinearitet."}];
+const vert=document.getElementById('hvQuiz'); if(!vert) return;
+let svart=0,rett=0;
+SP.forEach(function(s,i){
+  const d=document.createElement('div'); d.className='hvq';
+  d.innerHTML='<span class="sp"><b>'+(i+1)+'.</b> '+s.q+'</span>'+
+    '<button class="btn2" data-v="1">Ja</button><button class="btn2" data-v="0">Nei</button>'+
+    '<div class="sv"></div>';
+  d.querySelectorAll('button').forEach(function(b){
+    b.addEventListener('click',function(){
+      if(d.classList.contains('svart'))return;
+      const valgt=b.dataset.v==='1', ok=(valgt===s.ja);
+      d.classList.add('svart', ok?'rett':'feil');
+      d.querySelector('.sv').innerHTML=
+        '<span class="hvfasit '+(s.ja?'ja':'nei')+'">'+(s.ja?'JA':'NEI')+'</span>. '+s.f;
+      d.querySelectorAll('button').forEach(function(x){x.disabled=true;});
+      svart++; if(ok)rett++;
+      if(svart===SP.length){
+        const sum=document.getElementById('hvSum'); sum.style.display='block';
+        sum.innerHTML='<b>Du traff '+rett+' av '+SP.length+'.</b> Men det er ikke tallet som '+
+          'teller — det er at du nå har sett de tre fellene: å lese «viktigst» ut av koeffisientene, å tro at kontroll gir årsak, og å kontrollere for et mellomledd.';
+      }
+    });
+  });
+  vert.appendChild(d);
+});
+})();
+</script>
+
+
+<script>
+/* =====================================================================
+   Fane 2 · Randomisering mot statistisk kontroll (begrep A3).
+   Egen lukking, som resten av appen.
+
+   Modellen, med alt i standardavvik:
+       C ~ N(0,1)   målt konfunder        U ~ N(0,1)   umålt konfunder
+       tildeling:   randomisert  -> myntkast, uavhengig av C og U
+                    observasjon  -> de n/2 høyeste på (s·C + s·U + støy)
+       Y = d·T + g·C + gU·U + e
+       Cm = reliabilitetskorrigert måling av C
+   Estimatet er alltid koeffisienten til T, altså forskjellen mellom
+   gruppene i Y, i Y-enheter. Sannheten er d.
+   ===================================================================== */
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+if(!$('rdCv')) return;
+const fmt=(x,d=2)=>x.toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:false});
+function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function fit(cv){const r=window.devicePixelRatio||1,w=cv.clientWidth,
+  h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';
+  const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);c.clearRect(0,0,w,h);return [c,w,h];}
+
+/* OLS ved normallikningene; Gauss-eliminasjon med delvis pivotering.
+   X er en liste av rader, y en vektor. Returnerer koeffisientvektoren. */
+function ols(X,y){
+  const k=X[0].length, A=[];
+  for(let i=0;i<k;i++){ A.push(new Float64Array(k+1)); }
+  for(let r=0;r<X.length;r++){
+    const xr=X[r];
+    for(let i=0;i<k;i++){
+      for(let j=i;j<k;j++) A[i][j]+=xr[i]*xr[j];
+      A[i][k]+=xr[i]*y[r];
+    }
+  }
+  for(let i=0;i<k;i++) for(let j=0;j<i;j++) A[i][j]=A[j][i];
+  for(let i=0;i<k;i++){
+    let p=i; for(let r=i+1;r<k;r++) if(Math.abs(A[r][i])>Math.abs(A[p][i])) p=r;
+    const t=A[i];A[i]=A[p];A[p]=t;
+    if(Math.abs(A[i][i])<1e-12) return null;
+    for(let r=0;r<k;r++){ if(r===i)continue;
+      const f=A[r][i]/A[i][i];
+      for(let j=i;j<=k;j++) A[r][j]-=f*A[i][j];
+    }
+  }
+  const b=new Float64Array(k); for(let i=0;i<k;i++) b[i]=A[i][k]/A[i][i];
+  return b;
+}
+
+const P=()=>({d:+$('rdD').value,g:+$('rdG').value,s:+$('rdS').value,
+              rel:+$('rdRel').value,gu:+$('rdU').value,n:+$('rdN').value});
+
+/* én studie -> de fire estimatene */
+function studie(p){
+  const n=p.n, halv=Math.floor(n/2);
+  const C=new Float64Array(n), U=new Float64Array(n),
+        Tr=new Float64Array(n), To=new Float64Array(n);
+  // restvariansen i Y, så Y holder omtrent samme skala uansett innstillinger
+  let ve=1-(p.g*p.g+p.gu*p.gu); if(ve<0.05) ve=0.05;
+  const se=Math.sqrt(ve);
+  const lat=[];
+  for(let i=0;i<n;i++){
+    C[i]=rnorm(); U[i]=rnorm();
+    lat.push([p.s*C[i]+p.s*U[i]+Math.sqrt(Math.max(0.05,1-2*p.s*p.s))*rnorm(), i]);
+  }
+  // randomisert: nøyaktig halvparten, trukket tilfeldig (blokkrandomisering)
+  const idx=[...Array(n).keys()];
+  for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=idx[i];idx[i]=idx[j];idx[j]=t;}
+  for(let i=0;i<halv;i++) Tr[idx[i]]=1;
+  // observasjonell: de halv høyeste på den latente tildelingsvariabelen
+  lat.sort((a,b)=>b[0]-a[0]);
+  for(let i=0;i<halv;i++) To[lat[i][1]]=1;
+
+  const Yr=new Float64Array(n), Yo=new Float64Array(n), Cm=new Float64Array(n);
+  const a=Math.sqrt(p.rel), b2=Math.sqrt(Math.max(0,1-p.rel));
+  for(let i=0;i<n;i++){
+    const felles=p.g*C[i]+p.gu*U[i];
+    const stoy=se*rnorm();
+    Yr[i]=p.d*Tr[i]+felles+stoy;
+    Yo[i]=p.d*To[i]+felles+stoy;
+    Cm[i]=a*C[i]+b2*rnorm();
+  }
+  const X1=[],X2=[],X3=[],X4=[];
+  for(let i=0;i<n;i++){
+    X1.push([1,Tr[i]]);            // randomisert, ingen kontroll
+    X2.push([1,To[i]]);            // observasjonell, ingen kontroll
+    X3.push([1,To[i],C[i]]);       // kontrollert for C, perfekt målt
+    X4.push([1,To[i],Cm[i]]);      // kontrollert for C slik den faktisk er målt
+  }
+  const r1=ols(X1,Yr), r2=ols(X2,Yo), r3=ols(X3,Yo), r4=ols(X4,Yo);
+  return [r1?r1[1]:NaN, r2?r2[1]:NaN, r3?r3[1]:NaN, r4?r4[1]:NaN];
+}
+
+const RAD=[
+ {navn:'1 · Randomisert', und:'loddtrekning, ingen kontrollvariabel', f:'#2E7D5B'},
+ {navn:'2 · Observasjonell', und:'ingen kontroll', f:'#C8102E'},
+ {navn:'3 · Observasjonell', und:'kontrollert for C, perfekt målt', f:'#174A6B'},
+ {navn:'4 · Observasjonell', und:'kontrollert for C slik du målte den', f:'#B07A00'}
+];
+let RES=null;
+
+function kjor(){
+  const p=P(), M=500;
+  const ut=[[],[],[],[]];
+  for(let k=0;k<M;k++){ const e=studie(p); for(let j=0;j<4;j++) ut[j].push(e[j]); }
+  RES={p, ut};
+  tegn(); tabell();
+}
+
+function tegn(){
+  const [c,w,h]=fit($('rdCv')); if(!RES) return;
+  const p=RES.p, x0=Math.min(230,w*0.36), pw=w-x0-74;
+  let lo=p.d, hi=p.d;
+  RES.ut.forEach(a=>a.forEach(v=>{ if(v<lo)lo=v; if(v>hi)hi=v; }));
+  const pad=(hi-lo)*0.08+0.02; lo-=pad; hi+=pad;
+  const X=v=>x0+(v-lo)/(hi-lo)*pw;
+  const radh=(h-34)/4;
+  // akse
+  c.font='11px DejaVu Sans, sans-serif'; c.fillStyle='#6B767D'; c.textAlign='center';
+  const steg=(hi-lo)/5;
+  for(let i=0;i<=5;i++){ const v=lo+i*steg;
+    c.strokeStyle='#EDF0F2'; c.beginPath(); c.moveTo(X(v),4); c.lineTo(X(v),h-26); c.stroke();
+    c.fillText(fmt(v,2), X(v), h-12);
+  }
+  c.fillText('estimert effekt av tiltaket', x0+pw/2, h-1);
+  // sannheten
+  c.strokeStyle='#2E7D5B'; c.lineWidth=1.6; c.setLineDash([5,3]);
+  c.beginPath(); c.moveTo(X(p.d),2); c.lineTo(X(p.d),h-26); c.stroke(); c.setLineDash([]);
+  RAD.forEach((r,j)=>{
+    const yc=6+radh*j+radh/2, a=RES.ut[j];
+    c.textAlign='right'; c.fillStyle='#2B3940'; c.font='bold 12px DejaVu Sans, sans-serif';
+    c.fillText(r.navn, x0-10, yc-3);
+    c.fillStyle='#6B767D'; c.font='10.5px DejaVu Sans, sans-serif';
+    c.fillText(r.und, x0-10, yc+10);
+    // prikkene, med litt loddrett spredning så de ikke ligger oppå hverandre
+    c.fillStyle=r.f; c.globalAlpha=0.30;
+    for(let i=0;i<a.length;i++){
+      const yy=yc+(Math.random()-0.5)*(radh*0.52);
+      c.beginPath(); c.arc(X(a[i]), yy, 1.7, 0, 6.2832); c.fill();
+    }
+    c.globalAlpha=1;
+    const m=a.reduce((s,v)=>s+v,0)/a.length;
+    c.strokeStyle=r.f; c.lineWidth=2.4;
+    c.beginPath(); c.moveTo(X(m), yc-radh*0.34); c.lineTo(X(m), yc+radh*0.34); c.stroke();
+    const bias=m-p.d;
+    c.textAlign='left'; c.font='bold 11.5px DejaVu Sans, sans-serif';
+    c.fillStyle=Math.abs(bias)<0.03?'#2E7D5B':r.f;
+    c.fillText((bias>=0?'+':'−')+fmt(Math.abs(bias),2), x0+pw+8, yc+4);
+  });
+}
+
+function tabell(){
+  if(!RES) return;
+  const p=RES.p;
+  let s='<div class="tabrull"><table><thead><tr><th style="text-align:left">Analyse</th>'+
+        '<th>gj.snitt</th><th>skjevhet</th><th>SD mellom studier</th><th>bommer med mer enn 0.10</th></tr></thead><tbody>';
+  RAD.forEach((r,j)=>{
+    const a=RES.ut[j], m=a.reduce((x,v)=>x+v,0)/a.length;
+    const sd=Math.sqrt(a.reduce((x,v)=>x+(v-m)*(v-m),0)/(a.length-1));
+    const andel=a.filter(v=>Math.abs(v-p.d)>0.10).length/a.length*100;
+    s+='<tr><td style="text-align:left">'+r.navn+' — '+r.und+'</td><td>'+fmt(m,3)+'</td>'+
+       '<td style="color:'+(Math.abs(m-p.d)<0.03?'#2E7D5B':'#C8102E')+';font-weight:700">'+
+       ((m-p.d>=0?'+':'−')+fmt(Math.abs(m-p.d),3))+'</td><td>'+fmt(sd,3)+'</td><td>'+Math.round(andel)+' %</td></tr>';
+  });
+  s+='</tbody></table></div>';
+  $('rdTab').innerHTML=s;
+
+  const u=RES.ut, m=j=>u[j].reduce((x,v)=>x+v,0)/u[j].length;
+  const b2=m(1)-p.d, b3=m(2)-p.d, b4=m(3)-p.d;
+  let t='<b>Sannheten er '+fmt(p.d,2)+'.</b> ';
+  if(Math.abs(b2)<0.04 && p.s>0.05 && p.g>0.05)
+    t+='Her er det ingen konfundering å se — enten fordi C ikke påvirker Y, eller fordi den ikke styrer tildelingen. ';
+  else if(Math.abs(b2)>=0.04)
+    t+='Uten kontroll bommer den observasjonelle analysen med '+fmt(Math.abs(b2),2)+'. ';
+  if(p.gu>0.05)
+    t+='Den umålte U gjør at <b>alle</b> de observasjonelle radene bommer ('+fmt(Math.abs(b3),2)+
+       ' selv når C er perfekt målt) — ingen kontrollvariabel kan røre det du ikke har tall på. ';
+  else if(p.rel<0.99 && Math.abs(b4)>Math.abs(b3)+0.02)
+    t+='Kontrollen for C fjerner skjevheten når C er perfekt målt ('+fmt(Math.abs(b3),2)+
+       '), men med reliabilitet '+fmt(p.rel,2)+' står '+fmt(Math.abs(b4),2)+
+       ' igjen. Det er residual konfundering: du kontrollerte for den delen av C du faktisk fanget. ';
+  else if(Math.abs(b3)<0.04 && Math.abs(b2)>=0.04)
+    t+='Kontrollen gjør jobben her — men bare fordi C er både perfekt målt og den eneste konfunderen. ';
+  t+='Den randomiserte raden står uskjev uansett hva du skrur på, fordi loddtrekningen gjør '+
+     'tildelingen uavhengig av både C og U.';
+  $('rdLes').innerHTML=t;
+}
+
+function oppdater(){
+  const p=P();
+  $('rdDo').textContent=fmt(p.d,2); $('rdGo').textContent=fmt(p.g,2);
+  $('rdSo').textContent=fmt(p.s,2); $('rdRelo').textContent=fmt(p.rel,2);
+  $('rdUo').textContent=fmt(p.gu,2); $('rdNo').textContent=p.n;
+  $('rdSetup').innerHTML='Tiltaket flytter Y med <b>'+fmt(p.d,2)+'</b> standardavvik. '+
+    (p.s<0.05 ? 'C styrer ikke tildelingen, så det er ingen seleksjon å rette opp.'
+      : 'I observasjonsstudien får de med høy C og høy U tiltaket, så gruppene er ulike før tiltaket i det hele tatt begynner.')+
+    (p.gu>0.05 ? ' <b>U er umålt</b> — den finnes i verden, men ikke i datasettet ditt.' : '')+
+    (p.rel<0.99 ? ' C er målt med reliabilitet '+fmt(p.rel,2)+', altså med feil.' : '');
+  kjor();
+}
+['rdD','rdG','rdS','rdRel','rdU','rdN'].forEach(id=>{
+  const e=$(id); if(e) e.addEventListener('input',oppdater);
+});
+$('rdKjor').addEventListener('click',kjor);
+$('rdNull').addEventListener('click',function(){
+  $('rdD').value=0.30; $('rdG').value=0.50; $('rdS').value=0.70;
+  $('rdRel').value=1; $('rdU').value=0; $('rdN').value=200; oppdater();
+});
+window.addEventListener('resize',tegn);
+oppdater();
+})();
+</script>
+
+<script id="ovbegrep-js">
+(function(){
+  // Lokalt: appene ligger i PSY300_Sim_Apps/, MCQ-appen i PSY300_online/.
+  // Publisert: alt ligger flatt. Velg prefiks ut fra adressen.
+  var p = location.pathname.indexOf('/PSY300_Sim_Apps/') >= 0
+        ? '../PSY300_online/' : './';
+  var a = document.querySelectorAll('a.ovlenke[data-begrep]');
+  for (var i=0;i<a.length;i++){
+    a[i].href = p + 'PSY300_MCQ_Online.html?begrep=' + a[i].getAttribute('data-begrep');
+    a[i].target = '_blank'; a[i].rel = 'noopener';
+  }
 })();
 </script>
 </body></html>

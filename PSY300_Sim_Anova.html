@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PSY300 · Sim 22 — F-fabrikken</title>
+<title>PSY300 · Sim 22 — Enveis ANOVA</title>
 <style>
 :root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--orange:#B26A00;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
 *{box-sizing:border-box}
@@ -136,9 +136,13 @@ table.tt tr.na{background:rgba(46,84,150,.10)}
 
 /* ---- tabell mot setning: samme farge begge steder, og de lyser sammen ---- */
 .sporpar{display:grid;gap:12px;margin-top:6px}
-.sportab td.sp,.sporsetn .sp{border-radius:5px;padding:1px 5px;cursor:help;
-  transition:box-shadow .12s, background .12s}
-.sportab td.sp.pa,.sporsetn .sp.pa{box-shadow:0 0 0 2px #16203A}
+.sp{border-radius:5px;padding:1px 5px;cursor:help;
+  transition:box-shadow .12s, background .12s, font-size .12s}
+/* Markert tall: ring, stoerre og fetere. Paa et lerret bakerst i salen er
+   ringen alene for svak — det er stoerrelsen som ses. */
+.sp.pa{box-shadow:0 0 0 2px #16203A;font-size:1.13em;font-weight:800;
+  position:relative;z-index:2}
+.sp.laast{box-shadow:0 0 0 2px #16203A,0 0 0 5px rgba(22,32,58,.18)}
 .sp-sig{background:var(--sig-bg);color:var(--sig);font-weight:700}
 .sp-stoy{background:var(--stoy-bg);color:var(--stoy);font-weight:700}
 .sp-tstat{background:var(--tstat-bg);color:var(--tstat);font-weight:700}
@@ -640,9 +644,109 @@ body.trykk #foversikt,body.trykk #modusBtn{display:none!important}
 body.fmodus #modusBtn{left:14px;right:auto;bottom:11px;
   background:rgba(255,255,255,.10);color:#cfdaeb;
   border:1px solid rgba(255,255,255,.20);box-shadow:none;font-weight:600}
-</style></head><body>
+
+details.mer{margin:8px 0 0;border-top:1px solid rgba(0,0,0,.10);padding-top:7px}
+details.mer>summary{cursor:pointer;font-size:14.5px;font-weight:700;color:#1C7293;list-style:none;padding:2px 0}
+details.mer>summary::-webkit-details-marker{display:none}
+details.mer>summary::before{content:"\25B8 ";font-size:12px}
+details.mer[open]>summary::before{content:"\25BE "}
+details.mer>*:not(summary){margin-top:8px;font-size:15.5px;line-height:1.5}
+</style><style>
+/* ---- innlemmet: dans ---- */
+#fane-dans .k-sig{color:var(--sig);font-weight:600}
+#fane-dans .k-stoy{color:var(--stoy);font-weight:600}
+#fane-dans .k-tstat{color:var(--tstat);font-weight:700}
+#fane-dans .k-p{color:var(--pverdi);font-weight:600}
+#fane-dans .k-eff{color:var(--eff);font-weight:600}
+#fane-dans .k-ki{color:var(--ki);font-weight:600}
+#fane-dans .m-sig,#fane-dans .m-stoy,#fane-dans .m-tstat,#fane-dans .m-p,#fane-dans .m-eff,#fane-dans .m-ki{border-radius:5px;padding:1px 5px;font-weight:600}
+#fane-dans .m-sig{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+#fane-dans .m-stoy{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+#fane-dans .m-tstat{background:var(--tstat-bg);color:var(--tstat);box-shadow:inset 0 0 0 1px var(--tstat-kant)}
+#fane-dans .m-p{background:var(--pverdi-bg);color:var(--pverdi);box-shadow:inset 0 0 0 1px var(--pverdi-kant)}
+#fane-dans .m-eff{background:var(--eff-bg);color:var(--eff);box-shadow:inset 0 0 0 1px var(--eff-kant)}
+#fane-dans .m-ki{background:var(--ki-bg);color:var(--ki);box-shadow:inset 0 0 0 1px var(--ki-kant)}
+#fane-dans .brokfig{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 18px;
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 14px;margin:12px 0}
+#fane-dans .brokfig .brk{text-align:center;min-width:250px;flex:0 1 auto}
+#fane-dans .brokfig .tell,#fane-dans .brokfig .nevn{border-radius:8px;padding:8px 13px;font-size:15.5px;line-height:1.28}
+#fane-dans .brokfig .tell{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+#fane-dans .brokfig .nevn{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+#fane-dans .brokfig .strek{height:3px;background:#16203A;border-radius:2px;margin:6px 0}
+#fane-dans .brokfig .tall{display:block;font-size:23px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+#fane-dans .brokfig .lik{font-size:27px;color:#16203A;font-weight:600}
+#fane-dans .brokfig .res{font-size:17px;color:var(--tstat);text-align:center;line-height:1.3}
+#fane-dans .brokfig .res b{display:block;font-size:31px;font-weight:700;font-variant-numeric:tabular-nums}
+#fane-dans .brokfig .res .n{display:block;font-size:13.5px;color:#5C6A80;font-weight:400;margin-top:3px}
+#fane-dans .brokfig.smal .brk{min-width:210px}
+#fane-dans .brokfig.smal .tall{font-size:19px}
+#fane-dans .brokfig.smal .res b{font-size:25px}
+#fane-dans .stat.s-sig{background:var(--sig-bg);color:var(--sig)}
+#fane-dans .stat.s-stoy{background:var(--stoy-bg);color:var(--stoy)}
+#fane-dans .stat.s-tstat{background:var(--tstat-bg);color:var(--tstat)}
+#fane-dans .stat.s-p{background:var(--pverdi-bg);color:var(--pverdi)}
+#fane-dans .stat.s-eff{background:var(--eff-bg);color:var(--eff)}
+#fane-dans table.anova td.c-sig,#fane-dans table.tt td.c-sig{color:var(--sig);font-weight:700}
+#fane-dans table.anova td.c-stoy,#fane-dans table.tt td.c-stoy{color:var(--stoy);font-weight:700}
+#fane-dans table.anova td.c-tstat,#fane-dans table.tt td.c-tstat{color:var(--tstat);font-weight:700}
+#fane-dans table.anova td.c-p,#fane-dans table.tt td.c-p{color:var(--pverdi);font-weight:700}
+#fane-dans table.anova td.c-eff,#fane-dans table.tt td.c-eff{color:var(--eff);font-weight:700}
+#fane-dans .fargeliste{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:8px;margin-top:8px}
+#fane-dans .fargeliste div{border-radius:8px;padding:7px 11px;font-size:15px;line-height:1.35}
+#fane-dans .fargeliste b{display:block;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+#fane-dans table.anova tr.r-sig td,#fane-dans table.tt tr.r-sig td{background:var(--sig-bg)}
+#fane-dans table.anova tr.r-stoy td,#fane-dans table.tt tr.r-stoy td{background:var(--stoy-bg)}
+#fane-dans table.anova tr.r-total td,#fane-dans table.tt tr.r-total td{color:#5F6A7E}
+#fane-dans table.anova tr.r-total td:first-child{font-weight:700}
+#fane-dans table.anova tr.r-sig td:first-child{color:var(--sig);font-weight:700}
+#fane-dans table.anova tr.r-stoy td:first-child{color:var(--stoy);font-weight:700}
+#fane-dans *{box-sizing:border-box}
+#fane-dans .wrap{max-width:1000px;margin:0 auto;padding:16px}
+#fane-dans .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+#fane-dans h2{color:var(--navy);margin:.2em 0 .5em;font-size:19px}
+#fane-dans button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+#fane-dans .btn{background:var(--blue);color:#fff}
+#fane-dans .btn:hover{background:var(--navy)}
+#fane-dans .btn2{background:#eef1f7;color:var(--navy)}
+#fane-dans .btn2:hover{background:var(--light)}
+#fane-dans .muted{color:#62708a;font-size:16px}
+#fane-dans canvas{width:100%;display:block;touch-action:none}
+#fane-dans .stat{display:inline-block;background:var(--light);color:var(--navy);border-radius:8px;padding:3px 10px;font-size:15.5px;font-weight:600;margin:3px 4px 3px 0;font-variant-numeric:tabular-nums}
+#fane-dans .stat.red{background:#fbeceb;color:var(--red)}
+#fane-dans .stat.green{background:#eaf6ea;color:var(--green)}
+#fane-dans .stat.orange{background:#fdf3e6;color:var(--orange)}
+#fane-dans .sl{display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap}
+#fane-dans .sl label{min-width:250px;font-weight:600;font-size:16px;color:var(--navy)}
+#fane-dans .sl input[type=range]{flex:1;min-width:140px}
+#fane-dans .sl output{min-width:52px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--navy);font-size:17px}
+#fane-dans .note{background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px;margin-top:10px}
+#fane-dans .gloss{font-size:15.5px}
+#fane-dans .gloss b{color:var(--navy)}
+#fane-dans .keybox{background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:12px 14px;margin:14px 0;font-size:16.5px}
+#fane-dans .keybox .lbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:4px}
+#fane-dans .presbtn{position:fixed;right:12px;bottom:12px;z-index:50;background:#fff;color:var(--navy);
+  border:1px solid var(--line);border-radius:20px;padding:7px 14px;font-size:14px;font-weight:700;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer;opacity:.75}
+#fane-dans .presbtn:hover{opacity:1}
+#fane-dans .tabs{display:flex;gap:6px;margin:10px 0 0}
+#fane-dans .tab{background:#eef1f7;color:var(--navy);border-radius:9px 9px 0 0;padding:8px 14px;cursor:pointer;font-weight:700;font-size:16px}
+#fane-dans .tab.on{background:var(--blue);color:#fff}
+#fane-dans select{max-width:100%}
+</style>
+<style id="ovbegrep-css">
+.ovkort{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f6f8fa;
+ border:1px solid #dde3e8;border-left:5px solid #C8102E;border-radius:10px;
+ padding:10px 13px;margin:14px 0;font-size:15px}
+.ovkort .ovlbl{font-weight:700;color:#5B6670;letter-spacing:.02em;
+ text-transform:uppercase;font-size:11.5px}
+.ovkort a.ovlenke{display:inline-block;background:#fff;border:1px solid #c7d6ec;
+ border-radius:999px;padding:3px 11px;color:#174A6B;text-decoration:none;font-size:14.5px}
+.ovkort a.ovlenke:hover{background:#eef3fb;border-color:#8fb0d6}
+.ovkort .ovhint{color:#6B767D;font-size:13px}
+</style>
+</head><body>
 <header><h1>Sim 22 · Enveis ANOVA — fra tre grupper til ett svar</h1>
-<p>PSY300 · Forelesning 5 · Sju faner som følger enveis-ANOVA fra spørsmålet til den ferdige setningen: dekomponeringen, <i>F</i>, nullfordelingen, η², post hoc, forutsetningene — og to ekte datasett</p></header>
+<p>PSY300 · Forelesning 5 · Ni faner som følger enveis-ANOVA fra spørsmålet til den ferdige setningen: dekomponeringen, <i>F</i>, nullfordelingen, η², post hoc, forutsetningene, to ekte datasett og rapporteringen — og en fordypningsfane om hvorfor <i>t</i> og <i>F</i> vokser med <i>n</i> mens effektstørrelsen står stille</p></header>
 <div class="wrap">
 <div class="rad" style="display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 6px">
 <button class="fane on" data-fane="hvorfor">1 · Hvorfor ANOVA?</button>
@@ -653,6 +757,7 @@ body.fmodus #modusBtn{left:14px;right:auto;bottom:11px;
 <button class="fane" data-fane="forut">6 · Forutsetninger</button>
 <button class="fane" data-fane="ekte">7 · To ekte datasett</button>
 <button class="fane" data-fane="rapport">8 · Slik rapporteres det</button>
+<button class="fane" data-fane="dans">9 · Fordypning: <i>t</i>, <i>F</i> og <i>d</i> i 2 000 studier</button>
 </div>
 <div id="fane-hvorfor">
 <div class="card">
@@ -688,7 +793,9 @@ figurene, i JASP-tabellen og i den ferdige setningen. Ser du grønt over rødt, 
 <div class="hvkort hver"><h3>✓ Den forteller deg</h3><ul>
 <li><b>&Eacute;<i>n</i> test for alle gruppene</b>, så feilraten holder seg på fem prosent.</li>
 <li><b>Et signal-til-støy-forhold.</b> Stor <i>F</i> betyr at gruppene skiller seg mer enn folk innad gjør.</li>
-<li><b>Robust mot moderate brudd</b> på normalitet når gruppene er omtrent like store.</li>
+<li><b>Tåler moderate brudd</b> på normalitet alene, når gruppene er omtrent like store.
+<span class="eks">Men bare &eacute;tt brudd om gangen &mdash; se fane 6. «ANOVA er robust» er
+en sannhet med forbehold.</span></li>
 </ul></div>
 <div class="hvkort hvikke"><h3>✗ Den forteller deg ikke</h3><ul>
 <li><b>Hvilke</b> grupper som skiller seg. En signifikant <i>F</i> sier bare at <i>minst én</i> skiller seg fra <i>minst én annen</i>.<span class="eks">Derfor post hoc-tester, med korreksjon for at du gjør flere sammenligninger.</span></li>
@@ -750,6 +857,38 @@ emnet. De er der for at du skal kunne følge et tall fra figuren, til tabellen, 
 </div>
 
 <div class="keybox"><span class="lbl">Klar for simuleringen?</span><b>ANOVA sier at noen skiller seg. Post hoc sier hvem. η² sier om det betyr noe.</b></div>
+
+<div class="card" id="kort-modellfeil">
+<h2>&Eacute;n ligning, hele emnet</h2>
+<p>Hver eneste analyse i PSY300 er den samme setningen. Bare modellen vokser.</p>
+<div style="text-align:center;font-size:25px;line-height:1.5;margin:14px 0 6px">
+utfall<sub>i</sub> &nbsp;=&nbsp; <span class="m-sig">modell<sub>i</sub></span>
+&nbsp;+&nbsp; <span class="m-stoy">feil<sub>i</sub></span>
+</div>
+<p style="text-align:center;color:#62708a;font-size:15px;margin:0 0 14px">
+Det modellen treffer, og det den bommer med.</p>
+<p>ANOVA er den samme modellen som <i>t</i>-testen, bare med flere grupper: <b>&eacute;tt tall per gruppe</b>. Derfor heter <i>SS</i>-kolonnene i JASP-tabellen <i>Between</i> og <i>Residual</i> &mdash; det er nettopp modellen og feilen.</p>
+<table style="border-collapse:collapse;width:100%;font-size:15.5px;margin-top:10px">
+<tr><th style="border-bottom:1px solid #e2e6ee;padding:5px 8px;text-align:left;color:#4a5568;font-weight:600">Analyse</th>
+<th style="border-bottom:1px solid #e2e6ee;padding:5px 8px;text-align:left;color:#4a5568;font-weight:600">Hva <span class="m-sig">modellen</span> gjetter for hver person</th></tr>
+<tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px"><i>t</i>-test (Sim 16)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">gjennomsnittet i personens gruppe</td></tr>
+<tr style="background:#eef3fb"><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px"><b>Enveis ANOVA (Sim 22)</b></td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px"><b>gjennomsnittet i personens gruppe</b></td></tr>
+<tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Faktoriell ANOVA (Sim 24)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">totalgjennomsnitt (grand mean) + rad + kolonne + samspill</td></tr>
+<tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Gjentatte målinger (Sim 25)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">tidspunktets snitt + personens eget nivå</td></tr>
+<tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Regresjon (Sim 5, Sim 15)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px"><i>b</i><sub>0</sub> + <i>b</i><sub>1</sub><i>x</i><sub>1</sub> + …</td></tr>
+<tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Korrelasjon (Sim 11)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">den rette linja gjennom punktskyen</td></tr>
+</table>
+<p style="color:#62708a;font-size:15px;margin-top:10px">
+I alle seks er <span class="m-stoy">feilen</span> det samme: observert verdi &minus; det modellen gjettet.
+Det er residualen, og det er den vi kvadrerer og summerer n&aring;r vi regner ut
+<i>SS</i><sub>feil</sub>.</p>
+<div class="keybox"><span class="lbl">Sagt p&aring; &eacute;n linje</span>
+<b><i>F</i> = <i>MS</i><sub>modell</sub> / <i>MS</i><sub>feil</sub>. Hele ANOVA-tabellen er denne ene ligningen, radet opp i kolonner.</b></div>
+</div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C8">C8 ANOVA og F-brøken &rarr;</a> <a class="ovlenke" data-begrep="B5">B5 Type I-feil, alfa og multiple tester &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+
+<details class="mer" style="margin:14px 0"><summary>Mer om dette: hvorfor ikke bare mange <i>t</i>-tester?</summary><div>Med tre grupper er det tre parvise sammenligninger. Hver av dem har 5 % risiko for falsk alarm, så sjansen for <i>minst &eacute;n</i> falsk alarm er ikke 5 %, men omtrent 14 %. Med fem grupper er det ti sammenligninger og rundt 40 %. ANOVA stiller i stedet &eacute;<i>tt</i> spørsmål &mdash; «er det forskjell noe sted?» &mdash; og holder dermed feilraten på 5 %. Det er hele grunnen til at omnibustesten finnes. Sim 7, fane 3 viser oppblåsingen med simulering.</div></details>
 </div><!-- /fane-hvorfor -->
 <div id="fane-sim" class="hide">
 
@@ -761,6 +900,11 @@ emnet. De er der for at du skal kunne følge et tall fra figuren, til tabellen, 
 <canvas id="cvA" height="330"></canvas>
 <div class="sl"><label><i>n</i> per gruppe</label><input type="range" id="n" min="5" max="60" step="1" value="20"><output id="no">20</output></div>
 <div class="sl"><label>Spredning innen gruppene (<i>SD</i>)</label><input type="range" id="sd" min="1" max="12" step="0.1" value="5"><output id="sdo">5.0</output></div>
+<label class="chk" style="display:block;margin:2px 0 8px;font-size:15.5px;font-weight:600;color:var(--navy)">
+<input type="checkbox" id="las"> <b>lås gruppene til akkurat disse verdiene</b>
+<span class="muted" style="font-weight:400">— gruppene får nøyaktig det gjennomsnittet
+håndtaket står på og nøyaktig den <i>SD</i>-en glideren viser. De blå strekene står da helt
+stille når du drar <i>SD</i> eller <i>n</i>, og <i>F</i> blir den samme hver gang.</span></label>
 <button class="btn2" id="reset">Trekk nytt utvalg fra en populasjon der nullhypotesen er sann (like gjennomsnitt)</button>
 <button class="btn2" id="spread">Tydelig forskjell</button>
 <button class="btn2" id="newdata">Nye pasienter (samme gjennomsnitt)</button>
@@ -798,14 +942,24 @@ kvadratsum sier at støyen er alt, gjennomsnittlig kvadratsum sier noe helt anne
 <h2>Hvorfor «gjennomsnittlig kvadrert avvik» og ikke bare avstand?</h2>
 <div class="simblokk" id="blokk-ss">
 <canvas id="cvB" height="150"></canvas>
-<div class="note">Søylene viser hvordan den totale variasjonen i datasettet (SS<sub>total</sub>) deles i to deler som alltid summerer til helheten: den delen gruppene forklarer, og den som blir igjen. <b>η² (eta kvadrert) = SS<sub>mellom</sub>/SS<sub>total</sub></b> er nettopp den andelen: ANOVA-ens effektstørrelse, og samme idé som <i>R</i>² i regresjon. Legg merke til at du kan øke <i>F</i> på to helt ulike måter: ved å spre gjennomsnittene (mer signal) eller ved å redusere <i>SD</i> (mindre støy). Det er også derfor et stort <i>N</i> gir høy <i>F</i> selv ved bittesmå forskjeller: MS<sub>mellom</sub> vokser med <i>n</i>.</div>
+<div class="note">Søylene viser hvordan den totale variasjonen i datasettet (SS<sub>total</sub>) deles i to deler som alltid summerer til helheten: den delen gruppene forklarer, og den som blir igjen. <b>η² (eta kvadrert) = SS<sub>mellom</sub>/SS<sub>total</sub></b> er nettopp den andelen: ANOVA-ens effektstørrelse, og samme idé som <i>R</i>² i regresjon. Legg merke til at du kan øke <i>F</i> på to helt ulike måter: ved å spre gjennomsnittene (mer signal) eller ved å redusere <i>SD</i> (mindre støy) &mdash; og med <b>låsen</b> på kan du gjøre det ene uten å røre det andre. Det er også derfor et stort <i>N</i> gir høy <i>F</i> selv ved bittesmå forskjeller: MS<sub>mellom</sub> vokser med <i>n</i>.</div>
 </div><!-- /blokk-ss -->
 </div>
 
 <div class="card docs">
 <h2>Slik leser du det</h2>
-<div class="note"><b>Prøv dette:</b> (1) Trykk «Nullstill»: de tre gruppene trekkes nå fra populasjoner med <i>samme</i> gjennomsnitt, så gruppegjennomsnittene skiller seg bare ved tilfeldigheter. SS<sub>mellom</sub> blir liten og <i>F</i> havner i nærheten av 1. Det er hele poenget: <b>når H₀ er sann, forventes <i>F</i> ≈ 1</b>, fordi teller og nevner da estimerer den samme variansen. (2) Dra én gruppe forsiktig oppover og se <i>F</i> stige. (3) Sett gjennomsnittene tilbake og dra i stedet SD-en ned: <i>F</i> stiger like mye uten at forskjellene ble større. Signal-til-støy, ikke signal alene. (4) Sett <i>n</i> = 60 med bittesmå forskjeller: <i>F</i> blir signifikant selv om η² er ynkelig. Signifikans er ikke det samme som viktighet. (5) Med bare to grupper ville <i>F</i> vært nøyaktig <i>t</i>² fra <i>t</i>-testen; enveis-ANOVA er <i>t</i>-testen utvidet til flere grupper, ikke en ny idé.</div>
-<div class="note"><b>Merk:</b> en signifikant <i>F</i> sier bare at <b>minst én</b> gruppe skiller seg fra en annen, ikke hvilke. Derfor følges en signifikant ANOVA av post hoc-tester, og de må korrigeres for antall sammenligninger (se Sim 21 om familievis feil). Modellen forutsetter dessuten uavhengige observasjoner, tilnærmet normalfordelte residualer og nokså lik varians i gruppene (se Sim 19).</div>
+<div class="note" style="background:#fffaf0;border:1px solid #f0d9a8">
+<b>Appen åpner på vippen.</b> Med <i>n</i> = 20, <i>SD</i> = 5 og gruppesnitt 23 / 25 / 27 blir
+<i>F</i>(2, 57) = 3.20 og <i>p</i> = .048 &mdash; så vidt innenfor. Den kritiske verdien er 3.16.
+<b>Flytt én glider ett hakk</b> og se hva som skjer: <i>n</i> ned til 19 gir <i>p</i> = .056,
+<i>SD</i> opp til 5.1 gir <i>p</i> = .054. Begge veier like lett.
+<div style="margin-top:6px">Det er verdt å stoppe ved: <b>ingenting ved funnet forandret seg</b>
+&mdash; gruppene ligger like langt fra hverandre, og effektstørrelsen η² rører seg knapt. Det
+som forandret seg var hvor mange vi målte, eller hvor rotete målingen var. «Signifikant» er ikke
+en egenskap ved forskjellen, men en grense tre helt forskjellige ting kan skyve deg over.</div></div>
+
+<div class="note"><b>Prøv dette:</b> (1) Trykk «Nullstill»: de tre gruppene trekkes nå fra populasjoner med <i>samme</i> gjennomsnitt, så gruppegjennomsnittene skiller seg bare ved tilfeldigheter. SS<sub>mellom</sub> blir liten og <i>F</i> havner i nærheten av 1. Det er hele poenget: <b>når H₀ er sann, forventes <i>F</i> ≈ 1</b>, fordi teller og nevner da estimerer den samme variansen. (2) Dra én gruppe forsiktig oppover og se <i>F</i> stige. (3) Kryss av for <b>«lås gruppene til akkurat disse verdiene»</b> og dra så SD-glideren fram og tilbake: de blå strekene står helt stille, SS<sub>mellom</sub> er <b>nøyaktig det samme tallet</b> hele veien, og likevel faller <i>F</i> fra tresifret til under 3. Signal-til-støy, ikke signal alene. Uten låsen flytter gruppesnittene seg av seg selv når du drar &mdash; da endrer du begge deler samtidig, og demonstrasjonen viser ikke det den skal. (4) Sett <i>n</i> = 60 med bittesmå forskjeller: <i>F</i> blir signifikant selv om η² er ynkelig. Signifikans er ikke det samme som viktighet. (5) Med bare to grupper ville <i>F</i> vært nøyaktig <i>t</i>² fra <i>t</i>-testen; enveis-ANOVA er <i>t</i>-testen utvidet til flere grupper, ikke en ny idé.</div>
+<div class="note"><b>Merk:</b> en signifikant <i>F</i> sier bare at <b>minst én</b> gruppe skiller seg fra en annen, ikke hvilke. Derfor følges en signifikant ANOVA av post hoc-tester, og de må korrigeres for antall sammenligninger (se Sim 21 om familievis feil). Modellen forutsetter dessuten uavhengige observasjoner, tilnærmet normalfordelte residualer og nokså lik varians i gruppene (se Sim 33 · Forutsetninger og tiltak, fane 2).</div>
 </div>
 
 <div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b><i>F</i> er et forhold mellom signal og støy: variasjonen mellom gruppene delt på variasjonen innen dem. Når H₀ er sann, estimerer teller og nevner den samme variansen. Derfor forventes <i>F</i> ≈ 1, ikke 0.</b></div></div>
@@ -818,7 +972,7 @@ kvadratsum sier at støyen er alt, gjennomsnittlig kvadratsum sier noe helt anne
 <b>SS</b> — kvadratsum (sum of squares): summen av kvadrerte avvik. <b>SS<sub>mellom</sub></b> måler hvor mye gruppegjennomsnittene spriker fra det samlede gjennomsnittet, <b>SS<sub>innen</sub></b> hvor mye enkeltpersonene spriker fra sin egen gruppe, og <b>SS<sub>total</sub></b> = summen av de to.<br>
 <b><i>df</i></b> — frihetsgrader (degrees of freedom): antall verdier som fritt kan variere. Her <i>df</i><sub>mellom</sub> = k − 1 og <i>df</i><sub>innen</sub> = <i>N</i> − k, der k er antall grupper.<br>
 <b>MS</b> — gjennomsnittlig kvadratsum (mean square) = SS/df; altså en varians.<br>
-<b><i>F</i></b> — testobservatoren: MS<sub>mellom</sub>/MS<sub>innen</sub>. Forventes ≈ 1 når nullhypotesen er sann.<br>
+<b><i>F</i></b> — teststatistikken: MS<sub>mellom</sub>/MS<sub>innen</sub>. Forventes ≈ 1 når nullhypotesen er sann.<br>
 <b>H₀</b> — nullhypotesen; her at alle gruppegjennomsnittene i populasjonen er like.<br>
 <b><i>p</i></b> — sannsynligheten for å få en <i>F</i> minst så stor som din, gitt at H₀ er sann.<br>
 <b>η² (eta kvadrert)</b> — effektstørrelse: andelen av den totale variasjonen som gruppene forklarer.<br>
@@ -829,6 +983,10 @@ kvadratsum sier at støyen er alt, gjennomsnittlig kvadratsum sier noe helt anne
 </div>
 
 
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C8">C8 ANOVA og F-brøken &rarr;</a> <a class="ovlenke" data-begrep="C3">C3 Spredning og varians &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+
+<details class="mer" style="margin:14px 0"><summary>Mer om dette: hvorfor kvadrerte avvik?</summary><div>Avvikene fra gjennomsnittet summerer alltid til null, så de må gjøres positive før de kan legges sammen. Man kunne brukt absoluttverdier, men kvadrater har to egenskaper som absoluttverdier mangler: de er deriverbare overalt, og de gir samme dekomponering som varians. Det siste er avgjørende &mdash; det er derfor <i>SS</i><sub>mellom</sub> + <i>SS</i><sub>innen</sub> = <i>SS</i><sub>total</sub> går opp nøyaktig. Prisen er at uteliggere teller tungt, siden avstanden kvadreres. Sim 33 viser hva det gjør.</div></details>
 </div><!-- /fane-sim -->
 
 <div id="fane-null" class="hide">
@@ -871,6 +1029,10 @@ det finnes ingen venstre hale å ta med.</p>
 <b>Under H₀ ligger <i>F</i> rundt 1. Den kritiske verdien er ikke en regel noen fant på &mdash;
 det er stedet der de øverste 5 prosentene av nullfordelingen begynner.</b></div>
 </div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C8">C8 ANOVA og F-brøken &rarr;</a> <a class="ovlenke" data-begrep="B4">B4 p-verdien &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+
+<details class="mer" style="margin:14px 0"><summary>Mer om dette: hvorfor er <i>F</i> alltid positiv og høyreskjev?</summary><div><i>F</i> er en brøk mellom to varianser, og varianser kan ikke bli negative. Derfor starter fordelingen på null. Og fordi telleren kan bli vilkårlig stor mens nevneren ikke kan bli mindre enn null, får fordelingen en lang høyrehale. Det er grunnen til at <i>F</i>-testen alltid er ensidig: store verdier betyr forskjell, små betyr bare at gruppene ligner mer på hverandre enn tilfeldigheter skulle tilsi &mdash; noe som i seg selv ikke er et funn.</div></details>
 </div><!-- /fane-null -->
 
 <div id="fane-eta" class="hide">
@@ -986,6 +1148,10 @@ i en metodetung oppgave.</div></div>
 <i>n</i>. Derfor er de de eneste tallene i ANOVA-tabellen som kan sammenlignes på tvers av
 studier &mdash; η² om utvalget du målte, ω² om populasjonen du uttaler deg om.</b></div>
 </div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B7">B7 Effektstørrelse og praktisk betydning &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+
+<details class="mer" style="margin:14px 0"><summary>Mer om dette: når bør du bruke &omega;² i stedet for &eta;²?</summary><div>&eta;² regnes direkte fra kvadratsummene i ditt utvalg og er derfor <b>positivt forventningsskjev</b>: den overvurderer effekten i populasjonen, og mest i små utvalg. &omega;² korrigerer for dette ved å trekke fra forventet feilvarians. Med <i>n</i> over hundre per gruppe er forskjellen liten; med ti per gruppe kan &eta;² være dobbelt så stor som &omega;². Tommelfinger: oppgi &omega;² når utvalget er lite, og begge når du har plass.</div></details>
 </div><!-- /fane-eta -->
 
 <div id="fane-posthoc" class="hide">
@@ -1071,6 +1237,54 @@ spennet lite; med fem grupper er Scheff&eacute; fire ganger så streng som ukorr
 
 
 <div class="card">
+<h2>Hele familien &mdash; og når du skal bruke hvilken</h2>
+<p class="muted">De tre over er dem du trenger i dette emnet. Men JASP tilbyr flere, og
+hvilken som er riktig avhenger av to ting: <b>hvor mange sammenligninger</b> du har lov til
+å se på, og <b>om forutsetningene holder</b>.</p>
+
+<table class="tt" style="margin-top:8px">
+<tr><th>Metode</th><th>Når</th><th>Hvor i JASP</th></tr>
+<tr><td>Ukorrigert (LSD)</td><td>ingen korreksjon. Bare forsvarlig hvis du hadde
+<b>&eacute;n</b> planlagt sammenligning</td><td>Post Hoc &rarr; Standard, uten korreksjon</td></tr>
+<tr class="na"><td><b>Tukey</b></td><td><b>alle par, like store grupper, like varianser.
+Standardvalget</b></td><td>Post Hoc &rarr; Tukey</td></tr>
+<tr><td>Bonferroni / Holm</td><td>et vilkårlig antall tester. Holm er alltid litt mindre
+streng enn Bonferroni og bør foretrekkes</td><td>Post Hoc &rarr; Bonferroni / Holm</td></tr>
+<tr><td>&Scaron;id&aacute;k</td><td>som Bonferroni, men litt mindre konservativ. Forutsetter
+uavhengige tester</td><td>Post Hoc &rarr; Sidak</td></tr>
+<tr><td>Scheff&eacute;</td><td>alle mulige kontraster, også dem du fant på etterpå</td>
+<td>Post Hoc &rarr; Scheffe</td></tr>
+<tr><td>Games&ndash;Howell</td><td><b>ulike varianser.</b> Følger Welch, slik Tukey følger
+vanlig ANOVA</td><td>Post Hoc &rarr; Games-Howell</td></tr>
+<tr><td>Dunnett</td><td>bare mot <b>&eacute;n kontrollgruppe</b>, ikke alle par. Færre tester
+= mer styrke</td><td>Post Hoc &rarr; Dunnett</td></tr>
+<tr class="na"><td><b>Dunn</b></td><td><b>etter Kruskal&ndash;Wallis.</b> Rangbasert omnibus
+krever rangbasert oppfølging</td><td>ANOVA &rarr; Nonparametrics &rarr; Dunn's post hoc</td></tr>
+</table>
+
+<div class="advarsel" style="margin-top:12px"><b>Den som er lett å gå i:</b> du bytter til
+<b>Kruskal&ndash;Wallis</b> fordi forutsetningene ikke holdt (fane 6), får et signifikant
+omnibusresultat &mdash; og går tilbake hit for å velge post hoc. Men ingen av de seks øverste
+gjelder lenger. Når omnibustesten er rangbasert, må oppfølgingen være det også:
+<b>Dunn</b> etter Kruskal&ndash;Wallis, og <b>Conover</b> etter Friedman. Begge ligger rett
+under avkrysningsboksen for selve testen, og begge kan Bonferroni- eller Holm-justeres.
+<div style="margin-top:6px">Effektstørrelsen bytter også familie i samme øyeblikk &mdash;
+se <b>Sim 33 fane 4</b>.</div></div>
+
+<details class="mer"><summary>For den som vil grave: hvorfor er &Scaron;id&aacute;k mindre streng enn Bonferroni?</summary><div>
+Begge svarer på samme spørsmål: hvor lavt må terskelen ligge for at sjansen for <b>minst én</b>
+falsk positiv over <i>k</i> tester skal bli 5 %?<br><br>
+<b>Bonferroni</b> bruker en ulikhet og deler bare: α/<i>k</i>. Med <i>k</i> = 3 blir det .0167.<br>
+<b>&Scaron;id&aacute;k</b> regner eksakt, under antakelse om uavhengige tester:
+1 &minus; (1 &minus; α)<sup>1/<i>k</i></sup>. Med <i>k</i> = 3 blir det .0170.<br><br>
+Forskjellen er .0003. Den er altså reell, men forsvinnende liten så lenge antallet tester er
+lite &mdash; og post hoc-tester er aldri helt uavhengige, siden de deler data. Derfor er valget
+mellom dem i praksis uten betydning her, og derfor er <b>Holm</b> et bedre råd enn begge:
+den er uniformt mindre streng enn Bonferroni uten å anta noe ekstra.
+</div></details>
+</div>
+
+<div class="card">
 <h2>De tre parene, tegnet &mdash; og hva korreksjonen gjør med dem</h2>
 <p class="muted">Hvert punkt er en <span class="k-sig">forskjell mellom to gruppegjennomsnitt</span>,
 med <span class="k-ki">konfidensintervallet</span> sitt. Den loddrette streken er null.
@@ -1136,6 +1350,10 @@ rekkefølge på effektene.</b></div></div>
 familievise feilraten, og den koster deg styrke &mdash; og med ulike gruppestørrelser avgjøres
 utfallet like mye av <i>n</i> som av forskjellen.</b></div>
 </div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B5">B5 Type I-feil, alfa og multiple tester &rarr;</a> <a class="ovlenke" data-begrep="C8">C8 ANOVA og F-brøken &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+
+<details class="mer" style="margin:14px 0"><summary>Mer om dette: Tukey, Bonferroni eller Holm?</summary><div><b>Bonferroni</b> deler alfa på antall sammenligninger. Enkel og alltid gyldig, men konservativ &mdash; den kaster bort styrke. <b>Holm</b> gjør det samme trinnvis og er alltid minst like god som Bonferroni; det er sjelden en grunn til å velge Bonferroni framfor Holm. <b>Tukey</b> er laget nettopp for alle parvise sammenligninger etter en ANOVA og gir mest styrke i det tilfellet, men forutsetter like varianser og noenlunde like gruppestørrelser. Er variansene ulike, er Games&ndash;Howell riktigere.</div></details>
 </div><!-- /fane-posthoc -->
 
 <div id="fane-forut" class="hide">
@@ -1162,7 +1380,7 @@ Brytes denne, kan den reelle feilraten sprette langt over 5 % &mdash; særlig n�
 <div class="tit">3 · Normalfordelte residualer — den overvurderte</div>
 Betyr mye når gruppene er små, og nesten ingenting når de er store. Det er
 <b>gjennomsnittene</b> som må være tilnærmet normalfordelte, ikke rådataene.
-<div class="n">Sjekkes med Q–Q-plott. Rangbasert reserve: <b>Kruskal-Wallis</b>.</div></div>
+<div class="n">Sjekkes med Q–Q-plott. Rangbasert reserve: <b>Kruskal-Wallis</b> &mdash; se <a href="PSY300_Sim_Tiltakslaben.html#fane=rang">Sim 33 fane 4</a> for hva den gjør, hvilken post hoc den krever, og hvilken effektstørrelse som følger med.</div></div>
 </div>
 
 <div class="card">
@@ -1192,6 +1410,72 @@ noe om utvalget.</div></div>
 <tr><td>Vanlig ANOVA</td><td>15.27</td><td>2</td><td>72</td><td>&lt; .001</td></tr>
 <tr class="na"><td><b>Welch</b></td><td><b>34.91</b></td><td><b>2</b></td><td><b>47.9</b></td><td><b>&lt; .001</b></td></tr>
 </table>
+
+<div class="note" style="margin-top:10px"><b>Og den andre knappen i samme meny.</b>
+Ved siden av <code>Welch</code> står <code>Brown-Forsythe</code>. Begge korrigerer for ulike
+varianser, men på hver sin måte, og <b>Welch har mer styrke</b> &mdash; den er den du skal
+bruke. Brown&ndash;Forsythe er verdt å kjenne navnet på, siden den dukker opp i samme tabell.
+<details class="mer" style="margin-top:8px"><summary>For den som vil grave: når de to er uenige</summary><div>
+De kan lande på hver sin side av .05 på de samme dataene. Fields eget eksempel gir
+Welch <i>p</i> = .054 og Brown&ndash;Forsythe <i>p</i> = .026 &mdash; samme tall inn, motsatt
+konklusjon ut, hvis du behandler .05 som en grense.<br><br>
+Det er ikke en feil i noen av dem. De vekter gruppene ulikt: Welch etter <i>n</i>/<i>s</i>²,
+Brown&ndash;Forsythe etter 1 &minus; <i>n</i>/<i>N</i>. Når de er uenige, er det
+<b><i>p</i>-grensen</b> som er problemet, ikke dataene. Oppgi estimatet og intervallet, og la
+være å gjøre .054 til noe annet enn .026.<br><br>
+<b>Pass på navnet.</b> «Brown&ndash;Forsythe» brukes om <b>to</b> ulike ting. Her er det
+korreksjonen av <i>F</i>-testen. Men Levenes test kjøres som regel på avvik fra
+<b>medianen</b> i stedet for gjennomsnittet, og <i>den</i> varianten heter også
+Brown&ndash;Forsythe. Samme navn, to helt ulike formål.
+</div></details></div>
+
+<div class="advarsel" style="margin-top:10px"><b>Og for å sette brudd nummer 1 i perspektiv:</b>
+ulike varianser har en gratis løsning, og normalitet betyr lite i store utvalg. Brudd på
+<b>uavhengighet</b> har ingen av delene. Scariano og Davenport (1987) viste at med en
+korrelasjon på .5 mellom observasjoner, og tre grupper à ti, blir den reelle type I-feilraten
+<b>74 %</b> der den skulle vært 5 %. Det er derfor uavhengighet står først i lista, og det er
+derfor den må sikres i <b>designet</b>.</div>
+
+<div class="steg" style="border-left-color:#2E5496;margin-top:16px">
+<div class="tit">Samme tabell, et annet spørsmål: går det én vei?</div>
+Se på gjennomsnittene igjen: 28.23 &rarr; 31.04 &rarr; 34.27. De stiger jevnt, og
+<b>kategoriene har en rekkefølge</b> &mdash; én, to, tre eller flere behandlinger. Da kan du
+spørre om noe mer presist enn «gruppene er ulike».
+</div>
+
+<p style="font-size:16.5px;line-height:1.55;margin-top:10px">En <b>trendkontrast</b>
+(<i>polynomial contrast</i>) tester formen på forløpet i stedet for om gruppene bare skiller seg.
+I JASP: <code>ANOVA &rarr; Contrasts &rarr; polynomial</code>.</p>
+
+<table class="tt" style="margin-top:8px">
+<tr><th></th><th><i>t</i>(72)</th><th><i>p</i></th><th>SS</th></tr>
+<tr class="na"><td><b>Lineær trend</b></td><td class="c-tstat"><b>5.41</b></td>
+<td class="c-p"><b>&lt; .001</b></td><td class="c-sig"><b>382.8</b></td></tr>
+<tr><td>Kvadratisk trend</td><td>0.23</td><td>.821</td><td>0.7</td></tr>
+<tr class="sum"><td>Modellen samlet (<i>F</i> = 15.27)</td><td></td><td></td><td>399.5</td></tr>
+</table>
+<div class="tabnote">Den lineære trenden alene står for 383 av modellens 399 kvadratsummer.
+Krumningen er null.</div>
+
+<div class="note" style="margin-top:10px"><b>Hva du tjener på det.</b> Omnibustesten sier
+«gruppene er ulike» og bruker <b>to</b> frihetsgrader på det. Den lineære kontrasten sier
+<i>hvordan</i> &mdash; depresjonen stiger jevnt med antall tidligere behandlinger &mdash; og bruker
+<b>én</b>. Færre frihetsgrader på den hypotesen du faktisk hadde, betyr mer styrke.</div>
+
+<div class="boks rod" style="margin-top:10px"><b>Men bare når rekkefølgen betyr noe.</b>
+Her gjør den det: én behandling kommer før to. For <code>Gruppe</code> (ISTDP mot venteliste)
+finnes ingen rekkefølge, og en «lineær trend» over to vilkårlig sorterte kategorier er ikke
+et spørsmål. Trendanalyse forutsetter at kategoriene er <b>ordnet</b>, og helst likt avstandet.</div>
+
+<details class="mer"><summary>Mer om dette: hvorfor summerer ikke 383 + 0.7 til 399?</summary><div>
+Fordi gruppene er ulike store (35, 25 og 15). Med <b>like</b> store grupper er de to
+trendkontrastene ortogonale, og kvadratsummene deres deler modellen eksakt i to. Med ulike
+<i>n</i> er de ikke helt ortogonale, og da overlapper de litt &mdash; summen bommer med omtrent
+16 av 399.<br><br>
+Det er samme familie av poeng som i multippel regresjon: når prediktorer overlapper, kan du
+ikke legge sammen bidragene deres og få helheten. Se Sim 15 fane 4.
+</div></details>
+
 <p style="font-size:16.5px;line-height:1.55;margin-top:10px">Legg merke til at Welch her gir en
 <b>større</b> <i>F</i>, ikke en mindre. Welch vekter gruppene etter <i>n</i>/<i>s</i>², og
 gruppene med liten spredning får mer å si. <b>Korreksjonen er ikke alltid en straff</b> &mdash;
@@ -1206,6 +1490,10 @@ uansett hvilken vei <i>F</i> går.</div>
 lite når gruppene er store. Rekkefølgen er ikke tilfeldig &mdash; den er sortert etter hvor mye
 skade bruddet gjør.</b></div>
 </div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C13">C13 Forutsetninger og residualer &rarr;</a> <a class="ovlenke" data-begrep="C14">C14 Robuste alternativer &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+
+<details class="mer" style="margin:14px 0"><summary>Mer om dette: hvor ille er brudd på lik varians?</summary><div>Det avhenger av gruppestørrelsene &mdash; og av om de andre forutsetningene holder. Er gruppene <b>like store</b> og residualene <b>tilnærmet normalfordelte</b>, tåler ANOVA ganske store forskjeller i varians: feilraten holder seg nær 5 %. Er gruppene <b>ulike</b>, blir det alvorlig, og retningen avhenger av hvilken vei det går: er den største variansen i den minste gruppen, blir testen for liberal; er den i den største gruppen, blir den for konservativ. Welch-ANOVA løser begge deler og koster lite når forutsetningen faktisk holder. Sim 33, fane 5.<br><br><b>Og her er forbeholdet som ofte faller bort.</b> Setningen «ANOVA er robust» stammer fra simuleringer som er over 35 år gamle, og som testet &eacute;tt brudd om gangen. Nyere arbeid (Wilcox 2017; Field &amp; Wilcox 2017) viser at bruddene <b>forsterker hverandre</b>: når residualene ikke er normalfordelte, påvirkes <i>F</i> av ulik varians <b>selv med like store grupper</b>, og den reelle feilraten kan nå 18 % der den skulle vært 5 %. Tunghalede fordelinger er verst: en studie med styrke .90 kan falle til .28 hvis 10 % av observasjonene kommer fra en fordeling med større spredning.<br><br>Praktisk konsekvens: det er ingen grunn til å avvike fra Welch. Den koster lite når antakelsen holder, og du slipper å vurdere hvor nær «nær nok» er.</div></details>
 </div><!-- /fane-forut -->
 
 <div id="fane-ekte" class="hide">
@@ -1314,6 +1602,8 @@ den kommer i <b>Sim 28</b>. Enveis-ANOVA er grunnformen alt det andre bygger på
 signifikant effekt og et nullfunn. Metoden avgjør ikke hva du kan konkludere &mdash; det gjør
 designet, og her er faktoren ikke randomisert.</b></div>
 </div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C8">C8 ANOVA og F-brøken &rarr;</a> <a class="ovlenke" data-begrep="D2">D2 Å lese JASP-output &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-ekte -->
 
 <div id="fane-rapport" class="hide">
@@ -1426,7 +1716,7 @@ tall i tabellen finner plassen sin i teksten; forutsetningssjekken kommer i till
 <div class="keybox"><span class="lbl">Regelen bak fargene</span><b>Alt som er
 <span class="k-sig">grønt</span> handler om forskjellen mellom gruppene. Alt som er
 <span class="k-stoy">rødt</span> handler om spredningen innen dem.
-<span class="k-tstat">Marineblått</span> er testobservatoren og frihetsgradene,
+<span class="k-tstat">Marineblått</span> er teststatistikken og frihetsgradene,
 <span class="k-p">lilla</span> er <i>p</i>, og <span class="k-eff">rav</span> er
 effektstørrelsen. Fem farger, og du kan lese hvilken som helst ANOVA-utskrift.</b></div>
 </div>
@@ -1787,7 +2077,96 @@ frihetsgrader.<br>
 </div>
 </div>
 
-</div><!-- /fane-rapport -->
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="D4">D4 Å lese en resultatdel (APA) &rarr;</a> <a class="ovlenke" data-begrep="D2">D2 Å lese JASP-output &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+<div id="fane-dans" class="hide">
+<div class="card innlemmet"><div class="muted" style="font-size:14px">Fordypning · tidligere egen app (Sim 23 · Teststatistikkdansen). Samme sanne effekt, 2 000 studier: <i>t</i> og <i>F</i> vokser med <i>n</i>, effektstørrelsen gjør det ikke.</div></div>
+
+
+
+<div class="card">
+<h2>Sannheten i populasjonen</h2>
+<p class="muted">Du bestemmer hvordan verden ser ut. Så trekker vi mange utvalg fra den og ser hvor mye teststatistikken spretter fra studie til studie. Alle grupper er like store, og spredningen innen gruppene er den samme overalt.</p>
+<div class="sl"><label>Sann effektstørrelse (Cohens <i>d</i>)</label><input type="range" id="td_d" min="0" max="1.2" step="0.05" value="0.5"><output id="td_do">0.50</output></div>
+<div class="sl"><label><i>n</i> per gruppe</label><input type="range" id="td_n" min="5" max="120" step="5" value="30"><output id="td_no">30</output></div>
+<div class="sl"><label>Antall grupper (bare fane B)</label><input type="range" id="td_k" min="2" max="5" step="1" value="3"><output id="td_ko">3</output></div>
+<button class="btn" id="td_run">Trekk 2 000 utvalg</button>
+<button class="btn2" id="td_nulleff">Sett effekten til null</button>
+<button class="btn2" id="td_istdp">Terapi-RCT-studien (<i>d</i> ≈ 1.2 · <i>n</i> = 38)</button>
+<div id="td_setup" class="note"></div>
+</div>
+
+<div class="tabs">
+<div class="tab on" data-t="A">A · <i>t</i>-verdien</div>
+<div class="tab" data-t="B">B · <i>F</i>-verdien</div>
+<div class="tab" data-t="C">C · Effektstørrelsen</div>
+</div>
+
+<div id="td_paneA">
+<div class="card" style="border-top-left-radius:0">
+<h2>Ett utvalg om gangen</h2>
+<p class="muted">Hver strek er én studie: to grupper, <i>n</i> deltakere i hver, trukket fra den verdenen du satte opp. Grønn strek betyr at studien ble signifikant, grå at den ikke ble det. Samme sannhet, ulike svar.</p>
+<canvas id="td_cvA1" height="150"></canvas>
+<h2 style="margin-top:14px">Fordelingen av <i>t</i> over 2 000 utvalg</h2>
+<canvas id="td_cvA2" height="250"></canvas>
+<div id="td_statsA"></div>
+<div class="note" id="td_verdictA"></div>
+</div>
+</div>
+
+<div id="td_paneB" style="display:none">
+<div class="card" style="border-top-left-radius:0">
+<h2>Fordelingen av <i>F</i> over 2 000 utvalg</h2>
+<p class="muted">Samme øvelse, men nå med flere grupper og en enveis-ANOVA. Den første gruppen ligger <i>d</i> standardavvik over de andre, som alle er like. Legg merke til at <i>F</i> aldri kan bli negativ: den er et forhold mellom to varianser.</p>
+<canvas id="td_cvB1" height="250"></canvas>
+<div id="td_statsB"></div>
+<div class="note" id="td_verdictB"></div>
+</div>
+</div>
+
+<div id="td_paneC" style="display:none">
+<div class="card" style="border-top-left-radius:0">
+<h2>Fordelingen av observert Cohens <i>d</i></h2>
+<p class="muted">Teststatistikken avhenger av utvalgsstørrelsen, men effektstørrelsen gjør det ikke. Den grønne streken er sannheten du valgte. Det viser hvor mye ett enkelt estimat kan bomme, og hvorfor konfidensintervallet rundt <i>d</i> hører med i rapporten.</p>
+<canvas id="td_cvC1" height="250"></canvas>
+<div id="td_statsC"></div>
+<div class="note" id="td_verdictC"></div>
+</div>
+</div>
+
+<div class="card docs">
+<h2>Slik leser du det</h2>
+<div class="note"><b>Prøv dette:</b> (1) Sett <i>d</i> = 0 og trekk: fordelingen av <i>t</i> sentreres på 0, og nøyaktig 5 % havner utenfor den kritiske verdien. Det er type I-feilraten. (2) Skru <i>d</i> opp til .50 med <i>n</i> = 30: nå er andelen signifikante omtrent 47 %. Under halvparten av studiene finner effekten, selv om den finnes. Det er statistisk styrke. (3) Dra <i>n</i> opp til 120 med samme <i>d</i>: fordelingen flytter seg mot høyre og blir smalere, og nesten alle studier finner effekten. (4) Bytt til fane C og se at fordelingen av <i>d</i> ligger på samme sted uansett <i>n</i>, men blir smalere. Teststatistikken vokser med <i>n</i>, effektstørrelsen gjør det ikke. (5) Sammenlign fane A og B med to grupper: <i>F</i>-fordelingen er <i>t</i>-fordelingen kvadrert.</div>
+<div class="note"><b>Den viktigste vanen:</b> når du leser én studie, ser du ett strå fra denne fordelingen. Spør alltid hvor bredt konfidensintervallet er, for det er studiens eget anslag på hvor mye den kunne ha bommet.</div>
+</div>
+
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>En teststatistikk er ikke en egenskap ved verden, men ved studien din. Samme sanne effekt gir vidt forskjellige t- og <i>F</i>-verdier fra utvalg til utvalg, og andelen som havner over den kritiske verdien, er nettopp den statistiske styrken. Effektstørrelsen er den eneste av de tre som ikke vokser med utvalgsstørrelsen.</b></div></div>
+
+<div class="card docs">
+<h2>Ordforklaringer</h2>
+<div class="gloss">
+<p><b>Teststatistikk</b> — tallet en test regner ut for å avgjøre hvor uvanlig resultatet er. <i>t</i> for to grupper, <i>F</i> for flere.<br>
+<b><i>t</i></b> — differansen mellom gruppegjennomsnittene delt på standardfeilen til differansen.<br>
+<b><i>F</i></b> — variansen mellom gruppene delt på variansen innen gruppene. Med to grupper er <i>F</i> = <i>t</i>².<br>
+<b>Cohens <i>d</i></b> — effektstørrelse: forskjellen mellom gjennomsnittene målt i standardavvik. Grovt: .20 liten · .50 middels · .80 stor.<br>
+<b>Utvalgsfordeling</b> — fordelingen av en størrelse over mange gjentatte utvalg fra samme populasjon. Det er den du ser i histogrammene her.<br>
+<b><i>df</i></b> — frihetsgrader (degrees of freedom). For <i>t</i>-testen 2n − 2, for ANOVA er de to: k − 1 og <i>N</i> − k.<br>
+<b>Kritisk verdi</b> — grensen der resultatet kalles signifikant, ved α = .05.<br>
+<b>α (alfa)</b> — signifikansnivået, altså den tillatte andelen falske positive. Her .05.<br>
+<b>Statistisk styrke</b> — sannsynligheten for å få et signifikant resultat når effekten faktisk finnes. Andelen grønne studier i simuleringen.<br>
+<b>Type I-feil</b> — å finne en effekt som ikke finnes. Andelen signifikante når du setter <i>d</i> = 0.<br>
+<b>H₀</b> — nullhypotesen; her at alle gruppegjennomsnittene i populasjonen er like.<br>
+<b>ISTDP</b> — intensiv dynamisk korttidsterapi, behandlingen i emnets terapi-RCT (<i>N</i> = 86).</p>
+</div>
+</div>
+
+
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B7">B7 Effektstørrelse og praktisk betydning &rarr;</a> <a class="ovlenke" data-begrep="C7">C7 t-tester &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div><!-- /fane-dans -->
+<!-- /fane-rapport -->
 
 
 
@@ -1844,18 +2223,87 @@ function fcrit(d1,d2,a){let lo=0,hi=100;for(let i=0;i<90;i++){const m=(lo+hi)/2;
    pekes paa. */
 const K=3, LAB=['1 forsøk','2 forsøk','3 eller flere'], YLO=15, YHI=35;
 const TAK=35;                  // depresjonsskalaens maksimum
-let means=[20,20,20], z=[], N10=20;
+/* Startverdiene er valgt slik at appen aapner PAA VIPPEN.
+   Alle tre kontrollene staar moderat: n = 20 midt paa glideren 5-60,
+   SD = 5 midt paa glideren 1-12, og snittene 23/25/27 sentrert paa 25,
+   som er midt mellom aksens 15 og 35.
+
+   Sentreringen er ikke kosmetikk: naar en gruppe ligger naer taket paa 35
+   klippes stoyen, og spredningen i den gruppa kan ikke vokse. Ved 25 er det
+   ti poeng ned og ti opp, saa SD-glideren faar full virkning begge veier.
+
+   Og tallene er valgt saa F havner rett paa den kritiske verdien:
+     F = n*SUM(m_g - 25)^2 / 2 / SD^2 = 20*8/2 / 25 = 3.20
+     Fkrit(2, 57) = 3.16  ->  p = .048
+   Et lite dytt paa hvilken som helst av de tre glir over eller under .05.
+   Det er hele poenget: signifikans er ikke en egenskap ved funnet, men en
+   grense tre helt ulike ting kan skyve deg over. */
+let means=[23,25,27], z=[], N10=20;
 function newResid(){z=[];for(let g=0;g<K;g++){const a=[];for(let i=0;i<60;i++)a.push(rnorm());z.push(a);}}
 newResid();
 const SD=()=>+$('sd').value, N=()=>+$('n').value;
-function data(){const out=[];for(let g=0;g<K;g++){const a=[];
-  /* Skalaen gaar til 35, og et maaleinstrument kan ikke gi hoyere skaar
-     enn sitt eget tak. Klemmer vi ikke her, tegner figuren pasienter over
-     taket — og da motsier den taklinja si egen. Konsekvensen er dessuten
-     et poeng i seg selv: drar du et gruppegjennomsnitt opp mot 35, ser du
-     spredningen i den gruppa krympe av seg selv. Det er takeffekten,
-     demonstrert i stedet for forklart. */
-  for(const v of z[g].slice(0,N()))a.push(Math.max(0,Math.min(TAK,means[g]+SD()*v)));out.push(a);}return out;}
+/* Er gruppene laast til de verdiene som er satt? */
+function laast(){ const e=$('las'); return !!(e && e.checked); }
+/* Hvor mye det laaste oppsettet likevel bommer, per gruppe — settes av
+   data() og leses av drawA(). Bare skalataket kan skape avvik her. */
+let lasAvvik=[0,0,0];
+
+/* Skalaen gaar til 35, og et maaleinstrument kan ikke gi hoyere skaar enn
+   sitt eget tak. Klemmer vi ikke her, tegner figuren pasienter over taket —
+   og da motsier den taklinja si egen.
+
+   Men klippingen, og residualenes egne utvalgsverdier, gjor at det som
+   VISES vandrer naar gliderne dras. Utvalgsgjennomsnittet ganges med SD,
+   saa ved SD = 12 flyttet gruppesnittene seg opptil fem poeng: paastanden
+   «signalet staar stille, stoyen vokser» var rett og slett ikke sann. Og
+   MS innen har df = 57, saa den spratt 19 % fra innlasting til innlasting
+   — et startpunkt valgt til aa ligge paa vippen ville ligget der bare av
+   og til.
+
+   Med laasen paa loser vi begge deler: hver gruppe skaleres og forskyves
+   slik at de KLIPPEDE verdiene har noyaktig det gjennomsnittet haandtaket
+   staar paa og noyaktig den SD-en glideren viser. Punktene ligger fortsatt
+   spredt som ekte data — det er bare de to tallene som er festet. Da er
+   SS mellom konstant naar SD endres, og F er den samme hver gang appen
+   aapnes. */
+function data(){
+  const out=[], n=N(), sd=SD(), laa=laast();
+  const klipp=v=>Math.max(0,Math.min(TAK,v));
+  for(let g=0;g<K;g++){
+    const r=z[g].slice(0,n);
+    if(!laa){
+      lasAvvik[g]=0;
+      out.push(r.map(v=>klipp(means[g]+sd*v)));
+      continue;
+    }
+    /* Standardiser raastoffet foerst: snitt 0, SD 1 (med n-1, samme
+       divisor som MS innen bruker). */
+    const m0=r.reduce((a,v)=>a+v,0)/n;
+    let s0=0; for(const v of r) s0+=(v-m0)*(v-m0);
+    s0=Math.sqrt(s0/Math.max(1,n-1)) || 1;
+    const e=r.map(v=>(v-m0)/s0);
+    /* Klippingen trekker baade snittet og spredningen ned, saa vi soker
+       offset og skala som treffer etter klipping. To parametre, men hver
+       av dem er en sammentrekning, saa faa runder holder. */
+    let off=0, k=1;
+    for(let it=0; it<60; it++){
+      let sum=0; for(const v of e) sum+=klipp(means[g]+off+k*sd*v);
+      const mm=sum/n;
+      let ss=0; for(const v of e){ const x=klipp(means[g]+off+k*sd*v); ss+=(x-mm)*(x-mm); }
+      const obs=Math.sqrt(ss/Math.max(1,n-1));
+      const dM=means[g]-mm, dS=(obs>1e-9)? sd/obs : 1;
+      if(Math.abs(dM)<1e-9 && Math.abs(obs-sd)<1e-9) break;
+      off+=dM;
+      k*=Math.min(4, Math.max(0.25, dS));
+      if(Math.abs(off)>2*TAK || k>1e4) break;
+    }
+    const vals=e.map(v=>klipp(means[g]+off+k*sd*v));
+    const mm=vals.reduce((a,v)=>a+v,0)/n;
+    lasAvvik[g]=mm-means[g];
+    out.push(vals);
+  }
+  return out;
+}
 function anova(){
   const D=data(), n=N(), Nt=K*n;
   const gm=D.flat().reduce((s,v)=>s+v,0)/Nt;
@@ -1914,7 +2362,14 @@ function drawA(){
     '<span class="stat s-tstat"><i>F</i>('+a.d1+', '+a.d2+') = '+fmt(a.F)+'</span>'+
     '<span class="stat s-p">'+(a.p<0.001?'p &lt; .001':'p = '+fmt(a.p,3).replace('0.','.'))+'</span>'+
     '<span class="stat s-eff">η² = '+fmt(a.eta)+'</span>'+
-    '<span class="stat"><i>N</i> = '+a.Nt+'</span>';
+    '<span class="stat"><i>N</i> = '+a.Nt+'</span>'+
+    (laast()
+      ? '<span class="stat" style="background:#eef3fb;color:#1F3864">gruppene er låst til '
+        +'<i>M</i> og <i>SD</i> som satt</span>'
+        + (Math.max(...lasAvvik.map(Math.abs))>0.05
+           ? '<span class="stat red">taket på 35 hindrer at alle tre kan nås '
+             +'— øk avstanden til taket eller senk <i>SD</i></span>' : '')
+      : '');
   /* Den levende brøken: samme to farger som i figuren over, samme to tall
      som i MS-kolonnen under. Tre steder, ett regnestykke. */
   $('brokA').innerHTML=
@@ -2204,8 +2659,16 @@ function drawC(){
 }
 function render(){$('no').textContent=N();$('sdo').textContent=fmt(SD(),1);drawA();drawC();}
 ['n','sd'].forEach(id=>$(id).oninput=render);
-$('reset').onclick=()=>{means=[31,31,31];render();};
-$('spread').onclick=()=>{means=[27,31,35];render();};
+if($('las')) $('las').onchange=render;
+/* H0-demonstrasjonen MAA ha trekningsstoy: med tre like gjennomsnitt og
+   laasen paa blir SS mellom noyaktig null og F noyaktig 0 — stikk i strid
+   med poenget om at F ≈ 1 naar nullhypotesen er sann. Derfor slaar denne
+   knappen laasen av. */
+$('reset').onclick=()=>{means=[25,25,25]; if($('las')) $('las').checked=false; render();};
+/* Var [27,31,35]. Gruppe 3 laa da NOYAKTIG paa skalaens tak, saa all stoy
+   over 35 ble klippet bort: spredningen i den gruppa kollapset, og med
+   laasen paa var snittet 35 fysisk uoppnaaelig. Samme avstand, sentrert. */
+$('spread').onclick=()=>{means=[21,25,29];render();};
 /* De ekte gruppegjennomsnittene for depresjon ved oppstart. n settes likt
    for alle tre — figuren har én n-glider, og det er et poeng i seg selv:
    med lik n blir F litt hoyere enn i den ekte analysen, fordi den ekte
@@ -2213,6 +2676,10 @@ $('spread').onclick=()=>{means=[27,31,35];render();};
    til 3.6, som er kvadratroten av MS innen i den ekte tabellen. */
 $('ekte').onclick=()=>{
   means=[28.23,31.04,34.27];
+  /* Uten laasen landet gruppe 3 et halvt poeng under 34.27, fordi symmetrisk
+     stoy ble klippet mot taket. Med laasen paa treffer alle tre eksakt, og
+     takeffekten vises der den hoerer hjemme: i spredningen, ikke i snittet. */
+  if($('las')) $('las').checked=true;
   const sd=$('sd'), nn=$('n');
   if(sd){ sd.value=3.6; sd.dispatchEvent(new Event('input')); }
   if(nn){ nn.value=25;  nn.dispatchEvent(new Event('input')); }
@@ -2307,7 +2774,7 @@ const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA0
    den dyplenken). Simuleringen tegner seg selv på nytt via resize.
    ===================================================================== */
 (function(){
-const FANER=['hvorfor','sim','null','eta','posthoc','forut','ekte','rapport'];
+const FANER=['hvorfor','sim','null','eta','posthoc','forut','ekte','rapport','dans'];
 function visFane(f){
   if(FANER.indexOf(f)<0) f='hvorfor';
   FANER.forEach(function(x){
@@ -2545,16 +3012,36 @@ window.addEventListener('resize',tegn);
 tegn();
 })();
 
-/* --- sporing: tabellcelle <-> setningsbit, samme data-sp lyser sammen --- */
+/* --- sporing: tabellcelle <-> setningsbit, samme data-sp lyser sammen ---
+   Delegert paa document, ikke bundet til bestemte tabeller: da virker den
+   ogsaa paa slides som bygges om for hver visning, uten at noen maa huske
+   aa koble den paa nytt.
+
+   Klikk laaser markeringen. I salen har du ikke alltid en mus aa holde
+   stille med, og et laast tall staar til du trykker igjen.              */
 (function(){
-  const felt=[].slice.call(document.querySelectorAll('#sporTab .sp, #sporDesk .sp, #sporSetn .sp'));
-  if(!felt.length) return;
-  const lys=function(navn,paa){
-    felt.forEach(function(e){ if(e.dataset.sp===navn) e.classList.toggle('pa',paa); });
+  let laast=null;
+  const alle=function(){ return [].slice.call(document.querySelectorAll('[data-sp]')); };
+  const lys=function(navn,paa,klasse){
+    alle().forEach(function(e){
+      if(e.dataset.sp===navn) e.classList.toggle(klasse||'pa',paa);
+    });
   };
-  felt.forEach(function(e){
-    e.addEventListener('mouseenter',function(){ lys(e.dataset.sp,true); });
-    e.addEventListener('mouseleave',function(){ lys(e.dataset.sp,false); });
+  const naermeste=function(t){
+    while(t&&t!==document){ if(t.dataset&&t.dataset.sp) return t; t=t.parentNode; }
+    return null;
+  };
+  document.addEventListener('mouseover',function(e){
+    const t=naermeste(e.target); if(t) lys(t.dataset.sp,true);
+  });
+  document.addEventListener('mouseout',function(e){
+    const t=naermeste(e.target); if(t&&t.dataset.sp!==laast) lys(t.dataset.sp,false);
+  });
+  document.addEventListener('click',function(e){
+    const t=naermeste(e.target); if(!t) return;
+    if(laast){ lys(laast,false,'laast'); lys(laast,false); }
+    if(laast===t.dataset.sp){ laast=null; return; }
+    laast=t.dataset.sp; lys(laast,true,'laast'); lys(laast,true);
   });
 })();
 
@@ -2569,7 +3056,7 @@ const BITER=[
  ['rb-pastand','Depresjonsskåren ved oppstart skilte seg mellom pasienter med ulikt antall tidligere behandlingsforsøk',
   'Påstanden','Funnet på norsk, før noen parentes. En leser som bare leser denne biten, skal ha fått med seg hva du fant.'],
  ['rb-test',', <i>F</i>(2, 72) = 15.27',
-  'Testobservatoren','Signal delt på støy — og begge frihetsgradene. 2 er antall grupper minus 1; 72 er N minus antall grupper.'],
+  'Teststatistikken','Signal delt på støy — og begge frihetsgradene. 2 er antall grupper minus 1; 72 er N minus antall grupper.'],
  ['rb-p',', <i>p</i> &lt; .001',
   '<i>p</i>-verdien','Uten innledende null, og aldri som .000. En p-verdi kan bli liten, men ikke null.'],
  ['rb-eff',', η² = .30',
@@ -2842,20 +3329,25 @@ slide({t:'SIM · dra gjennomsnittene', blokk:'blokk-dra', html:
  '<div class="boks gronn avslor" data-trinn="1"><h3>1 · Trekk dem fra hverandre</h3>'+
  'Signalet vokser. Støyen står stille. <i>F</i> stiger.</div>'+
  '<div class="boks rod avslor" data-trinn="2"><h3>2 · Skru opp spredningen</h3>'+
- 'Signalet står stille. Støyen vokser. <i>F</i> faller.</div>'+
+ 'Signalet står <b>helt</b> stille &mdash; gjennomsnittene er låst. Støyen vokser. '+
+ '<i>F</i> faller.</div>'+
  '<div class="boks bla avslor" data-trinn="3" data-gjor="klikk:ekte">'+
  '<h3>3 · Sett de ekte tallene</h3>28.23 &middot; 31.04 &middot; 34.27, med '+
  '<i>SD</i> = 3.6. Slik ser datasettet faktisk ut.</div>'+
  '</div>',
- forbered:function(){ sett('n',25); sett('sd',5); },
- notat:'Dra ETT gjennomsnitt om gangen og les av MS mellom underveis. Tredje klikk setter '+
-       'de ekte tallene med knappen. To ting å si høyt der: (1) F blir et annet tall enn de '+
-       '15.27 vi får i den ekte analysen, fordi n her er lik i alle tre gruppene mens '+
-       'datasettet har 35/25/15 — med ulik n teller den minste gruppa mindre, og det er '+
-       'nettopp den som ligger lengst ute. (2) Snittet i gruppe 3 lander litt under 34.27, '+
-       'fordi figuren trekker symmetrisk støy og så klipper mot taket på 35. Det er '+
-       'takeffekten i sanntid: dra gruppa oppover og se spredningen krympe av seg selv. '+
-       'SD = 3.6 er kvadratroten av MS innen fra den ekte tabellen.'});
+ forbered:function(){ sett('n',20); sett('sd',5); kryss('las',true); },
+ notat:'«Lås gruppene til akkurat disse verdiene» er slått på for dette slidet. Det er det som gjør steg 2 '+
+       'ærlig: drar du SD-glideren fra 1 til 12, står de tre blå strekene HELT stille, SS '+
+       'mellom er nøyaktig det samme tallet hele veien, og F faller bare fordi MS innen '+
+       'vokser. Uten låsen vandret snittene opptil fem poeng og SS mellom vokste med 75 % '+
+       'mens du dro — altså motsatt av det man påstod. '+
+       'Dra ETT gjennomsnitt om gangen i steg 1 og les av MS mellom underveis. Tredje klikk '+
+       'setter de ekte tallene. Si høyt der at F blir et annet tall enn de 15.27 vi får i den '+
+       'ekte analysen, fordi n her er lik i alle tre gruppene mens datasettet har 35/25/15 — '+
+       'med ulik n teller den minste gruppa mindre, og det er nettopp den som ligger lengst '+
+       'ute. SD = 3.6 er kvadratroten av MS innen fra den ekte tabellen. '+
+       'Takeffekten kan du fortsatt vise: dra gruppe 3 helt opp mot 35 og se spredningen i '+
+       'den gruppa krympe av seg selv — nå uten at snittet også sklir.'});
 
 slide({t:'Kvadratsummene', klasse:'tett', html:
  '<h1>Hva er egentlig en kvadratsum?</h1>'+
@@ -2897,8 +3389,10 @@ slide({t:'SIM · rå kvadratsum mot gjennomsnittlig', blokk:['blokk-dra','blokk-
  '<b>rå kvadratsummer</b> og så <b>delt på hver sin frihetsgrad</b>. '+
  '<b>Skru <i>n</i> opp og ned.</b> Den øverste stolpen vokser kraftig &mdash; flere '+
  'personer gir flere kvadrerte avvik å summere. Den nederste står nesten stille.</p>',
- forbered:function(){ sett('n',25); sett('sd',5); },
- notat:'Dette er slidet som gjør delingen på df konkret. Dra n fra 5 til 60 mens de ser '+
+ forbered:function(){ sett('n',20); sett('sd',5); kryss('las',true); },
+ notat:'Låsen er på, så gruppegjennomsnittene ligger stille mens du drar n — det eneste som '+
+       'endrer seg er hvor mange tall summene er bygget av, som er hele poenget her. '+
+       'Dette er slidet som gjør delingen på df konkret. Dra n fra 5 til 60 mens de ser '+
        'på: rå SS innen mangedobles, men MS innen rører seg knapt — fordi den er et '+
        'GJENNOMSNITTLIG kvadrert avvik. Det er nettopp derfor de to tallene kan '+
        'sammenlignes i det hele tatt.'});
@@ -2940,12 +3434,13 @@ slide({t:'SIM · figuren og JASP-tabellen sammen', blokk:['blokk-dra','blokk-tab
  'samtidig &mdash; tabellen er ikke en ny analyse, den er den samme figuren skrevet med tall.</p>',
  /* Brøken står på slide 15, og to ganger på rad gjør sliden urolig: her er
     poenget figuren MOT tabellen, ikke utregningen mellom dem. */
- forbered:function(){ sett('n',25); sett('sd',5);
+ forbered:function(){ sett('n',20); sett('sd',5); kryss('las',true);
    const b=$('brokA'); if(b) b.classList.add('skjul'); },
  notat:'Dette er broen mellom bildet og utskriften, og den er verdt to minutter. Dra gruppe 3 '+
        'oppover mens de ser på tabellen: SS mellom vokser, SS innen står stille, F stiger, p '+
        'faller, η² vokser. Spør hvilken KOLONNE som flyttet seg først. Dra så SD-glideren i '+
-       'stedet, og still det samme spørsmålet — nå er det nevneren. Poenget er at ingen av '+
+       'stedet, og still det samme spørsmålet — nå er det nevneren, og med låsen på står '+
+       'SS mellom bokstavelig talt uendret i tabellen mens du drar. Poenget er at ingen av '+
        'tallene i utskriften er nye: alle sammen er avlesninger av det samme bildet.'});
 
 slide({t:'AVSTEMNING S2', klasse:'harqr', qr:'F5-A3', html:
@@ -3418,40 +3913,95 @@ slide({t:'Nullfunnet', klasse:'tett', html:
  notat:'Ingen post hoc her. Si det eksplisitt, så de ser regelen i bruk.'});
 
 slide({t:'Rapporteringsmalen', klasse:'tett', html:
- '<h1>Fra JASP-tabellen til setningen &mdash; tall for tall</h1>'+
- '<div class="jasp">'+
+ '<h1>Fra JASP-tabellene til setningen &mdash; tall for tall</h1>'+
+ '<p class="liten" style="margin:0 0 6px">Setningen henter fra <b>tre</b> tabeller. '+
+ '<b>Hold musa over et tall</b> &mdash; eller klikk for å låse det &mdash; så lyser '+
+ 'makkeren opp det andre stedet.</p>'+
+ '<div class="todelt" style="align-items:start">'+
+
+ /* ---- venstre: ANOVA-tabellen, med Welch-raden slik JASP skriver den ---- */
+ '<div style="flex:1.15">'+
+ '<div class="jasp" style="margin:0">'+
  '<p class="tit">ANOVA &ndash; Depression</p>'+
- '<table><tr><th class="venstre">Cases</th><th>Sum of Squares</th><th>df</th>'+
- '<th>Mean Square</th><th>F</th><th>p</th><th>η²</th></tr>'+
- '<tr><td class="venstre">Tidligere_behandling</td><td class="c-sig">399.5</td>'+
- '<td class="c-tstat">2</td><td class="c-sig">199.7</td><td class="c-tstat">15.27</td>'+
- '<td class="c-p">&lt; .001</td><td class="c-eff">0.2978</td></tr>'+
- '<tr class="stripe"><td class="venstre">Residuals</td><td class="c-stoy">942.1</td>'+
- '<td class="c-tstat">72</td><td class="c-stoy">13.08</td><td></td><td></td><td></td></tr>'+
+ '<table><tr><th class="venstre">Cases</th><th>Correction</th><th>SS</th><th><i>df</i></th>'+
+ '<th>MS</th><th><i>F</i></th><th><i>p</i></th><th>η²</th></tr>'+
+ '<tr><td class="venstre">Tidligere_behandling</td><td>None</td>'+
+   '<td class="c-sig">399.5</td><td class="c-tstat">2</td><td class="c-sig">199.7</td>'+
+   '<td class="c-tstat">15.27</td><td class="c-p">&lt; .001</td>'+
+   '<td class="sp sp-eff" data-sp="eta">0.298</td></tr>'+
+ '<tr class="stripe"><td class="venstre"></td><td><b>Welch</b></td><td></td>'+
+   '<td class="sp sp-df" data-sp="wdf1">2</td><td></td>'+
+   '<td class="sp sp-tstat" data-sp="wf">34.91</td>'+
+   '<td class="sp sp-p" data-sp="p">&lt; .001</td><td></td></tr>'+
+ '<tr><td class="venstre">Residuals</td><td>None</td><td class="c-stoy">942.1</td>'+
+   '<td class="c-tstat">72</td><td class="c-stoy">13.08</td><td></td><td></td><td></td></tr>'+
+ '<tr class="stripe"><td class="venstre"></td><td><b>Welch</b></td><td></td>'+
+   '<td class="sp sp-df" data-sp="wdf2">47.9</td><td></td><td></td><td></td><td></td></tr>'+
  '</table><p class="note"><b>Note.</b> Type III Sum of Squares</p></div>'+
- '<div class="apadel avslor" data-trinn="1" style="margin-top:10px">'+
+ '</div>'+
+
+ /* ---- hoyre: Levene og Descriptives, de to andre kildene ---- */
+ '<div style="flex:1">'+
+ '<div class="jasp" style="margin:0">'+
+ '<p class="tit">Test of Equality of Variances (Levene\'s)</p>'+
+ '<table><tr><th class="venstre"></th><th><i>F</i></th><th><i>df</i>1</th>'+
+ '<th><i>df</i>2</th><th><i>p</i></th></tr>'+
+ '<tr><td class="venstre">Depression</td>'+
+   '<td class="sp sp-tstat" data-sp="lf">16.01</td>'+
+   '<td class="sp sp-df" data-sp="ldf1">2</td>'+
+   '<td class="sp sp-df" data-sp="ldf2">72</td>'+
+   '<td class="sp sp-p" data-sp="lp">&lt; .001</td></tr></table></div>'+
+ '<div class="jasp" style="margin:8px 0 0">'+
+ '<p class="tit">Descriptives</p>'+
+ '<table><tr><th class="venstre">Tidligere_behandling</th><th><i>N</i></th>'+
+ '<th>Mean</th><th>SD</th></tr>'+
+ '<tr><td class="venstre">1</td><td>35</td>'+
+   '<td class="sp sp-sig" data-sp="m1">28.23</td>'+
+   '<td class="sp sp-stoy" data-sp="sd1">4.88</td></tr>'+
+ '<tr class="stripe"><td class="venstre">2</td><td>25</td>'+
+   '<td class="sp sp-sig" data-sp="m2">31.04</td>'+
+   '<td class="sp sp-stoy" data-sp="sd2">2.19</td></tr>'+
+ '<tr><td class="venstre">3 eller flere</td><td>15</td>'+
+   '<td class="sp sp-sig" data-sp="m3">34.27</td>'+
+   '<td class="sp sp-stoy" data-sp="sd3">1.16</td></tr></table></div>'+
+ '</div></div>'+
+
+ /* ---- setningen, med de samme merkelappene ---- */
+ '<div class="apadel avslor" data-trinn="1" style="margin-top:8px">'+
  '<p>Depresjonsskårene ved oppstart skilte seg mellom pasienter med ulikt antall tidligere '+
  'behandlingsforsøk. Fordi variansene var ulike, Levene '+
- '<span class="k-tstat"><i>F</i>(2, 72) = 16.01</span>, '+
- '<span class="k-p"><i>p</i> &lt; .001</span>, rapporteres Welchs justerte test, '+
- '<span class="k-tstat"><i>F</i>(2, 47.9) = 34.91</span>, '+
- '<span class="k-p"><i>p</i> &lt; .001</span>, '+
- '<span class="k-eff">η² = .30</span>. Pasienter med ett tidligere '+
- 'behandlingsforsøk '+
- '(<i>M</i> = <span class="k-sig">28.23</span>, <i>SD</i> = <span class="k-stoy">4.88</span>) '+
+ '<i>F</i>(<span class="sp sp-df" data-sp="ldf1">2</span>, '+
+ '<span class="sp sp-df" data-sp="ldf2">72</span>) = '+
+ '<span class="sp sp-tstat" data-sp="lf">16.01</span>, '+
+ '<i>p</i> <span class="sp sp-p" data-sp="lp">&lt; .001</span>, rapporteres Welchs '+
+ 'justerte test, <i>F</i>(<span class="sp sp-df" data-sp="wdf1">2</span>, '+
+ '<span class="sp sp-df" data-sp="wdf2">47.9</span>) = '+
+ '<span class="sp sp-tstat" data-sp="wf">34.91</span>, '+
+ '<i>p</i> <span class="sp sp-p" data-sp="p">&lt; .001</span>, '+
+ 'η² = <span class="sp sp-eff" data-sp="eta">.30</span>. '+
+ 'Pasienter med ett tidligere behandlingsforsøk '+
+ '(<i>M</i> = <span class="sp sp-sig" data-sp="m1">28.23</span>, '+
+ '<i>SD</i> = <span class="sp sp-stoy" data-sp="sd1">4.88</span>) '+
  'skåret lavere enn pasienter med to tidligere behandlingsforsøk '+
- '(<i>M</i> = <span class="k-sig">31.04</span>, <i>SD</i> = <span class="k-stoy">2.19</span>) '+
+ '(<i>M</i> = <span class="sp sp-sig" data-sp="m2">31.04</span>, '+
+ '<i>SD</i> = <span class="sp sp-stoy" data-sp="sd2">2.19</span>) '+
  'og lavere enn pasienter med tre eller flere '+
- '(<i>M</i> = <span class="k-sig">34.27</span>, <i>SD</i> = <span class="k-stoy">1.16</span>).</p></div>'+
- '<p class="liten avslor" data-trinn="2"><b>Følg fargene.</b> '+
- '<span class="k-tstat">Marineblått</span> i tabellen blir marineblått i setningen, '+
- '<span class="k-p">lilla</span> blir lilla, <span class="k-eff">rav</span> blir rav. '+
- '<b>De to kvadratsummene og de to MS-ene er ikke med i teksten</b> &mdash; de er '+
- 'mellomregning. Gjennomsnittene og standardavvikene henter du fra '+
- '<i>Descriptives</i>-tabellen.</p>',
- notat:'Les hele avsnittet høyt. Merk rekkefølgen: forutsetningsbruddet kommer FØR '+
-       'testresultatet, fordi det er det som bestemmer hvilken test som rapporteres. '+
-       'Det er dette de skal levere, og de har aldri sett det ferdig før.'});
+ '(<i>M</i> = <span class="sp sp-sig" data-sp="m3">34.27</span>, '+
+ '<i>SD</i> = <span class="sp sp-stoy" data-sp="sd3">1.16</span>).</p></div>'+
+
+ '<p class="liten avslor" data-trinn="2" style="margin-top:6px">'+
+ '<b>Legg merke til hva som IKKE er med.</b> '+
+ '<span class="k-sig">Kvadratsummene</span> og '+
+ '<span class="k-stoy">MS-ene</span> står bare i tabellen &mdash; de er mellomregning, '+
+ 'og de har ingen makker i teksten. Det samme gjelder den ukorrigerte '+
+ '<span class="k-tstat"><i>F</i> = 15.27</span>: når Levene er signifikant, er det '+
+ '<b>Welch-raden</b> som rapporteres, ikke den øverste. Og η² skrives '+
+ '<b>.30</b> i teksten, ikke 0.298 &mdash; to desimaler, uten null foran.</p>',
+ notat:'Sliden har tre tabeller fordi setningen har tre kilder, og det er nettopp det '+
+       'studentene bommer på: de leter etter gjennomsnittene i ANOVA-tabellen. Hold musa '+
+       'over 34.91 og vis at den står i Welch-raden, ikke i den vanlige. Klikk låser '+
+       'markeringen hvis du vil la den stå mens du snakker. Si også hvorfor 15.27 ikke er '+
+       'med: den er riktig regnet, men den forutsetter noe vi nettopp viste ikke holder.'});
 
 slide({t:'De vanligste feilene', klasse:'tett', html:
  '<h1>De vanligste feilene <span style="font-size:.62em;color:#3F4E63">'+
@@ -3532,7 +4082,7 @@ slide({t:'BONUS · ANOVA er en regresjon', klasse:'bonus', html:
  '<span class="k-stoy">residual</span>, samme '+
  '<span class="k-tstat"><i>F</i>(2, 72) = 15.27</span>. Og '+
  '<span class="k-eff">η² = .2978</span> er nøyaktig det regresjonen kaller '+
- '<span class="k-eff"><i>R</i>² = 0.298</span>.</p>',
+ '<span class="k-eff"><i>R</i>² = .298</span>.</p>',
  notat:'Legg de to tabellene ved siden av hverandre og les tallene høyt kolonne for kolonne. '+
        'Merk at regresjonen har en Total-rad som ANOVA-tabellen ikke har — det er den samme '+
        'summen studentene må legge sammen selv for å kontrollere η².'});
@@ -4263,5 +4813,173 @@ window.__avsluttForelesning=avslutt;
   if(q.get('modus')==='forelesning' && window.__startForelesning){ window.__startForelesning(); }
 })();
 
+</script>
+
+<script>
+/* ===== Innlemmet fane «dans» — tidligere egen app. Egen lukking, egne id-er (td_…). ===== */
+(function(){
+const __ROT=document.getElementById('fane-dans');
+const __G=id=>document.getElementById('td_'+id);
+
+
+"use strict";
+const $=id=>__G(id);
+const fmt=(x,d=2)=>x.toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:false});
+function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function fit(cv){const r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);c.clearRect(0,0,w,h);return [c,w,h];}
+function lgamma(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
+  let y=x,tmp=x+5.5;tmp-=(x+0.5)*Math.log(tmp);let ser=1.000000000190015;for(let j=0;j<6;j++)ser+=c[j]/++y;return -tmp+Math.log(2.5066282746310005*ser/x);}
+function betacf(a,b,x){const MAXIT=200,EPS=3e-12,FPMIN=1e-30;const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<FPMIN)d=FPMIN;d=1/d;let h=d;
+  for(let m=1;m<=MAXIT;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;h*=d*c;
+  aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<EPS)break;}return h;}
+function ibeta(a,b,x){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));
+  return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+const pF=(F,d1,d2)=>F<=0?1:ibeta(d2/2,d1/2,d2/(d2+d1*F));      // øvre hale
+function fcrit(d1,d2,a){let lo=0,hi=100;for(let i=0;i<90;i++){const m=(lo+hi)/2;if(pF(m,d1,d2)>a)lo=m;else hi=m;}return (lo+hi)/2;}
+
+
+
+const pT=(t,df)=>ibeta(df/2,0.5,df/(df+t*t));
+function tcrit(df,a){let lo=0,hi=200;for(let i=0;i<110;i++){const m=(lo+hi)/2;if(pT(m,df)>a)lo=m;else hi=m;}return (lo+hi)/2;}
+
+const D=()=>+$('d').value, N=()=>+$('n').value, K=()=>+$('k').value;
+let R=null;
+
+function trekk(){
+  const d=D(), n=N(), k=K(), S=2000;
+  const t=[], F=[], dd=[], dfT=2*n-2, df1=k-1, df2=k*n-k;
+  for(let s=0;s<S;s++){
+    // to grupper: t og d
+    const a=[],b=[];
+    for(let i=0;i<n;i++){a.push(d+rnorm());b.push(rnorm());}
+    const ma=a.reduce((q,v)=>q+v,0)/n, mb=b.reduce((q,v)=>q+v,0)/n;
+    let ss=0;a.forEach(v=>ss+=(v-ma)*(v-ma));b.forEach(v=>ss+=(v-mb)*(v-mb));
+    const sp=Math.sqrt(ss/dfT);
+    t.push((ma-mb)/(sp*Math.sqrt(2/n)));
+    dd.push((ma-mb)/sp);
+    // k grupper: F
+    const G=[],M=[];
+    for(let g=0;g<k;g++){const x=[];for(let i=0;i<n;i++)x.push((g===0?d:0)+rnorm());
+      G.push(x);M.push(x.reduce((q,v)=>q+v,0)/n);}
+    const gm=M.reduce((q,v)=>q+v,0)/k;
+    let ssB=0,ssW=0;
+    M.forEach(m=>ssB+=n*(m-gm)*(m-gm));
+    G.forEach((x,g)=>x.forEach(v=>ssW+=(v-M[g])*(v-M[g])));
+    F.push((ssB/df1)/(ssW/df2));
+  }
+  const tc=tcrit(dfT,0.05), fc=tc>0?0:0;
+  // kritisk F ved bisection på pF
+  let lo=0,hi=60;for(let i=0;i<90;i++){const m=(lo+hi)/2;if(pF(m,df1,df2)>0.05)lo=m;else hi=m;}
+  R={d,n,k,t,F,dd,dfT,df1,df2,tc,fc:(lo+hi)/2};
+  tegn();
+}
+
+function hist(cv,vals,LOx,HIx,farge,krit,sannhet,etikett){
+  const [c,w,h]=fit(cv);
+  const L=42,Rr=w-14,T=16,B=h-30,NB=54,bw=(HIx-LOx)/NB,cnt=new Array(NB).fill(0);
+  vals.forEach(v=>{const i=Math.floor((Math.min(HIx-1e-9,Math.max(LOx,v))-LOx)/bw);cnt[i]++;});
+  const mx=Math.max(...cnt), X=v=>L+(v-LOx)/(HIx-LOx)*(Rr-L), Y=q=>B-q/mx*(B-T);
+  for(let i=0;i<NB;i++){
+    const mid=LOx+(i+0.5)*bw, sig=krit.length===1?mid>krit[0]:Math.abs(mid)>krit[1];
+    c.fillStyle=sig?'#2E7D32':'#8fa6c4';
+    c.fillRect(X(LOx+i*bw),Y(cnt[i]),Math.max(1,(Rr-L)/NB-1),B-Y(cnt[i]));
+  }
+  c.strokeStyle='#1F3864';c.lineWidth=1;c.beginPath();c.moveTo(L,B);c.lineTo(Rr,B);c.stroke();
+  c.font='bold 14px system-ui';c.fillStyle='#8a94a6';c.textAlign='center';
+  const step=(HIx-LOx)/6;
+  for(let v=LOx;v<=HIx+1e-9;v+=step)c.fillText(fmt(v,1),X(v),B+20);
+  krit.forEach(v=>{if(v>=LOx&&v<=HIx){c.strokeStyle='#2E7D32';c.lineWidth=2;c.setLineDash([5,4]);
+    c.beginPath();c.moveTo(X(v),T);c.lineTo(X(v),B);c.stroke();c.setLineDash([]);}});
+  if(sannhet!==null&&sannhet>=LOx&&sannhet<=HIx){
+    c.strokeStyle='#B26A00';c.lineWidth=3;c.beginPath();c.moveTo(X(sannhet),T);c.lineTo(X(sannhet),B);c.stroke();
+    c.font='bold 15px system-ui';c.fillStyle='#B26A00';c.textAlign='left';c.fillText('sannheten',X(sannhet)+6,T+15);}
+  c.font='bold 15px system-ui';c.fillStyle='#2E7D32';c.textAlign='right';c.fillText(etikett,Rr-4,T+15);
+}
+
+function studier(cv){
+  const [c,w,h]=fit(cv);
+  const L=14,Rr=w-14,T=18,B=h-24, tc=R.tc;
+  const vis=R.t.slice(0,60), LOx=-6,HIx=Math.max(6,R.d*Math.sqrt(R.n/2)+5);
+  const X=v=>L+(v-LOx)/(HIx-LOx)*(Rr-L);
+  c.strokeStyle='#e6ebf3';c.lineWidth=1;c.beginPath();c.moveTo(L,(T+B)/2);c.lineTo(Rr,(T+B)/2);c.stroke();
+  vis.forEach((v,i)=>{
+    const x=X(v), y=T+((i%3)*((B-T)/3))+6;
+    c.strokeStyle=Math.abs(v)>tc?'#2E7D32':'#b9c4d4';c.lineWidth=2.4;
+    c.beginPath();c.moveTo(x,y);c.lineTo(x,y+((B-T)/3)-10);c.stroke();});
+  [-tc,tc].forEach(v=>{c.strokeStyle='#2E7D32';c.lineWidth=2;c.setLineDash([5,4]);
+    c.beginPath();c.moveTo(X(v),T-4);c.lineTo(X(v),B);c.stroke();c.setLineDash([]);});
+  c.font='bold 14px system-ui';c.fillStyle='#8a94a6';c.textAlign='center';
+  c.fillText('de 60 første studiene · grønn = signifikant',(L+Rr)/2,B+18);
+}
+
+function tegn(){
+  if(!R){['setup'].forEach(id=>$(id).innerHTML='<b>Trykk «Trekk 2 000 utvalg».</b>');return;}
+  const sigT=R.t.filter(v=>Math.abs(v)>R.tc).length/R.t.length;
+  const sigF=R.F.filter(v=>v>R.fc).length/R.F.length;
+  const mT=R.t.reduce((a,b)=>a+b,0)/R.t.length;
+  const mD=R.dd.reduce((a,b)=>a+b,0)/R.dd.length;
+  const sdD=Math.sqrt(R.dd.reduce((a,b)=>a+(b-mD)*(b-mD),0)/(R.dd.length-1));
+  const forv=R.d*Math.sqrt(R.n/2);
+  $('setup').innerHTML='Verden: <b><i>d</i> = '+fmt(R.d,2)+'</b>, <b><i>n</i> = '+R.n+'</b> per gruppe. '+
+    'Forventet <i>t</i> er d·√(n/2) = <b>'+fmt(forv,2)+'</b>, og kritisk <i>t</i> ved <i>df</i> = '+R.dfT+' er ±'+fmt(R.tc,2)+'. '+
+    (R.d===0?'Med d = 0 er hver eneste «signifikante» studie en falsk positiv.':'Andelen studier som blir signifikante, er den statistiske styrken.');
+  studier($('cvA1'));
+  hist($('cvA2'),R.t,-6,Math.max(8,forv+5),'#2E5496',[-R.tc,R.tc],null,fmt(100*sigT,1)+' % signifikante');
+  hist($('cvB1'),R.F,0,Math.max(12,forv*forv/2+12),'#2E5496',[R.fc],null,fmt(100*sigF,1)+' % signifikante');
+  hist($('cvC1'),R.dd,-0.8,Math.max(1.6,R.d+1.0),'#2E5496',[99],R.d,'sanne d = '+fmt(R.d,2));
+  $('statsA').innerHTML='<span class="stat"><i>t</i> i snitt: '+fmt(mT,2)+'</span>'+
+    '<span class="stat">forventet: '+fmt(forv,2)+'</span>'+
+    '<span class="stat green">signifikante: '+fmt(100*sigT,1)+' %</span>'+
+    '<span class="stat">kritisk <i>t</i>: ±'+fmt(R.tc,2)+'</span>';
+  $('verdictA').innerHTML = R.d===0
+    ? 'Ingen av de 2 000 studiene har en ekte forskjell, men '+fmt(100*sigT,1)+' % blir likevel signifikante. Det er ikke støy i simuleringen, det er α = .05 som virker etter hensikten.'
+    : 'Sannheten er den samme i alle 2 000 studiene, men t spenner fra '+fmt(Math.min(...R.t),1)+' til '+fmt(Math.max(...R.t),1)+'. <b>'+fmt(100*sigT,1)+' % ble signifikante</b>, altså er styrken '+fmt(100*sigT,0)+' %. De øvrige '+fmt(100-100*sigT,0)+' % gjorde alt riktig og fant likevel ingenting.';
+  $('statsB').innerHTML='<span class="stat">grupper: '+R.k+'</span>'+
+    '<span class="stat"><i>df</i> = '+R.df1+', '+R.df2+'</span>'+
+    '<span class="stat green">signifikante: '+fmt(100*sigF,1)+' %</span>'+
+    '<span class="stat">kritisk <i>F</i>: '+fmt(R.fc,2)+'</span>';
+  $('verdictB').innerHTML='F-fordelingen er skjev mot høyre og starter i 0, fordi den er et forhold mellom to varianser og aldri kan bli negativ. '+
+    (R.k===2?'Med to grupper er dette nøyaktig t-fordelingen kvadrert: kritisk F = '+fmt(R.fc,2)+' er '+fmt(R.tc,2)+'² = '+fmt(R.tc*R.tc,2)+'.':'Med '+R.k+' grupper sier et signifikant <i>F</i> bare at <b>minst én</b> gruppe skiller seg, ikke hvilke. Derfor kommer post hoc-testene etterpå.');
+  $('statsC').innerHTML='<span class="stat">sann <i>d</i>: '+fmt(R.d,2)+'</span>'+
+    '<span class="stat">observert <i>d</i> i snitt: '+fmt(mD,2)+'</span>'+
+    '<span class="stat orange"><i>SD</i> mellom studier: '+fmt(sdD,2)+'</span>';
+  $('verdictC').innerHTML='Observert d treffer sannheten i gjennomsnitt ('+fmt(mD,2)+' mot '+fmt(R.d,2)+'), men enkeltstudier bommer med rundt '+fmt(sdD,2)+' i hver retning. Prøv å endre <i>n</i>: fordelingen blir smalere, men flytter seg ikke. <b>Effektstørrelsen avhenger ikke av utvalgsstørrelsen, i motsetning til <i>t</i> og <i>F</i>.</b>';
+}
+
+__ROT.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+  __ROT.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));
+  ['A','B','C'].forEach(t=>{$('pane'+t).style.display=(t===b.dataset.t)?'':'none';});
+  if(R)tegn();
+}));
+['d','n','k'].forEach(id=>$(id).addEventListener('input',()=>{
+  $('do').textContent=fmt(D(),2);$('no').textContent=N();$('ko').textContent=K();}));
+$('run').addEventListener('click',trekk);
+$('nulleff').addEventListener('click',()=>{$('d').value=0;$('do').textContent=fmt(0,2);trekk();});
+$('istdp').addEventListener('click',()=>{$('d').value=1.2;$('n').value=40;$('do').textContent=fmt(1.2,2);$('no').textContent=40;trekk();});
+window.addEventListener('resize',()=>{if(R)tegn();});
+$('do').textContent=fmt(D(),2);$('no').textContent=N();$('ko').textContent=K();
+trekk();
+
+
+/* hidden-fanen har bredde 0: tegn på nytt når den åpnes */
+document.querySelectorAll('.fane[data-fane="dans"]').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>window.dispatchEvent(new Event('resize')),30)));
+{ const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'')).get('fane');
+  if(q==='dans') setTimeout(()=>window.dispatchEvent(new Event('resize')),60); }
+})();
+</script>
+
+<script id="ovbegrep-js">
+(function(){
+  // Lokalt: appene ligger i PSY300_Sim_Apps/, MCQ-appen i PSY300_online/.
+  // Publisert: alt ligger flatt. Velg prefiks ut fra adressen.
+  var p = location.pathname.indexOf('/PSY300_Sim_Apps/') >= 0
+        ? '../PSY300_online/' : './';
+  var a = document.querySelectorAll('a.ovlenke[data-begrep]');
+  for (var i=0;i<a.length;i++){
+    a[i].href = p + 'PSY300_MCQ_Online.html?begrep=' + a[i].getAttribute('data-begrep');
+    a[i].target = '_blank'; a[i].rel = 'noopener';
+  }
+})();
 </script>
 </body></html>

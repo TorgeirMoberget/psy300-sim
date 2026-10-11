@@ -1,0 +1,3793 @@
+<!DOCTYPE html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY300 · Sim 24 — Faktoriell ANOVA</title>
+<style>
+:root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--orange:#B26A00;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:20.5px;margin:0;font-weight:700}
+header p{margin:2px 0 0;font-size:15.5px;opacity:.85}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+h2{color:var(--navy);margin:.2em 0 .5em;font-size:19px}
+button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+.btn{background:var(--blue);color:#fff}.btn:hover{background:var(--navy)}
+.btn2{background:#eef1f7;color:var(--navy)}.btn2:hover{background:var(--light)}
+.muted{color:#62708a;font-size:16px}
+canvas{width:100%;display:block;touch-action:none}
+.stat{display:inline-block;background:var(--light);color:var(--navy);border-radius:8px;padding:3px 10px;font-size:15.5px;font-weight:600;margin:3px 4px 3px 0;font-variant-numeric:tabular-nums}
+.stat.red{background:#fbeceb;color:var(--red)}
+.stat.green{background:#eaf6ea;color:var(--green)}
+.stat.orange{background:#fdf3e6;color:var(--orange)}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap}
+.sl label{min-width:250px;font-weight:600;font-size:16px;color:var(--navy)}
+.sl input[type=range]{flex:1;min-width:140px}
+.sl output{min-width:52px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--navy);font-size:17px}
+.note{background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px;margin-top:10px}
+.gloss{font-size:15.5px}
+.gloss b{color:var(--navy)}
+table.anova{border-collapse:collapse;width:100%;margin-top:10px;font-size:16px;font-variant-numeric:tabular-nums}
+table.anova th{text-align:right;font-weight:600;border-bottom:1px solid #333;padding:6px 8px}
+table.anova th:first-child{text-align:left}
+table.anova td{text-align:right;padding:5px 8px;border:0}
+table.anova td:first-child{text-align:left}
+table.anova tr:last-child td{border-bottom:1px solid #333}
+/* =====================================================================
+   PSY300 FARGEKODE — én betydning per farge, den samme i alle appene.
+   Poenget er at en student som har sett grønt over rødt i figuren, skal
+   kjenne igjen de samme fargene i JASP-tabellen og i den ferdige
+   setningen — og dermed se hvor hvert tall kommer fra.
+     grønn   variasjon MELLOM grupper · signal · det vi leter etter
+     rød     variasjon INNEN grupper · støy · residual
+     marine  teststatistikken (F, t, χ²) og frihetsgradene
+     lilla   p-verdien
+     rav     effektstørrelsen (η², ω², d, R²)
+     turkis  konfidensintervallet
+   ===================================================================== */
+:root{
+  --sig:#1E7A3C;    --sig-bg:#E7F4EA;    --sig-kant:#A9D6B6;
+  --stoy:#C0392B;   --stoy-bg:#FBEDEB;   --stoy-kant:#EEC3BD;
+  --tstat:#1F3864;  --tstat-bg:#E7ECF6;  --tstat-kant:#B9C8E2;
+  --pverdi:#7B3FA0; --pverdi-bg:#F3EAF8; --pverdi-kant:#D3BCE4;
+  --eff:#B26A00;    --eff-bg:#FDF2E2;    --eff-kant:#EBD0A6;
+  --ki:#0F6E7B;     --ki-bg:#E4F1F3;     --ki-kant:#AAD3D9;
+}
+.k-sig{color:var(--sig);font-weight:600}
+.k-stoy{color:var(--stoy);font-weight:600}
+.k-tstat{color:var(--tstat);font-weight:700}
+.k-p{color:var(--pverdi);font-weight:600}
+.k-eff{color:var(--eff);font-weight:600}
+.k-ki{color:var(--ki);font-weight:600}
+/* markert variant — brukes der et tall skal kunne spores fra tabell til setning */
+.m-sig,.m-stoy,.m-tstat,.m-p,.m-eff,.m-ki{border-radius:5px;padding:1px 5px;font-weight:600}
+.m-sig{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+.m-stoy{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+.m-tstat{background:var(--tstat-bg);color:var(--tstat);box-shadow:inset 0 0 0 1px var(--tstat-kant)}
+.m-p{background:var(--pverdi-bg);color:var(--pverdi);box-shadow:inset 0 0 0 1px var(--pverdi-kant)}
+.m-eff{background:var(--eff-bg);color:var(--eff);box-shadow:inset 0 0 0 1px var(--eff-kant)}
+.m-ki{background:var(--ki-bg);color:var(--ki);box-shadow:inset 0 0 0 1px var(--ki-kant)}
+
+/* ---- brøkfiguren: teller over streken, nevner under ---- */
+.brokfig{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 18px;
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 14px;margin:12px 0}
+.brokfig .brk{text-align:center;min-width:250px;flex:0 1 auto}
+.brokfig .tell,.brokfig .nevn{border-radius:8px;padding:8px 13px;font-size:15.5px;line-height:1.28}
+.brokfig .tell{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+.brokfig .nevn{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+.brokfig .strek{height:3px;background:#16203A;border-radius:2px;margin:6px 0}
+.brokfig .tall{display:block;font-size:23px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+.brokfig .lik{font-size:27px;color:#16203A;font-weight:600}
+.brokfig .res{font-size:17px;color:var(--tstat);text-align:center;line-height:1.3}
+.brokfig .res b{display:block;font-size:31px;font-weight:700;font-variant-numeric:tabular-nums}
+.brokfig .res .n{display:block;font-size:13.5px;color:#5C6A80;font-weight:400;margin-top:3px}
+.brokfig.smal .brk{min-width:210px}
+.brokfig.smal .tall{font-size:19px}
+.brokfig.smal .res b{font-size:25px}
+
+.stat.s-sig{background:var(--sig-bg);color:var(--sig)}
+.stat.s-stoy{background:var(--stoy-bg);color:var(--stoy)}
+.stat.s-tstat{background:var(--tstat-bg);color:var(--tstat)}
+.stat.s-p{background:var(--pverdi-bg);color:var(--pverdi)}
+.stat.s-eff{background:var(--eff-bg);color:var(--eff)}
+table.anova td.c-sig,table.tt td.c-sig{color:var(--sig);font-weight:700}
+table.anova td.c-stoy,table.tt td.c-stoy{color:var(--stoy);font-weight:700}
+table.anova td.c-tstat,table.tt td.c-tstat{color:var(--tstat);font-weight:700}
+table.anova td.c-p,table.tt td.c-p{color:var(--pverdi);font-weight:700}
+table.anova td.c-eff,table.tt td.c-eff{color:var(--eff);font-weight:700}
+/* ---- fargeforklaring ---- */
+.fargeliste{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:8px;margin-top:8px}
+.fargeliste div{border-radius:8px;padding:7px 11px;font-size:15px;line-height:1.35}
+.fargeliste b{display:block;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+
+/* ---- ANOVA-tabellen med fargede rader ---- */
+table.anova tr.r-sig td,table.tt tr.r-sig td{background:var(--sig-bg)}
+table.anova tr.r-stoy td,table.tt tr.r-stoy td{background:var(--stoy-bg)}
+table.anova tr.r-total td,table.tt tr.r-total td{color:#5F6A7E}
+table.anova tr.r-total td:first-child{font-weight:700}
+table.anova tr.r-sig td:first-child{color:var(--sig);font-weight:700}
+table.anova tr.r-stoy td:first-child{color:var(--stoy);font-weight:700}
+
+/* ===== fellesklasser som manglet: tabeller, stegbokser og knapperader ===== */
+.rad{display:flex;flex-wrap:wrap;align-items:center}
+table.tt{border-collapse:collapse;width:100%;font-size:15.5px;font-variant-numeric:tabular-nums}
+table.tt th,table.tt td{border-bottom:1px solid #e2e6ee;padding:6px 8px;text-align:right}
+table.tt th:first-child,table.tt td:first-child{text-align:left}
+table.tt th{color:#2B3648;font-weight:600;font-size:14px}
+table.tt tr.sum td{border-top:2px solid var(--navy);border-bottom:0;font-weight:700;color:var(--navy)}
+table.tt tr.na{background:rgba(46,84,150,.10)}
+.steg{border-left:3px solid var(--blue);background:#f7f9ff;border-radius:0 8px 8px 0;
+  padding:9px 12px;margin:10px 0;font-size:16px}
+.steg .tit{font-weight:700;color:var(--navy);margin-bottom:3px}
+.steg .n{font-size:14.5px;color:#3F4E63;margin-top:5px}
+
+/* ---------- fane 8: rapportering ---------- */
+.rapsetning{background:#fff;border:1px solid var(--line);border-left:5px solid var(--navy);
+  border-radius:9px;padding:13px 15px;font-size:17.5px;line-height:1.8;margin:4px 0 10px}
+.rapbit{border-radius:5px;padding:1px 4px;cursor:help;transition:background .12s}
+.rapbit:hover,.rapbit.pa{background:#FFF1CC;box-shadow:0 0 0 2px #FFE08A}
+.rb-pastand{color:#16203A;font-weight:600}
+.rb-desk{color:var(--sig);font-weight:600}
+.rb-test{color:var(--tstat);font-weight:700}
+.rb-p{color:var(--pverdi);font-weight:600}
+.rb-eff{color:var(--eff);font-weight:600}
+.rb-ph{color:var(--ki);font-weight:600}
+.rb-nullpar{color:#5C6A80}
+
+/* ---- tabell mot setning: samme farge begge steder, og de lyser sammen ---- */
+.sporpar{display:grid;gap:12px;margin-top:6px}
+.sp{border-radius:5px;padding:1px 5px;cursor:help;
+  transition:box-shadow .12s, background .12s, font-size .12s}
+/* Markert tall: ring, stoerre og fetere. Paa et lerret bakerst i salen er
+   ringen alene for svak — det er stoerrelsen som ses. */
+.sp.pa{box-shadow:0 0 0 2px #16203A;font-size:1.13em;font-weight:800;
+  position:relative;z-index:2}
+.sp.laast{box-shadow:0 0 0 2px #16203A,0 0 0 5px rgba(22,32,58,.18)}
+.sp-sig{background:var(--sig-bg);color:var(--sig);font-weight:700}
+.sp-stoy{background:var(--stoy-bg);color:var(--stoy);font-weight:700}
+.sp-tstat{background:var(--tstat-bg);color:var(--tstat);font-weight:700}
+.sp-df{background:var(--tstat-bg);color:var(--tstat);font-weight:700}
+.sp-p{background:var(--pverdi-bg);color:var(--pverdi);font-weight:700}
+.sp-eff{background:var(--eff-bg);color:var(--eff);font-weight:700}
+.sporsetn{background:#fff;border:1px solid var(--line);border-left:5px solid var(--navy);
+  border-radius:9px;padding:13px 15px;font-size:17.5px;line-height:1.95}
+.sporlegg{font-size:14.5px;color:#5C6A80;line-height:1.5;margin-top:7px}
+#rapDeler{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:9px;margin-bottom:9px}
+.rapdel{background:#f7f9ff;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;line-height:1.45}
+.rapdel b{display:block;font-size:13px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px}
+.rapvalg.on,.phvalg.on{background:var(--navy);color:#fff}
+.malboks,.klikksti{background:#fff;border:1px solid var(--line);border-radius:8px;
+  padding:9px 12px;font-size:16px;line-height:1.6;margin-bottom:8px}
+.malboks.utfylt{background:#eef6ee;border-color:#c3e0c5}
+.klikksti{background:#f7f9ff;font-size:15px}
+.mallbl{display:block;font-size:12px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--navy);font-weight:700;margin-bottom:3px}
+.tabnavn{font-size:16px;font-weight:600;color:#1F3864;margin:16px 0 5px;font-style:italic}
+.gradering{font-style:normal;font-size:12.5px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.03em}
+.gr1{background:#eaf6ea;color:#1B5E20}.gr2{background:#fff4e0;color:#8a5200}
+.gr3{background:#f0f1f5;color:#5C6A80}
+.tabnote{font-size:14.5px;color:#5C6A80;line-height:1.5;margin:5px 0 2px}
+.feilliste{display:grid;gap:7px;margin-top:6px}
+.feil{background:#fdf1f0;border:1px solid #f2d3cf;border-left:4px solid var(--red);
+  border-radius:8px;padding:8px 11px;font-size:15.5px;line-height:1.5}
+.feil b{color:#8c2b20}.feil span{display:block;color:#3b4557;margin-top:2px}
+.effgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
+@media(max-width:700px){.effgrid{grid-template-columns:1fr}}
+.effkort{border:1px solid var(--line);border-radius:10px;padding:11px 13px;background:#fff}
+.effkort h3{margin:0 0 5px;font-size:16.5px;color:var(--navy)}
+.effkort .fml{font-size:19px;text-align:center;margin:9px 0 7px;color:#16203A}
+.effkort p{margin:5px 0;font-size:15.5px;line-height:1.5}
+.eta-kort{border-top:4px solid var(--blue)}
+.omega-kort{border-top:4px solid var(--green)}
+.brok{display:inline-block;vertical-align:middle;text-align:center;margin:0 3px}
+.brok .over{display:block;border-bottom:1.5px solid #16203A;padding:0 5px}
+.brok .under{display:block;padding:0 5px}
+.keybox{background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:12px 14px;margin:14px 0;font-size:16.5px}
+.keybox .lbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:4px}
+
+/* ===== Presentasjonsmodus (P) — for lerret under forelesning =============== */
+.presbtn{position:fixed;right:12px;bottom:12px;z-index:50;background:#fff;color:var(--navy);
+  border:1px solid var(--line);border-radius:20px;padding:7px 14px;font-size:14px;font-weight:700;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer;opacity:.75}
+.presbtn:hover{opacity:1}
+body.pres header{padding:6px 14px}
+body.pres header h1{font-size:17px}
+body.pres header p{display:none}
+body.pres .wrap{max-width:1240px;padding:6px 14px}
+body.pres .card{padding:10px 12px;margin:8px 0}
+body.pres h2{font-size:16.5px;margin:.1em 0 .3em}
+body.pres .muted:not([id]){display:none}
+body.pres .card.docs{display:none}
+body.pres .stat{font-size:16.5px}
+/* Paa lerretet er 15.5 px ulesbart fra bakerste rad. Avlesningen ER
+   poenget med figuren — det er der MS mellom, MS innen, F, p og η²
+   endrer seg mens du drar — saa den skal vaere like lett aa lese som
+   overskriften. */
+.slide .stat{font-size:24px;padding:7px 16px;margin:5px 7px 5px 0;border-radius:10px}
+.slide #statsA,.slide #statsC,.slide #msTall,.slide #ph1Tall,.slide #ph2Tall,
+.slide #fdfTall{margin-top:12px;line-height:1.9}
+/* forklaringsboksene under figurene skal leses fra bakerste rad */
+.slide #fdfNote,.slide #ph2Note,.slide #verdictA,.slide #verdictC{font-size:21px;line-height:1.5}
+body.pres .sl{margin:4px 0}
+body.pres .sl label{font-size:15px;min-width:210px}
+body.pres .note{padding:8px 11px;margin-top:7px}
+body.pres .keybox{font-size:18px}
+
+.fane{background:#fff;border:1px solid #d9dee8;border-radius:9px;padding:7px 13px;font-size:15px;
+  font-family:inherit;cursor:pointer;color:#1F3864}
+.fane.on{background:#1F3864;color:#fff;border-color:#1F3864;font-weight:700}
+.hide{display:none}
+
+/* ===== Fane 0 «Hvorfor …?» — felles mal for metodeappene ================= */
+.hvbig{font-size:20px;line-height:1.45;color:#1F3864;font-weight:600;margin:2px 0 10px}
+.hvgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+@media(max-width:760px){.hvgrid{grid-template-columns:1fr}}
+.hvkort{border-radius:10px;padding:11px 13px;font-size:16px;line-height:1.5}
+.hver{background:#eaf6ea;border:1px solid #bcdcbc;border-left:5px solid #2E7D32}
+.hvikke{background:#fbeceb;border:1px solid #edc9c5;border-left:5px solid #C0392B}
+.hvkort h3{margin:0 0 6px;font-size:16.5px;color:#1F3864}
+.hvkort ul{margin:0;padding-left:19px}
+.hvkort li{margin:0 0 7px}.hvkort li:last-child{margin-bottom:0}
+.hvkort .eks{display:block;color:#5A6B7B;font-size:14.5px;margin-top:2px}
+.hvnaar{border-collapse:collapse;width:100%;font-size:16px;margin-top:4px}
+.hvnaar th,.hvnaar td{border-bottom:1px solid #e2e6ee;padding:7px 8px;text-align:left;vertical-align:top}
+.hvnaar th{color:#4a5568;font-weight:600;font-size:14.5px}
+.hvnaar tr.na{background:rgba(46,84,150,.10)}
+.hvnaar tr.na td{font-weight:700;color:#1F3864}
+.hvq{border:1px solid #d9dee8;border-radius:10px;padding:10px 12px;margin:0 0 9px;
+  background:#fff;font-size:16.5px;line-height:1.45}
+.hvq .sp{display:block;margin-bottom:7px}
+.hvq button{font-size:15px;padding:6px 15px;margin:0 6px 0 0}
+.hvq .sv{display:none;margin-top:8px;font-size:15.5px;line-height:1.45;
+  border-left:3px solid #2E5496;background:#f7f9ff;border-radius:0 8px 8px 0;padding:8px 11px}
+.hvq.svart .sv{display:block}
+.hvq.rett{border-color:#8fc38f;background:#f6fbf6}
+.hvq.feil{border-color:#e3aaa4;background:#fdf6f5}
+.hvfasit{font-weight:700}.hvfasit.ja{color:#2E7D32}.hvfasit.nei{color:#C0392B}
+
+/* =====================================================================
+   FORELESNINGSMODUS — 16:9-scene skalert til lerretet
+   Aktiveres med ?modus=forelesning. Scenen er 1280 × 720 logiske piksler
+   og skaleres opp eller ned til den fyller vinduet, med sorte marger.
+   Simuleringsblokkene LÅNES inn i sliden fra utforskerdelen og leveres
+   tilbake etterpå, så det finnes bare én kopi av koden.
+   ===================================================================== */
+body.fmodus{background:#0d1526;overflow:hidden}
+body.fmodus>header,body.fmodus>.wrap,body.fmodus>.presbtn{display:none}
+#scene{display:none}
+/* Bredden settes av skaler() ut fra vinduets format; hoyden er alltid
+   720 logiske piksler, som er maalestokken all typografien er satt i. */
+body.fmodus #scene{display:block;position:fixed;left:0;top:0;width:1280px;height:720px;
+  transform-origin:0 0;background:#fff;overflow:hidden;
+  box-shadow:0 0 60px rgba(0,0,0,.55);font-size:19px}
+.slide{position:absolute;inset:0;padding:44px 60px 62px;display:flex;flex-direction:column}
+.slide h1{font-size:40px;line-height:1.15;color:var(--navy);margin:0 0 6px;font-weight:700}
+.slide h2{font-size:26px;color:var(--blue);margin:0 0 18px;font-weight:600}
+.slide p{font-size:23px;line-height:1.5;margin:0 0 14px}
+.slide ul{font-size:23px;line-height:1.5;margin:4px 0 14px;padding-left:28px}
+.slide li{margin-bottom:11px}
+.slide b{color:var(--navy)}
+.slide .stor{font-size:30px;line-height:1.4}
+.slide .liten{font-size:21px;line-height:1.45;color:#3F4E63}
+.slide table{font-size:21px;border-collapse:collapse;width:100%}
+.slide table th,.slide table td{border-bottom:1px solid #dbe1ec;padding:8px 11px;text-align:left}
+.slide table th{font-size:17px;color:#2B3648;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.slide table td.r,.slide table th.r{text-align:right;font-variant-numeric:tabular-nums}
+.slide table tr.uthev td{background:rgba(46,84,150,.10);font-weight:700;color:var(--navy)}
+
+/* slidetyper */
+.sl-tittel{justify-content:center;align-items:flex-start;
+  background:linear-gradient(135deg,#1F3864 0%,#2E5496 100%);color:#fff}
+.sl-tittel h1{color:#fff;font-size:58px;margin-bottom:14px}
+.sl-tittel .under{font-size:27px;opacity:.9}
+.sl-tittel .merke{font-size:19px;opacity:.65;margin-top:30px;letter-spacing:.07em;text-transform:uppercase}
+.sl-sitat{justify-content:center;align-items:center;text-align:center;background:#f7f9ff}
+.sl-sitat .ord{font-size:44px;line-height:1.28;color:var(--navy);font-weight:700;max-width:1000px}
+.sl-sitat .kilde{font-size:21px;color:#3F4E63;margin-top:26px}
+/* Klikk fram: et element med klassen .avslor står usynlig til neste
+   piltrykk. Det tar plassen sin med én gang, så resten av sliden ikke
+   hopper når det dukker opp. */
+.slide .avslor{opacity:0;transition:opacity .25s}
+.slide .avslor.vist{opacity:1}
+.slide.stort-tall{justify-content:center;align-items:center;text-align:center}
+.talldu{display:flex;gap:70px;justify-content:center;align-items:flex-end;margin:18px 0}
+.talldu div{text-align:center}
+.talldu .tall{font-size:76px;font-weight:700;color:var(--navy);line-height:1;font-variant-numeric:tabular-nums}
+.talldu .tall.mut{color:#5F6A7E}
+.talldu .navn{font-size:21px;color:#3F4E63;margin-top:10px}
+.slide .todelt{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:6px}
+.slide .tabellnavn{font-size:18px;font-weight:600;color:#3F4E63;margin:0 0 6px;
+  letter-spacing:.01em}
+/* Sammenlikningssliden setter to tabeller ved siden av hverandre — da maa
+   de vaere litt mindre enn en tabell som staar alene. */
+.slide .todelt .tabellnavn+table{font-size:19px}
+/* JASP-output slik studentene ser den: tynne linjer, tall hoyrestilt,
+   kolonnenavnene paa engelsk fordi det er JASPs egne. */
+.slide .minitab{font-size:17px;border-collapse:collapse;width:100%;margin-top:2px}
+.slide .minitab th{font-size:14.5px;white-space:nowrap;padding:3px 7px;
+  color:#16203A;border-bottom:1.5px solid #16203A;font-weight:600}
+.slide .minitab td{padding:5px 7px;font-variant-numeric:tabular-nums;
+  border-bottom:1px solid #E1E6EF}
+.slide .minitab tr:last-child td{border-bottom:1.5px solid #16203A}
+.slide .minitab td:first-child,.slide .minitab th:first-child{text-align:left}
+.slide .minitab td:not(:first-child),
+.slide .minitab th:not(:first-child){text-align:right}
+.slide .minitab .kb1{color:var(--kb1,#1E8E4E);font-weight:700}
+.slide .minitab .valgt td{background:#f2f5fa}
+.slide .jaspnote{font-size:14.5px;color:#5C6A80;margin:5px 0 0;line-height:1.35}
+/* Bonusslides kan hoppes over. Plaketten sier det, saa underviseren
+   slipper aa slaa opp i kjoremanuset midt i timen. */
+.bonusmerke{position:absolute;top:22px;right:26px;background:#fff3d6;
+  border:1px solid #e6c982;color:#7a5a12;border-radius:8px;
+  padding:5px 12px;font-size:15px;font-weight:700;letter-spacing:.04em}
+.slide.bonus h1{font-size:34px}
+.slide.bonus .todelt{gap:20px;margin-top:10px}
+.slide.bonus .boks{font-size:18px;line-height:1.4;padding:12px 16px}
+.slide.bonus .boks h3{font-size:19px;margin-bottom:4px}
+/* Tre bokser i bredden. Boksene maa ned fra 21 til 18 px for aa faa
+   plass — tre spalter er en tredjedel av bredden hver. */
+.slide .tredelt{display:grid;grid-template-columns:repeat(3,1fr);
+  gap:16px;margin-top:12px}
+/* Forklaringsbaandet under en laant simuleringsfigur: tre korte bokser
+   som sier hva tallene over betyr. order:3 er det som faktisk plasserer
+   dem UNDER figuren — .simvert settes inn sist i DOM-en, men uten en
+   order havner baandet likevel over den. */
+.slide .ordbaand{order:3;display:grid;grid-template-columns:repeat(3,1fr);
+  gap:14px;margin-top:14px}
+.slide .ordbaand .boks{padding:11px 14px;font-size:18px;line-height:1.4}
+.slide .ordbaand .boks h3{font-size:18px;margin-bottom:4px}
+/* Cohens d-sliden: figuren er poenget, de tre metaanalysene er fotnoter
+   til den. Baandet settes ned saa lerretet faar hoyden. */
+.slide.tvslide .ordbaand{gap:11px;margin-top:10px}
+.slide.tvslide .ordbaand .boks{font-size:15.5px;line-height:1.35;padding:9px 12px}
+.slide.tvslide .ordbaand .boks h3{font-size:16.5px;margin-bottom:2px}
+.slide.dslide .ordbaand{gap:11px;margin-top:10px}
+.slide.dslide .ordbaand .boks{font-size:15.5px;line-height:1.35;padding:9px 12px}
+.slide.dslide .ordbaand .boks h3{font-size:16.5px;margin-bottom:2px}
+/* Notatlinja under figuren sier det samme som den forste boksen i
+   baandet. Paa lerretet er den en gjentakelse som spiser hoyde; i
+   utforskeren staar den. De tre tallbrikkene blir staaende — de er
+   levende og endrer seg mens glideren dras. */
+.slide.dslide #efTall .note{display:none}
+/* Snittet under hver bunke med lapper, og summen av alle tolv. */
+/* De to fordelingsslidene baerer en bred figur og en paastand som er
+   for lang til 40 px uten aa brekke. 36 px holder den paa én linje. */
+.slide.fordelingsfigur h1{font-size:36px;line-height:1.15}
+.slide.fordelingsfigur .figurark{margin:6px 0 0}
+.slide .lappsnitt{margin-top:9px;font-size:19px;color:#3F4E63}
+.slide .lappsnitt b{font-size:23px;color:var(--navy)}
+.slide .lappalle{margin-top:14px;font-size:21px;color:#16203A;text-align:center}
+/* Deskriptivtabellen: tall i lesestorrelse, grupperadene uthevet. */
+.slide table.deskr{font-size:23px;margin-top:10px}
+.slide table.deskr th{font-size:17px}
+.slide table.deskr td.r,.slide table.deskr th.r{text-align:right;
+  font-variant-numeric:tabular-nums}
+.slide table.deskr tr.sum td{color:#3F4E63;border-top:2px solid #16203A}
+.slide .tredelt .boks{font-size:18px;line-height:1.4;padding:13px 16px}
+.slide .tredelt .boks h3{font-size:19px;margin-bottom:4px}
+/* Formelen paa aapningssliden: samme ramme som bonusslidene, men uten
+   at sliden maa vaere en bonusslide. */
+.slide .formel{text-align:center;background:rgba(46,84,150,.07);
+  border:1px solid #cbd6e8;border-radius:12px;padding:14px 18px;margin:12px 0;
+  color:#16203A;font-variant-numeric:tabular-nums}
+.slide.bonus .formel{font-size:26px;margin:12px 0 4px;padding:12px 16px;
+  text-align:center}
+.slide .boks{border-radius:12px;padding:16px 20px;font-size:21px;line-height:1.45}
+.slide .boks h3{margin:0 0 8px;font-size:22px;color:var(--navy)}
+.slide .boks ul{font-size:20px;padding-left:22px;margin:0}
+.slide .boks li{margin-bottom:8px}
+.boks.gul{background:#fff8ec;border:1px solid #f0d9a8}
+.boks.bla{background:#eef3fb;border:1px solid #c7d6ec}
+.boks.gronn{background:#eaf6ea;border:1px solid #bcdcbc}
+.boks.rod{background:#fbeceb;border:1px solid #edc9c5}
+/* Simuleringsblokken lånes inn hit. Den er bygget for en nettside der man
+   kan rulle; på en slide finnes ingen rulling. Derfor to ting: kontrollene
+   pakkes tettere, og tilpassBlokk() nedskalerer resten hvis det fortsatt
+   ikke går opp. Uten dette blir nedre halvdel av figuren klippet bort. */
+/* Stegknappene er underviserens verktoy i utforskeren. Paa sliden
+   styres trinnene av klikk-fram, saa raden skal ikke spise hoyde. */
+.slide #blokk-nhsteg .rad{display:none !important}
+/* Paa stegsliden styrer klikk-fram alt. Underviserens glidere og
+   knapper hoerer til utforskeren og skal ikke ta hoyde her. */
+.slide.stegslide #blokk-nhst .sl,
+.slide.stegslide #blokk-nhst .rad{display:none !important}
+.slide .simvert{flex:1;min-height:0;overflow:hidden;margin-top:2px}
+/* .skjul lar en slide ta bort en enkelt del av en LAANT blokk. Blokka er
+   den samme DOM-noden paa alle slidene som bruker den, saa den kan ikke
+   varieres i markupen — bare slaas av her, og slaas paa igjen av
+   BLOKKNULL naar neste slide laaner den. Klikk-motoren hopper over det
+   som er skjult, ellers ville et trinn gaatt med til aa avsloere noe
+   ingen kan se. */
+.skjul{display:none!important}
+.slide .simvert .simpakke{transform-origin:top left}
+.slide .simvert .simblokk{font-size:17px;transform-origin:top left}
+.slide .simvert .sl{margin:4px 0}
+.slide .simvert .sl{grid-template-columns:264px 1fr 84px}
+.slide .simvert .sl label{font-size:17px}
+.slide .simvert .sl output{font-size:18px}
+.slide .simvert button{font-size:17px;padding:5px 13px;margin:2px}
+.slide .simvert .rad{margin-top:2px!important}
+.slide .simvert .stat{font-size:17px;padding:2px 9px;margin:2px 4px 2px 0}
+.slide .simvert .note{font-size:17px;padding:7px 11px;margin-top:6px!important}
+.slide .simvert canvas{margin-top:4px!important}
+.slide .simvert table.tt{font-size:17px}
+.slide .simvert .steg{margin-bottom:6px}
+/* Alt som hører til utforskerversjonen og bare stjeler høyde på en slide. */
+.slide .simvert .keybox,.slide .simvert details.mer,.slide .simvert h3{display:none}
+.slide .lead{font-size:22px;color:#3F4E63;margin:0 0 10px;line-height:1.4}
+.slide.tett h1{font-size:34px;margin-bottom:2px}
+.slide.tett .lead{font-size:20px;margin-bottom:4px}
+/* Fasitsliden gjentar rutenettet fra avstemningen, med det riktige
+   alternativet markert og de andre dempet. Uten det maa studenten huske
+   hva «A og C» var mens hun leser hvorfor de er feil. */
+.slide.fasitsvar h1{font-size:32px;line-height:1.15}
+.slide.fasitsvar .avstsvar{gap:9px;margin-top:10px}
+.slide.fasitsvar .avstsvar div{font-size:19px;padding:8px 14px}
+.slide.fasitsvar .avstsvar div.rett{border-color:#2E7D32;
+  background:rgba(46,125,50,.10);font-weight:600}
+.slide.fasitsvar .avstsvar div.feil{opacity:.6}
+.slide.fasitsvar .todelt{gap:18px;margin-top:14px}
+.slide.fasitsvar .todelt .boks{font-size:18px;padding:11px 15px;line-height:1.4}
+.slide.fasitsvar .todelt .boks h3{font-size:19px;margin-bottom:3px}
+.slide.fasitsvar .liten{margin-top:12px}
+.avstsvar{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:14px}
+.avstsvar div{border:2px solid #BCC6D6;border-radius:11px;padding:12px 16px;font-size:22px}
+.avstsvar div b{color:var(--blue);margin-right:9px}
+.qrboks{position:absolute;right:52px;top:44px;text-align:center}
+.qrboks img{width:168px;height:168px;display:block;border:5px solid #fff;border-radius:8px;
+  box-shadow:0 2px 10px rgba(0,0,0,.16)}
+.qrboks .txt{font-size:16px;color:#3F4E63;margin-top:7px;font-weight:600}
+/* QR-boksen ligger absolutt plassert oppe til høyre. Plassen må reserveres
+   for HELE sliden, ikke bare for overskriften: svaralternativene og
+   tabellene er fullbredde-elementer, og de la seg rett under koden.
+   Absolutt plassering måles fra slidens ytterkant, så boksen står støtt
+   selv om innholdet trekkes inn. */
+.slide.harqr{padding-right:290px}
+
+/* ===== avstemningsslides: samme svaralternativ-form som i svar-appen =====
+   Ett alternativ per rad, bokstaven i sin egen sirkel, hvitt kort med
+   ramme. Studentene ser den samme formen paa lerretet og paa mobilen,
+   og da slipper de aa lete etter hvilken bokstav som hoerer til hva. */
+.slide .svaralt{display:grid;gap:11px;margin-top:16px}
+.slide .svaralt .opt{display:flex;align-items:flex-start;gap:15px;
+  background:#fff;border:2px solid #BCC6D6;border-radius:12px;
+  padding:14px 18px;font-size:22px;line-height:1.38;color:#16203A}
+.slide .svaralt .ltr{flex:none;width:38px;height:38px;line-height:38px;
+  text-align:center;border-radius:50%;background:var(--light);color:var(--navy);
+  font-weight:700;font-size:21px}
+.slide.harqr .svaralt .opt{font-size:20.5px;padding:12px 16px}
+.slide.harqr .svaralt{gap:9px}
+
+/* ===== slide 5: de to tallene =====
+   .tallrad var aldri definert, saa sliden falt tilbake paa vanlig flyt.
+   Her faar tallet, tankestreken og tolkningen hver sin plass. */
+.slide .tallrad{display:flex;gap:64px;justify-content:center;align-items:flex-start;
+  margin:26px 0 22px;flex-wrap:wrap}
+.slide .tallrad .tall{text-align:center;max-width:430px}
+.slide .tallrad .tall b{display:block;font-size:46px;font-weight:700;
+  color:var(--tstat);line-height:1.1;font-variant-numeric:tabular-nums}
+.slide .tallrad .tall.eff b{color:var(--eff)}
+.slide .tallrad .tall span{display:block;font-size:24px;color:#3F4E63;
+  line-height:1.35;margin-top:14px;padding-top:14px;
+  border-top:2px solid #cbd6e8}
+
+/* ===== trinnteller i navigasjonen =====
+   Venstrepil har alltid tatt bort siste trinn foer den bytter slide, men
+   ingenting paa skjermen sa fra om at det gikk an. Naa staar det der. */
+#fTrinn{display:none;color:#8fa0bd;font-size:14px;font-weight:600;
+  padding:3px 9px;border:1px solid rgba(255,255,255,.18);border-radius:8px}
+#fTrinn.vis{display:inline-block}
+
+/* engelsk fagterm i parentes — dempet, men lesbar fra bakerste rad */
+.eng{color:#5F6A7E;font-weight:400;font-style:italic}
+.slide .eng{color:#6B7689;font-size:.86em}
+
+
+/* ===== JASP-utskrift, satt som JASP setter den =====
+   Tynn strek over og under kolonneoverskriftene, tynn strek under siste
+   rad, ingen loddrette streker, sebrastripe paa annenhver datarad, og
+   «Note.»-linjer i kursiv under. Formatet er kopiert fra en faktisk
+   utskrift, slik at det studentene ser paa lerretet er det samme de ser
+   paa sin egen skjerm. */
+.jasp{margin:10px 0 4px}
+.jasp .tit{font-style:italic;font-size:16px;color:#16203A;margin:0 0 4px}
+.jasp table{border-collapse:collapse;width:100%;font-size:15px;
+  font-variant-numeric:tabular-nums}
+.jasp th{font-weight:400;color:#16203A;padding:5px 9px;text-align:right;
+  border-top:1.4px solid #16203A;border-bottom:1.1px solid #16203A}
+.jasp th:first-child,.jasp td:first-child{text-align:left}
+.jasp th.venstre,.jasp td.venstre{text-align:left}
+.jasp td{padding:4px 9px;text-align:right;border:0}
+.jasp tr.stripe td{background:#efefef}
+.jasp tr:last-child td{border-bottom:1.1px solid #16203A}
+.jasp .note{background:none;border:0;padding:2px 0 0;margin:0;font-size:13.5px;
+  color:#16203A;font-style:italic}
+.jasp .note b{font-style:italic;font-weight:400}
+.slide .jasp table{font-size:17px}
+.slide .jasp .tit{font-size:18px}
+.slide .jasp .note{font-size:15px}
+/* fargekoblingen fra tabell til setning */
+.jasp td.c-sig,.jasp td.c-stoy,.jasp td.c-tstat,.jasp td.c-p,.jasp td.c-eff,
+.jasp td.c-ki{font-weight:700}
+
+/* ---- live avstemning: panelet under QR-koden ---- */
+.avstpanel{display:none;margin-top:12px;width:178px}
+.avstpanel.vist{display:block}
+.avstgraf{width:100%;display:block;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.16);border-radius:8px}
+.avststatus{font-size:12.5px;color:#b9c8e2;margin-top:5px;line-height:1.35;
+  font-weight:600;text-align:center}
+.qrboks .avsthint{font-size:12.5px;color:#8fa0bd;margin-top:7px;font-weight:600}
+
+
+
+/* ---- oppsummeringsslidet: fire linjer, hver i sin farge ---- */
+.slide .oppsum{display:grid;gap:15px;margin:20px 0 6px;max-width:none}
+.slide .oppsum .rad{display:flex;align-items:baseline;gap:18px}
+.slide .oppsum .hvem{flex:none;min-width:200px;text-align:right;font-size:32px;
+  font-weight:700;line-height:1.1}
+/* nowrap: hver setning skal staa paa EN linje, ogsaa paa den smaleste
+   scenen (1000 px). Tekstene er maalt mot den bredden — blir de lengre,
+   stikker de ut i stedet for aa brekke, og det synes med en gang.      */
+.slide .oppsum .hva{font-size:25px;color:#3F4E63;line-height:1.25;white-space:nowrap}
+.slide .oppsum .hva b{color:#16203A}
+.slide .oppsum .hva .n{font-size:18px;color:#5F6A7E}
+
+/* ---- fasitslides: samme alternativer som sporsmaalet, med ring rundt
+   det riktige. Studentene ser NOYAKTIG samme liste to ganger, og oyet
+   trenger ikke lete etter hvilken bokstav som var hva. ---- */
+.slide .svaralt .opt.rett{border-color:var(--sig);border-width:3px;
+  background:var(--sig-bg);box-shadow:0 0 0 4px rgba(30,122,60,.16)}
+.slide .svaralt .opt.rett .ltr{background:var(--sig);color:#fff}
+.slide .svaralt .opt.rett::after{content:'✔';margin-left:auto;padding-left:16px;
+  color:var(--sig);font-weight:700;font-size:26px;line-height:1}
+.slide .svaralt .opt.feil{opacity:.5}
+.slide.fasitsvar .svaralt .opt{font-size:21px}
+.slide .fasitutdyp{font-size:21px;line-height:1.5;margin-top:16px;color:#3F4E63}
+.slide .fasitutdyp b{color:#16203A}
+
+/* ---- svarene malt rett inn i alternativkortene ---- */
+.slide .svaralt .opt{position:relative;overflow:hidden;transition:border-color .2s}
+.slide .svaralt .opt.svart{border-color:#6e93c8}
+.slide .svaralt .opt.svart::before{content:'';position:absolute;left:0;top:0;bottom:0;
+  width:var(--andel,0%);background:#a9c8ec;transition:width .45s ease;z-index:0}
+.slide .svaralt .opt > *{position:relative;z-index:1}
+.slide .svaralt .opt .pst{margin-left:auto;padding-left:14px;font-weight:700;
+  color:#2E5496;font-variant-numeric:tabular-nums;white-space:nowrap}
+/* panelet under QR-koden krymper til bare statuslinja naar kortene brukes */
+.avstpanel.kunstatus .avstgraf{display:none}
+.avstpanel.kunstatus{width:178px;margin-top:10px}
+.fasitmerke{display:inline-block;background:#2E7D32;color:#fff;border-radius:8px;
+  padding:5px 15px;font-size:21px;font-weight:700;margin-bottom:12px}
+
+/* chrome */
+#fnav{display:none}
+body.fmodus #fnav{display:flex;position:fixed;right:14px;bottom:11px;z-index:60;
+  align-items:center;gap:11px;color:#8fa0bd;font-size:14px;font-weight:600}
+#fnav button{background:rgba(255,255,255,.10);color:#cfdaeb;border:1px solid rgba(255,255,255,.20);
+  border-radius:8px;padding:5px 12px;font-size:14px;margin:0}
+#fnav button:hover{background:rgba(255,255,255,.20)}
+#fbar{position:fixed;left:0;bottom:0;height:4px;background:#4d7fd4;z-index:60;transition:width .18s}
+body:not(.fmodus) #fbar{display:none}
+#fnotat{display:none}
+body.fmodus.notat #fnotat{display:block;position:fixed;left:0;right:0;bottom:26px;z-index:59;
+  background:rgba(13,21,38,.94);color:#dbe4f2;padding:11px 22px;font-size:15.5px;line-height:1.45;
+  border-top:1px solid rgba(255,255,255,.14)}
+#fnotat b{color:#9fc0f5}
+#foversikt{display:none}
+body.fmodus.oversikt #foversikt{display:grid;position:fixed;inset:0;z-index:70;
+  background:rgba(13,21,38,.97);padding:26px 30px;overflow:auto;
+  grid-template-columns:repeat(4,1fr);gap:9px;align-content:start}
+#foversikt button{background:rgba(255,255,255,.07);color:#cfdaeb;border:1px solid rgba(255,255,255,.14);
+  border-radius:9px;padding:9px 12px;font-size:14px;text-align:left;margin:0;font-weight:600;line-height:1.3}
+#foversikt button:hover{background:rgba(77,127,212,.35)}
+#foversikt button .nr{color:#7e90ad;margin-right:8px;font-variant-numeric:tabular-nums}
+#foversikt .tittelrad{grid-column:1/-1;color:#9fc0f5;font-size:15px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;margin:14px 0 2px}
+#foversikt .tittelrad:first-child{margin-top:0}
+
+
+/* TRYKK-CSS-START */
+/* ===== TRYKKMODUS =========================================================
+   ?modus=trykk legger alle slidene under hverandre som ferdige ark, med
+   alle klikk-trinn utfoldet og figurene frosset til bilder. Da kan
+   nettleseren skrive dem ut: Cmd/Ctrl + P -> Lagre som PDF.
+
+   Hvorfor bilder og ikke levende canvas: en canvas som ikke er tegnet paa
+   nytt etter at utskriftsdialogen endret sidebredden, kommer ut blank.
+   Et <img> gjoer ikke det.
+
+   Maalene: A4 liggende med 6 mm marg gir 285 x 198 mm trykkflate. 285 mm
+   er 1077 px ved 96 dpi; skalaen regnes ut i JS og settes som --k.      */
+body.trykk{overflow:auto;background:#e9edf4}
+body.trykk>header,body.trykk>.wrap,body.trykk>.presbtn{display:none}
+body.trykk #scene,body.trykk #fnav,body.trykk #fbar,body.trykk #fnotat,
+body.trykk #foversikt,body.trykk #modusBtn{display:none!important}
+#trykkark{padding:20px 0 40px}
+.trykkside{position:relative;width:var(--sb,1280px);height:720px;margin:0 auto 20px;
+  background:#fff;box-shadow:0 2px 16px rgba(20,30,60,.18);overflow:hidden}
+.trykkside .skala{position:absolute;left:0;top:0;
+  width:var(--sb,1280px);height:720px;transform-origin:top left}
+.trykkside .slide{position:absolute;inset:0}
+.trykknr{position:absolute;right:16px;bottom:9px;z-index:5;
+  font-size:13px;font-weight:700;color:#93a2bd}
+.trykkfeil{position:absolute;left:40px;right:40px;bottom:40px;z-index:6;
+  padding:14px 16px;background:#fdecea;border-left:5px solid #C0392B;
+  font:600 15px/1.5 sans-serif;color:#8c2b20}
+.trykkhode{max-width:1280px;margin:0 auto 18px;padding:14px 18px;background:#fff;
+  border-left:5px solid #1E7A3C;box-shadow:0 2px 16px rgba(20,30,60,.18);
+  font-size:15px;line-height:1.5;color:#3F4E63}
+.trykkhode b{color:#1F3864}
+/* .skjul lar en slide ta bort en enkelt del av en LAANT blokk. */
+.skjul{display:none!important}
+@media print{
+  @page{size:A4 landscape;margin:6mm}
+  body.trykk{background:#fff}
+  #trykkark{padding:0}
+  .trykkhode{display:none}
+  .trykkside{width:285mm;height:198mm;margin:0;box-shadow:none;
+    page-break-after:always;break-after:page}
+  .trykkside:last-child{page-break-after:auto;break-after:auto}
+  .trykkside .skala{transform:scale(var(--k,0.841))}
+}
+/* TRYKK-CSS-SLUTT */
+
+/* ===== modusbryter =====
+   Samme knapp begge veier. I appmodus ligger den nede til hoyre som en
+   diskret pille; i forelesningsmodus flytter den seg til venstre side og
+   blir moerk, saa den ikke kolliderer med slide-navigasjonen til hoyre. */
+#modusBtn{position:fixed;right:12px;bottom:12px;z-index:80;
+  background:var(--navy,#1F3864);color:#fff;border:0;border-radius:20px;
+  padding:8px 16px;font-size:14px;font-weight:700;font-family:inherit;
+  box-shadow:0 2px 10px rgba(0,0,0,.20);cursor:pointer;opacity:.9}
+#modusBtn:hover{opacity:1}
+body.fmodus #modusBtn{left:14px;right:auto;bottom:11px;
+  background:rgba(255,255,255,.10);color:#cfdaeb;
+  border:1px solid rgba(255,255,255,.20);box-shadow:none;font-weight:600}
+</style>
+<style>
+/* Bare det som ikke finnes i den delte stilen fra Anova-appen. */
+.todelt{display:grid;grid-template-columns:minmax(300px,1.15fr) minmax(260px,1fr);gap:18px;align-items:start}
+@media(max-width:820px){.todelt{grid-template-columns:1fr}}
+canvas{width:100%;display:block;background:#fff;border:1px solid var(--line);border-radius:10px}
+.cellrute{display:grid;grid-template-columns:auto 1fr 1fr auto;gap:0;font-size:16px;
+  border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;margin:10px 0}
+.cellrute>div{padding:9px 12px;border-bottom:1px solid var(--line);border-right:1px solid var(--line)}
+.cellrute>div:nth-child(4n){border-right:0}
+.cellrute .hd{background:#eef3fb;font-weight:700;color:var(--navy)}
+.cellrute .mg{background:#f6f8fc;font-weight:700;color:var(--sig)}
+
+/* ---- datasettvelger ---- */
+#settvelger{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:2px 0 10px}
+.settknapp{flex:1 1 200px;text-align:left;padding:9px 12px;border:1px solid var(--line);
+  border-radius:10px;background:#fff;cursor:pointer;font:inherit;line-height:1.3}
+.settknapp b{display:block;color:var(--navy);font-size:15.5px}
+.settknapp span{display:block;font-size:13px;color:#5C6A80;margin-top:2px}
+.settknapp.on{border-color:var(--navy);background:#eef3fb;box-shadow:inset 0 0 0 1px var(--navy)}
+.settkilde{flex:1 1 100%;margin:2px 0 0;font-size:13.5px;color:#5C6A80;line-height:1.45}
+
+/* ---- fane 1: fortellingen ---- */
+.tredelt{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.hvkort .svar{margin:6px 0 0;font-size:16px;line-height:1.45}
+.fireruter{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+.firerute{border:1px solid var(--line);border-radius:10px;background:#fff;padding:11px 12px;
+  text-align:center;line-height:1.4}
+.firerute b{display:block;font-size:15.5px;color:var(--navy)}
+.firerute span{display:block;font-size:13.5px;color:#5C6A80}
+.firerute .antall{margin-top:5px;font-weight:600;color:#16203A}
+.stegboks{border:1px solid var(--line);border-radius:12px;background:#fbfcfe;padding:12px 14px;margin:14px 0}
+.stegknapper{display:flex;flex-wrap:wrap;gap:6px}
+.btn2.valgt{background:var(--navy);color:#fff;border-color:var(--navy)}
+.marginboks{border:1px solid var(--line);border-radius:10px;background:#fff;padding:12px 14px}
+.marginboks h3{margin:0 0 6px;font-size:15.5px;color:var(--navy)}
+.marginboks .tallrad{margin:0;font-size:24px;font-variant-numeric:tabular-nums}
+.marginboks .dom{margin:8px 0 0;font-size:15px;font-weight:600;border-radius:7px;padding:5px 9px}
+.marginboks .dom.nei{background:var(--stoy-bg);color:var(--stoy)}
+.marginboks .dom.ja{background:var(--sig-bg);color:var(--sig)}
+.regelboks{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 22px;
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0;
+  text-align:center;font-size:15.5px;line-height:1.4}
+.regelboks .stort{font-size:19px;font-weight:700;color:var(--navy)}
+.regelboks .vs{font-size:15px;color:#5C6A80}
+</style>
+</head>
+<body>
+<header><h1>Sim 24 · Faktoriell ANOVA — to spørsmål om gangen, og ett til</h1>
+<p>PSY300 · Forelesning 6 · Fjorten faner som følger et 2×2-design fra spørsmålet til den ferdige setningen: designet, estimatene, standardfeilen, konfidensintervallet, de tre <i>F</i>-ene, interaksjonen, enkle effekter, effektstørrelse, forutsetningene, JASP-outputen — på ekte data fra terapistudien</p></header>
+<div class="wrap">
+<div id="settvelger"></div>
+<div class="rad" style="display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 6px">
+<button class="fane on" data-fane="hvorfor">1 · Hvorfor faktoriell ANOVA?</button>
+<button class="fane" data-fane="design">2 · Designet og de tre spørsmålene</button>
+<button class="fane" data-fane="estimat">3 · Estimering: fra celler til effekter</button>
+<button class="fane" data-fane="se">4 · Hvor usikker? Standardfeilen</button>
+<button class="fane" data-fane="ki">5 · Konfidensintervallet</button>
+<button class="fane" data-fane="nhst">6 · Nullhypotesetesting: tre <i>F</i>-er</button>
+<button class="fane" data-fane="sim">7 · Bygg interaksjonen</button>
+<button class="fane" data-fane="lese">8 · Å lese et interaksjonsplott</button>
+<button class="fane" data-fane="enkle">9 · Enkle effekter</button>
+<button class="fane" data-fane="effekt">10 · Effektstørrelse</button>
+<button class="fane" data-fane="forut">11 · Forutsetninger</button>
+<button class="fane" data-fane="ekte">12 · Ekte data og JASP-output</button>
+<button class="fane" data-fane="rapport">13 · Slik rapporteres det</button>
+<button class="fane" data-fane="kji">14 · Kjikvadrat som interaksjon</button>
+</div>
+<div id="fane-hvorfor">
+<div class="card">
+
+<h2>Begynn her: tre spørsmål du allerede kan svare på</h2>
+
+<div class="tredelt" style="margin:14px 0">
+  <div class="hvkort"><h3>Hjelper det å ta med paraply?</h3>
+    <p class="svar">Det kommer an på <b>om det regner</b>.</p></div>
+  <div class="hvkort"><h3>Virker antibiotika?</h3>
+    <p class="svar">Det kommer an på <b>om du har en bakterie eller et virus</b>.</p></div>
+  <div class="hvkort"><h3>Er det lurt å pugge på nattbussen?</h3>
+    <p class="svar">Det kommer an på <b>hvor du skal bruke det du pugger</b>.</p></div>
+</div>
+
+<p class="lead" style="font-size:18px;line-height:1.6">Hver gang du svarer
+«<b>det kommer an på</b>», beskriver du en <b>interaksjon</b>. Du sier at
+effekten av det ene <b>avhenger av</b> det andre.</p>
+
+<p style="font-size:16.5px;line-height:1.55">Det er hele begrepet. Resten av
+denne appen handler om hvordan man <i>måler</i> det og <i>tester</i> om det er
+til å stole på. Men begrepet har du allerede.</p>
+
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+En interaksjon er et «<b>det kommer an på</b>» — skrevet med tall.</div>
+
+<hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+
+<h2>La oss se det skje</h2>
+
+<p style="font-size:16.5px;line-height:1.55" id="hvIntro"></p>
+
+<div class="fireruter" id="hvorforRuter"></div>
+
+<p style="font-size:16.5px;line-height:1.55">Fire grupper, fordi to valg ganger
+to valg blir fire. <b>Det er et faktorielt design.</b> Ikke noe mer mystisk
+enn det.</p>
+
+<div class="stegboks">
+  <div class="stegknapper">
+    <button class="btn2" id="hvSteg1">1 · Hva tror du?</button>
+    <button class="btn2" id="hvSteg2">2 · Se den ene gruppa</button>
+    <button class="btn2" id="hvSteg3">3 · Se den andre</button>
+    <button class="btn2" id="hvSteg4">4 · Se bare gjennomsnittene</button>
+    <button class="btn2" id="hvNull">Start på nytt</button>
+  </div>
+  <div class="todelt" style="margin-top:12px">
+    <div>
+      <canvas id="cvHvorfor" height="320" data-h="320"></canvas>
+    </div>
+    <div id="hvorforTekst"></div>
+  </div>
+</div>
+
+<hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+
+<h2>Hvorfor to analyser ikke holder</h2>
+
+<p style="font-size:16.5px;line-height:1.55">Tenk deg at du hadde gjort det
+enkle: kjørt <b>én analyse for {a}</b> og <b>én for {b}</b>.
+To vanlige sammenligninger, hver med sitt svar. Slik ville de sett ut:</p>
+
+<div class="todelt">
+  <div>
+    <div class="marginboks" id="hvMargA"></div>
+  </div>
+  <div>
+    <div class="marginboks" id="hvMargB"></div>
+  </div>
+</div>
+
+<div class="boks rod" id="hvKonklusjon"></div>
+
+<p style="font-size:16.5px;line-height:1.55">Det er dette faktoriell ANOVA er
+til for. Den stiller <b>et tredje spørsmål</b> som ingen av de to andre kan
+svare på:</p>
+
+<div class="tredelt" style="margin:12px 0">
+  <div class="hvkort"><h3>Spørsmål 1</h3>
+    Betyr <b id="hvNavnA">faktor A</b> noe? <span class="muted">— hovedeffekt</span></div>
+  <div class="hvkort"><h3>Spørsmål 2</h3>
+    Betyr <b id="hvNavnB">faktor B</b> noe? <span class="muted">— hovedeffekt</span></div>
+  <div class="hvkort" style="border-color:var(--eff);background:#fdf6ea">
+    <h3 style="color:var(--eff)">Spørsmål 3</h3>
+    <b>Henger de to sammen?</b> Avhenger effekten av det ene av det andre?
+    <span class="muted">— interaksjon</span></div>
+</div>
+
+<div class="keybox" id="hvKeybox"><span class="lbl">Det viktigste på hele fanen</span>
+<span id="hvKeyboxTekst"></span></div>
+
+<hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+
+<h2>Hvordan ser en interaksjon ut?</h2>
+
+<p style="font-size:16.5px;line-height:1.55">Én regel, og du trenger ikke mer
+for å lese figuren:</p>
+
+<div class="regelboks">
+  <div><span class="stort">Parallelle linjer</span><br>ingen interaksjon</div>
+  <div class="vs">mot</div>
+  <div><span class="stort">Linjer som ikke er parallelle</span><br>interaksjon</div>
+</div>
+
+<div class="figurark" id="hvorforMonstre"></div>
+
+<p style="font-size:16.5px;line-height:1.55">Avstanden mellom linjene er
+hovedeffekter. <b>Helningsforskjellen</b> er interaksjonen. Du kan flytte begge
+linjene så langt opp eller ned du vil uten å røre interaksjonen — så lenge de
+holder samme helning.</p>
+
+<div class="boks bla">
+<h3>Ett ord om ord</h3>
+<b>Faktor</b> = en gruppeinndeling. Her: {a} og {b}.<br>
+<b>Nivå</b> = verdiene faktoren kan ha. Her for eksempel «{B0}» og «{B1}».<br>
+<b>Celle</b> = én av de fire gruppene.<br>
+<b>Hovedeffekt</b> = svaret på «betyr denne faktoren noe, i snitt?»<br>
+<b>Interaksjon</b> = svaret på «kommer det an på den andre faktoren?»
+</div>
+
+<h3>Når skal du bruke den?</h3>
+<table class="tt" style="font-size:16px">
+<tr><th>Du har</th><th>Da bruker du</th></tr>
+<tr><td>To grupper</td><td><i>t</i>-test (Sim&nbsp;16)</td></tr>
+<tr><td>Tre eller flere grupper</td><td>Enveis ANOVA (Sim&nbsp;22)</td></tr>
+<tr><td><b>To gruppeinndelinger samtidig, og et «kommer det an på?»</b></td>
+    <td><b>Faktoriell ANOVA</b> — denne appen</td></tr>
+<tr><td>Samme personer målt flere ganger</td><td>Gjentatte målinger (Sim&nbsp;25)</td></tr>
+</table>
+
+<details class="mer"><summary>Mer om dette datasettet</summary>
+<div id="hvMer"></div>
+</details>
+
+<div class="gloss">
+<b>Faktoriell design</b> — to eller flere gruppefaktorer krysset med hverandre.
+<b>2×2</b> — to faktorer med to nivåer hver, altså fire celler.
+<b>Hovedeffekt</b> — effekten av én faktor, snittet over den andre.
+<b>Interaksjon</b> — at effekten av én faktor avhenger av nivået på den andre.
+<b>Marginal</b> — gjennomsnittet i kanten av tabellen; én faktor om gangen.
+</div>
+</div>
+</div>
+<div id="fane-design" class="hide">
+<div class="card">
+<h2>Designet: to faktorer, fire celler, tre spørsmål</h2>
+
+<p style="font-size:16.5px;line-height:1.55">Et <b>2×2-design</b> krysser to
+faktorer med to nivåer hver. Hver pasient havner i nøyaktig én av fire celler.
+Det er hele designet — resten av faget er hva du kan lese ut av de fire tallene.</p>
+
+<div class="cellrute" id="ruteDesign"></div>
+
+<p style="font-size:16.5px;line-height:1.55">Cellestørrelsene går fra
+<b>{nMin}</b> til <b>{nMaks}</b>. Er de like, kalles designet <b>balansert</b>,
+og da er analysen enklere enn den ser ut. Er de ulike, er det <b>ubalansert</b>,
+og det får følger for hvordan kvadratsummene regnes — fane&nbsp;11.</p>
+
+<h3>De tre spørsmålene, som tre nullhypoteser</h3>
+<table class="tt" style="font-size:16px">
+<tr><th>Spørsmål</th><th>Nullhypotese</th><th>Hva som sammenlignes</th></tr>
+<tr><td><b>Hovedeffekt av {a}</b></td>
+    <td><i>H</i><sub>0</sub>: de to radene har samme snitt</td>
+    <td>de to <span class="c-sig">radmarginalene</span></td></tr>
+<tr><td><b>Hovedeffekt av {b}</b></td>
+    <td><i>H</i><sub>0</sub>: de to kolonnene har samme snitt</td>
+    <td>de to <span class="c-sig">kolonnemarginalene</span></td></tr>
+<tr><td><b>Interaksjon</b></td>
+    <td><i>H</i><sub>0</sub>: (μ<sub>11</sub> − μ<sub>12</sub>) = (μ<sub>21</sub> − μ<sub>22</sub>)</td>
+    <td>de to <b>forskjellene</b> mot hverandre</td></tr>
+</table>
+
+<p style="font-size:16.5px;line-height:1.55">Den tredje raden er verdt å lese to
+ganger. Interaksjonens nullhypotese handler ikke om gjennomsnitt, men om
+<b>forskjeller mellom gjennomsnitt</b>. Den spør: er effekten av {b} innenfor
+{A0} den samme som innenfor {A1}? Det er en <b>forskjell mellom to
+forskjeller</b> — tallet fane&nbsp;9 kaller interaksjonskontrasten.</p>
+
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+En hovedeffekt sammenligner <b>gjennomsnitt</b>. En interaksjon sammenligner
+<b>forskjeller</b>.</div>
+
+<h3>Modellen bak</h3>
+<p style="font-size:16.5px;line-height:1.55">Hver observasjon skrives som en sum
+av fire ting og et slingringsmonn:</p>
+
+<div class="formel" style="text-align:center;font-size:20px;margin:12px 0">
+<i>Y</i><sub><i>ijk</i></sub> =
+<span class="m-tstat">μ</span> +
+<span class="m-sig">α<sub><i>i</i></sub></span> +
+<span class="m-sig">β<sub><i>j</i></sub></span> +
+<span class="m-eff">(αβ)<sub><i>ij</i></sub></span> +
+<span class="m-stoy">ε<sub><i>ijk</i></sub></span>
+</div>
+
+<table class="tt" style="font-size:16px">
+<tr><th>Ledd</th><th>Heter</th><th>Er</th></tr>
+<tr><td><span class="c-tstat">μ</span></td><td>grand mean</td>
+    <td>midtpunktet alt måles fra</td></tr>
+<tr><td><span class="c-sig">α<sub><i>i</i></sub></span></td><td>hovedeffekt av {a}</td>
+    <td>hvor mye rad <i>i</i> ligger over eller under μ</td></tr>
+<tr><td><span class="c-sig">β<sub><i>j</i></sub></span></td><td>hovedeffekt av {b}</td>
+    <td>hvor mye kolonne <i>j</i> ligger over eller under μ</td></tr>
+<tr><td><span class="c-eff">(αβ)<sub><i>ij</i></sub></span></td><td>interaksjon</td>
+    <td>det cellen er, ut over det de to hovedeffektene forutsier</td></tr>
+<tr><td><span class="c-stoy">ε<sub><i>ijk</i></sub></span></td><td>residual</td>
+    <td>det person <i>k</i> avviker fra sin egen celle</td></tr>
+</table>
+
+<p style="font-size:16.5px;line-height:1.55">Interaksjonsleddet er <b>restposten</b>:
+det som blir igjen når du har tatt ut begge hovedeffektene. Er det null, kan de
+fire cellene beskrives fullstendig av to tall. Er det ikke null, trenger du
+alle fire. Fane&nbsp;3 regner leddene ut på de ekte dataene.</p>
+
+<h3>Hvor faktoriell ANOVA sitter i SPINE</h3>
+<p style="font-size:16.5px;line-height:1.55">Rammeverket er det samme som i
+resten av emnet — det er bare <b>parameteren</b> som er ny:</p>
+
+<table class="tt" style="font-size:16px">
+<tr><th>SPINE</th><th>I en faktoriell ANOVA</th><th>Fane</th></tr>
+<tr><td><b>S</b>tandard error</td><td>usikkerheten i cellesnitt og i kontraster</td><td>4</td></tr>
+<tr><td><b>P</b>arameters</td><td>μ, α, β og (αβ) — det vi vil vite om populasjonen</td><td>2–3</td></tr>
+<tr><td><b>I</b>nterval estimates</td><td>KI rundt celler, marginaler og kontrasten</td><td>5</td></tr>
+<tr><td><b>N</b>ull hypothesis testing</td><td>tre <i>F</i>-tester av tre nullhypoteser</td><td>6</td></tr>
+<tr><td><b>E</b>stimation</td><td>cellesnittene, og effektene utledet av dem</td><td>3</td></tr>
+</table>
+
+<div class="boks bla">
+<h3>PESIN — samme bokstaver, rekkefølgen du faktisk jobber i</h3>
+<b>P</b>arameter → <b>E</b>stimat → <b>S</b>tandardfeil → <b>I</b>ntervall →
+<b>N</b>ullhypotesetesting. Fane 2 til 6 følger den rekkefølgen, én fane per
+bokstav. Har du den i hodet, er faktoriell ANOVA ikke en ny test, men en ny
+parameter i en kjent maskin.
+</div>
+
+<details class="mer"><summary>Mer om dette</summary>
+<p style="font-size:15.5px;line-height:1.5">Hvorfor <i>to</i> hovedeffekter og
+bare <i>én</i> interaksjon? Fordi antallet interaksjoner vokser med antall
+faktorer, ikke med antall nivåer. Tre faktorer gir tre toveis-interaksjoner og
+én treveis. Treveis-interaksjoner er notorisk vanskelige å tolke og krever
+store utvalg — de fleste artikler med et 2×2×2 rapporterer dem, og de færreste
+forklarer dem.</p>
+<p style="font-size:15.5px;line-height:1.5">Med to nivåer per faktor har hver
+effekt <i>df</i> = 1. Da er <i>F</i> = <i>t</i>², og hver effekt kan skrives som
+én kontrast — ett tall med ett fortegn. Det er derfor 2×2 er det designet som
+lar seg forstå helt ut. I et 2×3 har interaksjonen <i>df</i> = 2, og «retningen»
+på den er ikke lenger ett tall.</p>
+</details>
+
+<div class="gloss">
+<b>Balansert design</b> — like mange observasjoner i hver celle.
+<b>Ubalansert</b> — ulike celletall, som her (26/10/32/7).
+<b>Grand mean</b> — midtpunktet; her snittet av de fire cellesnittene, ikke av de 75 personene.
+<b>Kontrast</b> — en vektet sum av gjennomsnitt som svarer på ett bestemt spørsmål.
+<b>Residual</b> — avstanden fra en person til sitt eget cellegjennomsnitt.
+</div>
+</div>
+</div>
+<div id="fane-estimat" class="hide">
+<div class="card">
+<h2>Estimering: fra fire cellesnitt til fire effekter</h2>
+
+<p style="font-size:16.5px;line-height:1.55"><b>Parameteren</b> er det vi vil
+vite om populasjonen: μ, α, β og (αβ). <b>Estimatet</b> er det vi regner ut fra
+de 75 pasientene vi faktisk har. Her er regnestykket, ledd for ledd.</p>
+
+<h3>Steg 1 · Grand mean</h3>
+<p style="font-size:16.5px;line-height:1.55"><b>μ er snittet av de fire
+cellesnittene</b>, ikke av de {N} personene. I et ubalansert design er det
+forskjell: snitter du over personer, teller de store cellene mer, og
+«gjennomsnittspersonen» blir en fra den største cellen.</p>
+
+<div class="formel" style="text-align:center;font-size:18px;margin:10px 0"
+     id="estMuFormel"></div>
+
+<h3>Steg 2 · Hovedeffektene</h3>
+<p style="font-size:16.5px;line-height:1.55">Hver hovedeffekt er avstanden fra
+marginalen til μ. De to må summere til null — det er det som gjør dem til
+<i>effekter</i> og ikke til gjennomsnitt.</p>
+
+<div class="minitab" id="estEffTab"></div>
+
+<h3>Steg 3 · Interaksjonsleddet</h3>
+<p style="font-size:16.5px;line-height:1.55">Nå har vi en <b>prediksjon</b> for
+hver celle: μ pluss radeffekten pluss kolonneeffekten. Det er den beste
+gjetningen hvis de to faktorene virker uavhengig. Interaksjonsleddet er det
+cellen faktisk er, <b>minus</b> det:</p>
+
+<div class="minitab" id="estCelleTab"></div>
+
+<p style="font-size:16.5px;line-height:1.55">Fire tall, samme størrelse, vekslende
+fortegn. I et 2×2 er det alltid slik — interaksjonen er
+<b>ett tall</b>, og de fire leddene er det tallet med fortegn etter et sjakkbrett.
+Det er derfor interaksjonen har <i>df</i> = 1.</p>
+
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+Interaksjonsleddet er <b>avviket fra addisjon</b>: hvor mye cellen er noe annet
+enn summen av de to hovedeffektene.</div>
+
+<h3>Regnestykket tilbake</h3>
+<p style="font-size:16.5px;line-height:1.55">Kontrollen på at dekomponeringen
+er riktig, er at den lar seg reversere. Legg sammen de fire leddene, og du får
+cellesnittet tilbake — eksakt, ikke omtrent:</p>
+
+<div class="minitab" id="estTilbakeTab"></div>
+
+<div class="boks gronn">
+<h3>Hvorfor dette er verdt å se én gang</h3>
+Fordi det viser hva ANOVA-tabellen egentlig gjør. Kvadratsummen for en effekt
+er bare <b>summen av de kvadrerte leddene</b>, vektet med celletallene. Når
+JASP skriver <i>SS</i> = {SSi} for interaksjonen, er det de fire
+interaksjonsleddene som står bak. Ingenting mer mystisk enn det.
+</div>
+
+<details class="mer"><summary>Mer om dette</summary>
+<p style="font-size:15.5px;line-height:1.5">Denne kodingen heter
+<b>effektkoding</b> eller sum-to-zero: +1 for det ene nivået, −1 for det andre.
+Kjører du den samme modellen som regresjon med effektkodede prediktorer, blir
+regresjonskoeffisientene nøyaktig α̂, β̂ og (αβ̂) — og produktleddets
+koeffisient er interaksjonen. Det er samme modell, to skrivemåter.</p>
+<p style="font-size:15.5px;line-height:1.5">JASP bruker som standard
+<b>dummy-koding</b> internt, der ett nivå er referanse. Da endrer
+koeffisientene betydning: «effekten av {b}» blir effekten <i>i referansenivået</i>
+av den andre faktoren, ikke i snitt. Tabellen med <i>F</i>-verdier er den
+samme uansett, men koeffisienttabellen er det ikke — og det er en velkjent
+kilde til forvirring når man går mellom ANOVA og regresjon.</p>
+</details>
+
+<div class="gloss">
+<b>Parameter</b> — den ukjente sannheten om populasjonen (μ, α, β, αβ).
+<b>Estimat</b> — tallet vi regner ut av utvalget; skrives med hatt: μ̂.
+<b>Effektkoding</b> — +1/−1-koding som gjør at effektene summerer til null.
+<b>Additiv modell</b> — en modell uten interaksjonsledd; cellen er sum av rad og kolonne.
+</div>
+</div>
+</div>
+<div id="fane-se" class="hide">
+<div class="card">
+<h2>Hvor usikker er gjetningen? Standardfeilen</h2>
+
+<p style="font-size:16.5px;line-height:1.55">Estimatene fra forrige fane er tall
+fra <b>ett</b> utvalg. Hadde studien blitt gjort om igjen, ville de blitt litt
+annerledes. <b>Standardfeilen er hvor mye «litt» er</b> — spredningen i de
+tenkte gjentatte studiene.</p>
+
+<h3>Én felles støykilde: MS<sub>residual</sub></h3>
+<p style="font-size:16.5px;line-height:1.55">Faktoriell ANOVA antar at alle fire
+cellene har samme spredning, og slår dem derfor sammen til <b>ett</b> anslag på
+støyen. Det er <span class="m-stoy">MS<sub>residual</sub> = {MSE}</span>, og
+kvadratroten, <span class="k-stoy">{SDpool}</span>, er det felles standardavviket.
+Alle standardfeilene under er bygget av akkurat det tallet.</p>
+
+<div class="brokfig smal">
+<div class="brk">
+<div class="tell"><b>SS<sub>residual</sub></b><span class="tall">{SSE}</span></div>
+<div class="strek"></div>
+<div class="nevn"><b>df<sub>residual</sub></b><span class="tall">71</span></div>
+</div>
+<div class="lik">=</div>
+<div class="res"><b>{MSE}</b><span class="n">MS<sub>residual</sub> · felles varians</span></div>
+</div>
+
+<h3>Standardfeilen avhenger bare av celletallet</h3>
+<div class="formel" style="text-align:center;font-size:19px;margin:10px 0">
+<i>SE</i><sub>celle</sub> = √( <span class="m-stoy">MS<sub>res</sub></span> /
+<span class="m-tstat"><i>n</i><sub>celle</sub></span> )
+</div>
+
+<div class="minitab" id="seCelleTab"></div>
+
+<p style="font-size:16.5px;line-height:1.55"><b>Ubalansen koster.</b> Cellen med
+sju pasienter har mer enn dobbelt så stor standardfeil som cellen med 32. Det er
+ikke en feil i analysen — det er en presis beskjed om hvor mye vi vet om hvem.
+I figurene på fane 1, 5 og 8 er det den forskjellen som gjør ett feilfelt langt
+og et annet kort.</p>
+
+<h3>Standardfeilen til en forskjell</h3>
+<p style="font-size:16.5px;line-height:1.55">Skal du sammenligne to celler,
+legges usikkerheten deres sammen — ikke gjennomsnittet av dem, men summen under
+rottegnet:</p>
+
+<div class="formel" style="text-align:center;font-size:19px;margin:10px 0">
+<i>SE</i><sub>forskjell</sub> = √( <span class="m-stoy">MS<sub>res</sub></span> ·
+( 1/<i>n</i><sub>1</sub> + 1/<i>n</i><sub>2</sub> ) )
+</div>
+
+<div class="minitab" id="seDiffTab"></div>
+
+<h3>Og til interaksjonen</h3>
+<p style="font-size:16.5px;line-height:1.55">Interaksjonskontrasten bruker
+<b>alle fire</b> cellene, og betaler for alle fire:</p>
+
+<div class="formel" style="text-align:center;font-size:18px;margin:10px 0">
+<i>SE</i><sub>kontrast</sub> = √( {MSE} · (1/26 + 1/10 + 1/32 + 1/7) ) =
+<span class="m-ki">2.59</span>
+</div>
+
+<div class="boks rod">
+<h3>Derfor er interaksjoner vanskelige å oppdage</h3>
+Standardfeilen til interaksjonen er <b>større</b> enn til noen av de enkle
+effektene, fordi den bygger på fire celler i stedet for to. Med samme
+<i>N</i> trenger du derfor en <b>større</b> effekt for å påvise en interaksjon
+enn en hovedeffekt. Tommelfingerregelen er at å påvise en interaksjon på
+størrelse med en hovedeffekt krever omtrent <b>fire ganger</b> så mange
+deltakere. Det er en av grunnene til at interaksjonsfunn i litteraturen ofte
+ikke lar seg gjenta.
+</div>
+
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+Standardfeilen er <b>støyen delt på hvor mange som bærer den</b>. Fire celler
+betyr fire bidrag — og en bredere usikkerhet enn intuisjonen tilsier.</div>
+
+<details class="mer"><summary>Mer om dette</summary>
+<p style="font-size:15.5px;line-height:1.5">Legg merke til at cellens
+<i>SE</i> her ikke er den samme som <i>SD</i>/√<i>n</i> for den cellen alene.
+Ved å låne styrke fra alle 75 personene blir anslaget mer presist — det er
+gevinsten ved å anta lik varians. Prisen er at anslaget blir feil hvis
+antakelsen ikke holder. Fane&nbsp;11 tester den.</p>
+<p style="font-size:15.5px;line-height:1.5"><i>SE</i> for de estimerte
+marginale gjennomsnittene er litt mindre igjen, fordi marginalen bygger på to
+celler: √(MS<sub>res</sub>·(1/<i>n</i><sub>1</sub>+1/<i>n</i><sub>2</sub>)/4).
+</p>
+</details>
+
+<div class="gloss">
+<b>Standardfeil (SE)</b> — standardavviket til et estimat over tenkte gjentatte studier.
+<b>MS<sub>residual</sub></b> — felles variansanslag; «støyen» i modellen.
+<b>Felles varians</b> — antakelsen om at alle celler har samme spredning.
+<b>Presisjon</b> — det motsatte av standardfeil: liten SE, høy presisjon.
+</div>
+</div>
+</div>
+<div id="fane-ki" class="hide">
+<div class="card">
+<h2>Konfidensintervallet</h2>
+
+<p style="font-size:16.5px;line-height:1.55">Estimatet er ett tall.
+Konfidensintervallet er <b>spennet av verdier dataene er forenlige med</b>.
+Oppskriften er den samme som i <i>t</i>-testen og enveis-ANOVA — bare med
+<i>df</i> = {dfE}, som er residualens frihetsgrader:</p>
+
+<div class="formel" style="text-align:center;font-size:19px;margin:12px 0">
+estimat ± <span class="m-tstat"><i>t</i><sub>.975, {dfE}</sub></span> ·
+<span class="m-ki"><i>SE</i></span>  =  estimat ± {tKrit} · <i>SE</i>
+</div>
+
+<h3>Rundt de fire cellene</h3>
+<div class="todelt">
+  <div>
+    <canvas id="cvKi" height="300" data-h="300"></canvas>
+    <p class="muted" style="font-size:14px;margin:4px 0 0">Samme figur som på
+    fane 1. Feilfeltene er 95&nbsp;% KI, og de er ulike fordi cellene er ulikt store.</p>
+  </div>
+  <div><div class="minitab" id="kiCelleTab"></div></div>
+</div>
+
+<div class="boks rod">
+<h3>Fellen: overlappende intervaller</h3>
+Det er fristende å se to feilfelt som overlapper og konkludere «ingen
+forskjell». <b>Det holder ikke.</b> To 95&nbsp;%-intervaller kan overlappe selv
+om forskjellen mellom dem er signifikant. Vil du vite om forskjellen er
+forskjellig fra null, må du lage et intervall <b>rundt forskjellen</b> — ikke
+sammenligne to intervaller rundt hvert sitt gjennomsnitt.
+</div>
+
+<h3>Rundt forskjellene — de som faktisk svarer på spørsmålet</h3>
+<div class="minitab" id="kiDiffTab"></div>
+
+<p style="font-size:16.5px;line-height:1.55">Les den siste raden nøye.
+Interaksjonskontrasten er <b>−5.94</b> med intervall
+<span class="m-ki">[−11.10, −0.78]</span>. Null ligger utenfor — så vidt. Det
+svarer til <i>p</i> = .025, og de to tallene sier det samme på hver sin måte:
+dataene er forenlige med alt fra en nesten ubetydelig forskjell mellom
+enkle effektene til en meget stor en. <b>Vi vet at den finnes, og nesten
+ingenting om hvor stor den er.</b></p>
+
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+Et intervall som så vidt utelukker null, forteller deg at effekten er der —
+ikke hvor stor den er.</div>
+
+<h3>Hva intervallet ikke betyr</h3>
+<table class="tt" style="font-size:16px">
+<tr><th>Påstand</th><th>Riktig?</th></tr>
+<tr><td>«Det er 95&nbsp;% sannsynlig at den sanne verdien ligger i intervallet»</td>
+    <td class="c-stoy">Nei — parameteren er fast, intervallet varierer</td></tr>
+<tr><td>«95 av 100 slike studier ville gitt et intervall som dekker sannheten»</td>
+    <td class="c-sig">Ja — det er dekningsgraden</td></tr>
+<tr><td>«Verdier utenfor intervallet er utelukket»</td>
+    <td class="c-stoy">Nei — de er bare dårligere forenlige med dataene</td></tr>
+<tr><td>«Et bredt intervall betyr at studien er liten eller støyete»</td>
+    <td class="c-sig">Ja — bredden er 2 · {tKrit} · <i>SE</i></td></tr>
+</table>
+
+<details class="mer"><summary>Mer om dette</summary>
+<p style="font-size:15.5px;line-height:1.5">Intervallene her bruker
+<b>felles</b> MS<sub>residual</sub>, altså alle 75 personene, og derfor
+<i>df</i> = {dfE}. Regner du et intervall for cellen med sju pasienter alene, får
+du <i>df</i> = 6, <i>t</i> = 2.45 og et langt bredere intervall. Forskjellen er
+prisen for — og gevinsten ved — å anta lik varians.</p>
+<p style="font-size:15.5px;line-height:1.5">Intervallene i tabellen er
+<b>ukorrigerte</b>. Skal alle fire enkle effekter tolkes samtidig, bør de
+justeres, akkurat som post hoc-tester i enveis-ANOVA. Fane&nbsp;9 kommer
+tilbake til det.</p>
+</details>
+
+<div class="gloss">
+<b>Konfidensintervall</b> — spennet av parameterverdier dataene er forenlige med.
+<b>Dekningsgrad</b> — andelen slike intervaller som dekker den sanne verdien over gjentatte studier.
+<b>Presisjon</b> — bredden på intervallet.
+<b>Kritisk <i>t</i></b> — 1.99 ved <i>df</i> = {dfE} og 95&nbsp;%.
+</div>
+</div>
+</div>
+<div id="fane-nhst" class="hide">
+<div class="card">
+<h2>Nullhypotesetesting: tre <i>F</i>-er av samme støy</h2>
+
+<p style="font-size:16.5px;line-height:1.55">Hver av de tre effektene får sin
+egen <i>F</i>. Brøken er alltid den samme: <b>signal over støy</b>. Det som
+skifter, er telleren. <b>Nevneren er felles</b> — alle tre deler på den samme
+MS<sub>residual</sub>.</p>
+
+<div class="brokfig">
+<div class="brk">
+<div class="tell">MS for <b>effekten</b><span class="tall">{SSa} · {SSb} · {SSi}</span></div>
+<div class="strek"></div>
+<div class="nevn">MS<sub>residual</sub><span class="tall">{MSE}</span></div>
+</div>
+<div class="lik">=</div>
+<div class="res"><b><i>F</i></b><span class="n">tre ganger, én nevner</span></div>
+</div>
+
+<h3>Tabellen</h3>
+<div id="nhstTabell"></div>
+
+<p style="font-size:16.5px;line-height:1.55">Alle tre har <i>df</i><sub>1</sub> = 1,
+fordi hver faktor har to nivåer. <i>df</i><sub>2</sub> = {dfE} er
+<i>N</i> − antall celler = {N} − 4.</p>
+
+<h3>Nullfordelingen</h3>
+<div class="todelt">
+  <div>
+    <canvas id="cvNull" height="290" data-h="290"></canvas>
+    <p class="muted" style="font-size:14px;margin:4px 0 0"><i>F</i>(1, {dfE}) under
+    nullhypotesen. Den stiplede streken er grensen for <i>p</i> = .05.</p>
+  </div>
+  <div>
+    <p style="font-size:16px;line-height:1.5">Fordelingen viser hvilke
+    <i>F</i>-verdier rene tilfeldigheter lager når <b>ingen</b> effekt finnes.
+    Den er den samme for alle tre testene, fordi de har samme frihetsgrader.</p>
+    <p style="font-size:16px;line-height:1.5">
+    <span class="k-sig">{A}: {Fa}</span><br>
+    <span class="k-eff">Interaksjon: {Fi}</span><br>
+    <span class="k-stoy">{B}: {Fb}</span></p>
+    <p style="font-size:16px;line-height:1.5"><i>p</i> er arealet til høyre for
+    den observerte verdien: sannsynligheten for å se en <i>F</i> minst så stor
+    <b>hvis nullhypotesen er sann</b>.</p>
+  </div>
+</div>
+
+<div class="boks rod">
+<h3>Tre tester, tre sjanser til å ta feil</h3>
+Kjører du tre tester på 5&nbsp;%-nivå, er sjansen for minst ett falskt funn
+høyere enn 5&nbsp;%. I praksis korrigeres det sjelden i en faktoriell ANOVA —
+de tre spørsmålene er planlagt på forhånd og forskjellige fra hverandre. Men
+det er verdt å vite at «vi fant en interaksjon» i en studie som testet alle
+mulige krysninger, ikke er det samme funnet som en planlagt test.
+</div>
+
+<h3>Rekkefølgen du leser tabellen i</h3>
+<ol style="font-size:16.5px;line-height:1.6">
+<li><b>Interaksjonen først.</b> Er den signifikant, er hovedeffektene ikke
+lenger hele historien.</li>
+<li><b>Er interaksjonen signifikant</b> → gå til enkle effekter (fane&nbsp;9),
+og beskriv hovedeffektene med forbehold.</li>
+<li><b>Er den ikke signifikant</b> → tolk hovedeffektene som de står, og si at
+du ikke fant holdepunkter for at effekten varierte.</li>
+</ol>
+
+<p style="font-size:16.5px;line-height:1.55">Se etter i tabellen: er
+interaksjonen signifikant, kan en hovedeffekt som ikke er det <b>ikke</b> leses
+som «denne faktoren er irrelevant». Den kan like gjerne bety at to motsatte
+effekter utlignet hverandre i marginalen — se fane&nbsp;1.</p>
+
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+Les interaksjonsraden først. Den avgjør hva de to andre radene betyr.</div>
+
+<details class="mer"><summary>Mer om dette</summary>
+<p style="font-size:15.5px;line-height:1.5">Med <i>df</i><sub>1</sub> = 1 er
+<i>F</i> = <i>t</i>². Interaksjonens <i>F</i> = 5.269 er kvadratet av
+<i>t</i> = −2.296, som er interaksjonskontrasten delt på sin standardfeil:
+−5.94 / 2.59. De to testene er ikke beslektet — de er den samme testen.</p>
+<p style="font-size:15.5px;line-height:1.5">Et ikke-signifikant interaksjonsledd
+er <b>ikke</b> bevis for at effekten er lik i begge grupper. Studier er
+systematisk underdimensjonert for interaksjoner (se fane&nbsp;4), så
+«ingen interaksjon funnet» betyr som regel «vi hadde ikke styrke til å se den».
+Rapporter intervallet, ikke bare <i>p</i>.</p>
+</details>
+
+<div class="gloss">
+<b>Nullhypotese</b> — påstanden om at effekten er null i populasjonen.
+<b><i>F</i></b> — forholdet mellom systematisk og tilfeldig variasjon.
+<b>Nullfordeling</b> — fordelingen av <i>F</i> når nullhypotesen er sann.
+<b><i>p</i>-verdi</b> — sannsynligheten for minst så ekstrem <i>F</i> gitt at <i>H</i><sub>0</sub> er sann.
+<b>Kritisk verdi</b> — grensen der <i>p</i> = .05; her 3.98.
+</div>
+</div>
+</div>
+<div id="fane-sim" class="hide">
+<div class="card">
+<h2>Bygg interaksjonen selv</h2>
+
+<p style="font-size:16.5px;line-height:1.55">Dra de fire cellegjennomsnittene og
+se hva som skjer med de tre <i>F</i>-ene. Alt annet holdes fast: celletallene
+og MS<sub>residual</sub> er som i det ekte datasettet. <b>Det eneste du endrer,
+er hvor de fire punktene ligger.</b></p>
+
+<div class="simblokk" id="blokk-2x2">
+<div class="todelt">
+  <div>
+    <canvas id="cvSim" height="330" data-h="330"></canvas>
+    <p class="muted" style="font-size:14px;margin:4px 0 0">Dra et punkt opp eller
+    ned. Feilfeltene er 95&nbsp;% KI og følger celletallet.</p>
+  </div>
+  <div>
+    <div id="simTall"></div>
+    <div class="rad" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">
+      <button class="btn2" id="simEkte">Sett de ekte tallene</button>
+      <button class="btn2" id="simParallell">Gjør linjene parallelle</button>
+      <button class="btn2" id="simKryss">Lag en kryssende interaksjon</button>
+      <button class="btn2" id="simIngen">Fjern alle effekter</button>
+    </div>
+    <p class="muted" style="font-size:13.5px;margin-top:8px" id="simHint"></p>
+  </div>
+</div>
+</div>
+
+<h3>Tre ting å prøve</h3>
+<div class="hvgrid">
+  <div class="hvkort"><h3>1 · Parallelle linjer</h3>
+    Trykk «Gjør linjene parallelle». Interaksjonens <i>F</i> faller til null,
+    uansett hvor langt fra hverandre linjene ligger. <b>Avstand er hovedeffekt.
+    Helningsforskjell er interaksjon.</b></div>
+  <div class="hvkort"><h3>2 · Kryssende linjer</h3>
+    Trykk «Lag en kryssende interaksjon». Nå er begge hovedeffektene små og
+    interaksjonen stor. Marginalene er nesten like — og forteller ingenting
+    om cellene.</div>
+  <div class="hvkort"><h3>3 · Løft hele den ene linja</h3>
+    Dra begge punktene på <b>én</b> linje like mye opp. Bare hovedeffekten av
+    den faktoren endrer seg. Interaksjonen står stille, fordi <b>forskjellen mellom forskjellene</b>
+    er uendret.</div>
+</div>
+
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+Interaksjonen ser ikke på hvor linjene ligger, bare på om de er
+<b>parallelle</b>.</div>
+
+<div class="boks bla">
+<h3>Legg merke til hvor mye som skal til</h3>
+Prøv å dra punktene til interaksjonen så vidt blir signifikant. Med disse
+celletallene trenger du en forskjell mellom de to helningene på rundt
+<b>5 poeng</b> — omtrent en hel standardavvik. Det er ikke en liten effekt.
+Slik er det å lete etter interaksjoner med <i>N</i> = {N}.
+</div>
+
+<details class="mer"><summary>Mer om dette</summary>
+<p style="font-size:15.5px;line-height:1.5">Simuleringen holder
+MS<sub>residual</sub> fast på {MSE}. I ekte data ville spredningen innad i
+cellene også endret seg når du flytter gjennomsnittene — her er den låst,
+slik at du ser effekten av <i>bare</i> posisjonen. Det er en forenkling, og en
+bevisst en: ellers kunne du ikke se hva som skyldes hva.</p>
+<p style="font-size:15.5px;line-height:1.5">Kvadratsummene regnes med de ekte,
+ubalanserte celletallene. Derfor er ikke hovedeffekten helt symmetrisk i det du
+drar — en endring i cellen med 32 personer veier mer enn den samme endringen i
+cellen med 7.</p>
+</details>
+
+<div class="gloss">
+<b>Parallelle linjer</b> — ingen interaksjon; effekten av den ene er lik på begge nivåer av den andre.
+<b>Kryssende (disordinal) interaksjon</b> — effekten snur fortegn.
+<b>Ordinal interaksjon</b> — effekten har samme retning, men ulik størrelse.
+</div>
+</div>
+</div>
+<div id="fane-lese" class="hide">
+<div class="card">
+<h2>Å lese et interaksjonsplott</h2>
+
+<p style="font-size:16.5px;line-height:1.55">Figuren er raskere enn tabellen.
+Men den lures lett, og det er verdt å vite hvordan.</p>
+
+<h3>Det eneste spørsmålet: er linjene parallelle?</h3>
+<div class="figurark" id="lesePlott"></div>
+
+<table class="tt" style="font-size:16px">
+<tr><th>Mønster</th><th>Heter</th><th>Betyr</th></tr>
+<tr><td>Parallelle, på ulik høyde</td><td>bare hovedeffekter</td>
+    <td>effekten av B er den samme i begge A-gruppene</td></tr>
+<tr><td>Ulik helning, samme retning</td><td><b>ordinal</b> interaksjon</td>
+    <td>effekten finnes i begge, men er sterkere i den ene</td></tr>
+<tr><td>Krysser hverandre</td><td><b>disordinal</b> interaksjon</td>
+    <td>effekten snur fortegn — hjelper den ene, skader den andre</td></tr>
+<tr><td>Flate og oppå hverandre</td><td>ingenting</td>
+    <td>verken hovedeffekter eller interaksjon</td></tr>
+</table>
+
+<h3>Hvorfor skillet ordinal / disordinal betyr noe</h3>
+<p style="font-size:16.5px;line-height:1.55">Ved en <b>ordinal</b> interaksjon
+kan hovedeffekten fortsatt være en meningsfull oppsummering: retningen gjelder
+for alle, bare i ulik grad. Ved en <b>disordinal</b> interaksjon er
+hovedeffekten et gjennomsnitt av to motsatte ting, og beskriver ingen.</p>
+
+<div class="boks bla" id="leseDom"></div>
+
+<div class="boks rod">
+<h3>Tre måter figuren lurer deg</h3>
+<b>1 · Y-aksen.</b> En avkortet akse får små forskjeller til å se dramatiske ut.
+Se alltid etter hvor aksen starter.<br>
+<b>2 · Feilfelt uten forklaring.</b> Er det <i>SD</i>, <i>SE</i> eller 95&nbsp;% KI?
+De er tre ulike lengder, og figurer som ikke sier det, er ikke til å stole på.<br>
+<b>3 · Øyemål på parallellitet.</b> To linjer kan se tydelig ikke-parallelle ut
+og likevel ha <i>p</i> = .40. <b>Figuren viser estimatene, ikke usikkerheten i
+forskjellen mellom dem.</b> Det er testen som avgjør.
+</div>
+
+<h3>Bytt aksene</h3>
+<p style="font-size:16.5px;line-height:1.55">Den samme interaksjonen kan tegnes
+på to måter: {b} på x-aksen med én linje per {a}, eller omvendt. <b>Tallene er identiske</b> — bare
+historien du forteller, endrer seg.</p>
+
+<div class="todelt">
+  <div><canvas id="cvLeseA" height="280" data-h="280"></canvas>
+    <p class="muted" style="font-size:14px;margin:4px 0 0">{A} som linjer:
+    «virker {b} ulikt i de to gruppene?»</p></div>
+  <div><canvas id="cvLeseB" height="280" data-h="280"></canvas>
+    <p class="muted" style="font-size:14px;margin:4px 0 0">{B} som linjer:
+    «er {a}-forskjellen større på det ene nivået?»</p></div>
+</div>
+
+<p style="font-size:16.5px;line-height:1.55">Velg den som svarer på
+forskningsspørsmålet ditt. Spør du «virker {a} like godt for alle?», hører
+<b>{a}</b> hjemme som linjer og {b} på x-aksen — den venstre figuren.</p>
+
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+Figuren viser deg <b>om</b> du skal se nærmere etter. Testen forteller om du
+har lov til det.</div>
+
+<div class="gloss">
+<b>Ordinal interaksjon</b> — ulik styrke, samme retning.
+<b>Disordinal interaksjon</b> — effekten snur fortegn; linjene krysser.
+<b>Konvergerende linjer</b> — forskjellen krymper, men snur ikke innenfor de målte nivåene.
+<b>Avkortet akse</b> — y-akse som ikke starter på et meningsfullt nullpunkt.
+</div>
+</div>
+</div>
+<div id="fane-enkle" class="hide">
+<div class="card">
+<h2>Enkle effekter: å følge opp en signifikant interaksjon</h2>
+
+<p style="font-size:16.5px;line-height:1.55">Interaksjonen sier <b>at</b>
+effekten varierer. Den sier ikke <b>hvordan</b>. Det er akkurat samme situasjon
+som etter en signifikant omnibus-<i>F</i> i enveis-ANOVA: testen peker, den
+forklarer ikke. Oppfølgingen heter <b>enkle effekter</b> — effekten av den ene
+faktoren, innenfor ett nivå av den andre.</p>
+
+<div class="boks bla">
+<h3>Parallellen til post hoc</h3>
+<table class="tt" style="font-size:16px;margin:6px 0 0">
+<tr><th></th><th>Enveis ANOVA</th><th>Faktoriell ANOVA</th></tr>
+<tr><td>Omnibustest</td><td><i>F</i> for gruppe</td><td><i>F</i> for interaksjonen</td></tr>
+<tr><td>Sier</td><td>«minst to grupper skiller seg»</td><td>«effekten er ikke lik overalt»</td></tr>
+<tr><td>Sier ikke</td><td>hvilke</td><td>hvor, og i hvilken retning</td></tr>
+<tr><td>Oppfølging</td><td>post hoc (Tukey)</td><td><b>enkle effekter</b></td></tr>
+</table>
+</div>
+
+<h3>De fire enkle effektene</h3>
+<div class="minitab" id="enkleTab"></div>
+
+<p style="font-size:16.5px;line-height:1.55">Alle bruker <b>felles</b>
+MS<sub>residual</sub> og <i>df</i> = {dfE} — ikke bare de to cellene som
+sammenlignes. Det gir mer presise tester enn å kjøre fire separate
+<i>t</i>-tester på delutvalg, og er grunnen til at du skal be JASP om enkle
+effekter i stedet for å splitte datasettet.</p>
+
+<div class="boks rod">
+<h3>Det viktigste på denne fanen</h3>
+Se på de to første radene i tabellen — effekten av {b} i hver av de to
+gruppene — og sammenlign dem med interaksjonskontrasten nederst.
+<b>De tre testene stiller tre ulike spørsmål</b>, og svarene kan sprike.<br><br>
+Det er ikke en selvmotsigelse. Interaksjonstesten tester én ting: at
+−2.43 og +3.51 er ulike. De enkle effektene tester to andre ting: at hver av
+dem er ulik null. <b>En differanse kan være klart forskjellig fra null selv om
+begge leddene hver for seg er usikre.</b><br><br>
+Den motsatte feilen er like vanlig: å se at én enkel effekt er signifikant og
+den andre ikke, og konkludere med interaksjon. <b>Forskjellen mellom
+«signifikant» og «ikke signifikant» er ikke i seg selv signifikant.</b> Bare
+interaksjonstesten svarer på det spørsmålet.
+</div>
+
+<h3>Hvilke enkle effekter skal du kjøre?</h3>
+<p style="font-size:16.5px;line-height:1.55">Ikke alle. Velg dem
+forskningsspørsmålet ber om, og si i teksten at det var valget ditt. Spør du
+«virker det like godt for alle?», er det effekten av <b>{a}</b> innenfor hvert
+nivå av <b>{b}</b> som svarer:</p>
+
+<ul style="font-size:16.5px;line-height:1.6">
+<li>Innenfor <b>{B0}</b>: forskjellen i {a} er <b>{g1}</b>,
+<span class="m-p"><i>p</i> = {g1p}</span>, 95 % KI [{g1lo}, {g1hi}].</li>
+<li>Innenfor <b>{B1}</b>: forskjellen er <b>{g2}</b>,
+<span class="m-p"><i>p</i> = {g2p}</span>, 95 % KI [{g2lo}, {g2hi}].</li>
+</ul>
+
+<p style="font-size:16.5px;line-height:1.55"><b>Merk formuleringen.</b> «Vi fant
+ingen effekt» er feil når intervallet er bredt. Riktig er: «effekten lot seg ikke
+påvise, og intervallet utelukker verken en betydelig effekt eller ingen effekt.»
+Et bredt intervall er mangel på kunnskap, ikke kunnskap om fravær.</p>
+
+<h3>Korreksjon for flere tester</h3>
+<p style="font-size:16.5px;line-height:1.55">Fire enkle effekter er fire tester.
+Er de planlagt på forhånd og få, rapporteres de ofte ukorrigert med den
+begrunnelsen skrevet ut. Skal alle fire tolkes, er Bonferroni enkelt og ærlig:
+grensen blir .05/4 = <b>.0125</b>. Se etter i tabellen hvilke som overlever den.</p>
+
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+Enkle effekter forteller <b>hvor</b> interaksjonen bor. De erstatter ikke
+interaksjonstesten — de forklarer den.</div>
+
+<details class="mer"><summary>Mer om dette</summary>
+<p style="font-size:15.5px;line-height:1.5">I JASP: <b>ANOVA → Simple Main
+Effects</b>, med «Simple effect factor» = Gruppe og «Moderator factor» =
+den andre faktoren. JASP bruker felles feilledd som standard. Alternativet «Use
+pooled error term» skal stå på så lenge variansene er like (fane&nbsp;11).</p>
+<p style="font-size:15.5px;line-height:1.5">En annen vei er å regne
+<b>interaksjonskontrasten</b> direkte: (21.27 − 23.70) − (29.94 − 26.43) = −5.94.
+Det er ett tall med ett intervall, og for et 2×2 er det ofte den klareste
+måten å rapportere interaksjonen på — bedre enn fire enkle effekter som
+leseren må sammenligne selv.</p>
+</details>
+
+<div class="gloss">
+<b>Enkel effekt</b> — effekten av én faktor innenfor ett nivå av den andre.
+<b>Felles feilledd</b> — MS<sub>residual</sub> fra hele modellen, ikke fra delutvalget.
+<b>Interaksjonskontrast</b> — forskjellen mellom to enkle effekter; ett tall.
+<b>Bonferroni</b> — del signifikansnivået på antall tester.
+</div>
+</div>
+</div>
+<div id="fane-effekt" class="hide">
+<div class="card">
+<h2>Effektstørrelse: hvor mye, ikke bare om</h2>
+
+<p style="font-size:16.5px;line-height:1.55"><i>p</i> sier om effekten er til å
+skille fra null. Effektstørrelsen sier <b>hvor stor</b> den er. I en faktoriell
+ANOVA finnes det to familier, og de svarer på ulike spørsmål.</p>
+
+<h3>η² og η²<sub>p</sub> — to nevnere, to betydninger</h3>
+<div class="todelt">
+<div>
+<div class="brokfig smal">
+<div class="brk">
+<div class="tell">SS<sub>effekt</sub><span class="tall">{SSi}</span></div>
+<div class="strek"></div>
+<div class="nevn">SS<sub>total</sub><span class="tall">{SST}</span></div>
+</div>
+<div class="lik">=</div>
+<div class="res"><b>.043</b><span class="n">η² · andel av ALL variasjon</span></div>
+</div>
+</div>
+<div>
+<div class="brokfig smal">
+<div class="brk">
+<div class="tell">SS<sub>effekt</sub><span class="tall">{SSi}</span></div>
+<div class="strek"></div>
+<div class="nevn">SS<sub>effekt</sub> + SS<sub>res</sub><span class="tall">1633.67</span></div>
+</div>
+<div class="lik">=</div>
+<div class="res"><b>.069</b><span class="n">η²<sub>p</sub> · partiell</span></div>
+</div>
+</div>
+</div>
+
+<p style="font-size:16.5px;line-height:1.55">Forskjellen er <b>hva de andre
+effektene gjør med nevneren</b>. η² deler på alt, så en sterk hovedeffekt gjør
+interaksjonens η² mindre. η²<sub>p</sub> tar de andre effektene <i>ut</i> av
+nevneren og spør: av det denne effekten og støyen forklarer til sammen, hvor
+mye er denne effekten?</p>
+
+<div class="minitab" id="effTab"></div>
+
+<div class="boks rod">
+<h3>Derfor kan η²<sub>p</sub>-ene summere til mer enn 1</h3>
+Her summerer de til <b>.29</b>, som er greit — men i studier med flere sterke
+effekter kan summen passere 1, og det forvirrer mange. Det er ikke en feil:
+hver η²<sub>p</sub> har sin egen nevner. <b>η²<sub>p</sub> kan ikke leses som
+«andel av variansen i utfallet».</b> Bare η² kan det.
+</div>
+
+<h3>ω² — den forventningsrette</h3>
+<p style="font-size:16.5px;line-height:1.55">η² er systematisk <b>for stor</b>:
+den teller med tilfeldig variasjon som om den var effekt. ω² trekker fra det
+støyen forventes å bidra med:</p>
+
+<div class="formel" style="text-align:center;font-size:18px;margin:10px 0">
+ω² = ( SS<sub>effekt</sub> − <i>df</i> · MS<sub>res</sub> ) /
+( SS<sub>total</sub> + MS<sub>res</sub> )
+</div>
+
+<p style="font-size:16.5px;line-height:1.55">For interaksjonen:
+({SSi} − {MSE}) / ({SST} + {MSE}) = <b>.034</b>, mot η² = .043.
+Er en effekt mindre enn det støyen alene ville laget, blir ω² <b>negativ</b>.
+Den rapporteres da som 0, og er i seg selv en tydelig beskjed — se om noen av
+radene i tabellen over har det.</p>
+
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+η² er andelen av alt. η²<sub>p</sub> er andelen av det denne effekten kunne
+forklart. ω² er η² med en ærlig fratrekk for flaks.</div>
+
+<h3>Cohens <i>d</i> for de enkle effektene</h3>
+<p style="font-size:16.5px;line-height:1.55">η²-familien beskriver <b>varians</b>.
+For en konkret sammenligning er <i>d</i> som regel lettere å formidle: hvor
+mange standardavvik skiller de to gruppene? Nevneren er det felles
+standardavviket, √MS<sub>res</sub> = {SDpool}.</p>
+
+<div class="minitab" id="effDTab"></div>
+
+<h3>Hva er stort?</h3>
+<table class="tt" style="font-size:16px">
+<tr><th></th><th>Liten</th><th>Middels</th><th>Stor</th></tr>
+<tr><td>η², η²<sub>p</sub>, ω²</td><td>.01</td><td>.06</td><td>.14</td></tr>
+<tr><td>Cohens <i>d</i></td><td>0.2</td><td>0.5</td><td>0.8</td></tr>
+</table>
+
+<p style="font-size:16.5px;line-height:1.55">Grensene er Cohens egne, og han
+kalte dem selv vilkårlige. Bruk dem som grov oversettelse, ikke som dom. Det
+som betyr noe i terapistudien, er om <b>8.67 poeng</b> på en skala studentene
+kjenner, er klinisk relevant — ikke om .069 heter «middels».</p>
+
+<div class="boks bla">
+<h3>Og hva skal jeg rapportere?</h3>
+For hver effekt i ANOVA-tabellen: <b>η²<sub>p</sub></b> (det er konvensjonen i
+psykologi, og det JASP tilbyr først) og gjerne <b>ω²</b> ved siden av.
+For hver enkel effekt du tolker: <b>forskjellen i skalaens egne poeng, med
+konfidensintervall</b>, og <i>d</i> om leseren trenger en standardisert
+størrelse. Poengene er det mest informative tallet du har — ikke gjem dem bak
+en effektstørrelse.
+</div>
+
+<details class="mer"><summary>Mer om dette</summary>
+<p style="font-size:15.5px;line-height:1.5">JASP tilbyr η², η²<sub>p</sub> og ω²
+som avkrysningsbokser under «Effect size» i ANOVA-menyen. Ingen er huket av som
+standard i en faktoriell analyse, så de må velges aktivt — og det gjøres
+skuffende ofte ikke.</p>
+<p style="font-size:15.5px;line-height:1.5">Det finnes også generalisert
+η²<sub>G</sub>, som er laget for å kunne sammenlignes på tvers av design med
+ulike sett av faktorer. Den er nyttig i metaanalyser og lite brukt ellers.</p>
+</details>
+
+<div class="gloss">
+<b>η² (eta-kvadrat)</b> — andel av total variasjon som effekten forklarer.
+<b>η²<sub>p</sub> (partiell)</b> — andel av effekt + residual; de andre effektene er tatt ut av nevneren.
+<b>ω² (omega-kvadrat)</b> — forventningsrett anslag; kan bli negativt.
+<b>Cohens <i>d</i></b> — forskjell i antall standardavvik.
+<b>Forventningsrett</b> — treffer i snitt riktig over gjentatte studier.
+</div>
+</div>
+</div>
+<div id="fane-forut" class="hide">
+<div class="card">
+<h2>Forutsetninger — og hva brudd koster</h2>
+
+<p style="font-size:16.5px;line-height:1.55">Faktoriell ANOVA hviler på tre
+antakelser. To av dem er de samme som i enveis-ANOVA. Den tredje er ny, og
+handler om at cellene er ulikt store.</p>
+
+<table class="tt" style="font-size:16px">
+<tr><th>Forutsetning</th><th>Hvordan sjekke</th><th>Her</th><th>Hva brudd koster</th></tr>
+<tr><td><b>Uavhengige observasjoner</b></td><td>av designet, ikke av dataene</td>
+    <td class="c-sig">oppfylt</td><td>alvorlig — <i>p</i> blir meningsløs</td></tr>
+<tr><td><b>Normalfordelte residualer</b></td><td>QQ-plott, skjevhet, kurtose</td>
+    <td class="c-sig">oppfylt</td><td>lite, ved <i>n</i> over ~20 per celle</td></tr>
+<tr><td><b>Lik varians i cellene</b></td><td>Levenes test, spredningsplott</td>
+    <td class="c-sig">oppfylt</td><td><b>mye, når cellene er ulikt store</b></td></tr>
+</table>
+
+<h3>Levenes test</h3>
+<div class="minitab" id="forutLevene"></div>
+
+<p style="font-size:16.5px;line-height:1.55">Standardavvikene er 5.14, 3.59,
+4.36 og 5.06 — det største er 1.4 ganger det minste. Levenes test finner ingen
+holdepunkter for ulik varians, og det felles anslaget på {MSE} er forsvarlig.</p>
+
+<div class="boks rod">
+<h3>Hvorfor ulik varians er farligere her enn i enveis-ANOVA</h3>
+Med <b>balanserte</b> celler er <i>F</i> robust mot ulik varians. Med
+<b>ubalanserte</b> celler er den ikke det — og det går begge veier:<br><br>
+<b>Stor celle, stor varians</b> → testen blir <b>for konservativ</b>; du finner
+for få effekter.<br>
+<b>Liten celle, stor varians</b> → testen blir <b>for liberal</b>; du finner
+for mange, og <i>p</i> lyver i din favør.<br><br>
+Her har den minste cellen (<i>n</i> = 7) nest størst spredning. Hadde Levene
+vært signifikant, ville det vært den farlige kombinasjonen.
+</div>
+
+<h3>Residualene</h3>
+<div class="todelt">
+  <div><canvas id="cvQQ" height="280" data-h="280"></canvas>
+    <p class="muted" style="font-size:14px;margin:4px 0 0">QQ-plott av residualene.
+    Ligger punktene på linja, er de normalfordelte.</p></div>
+  <div>
+    <div class="minitab" id="forutResid"></div>
+    <p style="font-size:16px;line-height:1.5;margin-top:10px">Skjevhet −0.24 og
+    kurtose −0.40 er begge godt innenfor. En formell normalitetstest gir
+    <i>p</i> = .57. Residualene er ikke et problem her.</p>
+    <p style="font-size:16px;line-height:1.5"><b>Og hadde de vært det?</b> Med
+    <i>n</i> over 20 per celle spiller normalitet nesten ingen rolle —
+    sentralgrenseteoremet tar seg av gjennomsnittene. Det er de <b>små</b>
+    cellene som er sårbare, og her har to av dem 10 og 7.</p>
+  </div>
+</div>
+
+<h3>Ubalansen: Type I, II og III kvadratsummer</h3>
+<p style="font-size:16.5px;line-height:1.55">Når celletallene er ulike, er
+faktorene <b>korrelert med hverandre</b>. Da finnes det variasjon som kan
+tilskrives begge, og resultatet avhenger av hvem som får den først:</p>
+
+<table class="tt" style="font-size:16px">
+<tr><th>Type</th><th>Gjør</th><th>Brukes når</th></tr>
+<tr><td><b>I</b> (sekvensiell)</td><td>gir alt til den første i rekkefølgen</td>
+    <td>når det finnes en faglig rekkefølge; sjelden</td></tr>
+<tr><td><b>II</b></td><td>justerer for de andre hovedeffektene, ikke for interaksjonen</td>
+    <td>når interaksjonen er uten interesse</td></tr>
+<tr><td><b>III</b> (standard)</td><td>justerer hver effekt for <b>alle</b> de andre</td>
+    <td><b>som regel — og det JASP og SPSS gjør som standard</b></td></tr>
+</table>
+
+<p style="font-size:16.5px;line-height:1.55">Alle tall i denne appen er Type III.
+Med balanserte celler gir de tre typene <b>identiske</b> resultater — det er
+bare ubalansen som skiller dem. Det er verdt å skrive i metodedelen hvilken du
+brukte.</p>
+
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+Ubalanse gjør valget av kvadratsumtype til en faglig beslutning, ikke en
+teknisk detalj — og gjør lik varians til en forutsetning du <b>må</b> sjekke.</div>
+
+<h3>Og hvis noe brister?</h3>
+<ul style="font-size:16.5px;line-height:1.6">
+<li><b>Ulik varians:</b> Welch-justering finnes ikke ferdig for faktorielle
+design i JASP. Alternativene er robuste standardfeil, eller å rapportere
+resultatet med forbehold og vise spredningene.</li>
+<li><b>Skjeve residualer:</b> transformer utfallet, eller bruk en
+ikke-parametrisk tilnærming — men merk at interaksjonen da blir vanskeligere å
+tolke, fordi den ikke er invariant under transformasjon.</li>
+<li><b>Ekstreme verdier:</b> kjør analysen med og uten, og rapporter begge.
+Med <i>n</i> = 7 i en celle kan én person flytte konklusjonen.</li>
+</ul>
+
+<details class="mer"><summary>Mer om dette</summary>
+<p style="font-size:15.5px;line-height:1.5">En interaksjon er ikke invariant
+under monotone transformasjoner: logaritmerer du utfallet, kan en signifikant
+interaksjon forsvinne eller dukke opp. Hovedeffekter er mer robuste. Det er et
+argument for å velge skalaen ut fra faget — ikke ut fra hva som gir pene
+residualer.</p>
+<p style="font-size:15.5px;line-height:1.5">Levenes test er selv avhengig av
+utvalgsstørrelse: med store celler slår den ut på ubetydelige forskjeller, med
+små oppdager den ikke store. Se derfor på standardavvikene selv, ikke bare på
+<i>p</i>-verdien fra testen.</p>
+</details>
+
+<div class="gloss">
+<b>Homogen varians</b> — lik spredning i alle celler.
+<b>Levenes test</b> — test av om variansene er like; her på medianavvik (Brown–Forsythe).
+<b>Residual</b> — avstand fra person til eget cellegjennomsnitt.
+<b>Type III SS</b> — hver effekt justert for alle de andre; standard ved ubalanse.
+<b>QQ-plott</b> — observerte kvantiler mot forventede under normalfordeling.
+</div>
+</div>
+</div>
+<div id="fane-ekte" class="hide">
+<div class="card">
+<h2>Ekte data og JASP-output</h2>
+
+<div id="ekteHistorie"></div>
+
+<div class="boks bla" id="ekteDesignNote"></div>
+
+<h3>Slik klikker du det fram i JASP</h3>
+<div class="klikksti" id="ekteKlikksti"></div>
+
+<h3>Outputen, tabell for tabell</h3>
+
+<div id="ekteDeskr"></div>
+<p style="font-size:16px;line-height:1.5"><b>Les denne først.</b> Fire celler,
+med {nMin} til {nMaks} personer i hver. Avstanden mellom de to nivåene av
+{a} er <b>{g1}</b> innenfor {B0} og <b>{g2}</b> innenfor {B1} — se om de to
+tallene ligner på hverandre.</p>
+
+<div id="ekteAnova"></div>
+<p style="font-size:16px;line-height:1.5"><b>Les interaksjonsraden først.</b>
+Interaksjonen er <span class="m-tstat"><i>F</i>(1, {dfE}) = {Fi}</span>,
+<span class="m-p"><i>p</i> = {pi}</span>. Den avgjør hvordan de to andre radene
+skal leses: er den signifikant, beskriver hovedeffektene et gjennomsnitt av to
+ulike ting.</p>
+
+<div id="ekteLevene"></div>
+
+<div id="ekteEnkle"></div>
+
+<h3>Tallene du trenger, samlet</h3>
+<div class="minitab" id="ekteOppsum"></div>
+
+<div class="boks rod">
+<h3>Tre feil som går igjen når denne outputen skal tolkes</h3>
+<b>1 ·</b> «{B} hadde ingen effekt», sagt fordi hovedeffekten ikke var
+signifikant — når de to enkle effektene i virkeligheten pekte hver sin vei og
+utlignet hverandre.<br>
+<b>2 ·</b> «Effekten finnes bare i den ene gruppen», sagt fordi den ene enkle
+effekten var signifikant og den andre ikke. Ikke påvist er ikke det samme som
+null.<br>
+<b>3 ·</b> Å gi interaksjonen en årsaksforklaring når den faktoren ikke er
+randomisert. Sammenhengen er da observert, ikke forårsaket.
+</div>
+
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+Outputen gir deg tre <i>p</i>-verdier. Designet avgjør hva du har lov til å si
+om dem.</div>
+
+<div class="gloss">
+<b>Randomisert</b> — tildelt ved loddtrekning; tillater årsakspåstander.
+<b>Kvasi-eksperimentell</b> — gruppene er ikke tildelt tilfeldig; tillater ikke årsakspåstander.
+<b>Moderator</b> — en variabel som endrer styrken eller retningen på en annen effekt.
+<b>Descriptives</b> — JASPs tabell med <i>n</i>, gjennomsnitt og standardavvik per celle.
+</div>
+</div>
+</div>
+<div id="fane-rapport" class="hide">
+<div class="card">
+<h2>Slik rapporteres det</h2>
+
+<p style="font-size:16.5px;line-height:1.55">Tre former, og de skal si det
+samme: <b>teksten</b>, <b>tabellen</b> og <b>figuren</b>. Klikk på et tall i
+teksten under for å se hvor i outputen det kommer fra.</p>
+
+<h3>Metodedelen</h3>
+<div class="rapsetning" style="font-size:16.5px;line-height:1.6">
+{utfall} ble undersøkt med en <b>2 ({a}: {A0}, {A1}) × 2 ({b}: {B0}, {B1})
+variansanalyse mellom deltakere</b>. Type III kvadratsummer
+ble brukt på grunn av ulike celletall. Forutsetningen om lik varians ble
+vurdert med Levenes test, og residualenes fordeling med QQ-plott.
+</div>
+
+<h3>Resultatdelen</h3>
+<div class="rapsetning" id="rapTekst" style="font-size:16.5px;line-height:1.7"></div>
+
+<div class="boks bla">
+<h3>Fem ting setningen gjør riktig</h3>
+<b>1 ·</b> Interaksjonen kommer <b>først</b>, fordi den avgjør hvordan resten
+leses.<br>
+<b>2 ·</b> En hovedeffekt som ikke er signifikant, rapporteres — men <b>ikke</b>
+som «ingen effekt».<br>
+<b>3 ·</b> De enkle effektene står i <b>skalaens egne poeng</b> med intervall —
+ikke bare som <i>p</i>.<br>
+<b>4 ·</b> Den ikke-signifikante enkle effekten beskrives som <b>usikker</b>,
+ikke som fraværende.<br>
+<b>5 ·</b> Den <b>ikke-randomiserte</b> faktoren nevnes i tolkningen.
+</div>
+
+<h3>Tabellen</h3>
+<div id="rapTabell"></div>
+<p style="font-size:16px;line-height:1.5">En APA-tabell har ingen loddrette
+streker, og bare tre vannrette: over overskriftsraden, under den, og under
+tabellen. Effektstørrelse hører hjemme i tabellen, ikke bare i teksten.</p>
+
+<h3>Figuren</h3>
+<div class="todelt">
+  <div><canvas id="cvRap" height="290" data-h="290"></canvas></div>
+  <div>
+    <p style="font-size:16px;line-height:1.55"><b>Figurtekst:</b><br>
+    <span id="rapFigurtekst"></span></p>
+    <p style="font-size:16px;line-height:1.55">Figurteksten må si <b>hva
+    feilfeltene er</b>. En figur med udefinerte feilfelt er ikke tolkbar, og det
+    er den vanligste mangelen i studentarbeider.</p>
+  </div>
+</div>
+
+<h3>Og det du <i>ikke</i> skal skrive</h3>
+<table class="tt" style="font-size:16px">
+<tr><th>Skriv ikke</th><th>Fordi</th><th>Skriv heller</th></tr>
+<tr><td>«{B} hadde ingen effekt»</td>
+    <td>effekten var motsatt i de to gruppene</td>
+    <td>«hovedeffekten var ikke signifikant, men interaksjonen viser at…»</td></tr>
+<tr><td>«Det var en tendens til effekt (<i>p</i> = .073)»</td>
+    <td>en <i>p</i> over grensen er ikke en tendens</td>
+    <td>«effekten lot seg ikke påvise; 95&nbsp;% KI [−0.34, 7.36]»</td></tr>
+<tr><td>«Effekten finnes bare i den ene gruppen»</td>
+    <td>den andre enkle effekten var usikker, ikke null</td>
+    <td>«forskjellen var tydelig innenfor {B0} og usikker innenfor {B1}»</td></tr>
+<tr><td>«{B0} forsterker effekten»</td>
+    <td>en faktor som ikke er randomisert, gir ikke årsakspåstander</td>
+    <td>«{b} modererte den observerte forskjellen»</td></tr>
+<tr><td>«<i>F</i> = 5.27 beviser interaksjonen»</td>
+    <td>tester beviser ikke</td>
+    <td>«dataene gir holdepunkter for at effekten varierte»</td></tr>
+</table>
+
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+Rekkefølgen i teksten er interaksjon → enkle effekter → hovedeffekter med
+forbehold. Ikke motsatt.</div>
+
+<details class="mer"><summary>Mer om dette</summary>
+<p style="font-size:15.5px;line-height:1.5">APA 7 ber om eksakte
+<i>p</i>-verdier med tre desimaler, uten nullen foran komma (<i>p</i> = .025),
+og «&lt; .001» når den er mindre enn det. <i>F</i>, <i>p</i>, <i>M</i>,
+<i>SD</i>, <i>N</i> og <i>d</i> settes i kursiv; greske bokstaver som η og ω
+gjør det ikke.</p>
+<p style="font-size:15.5px;line-height:1.5">Er interaksjonen ikke signifikant,
+faller hele oppfølgingsdelen bort. Da rapporteres de to hovedeffektene som de
+står, og du skriver én setning om at det ikke var holdepunkter for at effekten
+varierte — gjerne med intervallet for interaksjonskontrasten, slik at leseren
+ser hvor mye som ikke er utelukket.</p>
+</details>
+
+<div class="gloss">
+<b>APA-tabell</b> — tre vannrette streker, ingen loddrette.
+<b>Figurtekst</b> — står under figuren og forklarer feilfelt og skala.
+<b>Moderere</b> — å endre styrken eller retningen på en sammenheng.
+<b>Eksakt <i>p</i></b> — den faktiske verdien, ikke «&lt; .05».
+</div>
+</div>
+</div>
+<div id="fane-kji" class="hide">
+<div class="card">
+<h2>Kjikvadrat som interaksjon</h2>
+
+<p style="font-size:16.5px;line-height:1.55">Denne fanen er en bro, ikke en del
+av løpet. Alt foran forutsetter at <b>utfallet er en tallskala</b>. Er utfallet
+i stedet en <b>kategori</b> — ja/nei, frisk/syk, fullført/droppet — finnes det
+en test med samme logikk: kjikvadrat.</p>
+
+<h3>Den samme tabellen, lest på nytt</h3>
+<p style="font-size:16.5px;line-height:1.55">Medisinbruk var en <b>faktor</b> i
+analysen foran. Her er den <b>utfallet</b>: henger medisinbruk sammen med
+hvilken gruppe pasienten havnet i?</p>
+
+<div class="minitab" id="kjiTab"></div>
+
+<p style="font-size:16.5px;line-height:1.55">72&nbsp;% av ISTDP-pasientene brukte
+medisin, mot 82&nbsp;% på venteliste. <span class="m-tstat">χ²(1) = 1.03</span>,
+<span class="m-p"><i>p</i> = .310</span> — forskjellen er ikke større enn
+tilfeldighetene i en randomisering lager. <b>Det er godt nytt for studien:</b>
+randomiseringen fordelte medisinbrukere jevnt.</p>
+
+<h3>Hvorfor dette er en interaksjon</h3>
+<p style="font-size:16.5px;line-height:1.55">En 2×2 krysstabell spør om
+<b>andelen</b> i én variabel avhenger av den andre. Det er samme spørsmålsform
+som interaksjonen: <i>avhenger effekten av det ene av nivået på det andre?</i>
+Forskjellen er hva som måles:</p>
+
+<table class="tt" style="font-size:16px">
+<tr><th></th><th>Faktoriell ANOVA</th><th>Kjikvadrat</th></tr>
+<tr><td>Utfallet</td><td>tallskala</td><td>kategori</td></tr>
+<tr><td>Sammenligner</td><td>gjennomsnitt</td><td>andeler</td></tr>
+<tr><td>Forventet under <i>H</i><sub>0</sub></td><td>like cellegjennomsnitt</td>
+    <td>rad-&nbsp;× kolonnesum / total</td></tr>
+<tr><td>Testobservator</td><td><i>F</i></td><td>χ²</td></tr>
+<tr><td>Effektstørrelse</td><td>η²<sub>p</sub>, <i>d</i></td>
+    <td>oddsratio, Cramérs <i>V</i></td></tr>
+<tr><td><i>df</i> i et 2×2</td><td>1</td><td>1</td></tr>
+</table>
+
+<h3>Forventede frekvenser</h3>
+<div class="minitab" id="kjiForv"></div>
+
+<p style="font-size:16.5px;line-height:1.55">χ² er summen av
+(observert − forventet)² / forventet over alle fire cellene — nøyaktig samme
+form som en kvadratsum. Er alle fire like som forventet, blir χ² = 0.</p>
+
+<h3>Effektstørrelsen</h3>
+<p style="font-size:16.5px;line-height:1.55"><b>Oddsratio = 0.57.</b> Oddsen for
+å bruke medisin var 0.57 ganger så høy i ISTDP-gruppen som på ventelisten. En
+oddsratio på 1 betyr ingen sammenheng; 0.57 høres ut som mye, men med
+95&nbsp;%-intervall som dekker 1 er det ikke noe å bygge på.</p>
+
+<div class="boks rod">
+<h3>Forutsetningen som brytes oftest</h3>
+Kjikvadrat krever at <b>forventede</b> frekvenser er minst 5 i alle celler.
+Her er den minste forventet 8.2 — greit. Er en av dem under 5, skal du bruke
+<b>Fishers eksakte test</b> i stedet. Med <i>n</i> = 7 i en celle er det en
+reell fare i mindre datasett.
+</div>
+
+<div class="keybox"><span class="lbl">Sagt på én linje</span>
+Kjikvadrat er interaksjonsspørsmålet stilt til <b>andeler</b> i stedet for
+gjennomsnitt.</div>
+
+<details class="mer"><summary>Mer om dette</summary>
+<p style="font-size:15.5px;line-height:1.5">Sammenhengen er dypere enn en
+analogi: en 2×2 krysstabell kan analyseres som en <b>logistisk regresjon</b>
+med et produktledd, og da er interaksjonskoeffisienten logaritmen til
+oddsratioen. Det er den samme modelltenkningen som i faktoriell ANOVA, med en
+annen kobling mellom prediktorer og utfall.</p>
+<p style="font-size:15.5px;line-height:1.5">Kjikvadrat for uavhengighet hører
+hjemme i forelesning 2, og appen om <i>p</i>-verdier dekker den grundigere.
+Den står her fordi den samme tabellen dukker opp igjen — og fordi
+randomiseringssjekken er noe enhver leser av en RCT skal se etter.</p>
+</details>
+
+<div class="gloss">
+<b>Krysstabell</b> — tabell over antall i hver kombinasjon av to kategorier.
+<b>Forventet frekvens</b> — antallet cellen ville hatt hvis de to var uavhengige.
+<b>Oddsratio</b> — forholdet mellom oddsen i de to gruppene; 1 betyr ingen sammenheng.
+<b>Fishers eksakte test</b> — brukes når forventede frekvenser er små.
+</div>
+</div>
+</div>
+</div>
+<script>
+const FANER=['hvorfor','design','estimat','se','ki','nhst','sim','lese','enkle','effekt','forut','ekte','rapport','kji'];
+/* GENERERT av lag_datasett.py — ikke rediger for hånd. */
+const DATASETT = {
+  dykk1975: {
+    tittel: "Dykkerne · 1975",
+    kort: "Stor kryssende interaksjon",
+    historie: "Dykkere lærte ordlister enten på land eller under vann, og skulle huske dem igjen enten på land eller under vann.",
+    utfall: "Antall ord husket (av 36)",
+    utfallKort: "ord husket",
+    faktorANavn: "Læringssted",
+    faktorBNavn: "Husketested",
+    xlab: "Hvor de skulle huske ordene",
+    ylab: "Antall ord husket",
+    kilde: "Simulert etter mønsteret i Godden & Baddeley (1975), British Journal of Psychology 66, 325–331. Originalen var innen-person med 16 dykkere og rapporterte F(1, 12) = 22.0, p < .001 for interaksjonen.",
+    intro: "Et forsøk fra 1975. Noen dykkere skulle lære en liste med ord, og senere huske så mange som mulig. Halvparten lærte ordene <b>på land</b>, halvparten <b>under vann</b>. Og så ble hver av dem bedt om å huske ordene <b>enten på land eller under vann</b>.",
+    spor: "Spiller det noen rolle <i>hvor</i> de skulle huske ordene? Og spiller det rolle om stedet var det <b>samme</b> som der de lærte dem?",
+    mer: "<p>Dykkerforsøket er ekte, og det er et av de mest siterte i kognitiv psykologi. Men det har en fortsettelse: i 2021 gjorde Jaap Murre nøyaktig det samme forsøket om igjen med 16 nye dykkere — og <b>fant ingen interaksjon</b>. Bytt til datasettet «Dykkerne · 2021» øverst, så ser du hvordan den samme figuren ser ut når effekten ikke er der. Det er en nyttig påminnelse: et enkeltfunn, selv et berømt et, er ikke det samme som en etablert sannhet.</p><p>Originalen fra 1975 var <b>innen-person</b>: de samme 16 dykkerne gjorde alle fire betingelsene. Tallene i denne appen er simulert som et <b>mellom-person</b>-design, fordi det er den varianten faktoriell ANOVA i dette emnet handler om. Mønsteret og konklusjonen er den samme; analysen er den som passer til forelesningen.</p>",
+    ekte: false,
+    faktorA:{navn:"Læringssted", niva:["Lært på land", "Lært under vann"]},
+    faktorB:{navn:"Husketested", niva:["Husket på land", "Husket under vann"]},
+    celle: {
+      "Lært på land": {"Husket på land":{n:16, M:13.50, SD:3.60}, "Husket under vann":{n:16, M:8.60, SD:3.60}},
+      "Lært under vann": {"Husket på land":{n:16, M:8.50, SD:3.60}, "Husket under vann":{n:16, M:11.40, SD:3.60}},
+    },
+    N:64, dfE:60, MSE:12.96, SSE:777.63, SST:1056.35, tKrit:2.000,
+    emm: {"Lært på land":{M:11.05, SE:0.636}, "Lært under vann":{M:9.95, SE:0.636}, "Husket på land":{M:11.00, SE:0.636}, "Husket under vann":{M:10.00, SE:0.636}},
+    anova: [
+      {kilde:"Læringssted", SS:19.36, df:1, MS:19.36, F:1.494, p:'.226', pTall:0.226412, etap:0.024, omega:0.006},
+      {kilde:"Husketested", SS:16.00, df:1, MS:16.00, F:1.235, p:'.271', pTall:0.270962, etap:0.020, omega:0.003},
+      {kilde:"Læringssted ✻ Husketested", SS:243.36, df:1, MS:243.36, F:18.777, p:'< .001', pTall:0.000057, etap:0.238, omega:0.215},
+      {kilde:'Residual', SS:777.63, df:60, MS:12.96, F:null, p:null}
+    ],
+    enkle: {
+      "B_i_Lært på land":{navn:"Lært på land", diff:4.90, SE:1.273, t:3.850, p:'< .001', lo:2.35, hi:7.45, d:1.36},
+      "B_i_Lært under vann":{navn:"Lært under vann", diff:-2.90, SE:1.273, t:-2.278, p:'.026', lo:-5.45, hi:-0.35, d:-0.81},
+      "A_i_Husket på land":{navn:"Husket på land", diff:5.00, SE:1.273, t:3.928, p:'< .001', lo:2.45, hi:7.55, d:1.39},
+      "A_i_Husket under vann":{navn:"Husket under vann", diff:-2.80, SE:1.273, t:-2.200, p:'.032', lo:-5.35, hi:-0.25, d:-0.78}
+    },
+    kontrast: {verdi:7.80, SE:1.800, t:4.333, p:'< .001', lo:4.20, hi:11.40},
+    effekt: {mu:10.500, a:0.550, b:0.500, ab:1.950},
+    levene: {F:0.102, df1:3, df2:60, p:'.958'},
+    residual: {skjev:0.06, kurtose:-0.82},
+    res: [-6.6,-6.55,-5.96,-5.9,-5.37,-4.6,-4.43,-4.33,-3.71,-3.64,-3.59,-3.58,-3.15,-2.99,-2.95,-2.89,-2.81,-2.71,-2.61,-2.59,-2.38,-1.78,-1.57,-1.51,-1.42,-1.11,-1.05,-0.61,-0.5,-0.33,-0.31,-0.16,0.07,0.33,0.47,0.5,0.59,0.6,0.74,0.89,1.27,1.75,2.47,2.47,2.49,2.54,2.66,2.69,2.76,2.94,2.96,3.25,3.25,3.31,3.39,4.1,4.41,4.41,4.79,5.04,6.4,6.43,6.72,7.05]
+  },
+  dykk2021: {
+    tittel: "Dykkerne · 2021",
+    kort: "Ingen interaksjon",
+    historie: "Nøyaktig samme forsøk, gjort om igjen 46 år senere — med 16 nye dykkere i et oppvarmet basseng i Amsterdam.",
+    utfall: "Antall ord husket (av 36)",
+    utfallKort: "ord husket",
+    faktorANavn: "Læringssted",
+    faktorBNavn: "Husketested",
+    xlab: "Hvor de skulle huske ordene",
+    ylab: "Antall ord husket",
+    kilde: "Simulert etter de publiserte F-verdiene i Murre (2021), Royal Society Open Science 8: 200724: læringssted F = 16.2, husketested F = 0.601, interaksjon F = 1.999, alle med df = 1, 60.",
+    intro: "Nøyaktig samme forsøk, 46 år senere. 16 nye dykkere, et oppvarmet basseng i Amsterdam, de samme fire betingelsene — lært på land eller under vann, husket på land eller under vann.",
+    spor: "Kommer det samme mønsteret tilbake? Avhenger effekten av <i>hvor de skulle huske</i> fortsatt av <b>hvor de lærte</b>?",
+    mer: "<p>Dette er en <b>replikasjon</b> av forsøket fra 1975, og den fant ikke interaksjonen. Den fant derimot en tydelig hovedeffekt av læringssted: de som lærte på land husket flere ord uansett hvor de ble testet.</p><p>Det er ikke et bevis for at det opprinnelige funnet var galt — ett forsøk med 16 personer avgjør ingenting alene, verken i 1975 eller i 2021. Men det er en god grunn til å være forsiktig med hvor bastant man formulerer seg. Bytt mellom de to datasettene og se hvor ulik den samme figuren kan se ut.</p>",
+    ekte: false,
+    faktorA:{navn:"Læringssted", niva:["Lært på land", "Lært under vann"]},
+    faktorB:{navn:"Husketested", niva:["Husket på land", "Husket under vann"]},
+    celle: {
+      "Lært på land": {"Husket på land":{n:16, M:9.69, SD:4.00}, "Husket under vann":{n:16, M:10.33, SD:4.00}},
+      "Lært under vann": {"Husket på land":{n:16, M:7.09, SD:4.00}, "Husket under vann":{n:16, M:4.89, SD:4.00}},
+    },
+    N:64, dfE:60, MSE:16.00, SSE:960.17, SST:1260.73, tKrit:2.000,
+    emm: {"Lært på land":{M:10.01, SE:0.707}, "Lært under vann":{M:5.99, SE:0.707}, "Husket på land":{M:8.39, SE:0.707}, "Husket under vann":{M:7.61, SE:0.707}},
+    anova: [
+      {kilde:"Læringssted", SS:258.57, df:1, MS:258.57, F:16.158, p:'< .001', pTall:0.000165, etap:0.212, omega:0.190},
+      {kilde:"Husketested", SS:9.73, df:1, MS:9.73, F:0.608, p:'.438', pTall:0.438497, etap:0.010, omega:-0.005},
+      {kilde:"Læringssted ✻ Husketested", SS:32.26, df:1, MS:32.26, F:2.016, p:'.161', pTall:0.160819, etap:0.033, omega:0.013},
+      {kilde:'Residual', SS:960.17, df:60, MS:16.00, F:null, p:null}
+    ],
+    enkle: {
+      "B_i_Lært på land":{navn:"Lært på land", diff:-0.64, SE:1.414, t:-0.453, p:'.653', lo:-3.47, hi:2.19, d:-0.16},
+      "B_i_Lært under vann":{navn:"Lært under vann", diff:2.20, SE:1.414, t:1.555, p:'.125', lo:-0.63, hi:5.03, d:0.55},
+      "A_i_Husket på land":{navn:"Husket på land", diff:2.60, SE:1.414, t:1.838, p:'.071', lo:-0.23, hi:5.43, d:0.65},
+      "A_i_Husket under vann":{navn:"Husket under vann", diff:5.44, SE:1.414, t:3.846, p:'< .001', lo:2.61, hi:8.27, d:1.36}
+    },
+    kontrast: {verdi:-2.84, SE:2.000, t:-1.420, p:'.161', lo:-6.84, hi:1.16},
+    effekt: {mu:8.000, a:2.010, b:0.390, ab:-0.710},
+    levene: {F:0.042, df1:3, df2:60, p:'.989'},
+    residual: {skjev:-0.17, kurtose:-0.75},
+    res: [-8.53,-7.86,-7.65,-6.11,-6.02,-5.35,-5.08,-4.77,-4.69,-4.56,-3.82,-3.64,-3.63,-3.61,-3.21,-2.93,-2.82,-2.79,-2.41,-2.25,-2.18,-1.97,-1.7,-1.4,-1.32,-1.24,-1.09,-0.86,-0.55,-0.51,-0.46,0.29,0.51,0.61,0.68,0.96,0.99,1.47,1.6,1.74,1.78,1.93,1.94,2.09,2.19,2.3,2.8,3.43,3.43,3.56,3.99,4.01,4.03,4.03,4.11,4.46,4.7,5,5.26,5.26,5.71,5.84,6.17,8.13]
+  },
+  testeffekt: {
+    tittel: "Testeffekten · 2006",
+    kort: "Kryssende: lese om igjen mot å teste seg",
+    historie: "Studenter leste en fagtekst, og fikk så enten lese den om igjen eller teste seg selv på den. Noen ble målt etter fem minutter, andre etter en uke.",
+    utfall: "Antall poenger husket (av 30)",
+    utfallKort: "poenger husket",
+    faktorANavn: "Studiemetode",
+    faktorBNavn: "Tidsintervall",
+    xlab: "Når de skulle gjenfortelle teksten",
+    ylab: "Antall poenger husket",
+    kilde: "Simulert etter de publiserte cellesnittene i Roediger & Karpicke (2006), Psychological Science 17, 249–255, forsøk 1: 81 % mot 75 % etter 5 minutter, og 42 % mot 56 % etter én uke, av 30 poenger i teksten.",
+    intro: "Et forsøk om hvordan man bør lese til eksamen. Studenter leste en fagtekst i sju minutter. Så fikk halvparten <b>lese den om igjen</b>, mens den andre halvparten måtte <b>teste seg selv</b> — skrive ned alt de husket, uten å se teksten og uten å få fasit. Til slutt skulle alle gjenfortelle teksten: noen <b>etter fem minutter</b>, andre <b>etter en uke</b>.",
+    spor: "Hva lønner seg — å lese om igjen, eller å teste seg selv? Og kommer svaret an på <b>når</b> du skal huske det?",
+    mer: "<p>Dette er <b>testeffekten</b>, et av de mest replikerte funnene i kognitiv psykologi, og et av de få med direkte råd til deg: å hente fram noe fra hukommelsen fester det bedre enn å lese det en gang til. Å lese om igjen kjennes tryggere der og da — og i forsøket var de som leste om igjen også <b>mest sikre</b> på at de kom til å huske teksten en uke senere. De husket minst.</p><p>Originalen var et 2×3-design: tidsintervallene var 5 minutter, 2 dager og 1 uke, og studiemetode var en <b>innen-person</b>-faktor — hver student gjorde begge deler, med hver sin tekst. Her er to av de tre intervallene simulert som et balansert <b>mellom-person</b> 2×2, fordi det er den varianten faktoriell ANOVA i dette emnet handler om. Cellesnittene er de publiserte; spredningen innad i cellene er simulert.</p><p>De publiserte testene fra hele 2×3-designet: studiemetode <i>F</i>(1, 117) = 36.39, tidsintervall <i>F</i>(2, 117) = 50.34, interaksjon <i>F</i>(2, 117) = 32.10.</p>",
+    ekte: false,
+    faktorA:{navn:"Studiemetode", niva:["Leste om igjen", "Testet seg selv"]},
+    faktorB:{navn:"Tidsintervall", niva:["Etter 5 minutter", "Etter 1 uke"]},
+    celle: {
+      "Leste om igjen": {"Etter 5 minutter":{n:30, M:24.30, SD:4.50}, "Etter 1 uke":{n:30, M:12.60, SD:4.50}},
+      "Testet seg selv": {"Etter 5 minutter":{n:30, M:22.50, SD:4.50}, "Etter 1 uke":{n:30, M:16.80, SD:4.50}},
+    },
+    N:120, dfE:116, MSE:20.25, SSE:2348.83, SST:4932.73, tKrit:1.981,
+    emm: {"Leste om igjen":{M:18.45, SE:0.581}, "Testet seg selv":{M:19.65, SE:0.581}, "Etter 5 minutter":{M:23.40, SE:0.581}, "Etter 1 uke":{M:14.70, SE:0.581}},
+    anova: [
+      {kilde:"Studiemetode", SS:43.20, df:1, MS:43.20, F:2.133, p:'.147', pTall:0.146816, etap:0.018, omega:0.005},
+      {kilde:"Tidsintervall", SS:2270.70, df:1, MS:2270.70, F:112.141, p:'< .001', pTall:0.000000, etap:0.492, omega:0.454},
+      {kilde:"Studiemetode ✻ Tidsintervall", SS:270.00, df:1, MS:270.00, F:13.334, p:'< .001', pTall:0.000392, etap:0.103, omega:0.050},
+      {kilde:'Residual', SS:2348.83, df:116, MS:20.25, F:null, p:null}
+    ],
+    enkle: {
+      "B_i_Leste om igjen":{navn:"Leste om igjen", diff:11.70, SE:1.162, t:10.070, p:'< .001', lo:9.40, hi:14.00, d:2.60},
+      "B_i_Testet seg selv":{navn:"Testet seg selv", diff:5.70, SE:1.162, t:4.906, p:'< .001', lo:3.40, hi:8.00, d:1.27},
+      "A_i_Etter 5 minutter":{navn:"Etter 5 minutter", diff:1.80, SE:1.162, t:1.549, p:'.124', lo:-0.50, hi:4.10, d:0.40},
+      "A_i_Etter 1 uke":{navn:"Etter 1 uke", diff:-4.20, SE:1.162, t:-3.615, p:'< .001', lo:-6.50, hi:-1.90, d:-0.93}
+    },
+    kontrast: {verdi:6.00, SE:1.643, t:3.652, p:'< .001', lo:2.75, hi:9.25},
+    effekt: {mu:19.050, a:-0.600, b:4.350, ab:1.500},
+    levene: {F:0.109, df1:3, df2:116, p:'.955'},
+    residual: {skjev:-0.32, kurtose:-0.10},
+    res: [-13,-10.85,-9.03,-8.91,-8.78,-8.72,-8.22,-7.49,-7.32,-7.1,-6.27,-5.82,-5.54,-5.54,-5.07,-4.76,-4.68,-4.54,-4.29,-4.09,-3.63,-3.61,-3.52,-3.33,-3.09,-2.88,-2.85,-2.8,-2.79,-2.75,-2.73,-2.71,-2.7,-2.62,-2.48,-2.45,-2.44,-2.2,-2.15,-2.15,-2.07,-1.64,-1.62,-1.6,-1.57,-1.32,-1.18,-1.02,-1,-0.72,-0.64,-0.6,-0.54,-0.38,-0.37,-0.26,-0.2,-0.12,-0,0.22,0.22,0.3,0.34,0.58,0.58,0.58,0.59,1.09,1.09,1.15,1.22,1.34,1.76,1.77,1.81,1.85,1.87,1.89,1.96,1.97,2,2.05,2.06,2.39,2.43,2.51,2.53,2.63,2.96,3.17,3.36,3.38,3.41,3.5,3.65,3.68,3.87,3.95,3.97,4.24,4.43,4.8,4.99,5.05,5.07,5.39,5.39,5.5,5.6,5.89,6.46,6.47,6.56,6.7,7.15,7.42,7.73,8.34,8.71,9.24]
+  },
+  terapi: {
+    tittel: "Terapistudien",
+    kort: "Liten interaksjon, ubalanserte celler",
+    historie: "75 pasienter ble trukket til korttidsterapi eller venteliste. Noen brukte medisin fra før, andre ikke.",
+    utfall: "Lav selvtillit etter behandling",
+    utfallKort: "selvtillit-skåre",
+    faktorANavn: "Gruppe",
+    faktorBNavn: "Medisinbruk",
+    xlab: "Medisinbruk ved oppstart",
+    ylab: "Lav selvtillit etter behandling",
+    kilde: "Ekte data fra emnets terapistudie (N = 75). Gruppe er randomisert; medisinbruk er det ikke, så interaksjonen er observert, ikke forårsaket.",
+    intro: "75 pasienter ble trukket til enten korttidsterapi (ISTDP) eller <b>venteliste</b>. Noen av dem <b>brukte medisin</b> fra før, andre ikke. Etter behandlingen ble selvtilliten deres målt.",
+    spor: "Hjelper terapien? Og hjelper den <b>like mye</b> for dem som bruker medisin som for dem som ikke gjør det?",
+    mer: "<p>Dette er ekte data, og det merkes: cellene er <b>ikke like store</b>, og tallene er ikke like pene som i et simulert eksempel. Det er normaltilstanden i psykologisk forskning.</p><p>Legg merke til at de to faktorene ikke er av samme slag. <b>Gruppe</b> er randomisert — pasientene ble trukket — så en forskjell der kan tolkes som en virkning av terapien. <b>Medisinbruk</b> er derimot noe pasientene hadde med seg inn. Om interaksjonen skulle vise seg å være tydelig, betyr det at terapien virket ulikt i de to gruppene — men ikke nødvendigvis at det var <i>medisinen</i> som gjorde det. De som brukte medisin kan skille seg fra de andre på mange måter.</p>",
+    ekte: true,
+    faktorA:{navn:"Gruppe", niva:["ISTDP", "Venteliste"]},
+    faktorB:{navn:"Medisinbruk", niva:["Bruker medisin", "Uten medisin"]},
+    celle: {
+      "ISTDP": {"Bruker medisin":{n:26, M:21.27, SD:5.14}, "Uten medisin":{n:10, M:23.70, SD:3.59}},
+      "Venteliste": {"Bruker medisin":{n:32, M:29.94, SD:4.36}, "Uten medisin":{n:7, M:26.43, SD:5.06}},
+    },
+    N:75, dfE:71, MSE:21.42, SSE:1520.80, SST:2053.20, tKrit:1.994,
+    emm: {"ISTDP":{M:22.48, SE:0.861}, "Venteliste":{M:28.19, SE:0.966}, "Bruker medisin":{M:25.61, SE:0.611}, "Uten medisin":{M:25.06, SE:1.140}},
+    anova: [
+      {kilde:"Gruppe", SS:415.78, df:1, MS:415.78, F:19.411, p:'< .001', pTall:0.000037, etap:0.215, omega:0.190},
+      {kilde:"Medisinbruk", SS:3.73, df:1, MS:3.73, F:0.174, p:'.678', pTall:0.677652, etap:0.002, omega:-0.009},
+      {kilde:"Gruppe ✻ Medisinbruk", SS:112.88, df:1, MS:112.88, F:5.270, p:'.025', pTall:0.024652, etap:0.069, omega:0.044},
+      {kilde:'Residual', SS:1520.80, df:71, MS:21.42, F:null, p:null}
+    ],
+    enkle: {
+      "B_i_ISTDP":{navn:"ISTDP", diff:-2.43, SE:1.722, t:-1.411, p:'.163', lo:-5.86, hi:1.00, d:-0.53},
+      "B_i_Venteliste":{navn:"Venteliste", diff:3.51, SE:1.931, t:1.818, p:'.073', lo:-0.34, hi:7.36, d:0.76},
+      "A_i_Bruker medisin":{navn:"Bruker medisin", diff:-8.67, SE:1.222, t:-7.095, p:'< .001', lo:-11.11, hi:-6.23, d:-1.87},
+      "A_i_Uten medisin":{navn:"Uten medisin", diff:-2.73, SE:2.281, t:-1.197, p:'.235', lo:-7.28, hi:1.82, d:-0.59}
+    },
+    kontrast: {verdi:-5.94, SE:2.587, t:-2.296, p:'.025', lo:-11.10, hi:-0.78},
+    effekt: {mu:25.335, a:-2.850, b:0.270, ab:-1.485},
+    levene: {F:0.450, df1:3, df2:71, p:'.718'},
+    residual: {skjev:-0.24, kurtose:-0.40},
+    res: [-10.27,-9.94,-8.94,-8.94,-8.27,-6.43,-6.27,-6.27,-5.27,-5.27,-4.94,-4.94,-4.7,-4.27,-3.94,-3.94,-3.94,-3.94,-3.7,-3.43,-3.43,-2.7,-2.7,-2.27,-1.7,-1.27,-1.27,-1.27,-1.27,-0.94,-0.94,-0.94,-0.43,-0.27,0.06,0.06,0.06,0.06,0.73,0.73,1.06,1.3,1.57,1.73,1.73,2.06,2.06,2.3,2.3,2.73,3.06,3.06,3.06,3.06,3.06,3.06,3.3,3.57,3.73,3.73,3.73,4.06,4.06,4.06,4.73,4.73,5.06,5.06,5.06,5.06,5.73,6.3,8.57,9.73,9.73]
+  },
+};
+/* =====================================================================
+   Sim 24 · Faktoriell ANOVA — felles kjerne
+   ---------------------------------------------------------------------
+   Datasettene ligger i _datasett.js, generert av lag_datasett.py. Her er
+   bare valget mellom dem, hjelpefunksjonene og de felles figurene.
+
+   Datasettbyttet laster siden på nytt med ?sett=... i adressen. Det er
+   med vilje: alle fanene tegner seg én gang ved oppstart, og en
+   omtegning uten omlasting ville krevd at hver fane holdt orden på sine
+   egne lyttere. Omlasting gir ren tilstand, og adressen blir delbar.
+   ===================================================================== */
+
+const STD_SETT = 'dykk1975';
+
+function settNokkel(){
+  const q = new URLSearchParams((location.search||'').replace(/^\?/,'') + '&' +
+                                (location.hash||'').replace(/^#/,''));
+  let s = q.get('sett');
+  if(!s){ try{ s = localStorage.getItem('psy300_fak_sett'); }catch(e){} }
+  return (s && DATASETT[s]) ? s : STD_SETT;
+}
+const SETT = settNokkel();
+try{ localStorage.setItem('psy300_fak_sett', SETT); }catch(e){}
+
+/* D er det aktive datasettet. Alle faner leser herfra og bare herfra. */
+const D = DATASETT[SETT];
+
+/* ---- korte oppslag, så fanene slipper å kjenne nivånavnene ---------- */
+const A0 = D.faktorA.niva[0], A1 = D.faktorA.niva[1];
+const B0 = D.faktorB.niva[0], B1 = D.faktorB.niva[1];
+/* effekten av faktor B (x-aksen) innenfor ett nivå av faktor A (linjene) */
+function enkelB(a){ return D.enkle['B_i_'+a]; }
+/* effekten av faktor A innenfor ett nivå av faktor B */
+function enkelA(b){ return D.enkle['A_i_'+b]; }
+function M(a,b){ return D.celle[a][b].M; }
+function n(a,b){ return D.celle[a][b].n; }
+
+/* ---- små hjelpere --------------------------------------------------- */
+const $  = function(s){ return document.querySelector(s); };
+const $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
+/* Tall uten unødvendige desimaler: 7 skal stå som 7, ikke som 7.0. */
+function fmt(v, des){
+  if(v===null||v===undefined||isNaN(v)) return '–';
+  if(des===undefined) des=2;
+  let s=Number(v).toFixed(des);
+  if(s.indexOf('.')>=0) s=s.replace(/\.?0+$/,'');
+  return s;
+}
+function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function tegnFor(v){ return v>=0 ? '+'+fmt(v) : fmt(v); }
+/* «p < .001» skal aldri bli «p = < .001», og < må skrives som &lt; i HTML. */
+function pLik(p){
+  const s=String(p);
+  return s.indexOf('<')===0 ? '&lt; '+s.slice(1).trim() : '= '+s;
+}
+
+function celler(){
+  const ut=[];
+  D.faktorA.niva.forEach(function(a){
+    D.faktorB.niva.forEach(function(b){
+      const c=D.celle[a][b];
+      ut.push({a:a, b:b, n:c.n, M:c.M, SD:c.SD, SE:Math.sqrt(D.MSE/c.n)});
+    });
+  });
+  return ut;
+}
+
+/* ---- datasettvelger ------------------------------------------------- */
+(function(){
+  const boks=document.getElementById('settvelger');
+  if(!boks) return;
+  boks.innerHTML = Object.keys(DATASETT).map(function(k){
+    const d=DATASETT[k];
+    return '<button class="settknapp'+(k===SETT?' on':'')+'" data-sett="'+k+'">'+
+           '<b>'+esc(d.tittel)+'</b><span>'+esc(d.kort)+'</span></button>';
+  }).join('') +
+  '<p class="settkilde">'+esc(D.kilde)+
+  (D.ekte ? '' : ' <b>Dette er simulerte data</b>, laget for å ha akkurat dette mønsteret.')+
+  '</p>';
+  boks.querySelectorAll('.settknapp').forEach(function(b){
+    b.addEventListener('click', function(){
+      if(b.dataset.sett===SETT) return;
+      try{ localStorage.setItem('psy300_fak_sett', b.dataset.sett); }catch(e){}
+      const fane=(location.hash||'').replace(/^#/,'');
+      location.href = location.pathname + '?sett=' + b.dataset.sett +
+                      (fane ? '#'+fane : '');
+    });
+  });
+})();
+
+/* ---- fanebytte ------------------------------------------------------ */
+(function(){
+  function visFane(f){
+    if(FANER.indexOf(f)<0) f=FANER[0];
+    FANER.forEach(function(x){
+      const e=document.getElementById('fane-'+x);
+      if(e) e.classList.toggle('hide', x!==f);
+    });
+    $$('.fane').forEach(function(b){ b.classList.toggle('on', b.dataset.fane===f); });
+    window.dispatchEvent(new Event('resize'));
+    try{ history.replaceState(null,'','#fane='+f); }catch(e){}
+  }
+  $$('.fane').forEach(function(b){
+    b.addEventListener('click', function(){ visFane(b.dataset.fane); });
+  });
+  const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+
+          (location.hash||'').replace(/^#/,''));
+  const f=q.get('fane'); if(f && FANER.indexOf(f)>=0) visFane(f);
+  window.__visFane=visFane;
+})();
+
+/* ---- felles tegnefunksjon: interaksjonsplott ------------------------
+   Én funksjon, ett utseende, uansett datasett og fane. Uten det må
+   studenten lære figuren på nytt hver gang den dukker opp.
+   opt: {M:{a:{b:verdi}}, ki, ylo, yhi, bytt (bytt hvilken faktor som er
+         linjer), stegA (vis bare første linje), marg (vis marginaler)}
+--------------------------------------------------------------------- */
+const LINJEFARGE = ['#1B5E20', '#8a5200'];
+
+function autoSkala(M){
+  let lo=Infinity, hi=-Infinity;
+  Object.keys(M).forEach(function(a){ Object.keys(M[a]).forEach(function(b){
+    const se=Math.sqrt(D.MSE/n(a,b))*D.tKrit;
+    lo=Math.min(lo, M[a][b]-se); hi=Math.max(hi, M[a][b]+se);
+  });});
+  const pad=(hi-lo)*0.18;
+  return [Math.floor((lo-pad)), Math.ceil((hi+pad))];
+}
+
+function tegnInteraksjon(cv, opt){
+  opt = opt || {};
+  const MM = opt.M || (function(){
+    const o={};
+    D.faktorA.niva.forEach(function(a){ o[a]={};
+      D.faktorB.niva.forEach(function(b){ o[a][b]=M(a,b); }); });
+    return o;
+  })();
+  const r = window.devicePixelRatio||1;
+  const w = cv.clientWidth || 520;
+  const h = +(cv.dataset.h || cv.getAttribute('height') || 320);
+  cv.width=w*r; cv.height=h*r; cv.style.height=h+'px';
+  const c = cv.getContext('2d');
+  c.setTransform(r,0,0,r,0,0); c.clearRect(0,0,w,h);
+
+  const auto=autoSkala(MM);
+  const YLO = opt.ylo!==undefined ? opt.ylo : auto[0];
+  const YHI = opt.yhi!==undefined ? opt.yhi : auto[1];
+  /* Plass til høyre for linjenavnene. De er lange («Lært under vann»), og
+     kortes ned hvis figuren er smal. */
+  const hoyre = w<520 ? 96 : 150;
+  const x0=52, y0=h-44, pw=w-x0-hoyre, ph=y0-26;
+  const X = i => x0 + (i===0 ? pw*0.24 : pw*0.76);
+  const Y = v => y0 - (v-YLO)/(YHI-YLO)*ph;
+
+  const steg = Math.max(1, Math.round((YHI-YLO)/6));
+  c.strokeStyle='#e5e9f0'; c.lineWidth=1; c.fillStyle='#5C6A80';
+  c.font='12.5px sans-serif'; c.textAlign='right';
+  for(let v=Math.ceil(YLO/steg)*steg; v<=YHI; v+=steg){
+    const y=Y(v);
+    c.beginPath(); c.moveTo(x0,y); c.lineTo(x0+pw,y); c.stroke();
+    c.fillText(String(v), x0-8, y+4);
+  }
+  c.textAlign='center'; c.font='bold 13.5px sans-serif'; c.fillStyle='#16203A';
+  D.faktorB.niva.forEach(function(b,i){ c.fillText(b, X(i), y0+20); });
+  c.font='bold 13px sans-serif'; c.fillStyle='#5C6A80';
+  c.fillText(opt.xlab || D.xlab, x0+pw/2, y0+38);
+  c.save(); c.translate(15, y0-ph/2); c.rotate(-Math.PI/2);
+  c.textAlign='center'; c.fillStyle='#5C6A80'; c.font='bold 13px sans-serif';
+  c.fillText(opt.ylab || D.ylab, 0, 0);
+  c.restore();
+
+  /* Gruppefarger, IKKE fargekoden for signal og støy. Grønt og rødt er
+     reservert for «mellom» og «innen» i alle appene. Her er nivået på
+     faktor A bare identitet. */
+  const linjer = opt.stegA ? [D.faktorA.niva[0]] : D.faktorA.niva;
+  linjer.forEach(function(a, ai){
+    const farge=LINJEFARGE[D.faktorA.niva.indexOf(a)];
+    const pts = D.faktorB.niva.map(function(b,i){
+      return {x:X(i), y:Y(MM[a][b]), v:MM[a][b], b:b}; });
+    c.strokeStyle=farge; c.lineWidth=3.2; c.lineJoin='round'; c.lineCap='round';
+    c.beginPath(); pts.forEach(function(p,i){ i?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y); }); c.stroke();
+    if(opt.ki!==false){
+      pts.forEach(function(p){
+        const m=D.tKrit*Math.sqrt(D.MSE/n(a,p.b));
+        c.strokeStyle=farge; c.lineWidth=1.6;
+        c.beginPath(); c.moveTo(p.x, Y(p.v-m)); c.lineTo(p.x, Y(p.v+m)); c.stroke();
+        c.beginPath(); c.moveTo(p.x-5, Y(p.v+m)); c.lineTo(p.x+5, Y(p.v+m)); c.stroke();
+        c.beginPath(); c.moveTo(p.x-5, Y(p.v-m)); c.lineTo(p.x+5, Y(p.v-m)); c.stroke();
+      });
+    }
+    pts.forEach(function(p){
+      c.beginPath(); c.arc(p.x,p.y,5.6,0,6.284);
+      c.fillStyle=farge; c.fill();
+      c.strokeStyle='#fff'; c.lineWidth=1.8; c.stroke();
+      if(opt.tall){
+        /* Utenfor feilstolpen, ikke over punktet — ellers legger tallet seg
+           oppå den øverste tverrstreken. Og på den siden der det ikke er
+           noen annen linje: det nederste av to punkter får tallet UNDER,
+           ellers havner det midt i den andre linjas feilstolpe. */
+        const m2 = (opt.ki!==false) ? D.tKrit*Math.sqrt(D.MSE/n(a,p.b)) : 0;
+        const andre = D.faktorA.niva.filter(function(x){ return x!==a; })[0];
+        const nederst = andre && MM[andre] && MM[andre][p.b] > p.v;
+        c.fillStyle=farge; c.font='bold 13px sans-serif'; c.textAlign='center';
+        c.fillText(fmt(p.v), p.x, nederst ? Y(p.v-m2)+18 : Y(p.v+m2)-9);
+      }
+    });
+    const sist=pts[pts.length-1];
+    c.fillStyle=farge; c.font='bold 13px sans-serif'; c.textAlign='left';
+    const navn = (w<520 && a.length>14) ? a.slice(0,13)+'…' : a;
+    c.fillText(navn, sist.x+11, sist.y+4);
+  });
+  return {X:X, Y:Y, x0:x0, y0:y0, pw:pw, ph:ph, YLO:YLO, YHI:YHI};
+}
+
+/* ---- JASP-lignende tabeller ---------------------------------------- */
+function jaspAnovaTabell(opt){
+  opt=opt||{};
+  let ut='<div class="jasp"><p class="tit">ANOVA — '+esc(opt.tittel||D.utfall)+'</p>'+
+    '<table><thead><tr><th class="venstre">Cases</th><th>Sum of Squares</th><th>df</th>'+
+    '<th>Mean Square</th><th>F</th><th>p</th>'+(opt.eff!==false?'<th>η²p</th><th>ω²</th>':'')+
+    '</tr></thead><tbody>';
+  D.anova.forEach(function(r,i){
+    ut+='<tr'+(i%2?' class="stripe"':'')+'><td class="venstre">'+esc(r.kilde)+'</td>'+
+        '<td>'+fmt(r.SS,3)+'</td><td>'+r.df+'</td><td>'+fmt(r.MS,3)+'</td>'+
+        '<td'+(r.F!==null?' class="c-tstat"':'')+'>'+(r.F!==null?fmt(r.F,3):'')+'</td>'+
+        '<td'+(r.p!==null?' class="c-p"':'')+'>'+(r.p!==null?r.p:'')+'</td>';
+    if(opt.eff!==false){
+      ut+='<td'+(r.F!==null?' class="c-eff"':'')+'>'+(r.F!==null?fmt(r.etap,3):'')+'</td>'+
+          '<td'+(r.F!==null?' class="c-eff"':'')+'>'+(r.F!==null?fmt(r.omega,3):'')+'</td>';
+    }
+    ut+='</tr>';
+  });
+  ut+='</tbody></table><p class="note">Type III Sum of Squares</p></div>';
+  return ut;
+}
+
+function jaspDeskriptiv(){
+  let ut='<div class="jasp"><p class="tit">Descriptives — '+esc(D.utfall)+'</p>'+
+    '<table><thead><tr><th class="venstre">'+esc(D.faktorA.navn)+'</th>'+
+    '<th class="venstre">'+esc(D.faktorB.navn)+'</th>'+
+    '<th>N</th><th>Mean</th><th>SD</th><th>SE</th></tr></thead><tbody>';
+  celler().forEach(function(c,i){
+    ut+='<tr'+(i%2?' class="stripe"':'')+'><td class="venstre">'+esc(c.a)+'</td>'+
+        '<td class="venstre">'+esc(c.b)+'</td><td>'+c.n+'</td><td>'+fmt(c.M,3)+'</td>'+
+        '<td>'+fmt(c.SD,3)+'</td><td>'+fmt(c.SE,3)+'</td></tr>';
+  });
+  ut+='</tbody></table></div>';
+  return ut;
+}
+
+/* Firefeltstabellen med marginaler — brukes av flere faner. */
+function ruteTabell(vis){
+  vis=vis||{};
+  const e=D.emm;
+  function celleHtml(a,b){
+    const x=D.celle[a][b];
+    return '<div><b>'+fmt(x.M)+'</b>'+(vis.n===false?'':
+      '<br><span class="muted" style="font-size:13px">n = '+x.n+'</span>')+'</div>';
+  }
+  return '<div class="cellrute">'+
+    '<div class="hd"></div><div class="hd">'+esc(B0)+'</div><div class="hd">'+esc(B1)+'</div>'+
+    '<div class="hd">Snitt</div>'+
+    '<div class="hd">'+esc(A0)+'</div>'+celleHtml(A0,B0)+celleHtml(A0,B1)+
+    '<div class="mg">'+fmt(e[A0].M)+'</div>'+
+    '<div class="hd">'+esc(A1)+'</div>'+celleHtml(A1,B0)+celleHtml(A1,B1)+
+    '<div class="mg">'+fmt(e[A1].M)+'</div>'+
+    '<div class="hd">Snitt</div>'+
+    '<div class="mg">'+fmt(e[B0].M)+'</div><div class="mg">'+fmt(e[B1].M)+'</div>'+
+    '<div class="mg" style="color:var(--tstat)">'+fmt(D.effekt.mu)+'</div>'+
+    '</div>';
+}
+
+/* ---- {token}-erstatning i fanetekstene ------------------------------
+   Fanene er skrevet som HTML med plassholdere, slik at prosaen følger med
+   når man bytter datasett. Alternativet — å generere all tekst fra JS —
+   ville gjort fanene uleselige å redigere. */
+const TOKEN = (function(){
+  const a=D.anova, k=D.kontrast;
+  const t={
+    N:D.N, dfE:D.dfE, MSE:fmt(D.MSE), SSE:fmt(D.SSE), SST:fmt(D.SST),
+    tKrit:fmt(D.tKrit), SDpool:fmt(Math.sqrt(D.MSE)),
+    utfall:D.utfall, utfallKort:D.utfallKort,
+    A:D.faktorA.navn, B:D.faktorB.navn,
+    a:D.faktorA.navn.toLowerCase(), b:D.faktorB.navn.toLowerCase(),
+    A0:A0, A1:A1, B0:B0, B1:B1,
+    Fa:fmt(a[0].F), Fb:fmt(a[1].F), Fi:fmt(a[2].F),
+    pa:a[0].p, pb:a[1].p, pi:a[2].p,
+    SSa:fmt(a[0].SS), SSb:fmt(a[1].SS), SSi:fmt(a[2].SS),
+    etapi:fmt(a[2].etap,3), etai:fmt(a[2].SS/D.SST,3), omegai:fmt(a[2].omega,3),
+    kon:fmt(k.verdi), konSE:fmt(k.SE), konLo:fmt(k.lo), konHi:fmt(k.hi), konP:k.p,
+    nMin:Math.min.apply(null, celler().map(function(c){ return c.n; })),
+    nMaks:Math.max.apply(null, celler().map(function(c){ return c.n; })),
+    ledd1:celler().map(function(c){ return '1/'+c.n; }).join(' + ')
+  };
+  t.e1=tegnFor(enkelB(A0).diff); t.e2=tegnFor(enkelB(A1).diff);
+  t.g1=tegnFor(enkelA(B0).diff); t.g2=tegnFor(enkelA(B1).diff);
+  t.g1p=enkelA(B0).p; t.g2p=enkelA(B1).p;
+  t.g1lo=fmt(enkelA(B0).lo); t.g1hi=fmt(enkelA(B0).hi);
+  t.g2lo=fmt(enkelA(B1).lo); t.g2hi=fmt(enkelA(B1).hi);
+  t.e1p=enkelB(A0).p; t.e2p=enkelB(A1).p;
+  return t;
+})();
+
+(function(){
+  const rot=document.querySelector('.wrap');
+  if(!rot) return;
+  const gaa=document.createTreeWalker(rot, NodeFilter.SHOW_TEXT, null);
+  const noder=[];
+  while(gaa.nextNode()) if(gaa.currentNode.nodeValue.indexOf('{')>=0) noder.push(gaa.currentNode);
+  noder.forEach(function(nd){
+    nd.nodeValue = nd.nodeValue.replace(/\{(\w+)\}/g, function(m, navn){
+      return (navn in TOKEN) ? TOKEN[navn] : m;
+    });
+  });
+})();
+
+/* ================= fane: hvorfor ================= */
+(function(){
+  /* De fire cellene som ruter, med antall — før noen tall om utfallet vises.
+     Poenget er at studenten ser DESIGNET først, ikke resultatet. */
+  const ruter=document.getElementById('hvorforRuter');
+  if(ruter){
+    ruter.innerHTML = D.faktorA.niva.map(function(a){
+      return D.faktorB.niva.map(function(b){
+        return '<div class="firerute"><b>'+esc(a)+'</b><span>og</span><b>'+esc(b)+'</b>'+
+               '<span class="antall">'+n(a,b)+' personer</span></div>';
+      }).join('');
+    }).join('');
+  }
+
+  const navnA=document.getElementById('hvNavnA');
+  if(navnA) navnA.textContent=D.faktorA.navn.toLowerCase();
+  const navnB=document.getElementById('hvNavnB');
+  if(navnB) navnB.textContent=D.faktorB.navn.toLowerCase();
+
+  /* Fortellingen skal følge datasettet, ikke omvendt. Derfor kommer både
+     ingressen, spørsmålet og «Mer om dette» fra meta-feltene i _datasett.js. */
+  const intro=document.getElementById('hvIntro');
+  if(intro) intro.innerHTML = D.intro || esc(D.historie);
+  const mer=document.getElementById('hvMer');
+  if(mer) mer.innerHTML = (D.mer || '<p>'+esc(D.kilde)+'</p>')
+      .replace(/<p>/g, '<p style="font-size:15.5px;line-height:1.5">');
+
+  /* ---- klikk-fram-fortellingen --------------------------------------- */
+  const cv=document.getElementById('cvHvorfor');
+  const tekst=document.getElementById('hvorforTekst');
+  let steg=0;
+
+  const eA=enkelB(A0), eB=enkelB(A1);   /* effekten av x-aksen i hver linje */
+  const int=D.anova[2];
+
+  /* Fire mønstre, fire fortellinger. Skillet mellom «hver sin vei» og «krysser»
+     er ikke det samme: to linjer kan begge gå nedover og likevel krysse, fordi
+     den ene faller mye brattere. Uten denne forgreningen ville teksten påstå at
+     linjene heller hver sin vei også der de ikke gjør det. */
+  const sigInt   = int.pTall < 0.05;
+  const motsatt  = (eA.diff > 0) !== (eB.diff > 0);            /* ulik helning-retning */
+  const gB0=enkelA(B0).diff, gB1=enkelA(B1).diff;
+  const krysser  = (gB0 > 0) !== (gB1 > 0);                    /* bytter rekkefølge */
+  const P = 'font-size:16.5px;line-height:1.6';
+  const enhet = D.utfallKort ? ' '+D.utfallKort : '';
+  const hoyest1 = eA.diff >= 0 ? B0 : B1;
+
+  const steg2Boks = !sigInt
+    ? '<div class="boks bla" style="margin:10px 0"><b>Omtrent samme helning.</b> '+
+      'De to linjene går nesten parallelt. Det som gjaldt den ene gruppa, ser ut '+
+      'til å gjelde den andre også.</div>'+
+      '<p style="'+P+'">Den foreløpige konklusjonen fra forrige steg ser altså ut '+
+      'til å <b>holde for begge gruppene</b>.</p>'
+    : motsatt
+    ? '<div class="boks gronn" style="margin:10px 0"><b>Se hva som skjedde.</b> '+
+      'De to linjene heller <b>hver sin vei</b>. Det som trakk den ene gruppa opp, '+
+      'trakk den andre ned.</div>'+
+      '<p style="'+P+'">Den foreløpige konklusjonen fra forrige steg var altså feil '+
+      '— eller rettere: <b>den gjaldt bare halvparten</b>.</p>'
+    : krysser
+    ? '<div class="boks gronn" style="margin:10px 0"><b>Se hva som skjedde.</b> '+
+      'Begge linjene går samme vei — men den ene så mye brattere at de '+
+      '<b>krysser hverandre</b>. Hvem som ligger høyest snur helt om fra «'+
+      esc(B0)+'» til «'+esc(B1)+'».</div>'+
+      '<p style="'+P+'">Svaret på «hva er best?» er altså ikke ett svar. '+
+      '<b>Det kommer an på</b> hvilken av de to du spør om.</p>'
+    : '<div class="boks gronn" style="margin:10px 0"><b>Samme vei — men ikke like '+
+      'bratt.</b> Begge linjene heller samme retning, den ene mye mer enn den '+
+      'andre. Effekten er der i begge gruppene, i <b>svært ulik størrelse</b>.</div>'+
+      '<p style="'+P+'">Den foreløpige konklusjonen fra forrige steg peker altså '+
+      'riktig vei — men den sier ett tall der det egentlig trengs to.</p>';
+
+  /* ---- hvilken marginal er det som lyver mest? -----------------------
+     Steg 4 skal vise den faktoren der gjennomsnittet skjuler mest. Det er
+     ikke alltid den samme: hos dykkerne er det husketestedet, i
+     testeffekten er det studiemetoden. Målet er marginalforskjellen delt på
+     den største av de to enkle effektene. */
+  function margMaal(niva, enkle){
+    const d = D.emm[niva[0]].M - D.emm[niva[1]].M;
+    const maks = Math.max(Math.abs(enkle[0]), Math.abs(enkle[1]));
+    return {diff:d, maks:maks, forhold: maks>0 ? Math.abs(d)/maks : 1};
+  }
+  const mA = margMaal(D.faktorA.niva, [gB0, gB1]);
+  const mB = margMaal(D.faktorB.niva, [eA.diff, eB.diff]);
+  const margA = mA.forhold < mB.forhold;          /* true: vis faktor A i steg 4 */
+  const mm    = margA ? mA : mB;
+  const mNiva = margA ? D.faktorA.niva : D.faktorB.niva;
+  const mNavn = (margA ? D.faktorA.navn : D.faktorB.navn).toLowerCase();
+  const mEnkle= margA ? [gB0, gB1] : [eA.diff, eB.diff];
+  const utligner = mm.forhold < 0.4;
+
+  const steg3Boks = !sigInt
+    ? '<div class="boks bla" style="margin:10px 0"><b>Og her holder gjennomsnittet.</b> '+
+      'Forskjellen var <b>'+fmt(Math.abs(mEnkle[0]))+'</b> i den ene gruppa og <b>'+
+      fmt(Math.abs(mEnkle[1]))+'</b> i den andre — men de to linjene var omtrent '+
+      'parallelle, så ett tall er en grei oppsummering av begge.</div>'+
+      '<p style="'+P+'">Dette er normalsituasjonen. Når interaksjonen <b>ikke</b> er '+
+      'der, kan du snakke om hovedeffekter uten å skjule noe. Det er nettopp derfor '+
+      'du må teste interaksjonen: for å vite om du har lov.</p>'
+    : utligner
+    ? '<div class="boks rod" style="margin:10px 0"><b>Nesten ingen forskjell.</b> '+
+      'Hvis noen bare viste deg de to tallene, ville du konkludert med at '+
+      esc(mNavn)+' ikke betyr noe. Og du ville tatt fullstendig feil: forskjellen '+
+      'er <b>'+fmt(Math.abs(mEnkle[0]))+'</b> i den ene gruppa og <b>'+
+      fmt(Math.abs(mEnkle[1]))+'</b> i den andre.</div>'+
+      '<p style="'+P+'">Gjennomsnittet skjuler at de to gruppene gikk i hver sin '+
+      'retning. De <b>utlignet hverandre</b>.</p>'
+    : '<div class="boks rod" style="margin:10px 0"><b>Her er forskjellen — men den '+
+      'beskriver ingen.</b> Tallet <b>'+fmt(Math.abs(mm.diff))+'</b> er et snitt av '+
+      '<b>'+fmt(Math.abs(mEnkle[0]))+'</b> i den ene gruppa og <b>'+
+      fmt(Math.abs(mEnkle[1]))+'</b> i den andre.</div>'+
+      '<p style="'+P+'">Gjennomsnittet er ikke <i>galt</i>. Det er bare en '+
+      'oppsummering av to forskjellige historier, og det skjuler at de er '+
+      'forskjellige.</p>';
+
+  const TEKST=[
+/* 0 */
+'<p style="'+P+'"><b>Før du ser tallene:</b> hva tror du?</p>'+
+'<p style="'+P+'">'+(D.spor || esc(D.historie))+'</p>'+
+'<p class="muted" style="font-size:15px">Trykk på knappene over, én om gangen.</p>',
+/* 1 */
+'<p style="'+P+'">Her er de som er <b>'+esc(A0)+'</b>.</p>'+
+'<p style="'+P+'">De endte på <b>'+fmt(M(A0,B0))+'</b> i «'+esc(B0)+'», og <b>'+
+fmt(M(A0,B1))+'</b> i «'+esc(B1)+'».</p>'+
+'<p style="'+P+'">Forskjell: <b class="k-eff">'+tegnFor(eA.diff)+enhet+
+'</b>. Linja heller.</p>'+
+'<p class="muted" style="font-size:15px">Foreløpig konklusjon: «'+esc(hoyest1)+
+'» ligger høyest.</p>',
+/* 2 */
+'<p style="'+P+'">Og her er de som er <b>'+esc(A1)+'</b>.</p>'+
+'<p style="'+P+'">For dem: <b>'+fmt(M(A1,B0))+'</b> mot <b>'+fmt(M(A1,B1))+
+'</b>. Forskjell: <b class="k-eff">'+tegnFor(eB.diff)+enhet+'</b>.</p>'+
+steg2Boks,
+/* 3 */
+'<p style="'+P+'">'+(sigInt ? 'Og nå det som er lett å overse.' :
+  'Og nå gjennomsnittene.')+' Hvis du bare ser på '+
+'<b>gjennomsnittene</b> — alle i «'+esc(mNiva[0])+'» mot alle i «'+esc(mNiva[1])+
+'» — får du dette:</p>'+
+'<p style="font-size:20px;line-height:1.5;text-align:center;margin:14px 0">'+
+'<b>'+fmt(D.emm[mNiva[0]].M)+'</b> &nbsp;mot&nbsp; <b>'+
+fmt(D.emm[mNiva[1]].M)+'</b></p>'+
+steg3Boks
+  ];
+
+  function tegn(){
+    if(!cv) return;
+    tegnInteraksjon(cv, {
+      stegA: steg===1,
+      ki: steg>=1,
+      tall: steg>=1 && steg<3,
+      marg: steg>=3
+    });
+    if(steg>=3) tegnMarginaler();
+    if(tekst) tekst.innerHTML=TEKST[Math.min(steg,3)];
+    ['hvSteg1','hvSteg2','hvSteg3','hvSteg4'].forEach(function(id,i){
+      const b=document.getElementById(id);
+      if(b) b.classList.toggle('valgt', steg===i);
+    });
+  }
+
+  /* Marginalstrekene tegnes oppå — de skal se ut som en oppsummering
+     lagt over figuren, ikke som en tredje linje i dataene.
+     Faktor B har ett snitt per x-posisjon, faktor A ett snitt per linje,
+     og de to tegnes derfor ulikt. */
+  function tegnMarginaler(){
+    const g=tegnInteraksjon(cv, {ki:false});
+    const c=cv.getContext('2d');
+    c.strokeStyle='#7B3FA0'; c.fillStyle='#7B3FA0';
+    c.font='bold 13px sans-serif'; c.lineWidth=2.4;
+    if(margA){
+      /* Vannrette streker over hele bredden — ett snitt per linje. De to
+         snittene ligger ofte tett, så etiketten må legges på YTTERSIDEN av
+         hvert par: den øverste over sin strek, den nederste under sin. Ellers
+         havner begge i gapet mellom strekene og skriver oppå hverandre. */
+      const over = D.emm[D.faktorA.niva[0]].M >= D.emm[D.faktorA.niva[1]].M
+                 ? D.faktorA.niva[0] : D.faktorA.niva[1];
+      D.faktorA.niva.forEach(function(a){
+        const y=g.Y(D.emm[a].M);
+        c.setLineDash([6,4]);
+        c.beginPath(); c.moveTo(g.x0, y); c.lineTo(g.x0+g.pw, y); c.stroke();
+        c.setLineDash([]);
+        c.textAlign='left';
+        c.fillText('snitt '+fmt(D.emm[a].M)+' — '+a, g.x0+8, y+(a===over ? -8 : 17));
+      });
+    } else {
+      D.faktorB.niva.forEach(function(b,i){
+        const y=g.Y(D.emm[b].M);
+        c.setLineDash([6,4]);
+        c.beginPath(); c.moveTo(g.X(i)-34, y); c.lineTo(g.X(i)+34, y); c.stroke();
+        c.setLineDash([]);
+        c.textAlign='center';
+        c.fillText('snitt '+fmt(D.emm[b].M), g.X(i), y-9);
+      });
+    }
+  }
+
+  /* Knappetekstene navngir gruppene, slik at studenten vet hva neste klikk
+     viser før hun trykker. */
+  (function(){
+    const b2=document.getElementById('hvSteg2'), b3=document.getElementById('hvSteg3');
+    if(b2) b2.textContent='2 · Se «'+A0+'»';
+    if(b3) b3.textContent='3 · Se «'+A1+'»';
+  })();
+
+  function sett(s){ steg=s; tegn(); }
+  [['hvSteg1',0],['hvSteg2',1],['hvSteg3',2],['hvSteg4',3],['hvNull',0]].forEach(function(p){
+    const b=document.getElementById(p[0]);
+    if(b) b.addEventListener('click', function(){ sett(p[1]); });
+  });
+  window.addEventListener('resize', tegn);
+  tegn();
+
+  /* ---- «to separate analyser»-boksene -------------------------------- */
+  function margBoks(id, faktor, niva, rad){
+    const el=document.getElementById(id);
+    if(!el) return;
+    const sig = rad.pTall < 0.05;
+    el.innerHTML =
+      '<h3>Analyse: betyr '+esc(faktor.navn.toLowerCase())+' noe?</h3>'+
+      '<p class="tallrad"><b>'+fmt(D.emm[niva[0]].M)+'</b> mot <b>'+
+      fmt(D.emm[niva[1]].M)+'</b></p>'+
+      '<p class="muted" style="font-size:14px">'+esc(niva[0])+' mot '+esc(niva[1])+'</p>'+
+      '<p class="dom '+(sig?'ja':'nei')+'">'+(sig
+        ? 'Forskjell påvist (<i>p</i> '+pLik(rad.p)+')'
+        : 'Ingen forskjell påvist (<i>p</i> '+pLik(rad.p)+')')+'</p>';
+  }
+  margBoks('hvMargA', D.faktorA, D.faktorA.niva, D.anova[0]);
+  margBoks('hvMargB', D.faktorB, D.faktorB.niva, D.anova[1]);
+
+  const a=D.anova[0].pTall<0.05, b=D.anova[1].pTall<0.05, i=int.pTall<0.05;
+  const Fi='<b><i>F</i>(1, '+D.dfE+') = '+fmt(int.F)+', <i>p</i> '+
+           pLik(int.p)+'</b>';
+
+  const kon=document.getElementById('hvKonklusjon');
+  if(kon){
+    if(!a && !b && i){
+      kon.innerHTML='<h3>Begge analysene sier «ingenting her»</h3>'+
+        'Og likevel <b>er</b> det noe der — du så det nettopp i figuren. '+
+        'To separate analyser ville fått deg til å konkludere at verken '+
+        esc(D.faktorA.navn.toLowerCase())+' eller '+esc(D.faktorB.navn.toLowerCase())+
+        ' spiller noen rolle. Den tredje testen, interaksjonen, gir '+Fi+'.';
+    } else if(i && (!a || !b)){
+      const stum = !a ? D.faktorA.navn : D.faktorB.navn;
+      const hoy  = !a ? D.faktorB.navn : D.faktorA.navn;
+      kon.innerHTML='<h3>Den ene analysen sier «ingenting her»</h3>'+
+        'Analysen av <b>'+esc(stum.toLowerCase())+'</b> finner ingen forskjell, og '+
+        'analysen av <b>'+esc(hoy.toLowerCase())+'</b> finner én — men ingen av dem '+
+        'fanger opp det du så i figuren. At '+esc(stum.toLowerCase())+' ikke betyr '+
+        'noe <i>i snitt</i>, er ikke det samme som at det ikke betyr noe. Den tredje '+
+        'testen, interaksjonen, gir '+Fi+'.';
+    } else if(i){
+      kon.innerHTML='<h3>Hovedeffektene forteller ikke hele historien</h3>'+
+        'Interaksjonen er signifikant ('+Fi+'), og da beskriver hovedeffektene et '+
+        'gjennomsnitt av to ulike ting.';
+    } else {
+      kon.innerHTML='<h3>Her er det ingen interaksjon</h3>'+
+        'Interaksjonstesten gir '+Fi+'. Linjene er omtrent parallelle, og da '+
+        '<b>er</b> hovedeffektene en god oppsummering. Merk at det ikke er '+
+        'bevis for at effekten er lik overalt — bare at vi ikke kunne påvise '+
+        'at den ikke er det.';
+    }
+  }
+
+  const kb=document.getElementById('hvKeyboxTekst');
+  if(kb){
+    kb.innerHTML = (!a && !b && i)
+      ? 'To separate analyser kan begge si «ingenting her» — samtidig som det '+
+        '<b>åpenbart</b> skjer noe. Bare den tredje testen ser det.'
+      : i
+      ? 'Et gjennomsnitt over to grupper kan skjule at gruppene gikk hver sin vei. '+
+        'Bare den tredje testen — <b>interaksjonen</b> — ser forskjellen mellom dem.'
+      : 'Når linjene er parallelle, er hovedeffektene en ærlig oppsummering. Men '+
+        'det er <b>interaksjonstesten</b> som forteller deg om du har lov til å si '+
+        'det.';
+  }
+
+  /* ---- fire skjematiske mønstre -------------------------------------- */
+  const ark=document.getElementById('hvorforMonstre');
+  if(ark){
+    const M4=[
+      {navn:'Parallelle', und:'ingen interaksjon', v:[[3,7],[6,10]]},
+      {navn:'Ulik helning', und:'interaksjon', v:[[3,7],[6,8]]},
+      {navn:'Krysser', und:'interaksjon', v:[[3,8],[8,3]]},
+      {navn:'Flate', und:'ingenting skjer', v:[[5.5,5.5],[6,6]]}
+    ];
+    ark.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:12px 0';
+    ark.innerHTML=M4.map(function(m,i){
+      return '<div style="text-align:center"><canvas id="cvHM'+i+'" height="140" data-h="140"></canvas>'+
+             '<p style="font-size:14.5px;margin:5px 0 0"><b>'+m.navn+'</b><br>'+
+             '<span class="muted" style="font-size:13px">'+m.und+'</span></p></div>';
+    }).join('');
+    M4.forEach(function(m,i){
+      const c0=document.getElementById('cvHM'+i);
+      function t(){
+        const r=window.devicePixelRatio||1, w=c0.clientWidth||180, h=140;
+        c0.width=w*r; c0.height=h*r; c0.style.height=h+'px';
+        const c=c0.getContext('2d'); c.setTransform(r,0,0,r,0,0); c.clearRect(0,0,w,h);
+        const x0=16, y0=h-18, pw=w-32, ph=y0-14;
+        const X=j=>x0+(j===0?pw*0.22:pw*0.78), Y=v=>y0-(v-1)/10*ph;
+        c.strokeStyle='#e5e9f0'; c.lineWidth=1;
+        c.beginPath(); c.moveTo(x0,y0); c.lineTo(x0+pw,y0); c.stroke();
+        m.v.forEach(function(p,k){
+          c.strokeStyle=LINJEFARGE[k]; c.lineWidth=3; c.lineCap='round';
+          c.beginPath(); c.moveTo(X(0),Y(p[0])); c.lineTo(X(1),Y(p[1])); c.stroke();
+          [0,1].forEach(function(j){
+            c.beginPath(); c.arc(X(j),Y(p[j]),4.2,0,6.284);
+            c.fillStyle=LINJEFARGE[k]; c.fill();
+            c.strokeStyle='#fff'; c.lineWidth=1.5; c.stroke();
+          });
+        });
+      }
+      window.addEventListener('resize',t); t();
+    });
+  }
+})();
+
+/* ================= fane: design ================= */
+(function(){
+  const r=document.getElementById('ruteDesign');
+  if(r) r.innerHTML = ruteTabell();
+})();
+
+/* ================= fane: estimat ================= */
+(function(){
+  const e=D.effekt, m=D.emm;
+  /* Fortegn: +a på første nivå av faktor A, +b på første nivå av faktor B,
+     og ab er positivt i cellen der begge er første nivå. */
+  const tegn={}; tegn[A0]=1; tegn[A1]=-1; tegn[B0]=1; tegn[B1]=-1;
+
+  const t1=document.getElementById('estEffTab');
+  if(t1) t1.innerHTML =
+    '<table class="tt" style="font-size:16px;width:100%">'+
+    '<tr><th>Effekt</th><th>Snitt</th><th>− μ̂</th><th>= estimat</th></tr>'+
+    [[A0,'α̂',e.a],[A1,'α̂',-e.a],[B0,'β̂',e.b],[B1,'β̂',-e.b]].map(function(x){
+      return '<tr><td>'+x[1]+'<sub>'+esc(x[0])+'</sub></td><td>'+fmt(m[x[0]].M)+'</td>'+
+             '<td>'+fmt(e.mu)+'</td><td class="c-sig">'+tegnFor(x[2])+'</td></tr>';
+    }).join('')+'</table>'+
+    '<p class="muted" style="font-size:13.5px;margin:6px 0 0">'+
+    'α̂-ene summerer til null, og det gjør β̂-ene også. Forskjellen mellom de to '+
+    'nivåene av '+esc(D.faktorB.navn.toLowerCase())+' er '+fmt(Math.abs(e.b*2))+
+    ' i marginalen.</p>';
+
+  const t2=document.getElementById('estCelleTab');
+  if(t2){
+    let r='<table class="tt" style="font-size:16px;width:100%">'+
+      '<tr><th>Celle</th><th>Observert</th><th>μ̂ + α̂ + β̂ (additiv gjetning)</th>'+
+      '<th>Interaksjonsledd</th></tr>';
+    D.faktorA.niva.forEach(function(a){
+      D.faktorB.niva.forEach(function(b){
+        const pred=e.mu + tegn[a]*e.a + tegn[b]*e.b;
+        r+='<tr><td>'+esc(a)+' / '+esc(b)+'</td><td>'+fmt(M(a,b))+'</td>'+
+           '<td>'+fmt(pred)+'</td><td class="c-eff">'+tegnFor(M(a,b)-pred)+'</td></tr>';
+      });
+    });
+    t2.innerHTML=r+'</table>';
+  }
+
+  const t3=document.getElementById('estTilbakeTab');
+  if(t3){
+    let r='<table class="tt" style="font-size:15.5px;width:100%">'+
+      '<tr><th>Celle</th><th>μ̂</th><th>α̂</th><th>β̂</th><th>(αβ̂)</th>'+
+      '<th>= sum</th><th>Observert</th></tr>';
+    D.faktorA.niva.forEach(function(a){
+      D.faktorB.niva.forEach(function(b){
+        const A=tegn[a]*e.a, B=tegn[b]*e.b, AB=tegn[a]*tegn[b]*e.ab;
+        r+='<tr><td>'+esc(a)+' / '+esc(b)+'</td><td>'+fmt(e.mu)+'</td>'+
+           '<td class="c-sig">'+tegnFor(A)+'</td><td class="c-sig">'+tegnFor(B)+'</td>'+
+           '<td class="c-eff">'+tegnFor(AB)+'</td>'+
+           '<td><b>'+fmt(e.mu+A+B+AB)+'</b></td><td>'+fmt(M(a,b))+'</td></tr>';
+      });
+    });
+    t3.innerHTML=r+'</table>';
+  }
+})();
+
+/* ================= fane: se ================= */
+(function(){
+  const t=document.getElementById('seCelleTab');
+  if(t){
+    let r='<table class="tt" style="font-size:16px;width:100%">'+
+      '<tr><th>Celle</th><th><i>n</i></th><th>√(MS<sub>res</sub> / <i>n</i>)</th>'+
+      '<th><i>SE</i></th></tr>';
+    celler().forEach(function(c){
+      r+='<tr><td>'+esc(c.a)+' / '+esc(c.b)+'</td><td>'+c.n+'</td>'+
+         '<td class="muted">√('+fmt(D.MSE)+' / '+c.n+')</td>'+
+         '<td class="c-ki">'+fmt(c.SE)+'</td></tr>';
+    });
+    t.innerHTML=r+'</table>';
+  }
+  const t2=document.getElementById('seDiffTab');
+  if(t2){
+    const par=[
+      [D.faktorB.navn+' innenfor '+A0, [A0,B0],[A0,B1], enkelB(A0)],
+      [D.faktorB.navn+' innenfor '+A1, [A1,B0],[A1,B1], enkelB(A1)],
+      [D.faktorA.navn+' innenfor '+B0, [A0,B0],[A1,B0], enkelA(B0)],
+      [D.faktorA.navn+' innenfor '+B1, [A0,B1],[A1,B1], enkelA(B1)]
+    ];
+    let r='<table class="tt" style="font-size:16px;width:100%">'+
+      '<tr><th>Forskjell</th><th><i>n</i><sub>1</sub>, <i>n</i><sub>2</sub></th>'+
+      '<th>Estimat</th><th><i>SE</i></th></tr>';
+    let best=null;
+    par.forEach(function(p){
+      if(!best || p[3].SE<best[3].SE) best=p;
+      r+='<tr><td>'+esc(p[0])+'</td><td>'+n(p[1][0],p[1][1])+', '+n(p[2][0],p[2][1])+'</td>'+
+         '<td>'+tegnFor(p[3].diff)+'</td><td class="c-ki">'+fmt(p[3].SE)+'</td></tr>';
+    });
+    t2.innerHTML=r+'</table>'+
+      '<p class="muted" style="font-size:13.5px;margin:6px 0 0">Mest presis: '+
+      esc(best[0])+', med <i>SE</i> = '+fmt(best[3].SE)+'.</p>';
+  }
+  /* Regnestykket for kontrastens standardfeil, med datasettets egne tall. */
+  const f=document.getElementById('seKontrastFormel');
+  if(f){
+    const ledd=celler().map(function(c){ return '1/'+c.n; }).join(' + ');
+    f.innerHTML='<i>SE</i><sub>kontrast</sub> = √( <span class="m-stoy">'+fmt(D.MSE)+
+      '</span> · ('+ledd+') ) = <span class="m-ki">'+fmt(D.kontrast.SE)+'</span>';
+  }
+})();
+
+/* ================= fane: ki ================= */
+(function(){
+  const cv=document.getElementById('cvKi');
+  function tegn(){ if(cv) tegnInteraksjon(cv,{}); }
+  window.addEventListener('resize', tegn); tegn();
+
+  const t=document.getElementById('kiCelleTab');
+  if(t){
+    let r='<table class="tt" style="font-size:15.5px;width:100%">'+
+      '<tr><th>Celle</th><th><i>M</i></th><th><i>SE</i></th><th>95 % KI</th></tr>';
+    const bredde=[];
+    celler().forEach(function(c){
+      const m=D.tKrit*c.SE; bredde.push(2*m);
+      r+='<tr><td>'+esc(c.a)+' / '+esc(c.b)+'</td><td>'+fmt(c.M)+'</td>'+
+         '<td>'+fmt(c.SE)+'</td><td class="c-ki">['+fmt(c.M-m)+', '+fmt(c.M+m)+']</td></tr>';
+    });
+    const lav=Math.min.apply(null,bredde), hoy=Math.max.apply(null,bredde);
+    t.innerHTML=r+'</table>'+
+      '<p class="muted" style="font-size:13.5px;margin:6px 0 0">'+
+      (Math.abs(hoy-lav)<0.05
+        ? 'Alle fire intervallene er like brede, fordi cellene er like store.'
+        : 'Bredden varierer fra '+fmt(lav)+' til '+fmt(hoy)+' — cellene er ulikt store.')+
+      '</p>';
+  }
+
+  const t2=document.getElementById('kiDiffTab');
+  if(t2){
+    const rad=[
+      [D.faktorB.navn+' innenfor '+A0, enkelB(A0)],
+      [D.faktorB.navn+' innenfor '+A1, enkelB(A1)],
+      [D.faktorA.navn+' innenfor '+B0, enkelA(B0)],
+      [D.faktorA.navn+' innenfor '+B1, enkelA(B1)]
+    ];
+    let r='<table class="tt" style="font-size:16px;width:100%">'+
+      '<tr><th>Forskjell</th><th>Estimat</th><th><i>SE</i></th><th>95 % KI</th>'+
+      '<th>Dekker null?</th></tr>';
+    rad.forEach(function(x){
+      const e=x[1], null0=(e.lo<0 && e.hi>0);
+      r+='<tr><td>'+esc(x[0])+'</td><td>'+tegnFor(e.diff)+'</td>'+
+         '<td>'+fmt(e.SE)+'</td><td class="c-ki">['+fmt(e.lo)+', '+fmt(e.hi)+']</td>'+
+         '<td class="'+(null0?'c-stoy':'c-sig')+'">'+(null0?'ja':'nei')+'</td></tr>';
+    });
+    const k=D.kontrast;
+    r+='<tr style="border-top:2px solid #16203A"><td><b>Interaksjonskontrast</b><br>'+
+       '<span class="muted" style="font-size:13px">forskjellen mellom de to første radene</span></td>'+
+       '<td><b>'+fmt(k.verdi)+'</b></td><td>'+fmt(k.SE)+'</td>'+
+       '<td class="c-ki"><b>['+fmt(k.lo)+', '+fmt(k.hi)+']</b></td>'+
+       '<td class="'+((k.lo<0&&k.hi>0)?'c-stoy':'c-sig')+'"><b>'+
+       ((k.lo<0&&k.hi>0)?'ja':'nei')+'</b></td></tr>';
+    t2.innerHTML=r+'</table>';
+  }
+})();
+
+/* ================= fane: nhst ================= */
+(function(){
+  const t=document.getElementById('nhstTabell');
+  if(t) t.innerHTML = jaspAnovaTabell({tittel:'Low_self_esteem_post'});
+
+  /* F(1,71)-tettheten. Skrevet ut direkte — den har en enkel form når
+     df1 = 1, og appen trenger ingen generell gammafunksjon for å tegne den. */
+  function fTetthet(x, d1, d2){
+    if(x<=0) return 0;
+    const lnB = lgamma(d1/2)+lgamma(d2/2)-lgamma((d1+d2)/2);
+    const ln = (d1/2)*Math.log(d1/d2) + (d1/2-1)*Math.log(x)
+             - ((d1+d2)/2)*Math.log(1+d1*x/d2) - lnB;
+    return Math.exp(ln);
+  }
+  function lgamma(z){
+    const g=[76.18009172947146,-86.50532032941677,24.01409824083091,
+             -1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
+    let x=z, y=z, tmp=x+5.5;
+    tmp-=(x+0.5)*Math.log(tmp);
+    let ser=1.000000000190015;
+    for(let j=0;j<6;j++) ser+=g[j]/++y;
+    return -tmp+Math.log(2.5066282746310005*ser/x);
+  }
+
+  /* Kritisk F ved alfa = .05 — finnes ved halvering, siden df varierer
+     mellom datasettene (60 mot 71). */
+  const KRIT=(function(){
+    let lo=0.5, hi=25;
+    for(let i=0;i<80;i++){
+      const m=(lo+hi)/2;
+      if(pVerdiF(m) > 0.05) lo=m; else hi=m;
+    }
+    return (lo+hi)/2;
+  })();
+  function pVerdiF(F){
+    /* F(1, df) → tosidig t: p = P(|t| > √F) */
+    const t=Math.sqrt(Math.max(F,0)), df=D.dfE;
+    return ibeta(df/2, 0.5, df/(df+t*t));
+  }
+  function ibeta(a,b,x){
+    if(x<=0) return 0; if(x>=1) return 1;
+    const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));
+    return x < (a+1)/(a+b+2) ? bt*bcf(a,b,x)/a : 1-bt*bcf(b,a,1-x)/b;
+  }
+  function bcf(a,b,x){
+    const FPMIN=1e-300; let qab=a+b,qap=a+1,qam=a-1,c=1,d=1-qab*x/qap;
+    if(Math.abs(d)<FPMIN)d=FPMIN; d=1/d; let h=d;
+    for(let m=1;m<=200;m++){
+      const m2=2*m; let aa=m*(b-m)*x/((qam+m2)*(a+m2));
+      d=1+aa*d; if(Math.abs(d)<FPMIN)d=FPMIN;
+      c=1+aa/c; if(Math.abs(c)<FPMIN)c=FPMIN;
+      d=1/d; h*=d*c;
+      aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
+      d=1+aa*d; if(Math.abs(d)<FPMIN)d=FPMIN;
+      c=1+aa/c; if(Math.abs(c)<FPMIN)c=FPMIN;
+      d=1/d; const de=d*c; h*=de;
+      if(Math.abs(de-1)<3e-16) break;
+    }
+    return h;
+  }
+  const cv=document.getElementById('cvNull');
+  function tegn(){
+    if(!cv) return;
+    const r=window.devicePixelRatio||1, w=cv.clientWidth||520;
+    const h=+(cv.dataset.h||290);
+    cv.width=w*r; cv.height=h*r; cv.style.height=h+'px';
+    const c=cv.getContext('2d'); c.setTransform(r,0,0,r,0,0); c.clearRect(0,0,w,h);
+    const x0=44, y0=h-40, pw=w-x0-24, ph=y0-24;
+    const XMAX=22;
+    /* Tettheten går mot uendelig når x → 0 ved df1 = 1. Vi starter derfor
+       tegningen litt inne, og skalerer mot en fast topp — ellers ville hele
+       figuren blitt ett smalt spyd i venstre kant. */
+    const YMAX=0.55;
+    const X=v=>x0+v/XMAX*pw, Y=d=>y0-Math.min(d,YMAX)/YMAX*ph;
+
+    /* areal til høyre for kritisk verdi */
+    c.fillStyle='rgba(192,57,43,.18)';
+    c.beginPath(); c.moveTo(X(KRIT), y0);
+    for(let v=KRIT; v<=XMAX; v+=0.05) c.lineTo(X(v), Y(fTetthet(v,1,D.dfE)));
+    c.lineTo(X(XMAX), y0); c.closePath(); c.fill();
+
+    c.strokeStyle='#16203A'; c.lineWidth=2.4; c.beginPath();
+    let f=true;
+    for(let v=0.04; v<=XMAX; v+=0.04){
+      const y=Y(fTetthet(v,1,D.dfE));
+      if(f){ c.moveTo(X(v), y); f=false; } else c.lineTo(X(v), y);
+    }
+    c.stroke();
+
+    /* akse */
+    c.strokeStyle='#c9d2e0'; c.lineWidth=1;
+    c.beginPath(); c.moveTo(x0,y0); c.lineTo(x0+pw,y0); c.stroke();
+    c.fillStyle='#5C6A80'; c.font='12.5px sans-serif'; c.textAlign='center';
+    [0,5,10,15,20].forEach(function(v){ c.fillText(String(v), X(v), y0+18); });
+    c.font='bold 12.5px sans-serif'; c.fillText('F(1, '+D.dfE+')', x0+pw/2, y0+36);
+
+    function merk(v, farge, navn, dy){
+      c.strokeStyle=farge; c.lineWidth=2.2; c.setLineDash([]);
+      c.beginPath(); c.moveTo(X(v), y0); c.lineTo(X(v), 20+dy); c.stroke();
+      c.fillStyle=farge; c.font='bold 12.5px sans-serif'; c.textAlign='left';
+      c.fillText(navn, X(v)+5, 30+dy);
+    }
+    c.setLineDash([4,4]); c.strokeStyle='#5C6A80'; c.lineWidth=1.4;
+    c.beginPath(); c.moveTo(X(KRIT), y0); c.lineTo(X(KRIT), 40); c.stroke();
+    c.setLineDash([]);
+    c.fillStyle='#5C6A80'; c.font='12px sans-serif'; c.textAlign='center';
+    c.fillText('3.98', X(KRIT), 34);
+
+    /* Markørene hentes fra datasettet og sorteres synkende, slik at
+       etikettene ikke legger seg oppå hverandre uansett F-verdier. */
+    const FARGE={0:'#1E7A3C', 1:'#C0392B', 2:'#B26A00'};
+    D.anova.filter(function(x){ return x.F!==null; })
+      .map(function(x,i){ return {F:x.F, navn:x.kilde, farge:FARGE[i]}; })
+      .sort(function(a,b){ return b.F-a.F; })
+      .forEach(function(x,i){
+        merk(Math.min(x.F, XMAX-0.5), x.farge, x.navn+' '+fmt(x.F), 4+i*46);
+      });
+  }
+  window.addEventListener('resize', tegn); tegn();
+})();
+
+/* ================= fane: sim ================= */
+(function(){
+  const cv=document.getElementById('cvSim');
+  if(!cv) return;
+  function fraD(){
+    const o={}; D.faktorA.niva.forEach(function(a){ o[a]={};
+      D.faktorB.niva.forEach(function(b){ o[a][b]=M(a,b); }); });
+    return o;
+  }
+  const EKTE=fraD();
+  let MM=JSON.parse(JSON.stringify(EKTE));
+  let geo=null, drar=null;
+
+  /* Type III-kvadratsummer for et 2×2 med ubalanserte celler.
+     Med effektkoding og vekting etter celletall reduserer det seg til tre
+     kontraster — ingen matriseinvertering nødvendig for dette designet. */
+  function analyse(MM){
+    const n=function(a,b){ return D.celle[a][b].n; };
+    const A=D.faktorA.niva, B=D.faktorB.niva;
+    /* harmoniske vekter: hver kontrast får sin egen nevner */
+    function kontrast(v){       /* v[a][b] = vekt */
+      let est=0, sum=0;
+      A.forEach(function(a){ B.forEach(function(b){
+        est += v[a][b]*MM[a][b];
+        sum += v[a][b]*v[a][b]/n(a,b);
+      });});
+      return {est:est, SE:Math.sqrt(D.MSE*sum), SS:est*est/sum};
+    }
+    const kA={}, kB={}, kI={};
+    kA[A0]={}; kA[A0][B0]= 0.5; kA[A0][B1]= 0.5;
+    kA[A1]={}; kA[A1][B0]=-0.5; kA[A1][B1]=-0.5;
+    kB[A0]={}; kB[A0][B0]= 0.5; kB[A0][B1]=-0.5;
+    kB[A1]={}; kB[A1][B0]= 0.5; kB[A1][B1]=-0.5;
+    kI[A0]={}; kI[A0][B0]= 1;   kI[A0][B1]=-1;
+    kI[A1]={}; kI[A1][B0]=-1;   kI[A1][B1]= 1;
+    const a=kontrast(kA), b=kontrast(kB), i=kontrast(kI);
+    function F(x){ return x.SS/D.MSE; }
+    return {a:a,b:b,i:i, Fa:F(a), Fb:F(b), Fi:F(i)};
+  }
+  /* p-verdi for F(1,71) — enkel numerisk integrasjon av t-fordelingen,
+     siden F = t² når df1 = 1. */
+  function pVerdi(F){
+    const t=Math.sqrt(Math.max(F,0)), df=D.dfE;
+    const x=df/(df+t*t);
+    return betai(df/2, 0.5, x);
+  }
+  function betai(a,b,x){
+    if(x<=0) return 0; if(x>=1) return 1;
+    const bt=Math.exp(lg(a+b)-lg(a)-lg(b)+a*Math.log(x)+b*Math.log(1-x));
+    return x < (a+1)/(a+b+2) ? bt*bcf(a,b,x)/a : 1-bt*bcf(b,a,1-x)/b;
+  }
+  function bcf(a,b,x){
+    const FPMIN=1e-300; let qab=a+b,qap=a+1,qam=a-1,c=1,d=1-qab*x/qap;
+    if(Math.abs(d)<FPMIN)d=FPMIN; d=1/d; let h=d;
+    for(let m=1;m<=200;m++){
+      const m2=2*m; let aa=m*(b-m)*x/((qam+m2)*(a+m2));
+      d=1+aa*d; if(Math.abs(d)<FPMIN)d=FPMIN;
+      c=1+aa/c; if(Math.abs(c)<FPMIN)c=FPMIN;
+      d=1/d; h*=d*c;
+      aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
+      d=1+aa*d; if(Math.abs(d)<FPMIN)d=FPMIN;
+      c=1+aa/c; if(Math.abs(c)<FPMIN)c=FPMIN;
+      d=1/d; const de=d*c; h*=de;
+      if(Math.abs(de-1)<3e-16) break;
+    }
+    return h;
+  }
+  function lg(z){
+    const g=[76.18009172947146,-86.50532032941677,24.01409824083091,
+             -1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
+    let x=z,y=z,tmp=x+5.5; tmp-=(x+0.5)*Math.log(tmp);
+    let ser=1.000000000190015;
+    for(let j=0;j<6;j++) ser+=g[j]/++y;
+    return -tmp+Math.log(2.5066282746310005*ser/x);
+  }
+
+  function rad(navn, F, klasse){
+    const p=pVerdi(F);
+    return '<tr><td>'+navn+'</td><td class="'+klasse+'">'+fmt(F,2)+'</td>'+
+           '<td class="c-p">'+(p<0.001?'&lt; .001':String(p.toFixed(3)).replace(/^0/,''))+
+           '</td></tr>';
+  }
+  function oppdater(){
+    const A=analyse(MM);
+    const t=document.getElementById('simTall');
+    if(t) t.innerHTML=
+      '<table class="tt" style="font-size:16.5px;width:100%">'+
+      '<tr><th>Effekt</th><th><i>F</i>(1, 71)</th><th><i>p</i></th></tr>'+
+      rad(esc(D.faktorA.navn), A.Fa, 'c-sig')+
+      rad(esc(D.faktorB.navn), A.Fb, 'c-sig')+
+      rad('<b>Interaksjon</b>', A.Fi, 'c-eff')+
+      '</table>'+
+      '<p style="font-size:15px;margin:8px 0 0">Helning for '+esc(A0)+': <b>'+
+      tegnFor(MM[A0][B0]-MM[A0][B1])+'</b><br>Helning for '+esc(A1)+': <b>'+
+      tegnFor(MM[A1][B0]-MM[A1][B1])+'</b><br>'+
+      '<span class="k-eff">Forskjellen mellom dem: '+
+      tegnFor((MM[A0][B0]-MM[A0][B1])-(MM[A1][B0]-MM[A1][B1]))+'</span></p>';
+    const h=document.getElementById('simHint');
+    if(h){
+      const d=Math.abs((MM[A0][B0]-MM[A0][B1])-(MM[A1][B0]-MM[A1][B1]));
+      h.textContent = d<0.4 ? 'Linjene er praktisk talt parallelle — ingen interaksjon.'
+        : (pVerdi(A.Fi)<0.05 ? 'Interaksjonen er signifikant: linjene er ikke parallelle.'
+                             : 'Linjene spriker, men ikke nok til å utelukke tilfeldighet.');
+    }
+    geo = tegnInteraksjon(cv, {M:MM});
+  }
+
+  /* --- dra-og-slipp -------------------------------------------------- */
+  function punkter(){
+    const ut=[];
+    D.faktorA.niva.forEach(function(a){
+      D.faktorB.niva.forEach(function(b,i){
+        ut.push({a:a, b:b, x:geo.X(i), y:geo.Y(MM[a][b])});
+      });
+    });
+    return ut;
+  }
+  function pos(e){
+    const r=cv.getBoundingClientRect();
+    const t=e.touches?e.touches[0]:e;
+    const k=(r.width>0 && cv.clientWidth>0)? cv.clientWidth/r.width : 1;
+    return [(t.clientX-r.left)*k, (t.clientY-r.top)*k];
+  }
+  function nedd(e){
+    if(!geo) return;
+    const p=pos(e); let best=null, bd=26*26;
+    punkter().forEach(function(q){
+      const dx=q.x-p[0], dy=q.y-p[1], d2=dx*dx+dy*dy;
+      if(d2<bd){ bd=d2; best=q; }
+    });
+    if(best){ drar=best; e.preventDefault(); }
+  }
+  function flytt(e){
+    if(!drar||!geo) return;
+    const p=pos(e);
+    const v=geo.YLO + (geo.y0-p[1])/geo.ph*(geo.YHI-geo.YLO);
+    MM[drar.a][drar.b]=Math.max(geo.YLO+1, Math.min(geo.YHI-1, v));
+    oppdater(); e.preventDefault();
+  }
+  function opp(){ drar=null; }
+  cv.addEventListener('mousedown',nedd); cv.addEventListener('touchstart',nedd,{passive:false});
+  window.addEventListener('mousemove',flytt); window.addEventListener('touchmove',flytt,{passive:false});
+  window.addEventListener('mouseup',opp);   window.addEventListener('touchend',opp);
+
+  function sett(ny){ MM=JSON.parse(JSON.stringify(ny)); oppdater(); }
+  const knapp=function(id,fn){ const b=document.getElementById(id); if(b) b.addEventListener('click',fn); };
+  /* Forhåndsvalgene bygges rundt datasettets eget midtpunkt og spredning,
+     slik at de ligger innenfor aksen uansett hvilken skala utfallet har. */
+  const mu=D.effekt.mu, sd=Math.sqrt(D.MSE);
+  function mal(a0b0,a0b1,a1b0,a1b1){
+    const o={}; o[A0]={}; o[A1]={};
+    o[A0][B0]=mu+a0b0*sd; o[A0][B1]=mu+a0b1*sd;
+    o[A1][B0]=mu+a1b0*sd; o[A1][B1]=mu+a1b1*sd;
+    return o;
+  }
+  knapp('simEkte',     function(){ sett(EKTE); });
+  knapp('simParallell',function(){ sett(mal(-0.8,-0.2, 0.2, 0.8)); });
+  knapp('simKryss',    function(){ sett(mal(-0.9, 0.9, 0.9,-0.9)); });
+  knapp('simIngen',    function(){ sett(mal(0,0,0,0)); });
+
+  window.addEventListener('resize', oppdater);
+  oppdater();
+  window.__simOppdater=oppdater;
+})();
+
+/* ================= fane: lese ================= */
+(function(){
+  const ark=document.getElementById('lesePlott');
+  if(ark){
+    const M4=[
+      {navn:'Parallelle', und:'bare hovedeffekter', v:[[3,7],[6,10]]},
+      {navn:'Ordinal', und:'samme retning, ulik styrke', v:[[3,7],[6,8]]},
+      {navn:'Disordinal', und:'effekten snur — linjene krysser', v:[[3,8],[8,3]]},
+      {navn:'Ingenting', und:'verken hovedeffekt eller interaksjon', v:[[5.5,5.5],[6,6]]}
+    ];
+    ark.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:12px 0';
+    ark.innerHTML=M4.map(function(m,i){
+      return '<div style="text-align:center"><canvas id="cvM'+i+'" height="150" data-h="150"></canvas>'+
+             '<p style="font-size:14.5px;margin:5px 0 0"><b>'+m.navn+'</b><br>'+
+             '<span class="muted" style="font-size:13px">'+m.und+'</span></p></div>';
+    }).join('');
+    M4.forEach(function(m,i){
+      const cv=document.getElementById('cvM'+i);
+      function tegn(){
+        const r=window.devicePixelRatio||1, w=cv.clientWidth||190, h=150;
+        cv.width=w*r; cv.height=h*r; cv.style.height=h+'px';
+        const c=cv.getContext('2d'); c.setTransform(r,0,0,r,0,0); c.clearRect(0,0,w,h);
+        const x0=16, y0=h-20, pw=w-32, ph=y0-16;
+        const X=j=>x0+(j===0?pw*0.22:pw*0.78), Y=v=>y0-(v-1)/10*ph;
+        c.strokeStyle='#e5e9f0'; c.lineWidth=1;
+        c.beginPath(); c.moveTo(x0,y0); c.lineTo(x0+pw,y0); c.stroke();
+        m.v.forEach(function(p,k){
+          c.strokeStyle=LINJEFARGE[k]; c.lineWidth=2.8; c.lineCap='round';
+          c.beginPath(); c.moveTo(X(0),Y(p[0])); c.lineTo(X(1),Y(p[1])); c.stroke();
+          [0,1].forEach(function(j){
+            c.beginPath(); c.arc(X(j),Y(p[j]),4,0,6.284);
+            c.fillStyle=LINJEFARGE[k]; c.fill();
+            c.strokeStyle='#fff'; c.lineWidth=1.5; c.stroke();
+          });
+        });
+      }
+      window.addEventListener('resize',tegn); tegn();
+    });
+  }
+
+  /* Hvilken form har interaksjonen i det valgte datasettet? */
+  const dom=document.getElementById('leseDom');
+  if(dom){
+    const e1=enkelB(A0).diff, e2=enkelB(A1).diff;
+    const kryss=(e1>0)!==(e2>0);
+    const sig=!(D.kontrast.lo<0 && D.kontrast.hi>0);
+    dom.innerHTML='<h3>Og dette datasettet?</h3>'+
+      'Effekten av '+esc(D.faktorB.navn.toLowerCase())+' er <b>'+tegnFor(e1)+'</b> for '+
+      esc(A0)+' og <b>'+tegnFor(e2)+'</b> for '+esc(A1)+'. '+
+      (kryss ? 'De peker <b>hver sin vei</b> — dette er en <b>disordinal</b> (kryssende) interaksjon.'
+             : 'De peker <b>samme vei</b>, med ulik styrke — dette er en <b>ordinal</b> interaksjon.')+
+      ' '+(sig ? 'Og forskjellen mellom dem er stor nok til å utelukke tilfeldighet.'
+               : 'Men forskjellen mellom dem er <b>ikke</b> stor nok til å utelukke tilfeldighet — '+
+                 'formen på figuren kan godt være støy.');
+  }
+
+  const a=document.getElementById('cvLeseA');
+  function tegnA(){ if(a) tegnInteraksjon(a,{}); }
+
+  /* Samme tall, byttede akser: faktor B blir linjer, faktor A blir x-akse. */
+  const b=document.getElementById('cvLeseB');
+  function tegnB(){
+    if(!b) return;
+    const r=window.devicePixelRatio||1, w=b.clientWidth||400, h=+(b.dataset.h||280);
+    b.width=w*r; b.height=h*r; b.style.height=h+'px';
+    const c=b.getContext('2d'); c.setTransform(r,0,0,r,0,0); c.clearRect(0,0,w,h);
+    const MM={}; D.faktorA.niva.forEach(function(x){ MM[x]={};
+      D.faktorB.niva.forEach(function(y){ MM[x][y]=M(x,y); }); });
+    const auto=autoSkala(MM), YLO=auto[0], YHI=auto[1];
+    const hoyre=w<520?96:150;
+    const x0=52, y0=h-44, pw=w-x0-hoyre, ph=y0-26;
+    const X=i=>x0+(i===0?pw*0.24:pw*0.76), Y=v=>y0-(v-YLO)/(YHI-YLO)*ph;
+    const steg=Math.max(1,Math.round((YHI-YLO)/6));
+    c.strokeStyle='#e5e9f0'; c.lineWidth=1; c.fillStyle='#5C6A80';
+    c.font='12.5px sans-serif'; c.textAlign='right';
+    for(let v=Math.ceil(YLO/steg)*steg; v<=YHI; v+=steg){ const y=Y(v);
+      c.beginPath(); c.moveTo(x0,y); c.lineTo(x0+pw,y); c.stroke();
+      c.fillText(String(v), x0-8, y+4); }
+    c.textAlign='center'; c.font='bold 13.5px sans-serif'; c.fillStyle='#16203A';
+    D.faktorA.niva.forEach(function(g,i){ c.fillText(g, X(i), y0+20); });
+    c.font='bold 13px sans-serif'; c.fillStyle='#5C6A80';
+    c.fillText(D.faktorA.navn, x0+pw/2, y0+38);
+    c.save(); c.translate(15, y0-ph/2); c.rotate(-Math.PI/2);
+    c.textAlign='center'; c.fillStyle='#5C6A80'; c.font='bold 13px sans-serif';
+    c.fillText(D.ylab,0,0); c.restore();
+    const farge=['#1F3864','#7B3FA0'];
+    D.faktorB.niva.forEach(function(m,k){
+      const pts=D.faktorA.niva.map(function(g,i){ return {x:X(i), y:Y(M(g,m))}; });
+      c.strokeStyle=farge[k]; c.lineWidth=3.2; c.lineJoin='round'; c.lineCap='round';
+      c.beginPath(); pts.forEach(function(p,i){ i?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y); }); c.stroke();
+      pts.forEach(function(p){
+        c.beginPath(); c.arc(p.x,p.y,5.4,0,6.284);
+        c.fillStyle=farge[k]; c.fill(); c.strokeStyle='#fff'; c.lineWidth=1.8; c.stroke(); });
+      const s=pts[pts.length-1];
+      c.fillStyle=farge[k]; c.font='bold 13px sans-serif'; c.textAlign='left';
+      c.fillText((w<520&&m.length>14)?m.slice(0,13)+'…':m, s.x+11, s.y+4);
+    });
+  }
+  window.addEventListener('resize', function(){ tegnA(); tegnB(); });
+  tegnA(); tegnB();
+})();
+
+/* ================= fane: enkle ================= */
+(function(){
+  const t=document.getElementById('enkleTab');
+  if(!t) return;
+  const rad=[
+    ['<b>'+esc(D.faktorB.navn)+'</b> innenfor '+esc(A0), enkelB(A0)],
+    ['<b>'+esc(D.faktorB.navn)+'</b> innenfor '+esc(A1), enkelB(A1)],
+    ['<b>'+esc(D.faktorA.navn)+'</b> innenfor '+esc(B0), enkelA(B0)],
+    ['<b>'+esc(D.faktorA.navn)+'</b> innenfor '+esc(B1), enkelA(B1)]
+  ];
+  let r='<table class="tt" style="font-size:16px;width:100%">'+
+    '<tr><th>Enkel effekt</th><th>Forskjell</th><th><i>SE</i></th>'+
+    '<th><i>t</i>('+D.dfE+')</th><th><i>p</i></th><th>95 % KI</th><th><i>d</i></th></tr>';
+  rad.forEach(function(x){
+    const e=x[1], sig=(e.lo>0||e.hi<0);
+    r+='<tr><td>'+x[0]+'</td>'+
+       '<td>'+tegnFor(e.diff)+'</td><td>'+fmt(e.SE)+'</td>'+
+       '<td class="c-tstat">'+tegnFor(e.t)+'</td>'+
+       '<td class="'+(sig?'c-p':'muted')+'">'+e.p+'</td>'+
+       '<td class="c-ki">['+fmt(e.lo)+', '+fmt(e.hi)+']</td>'+
+       '<td class="c-eff">'+tegnFor(e.d)+'</td></tr>';
+  });
+  const k=D.kontrast;
+  r+='<tr style="border-top:2px solid #16203A"><td><b>Interaksjonskontrast</b><br>'+
+     '<span class="muted" style="font-size:13px">('+tegnFor(enkelB(A0).diff)+') − ('+
+     tegnFor(enkelB(A1).diff)+')</span></td>'+
+     '<td><b>'+fmt(k.verdi)+'</b></td><td>'+fmt(k.SE)+'</td>'+
+     '<td class="c-tstat">'+fmt(k.t,3)+'</td><td class="c-p"><b>'+k.p+'</b></td>'+
+     '<td class="c-ki">['+fmt(k.lo)+', '+fmt(k.hi)+']</td>'+
+     '<td class="muted">–</td></tr>';
+  t.innerHTML=r+'</table>'+
+    '<p class="muted" style="font-size:13.5px;margin:6px 0 0"><i>d</i> er regnet '+
+    'med felles standardavvik √MS<sub>res</sub> = '+fmt(Math.sqrt(D.MSE))+'. '+
+    '<i>t</i>² for kontrasten ('+fmt(k.t*k.t,3)+') er <i>F</i> for interaksjonen.</p>';
+})();
+
+/* ================= fane: effekt ================= */
+(function(){
+  function merkelapp(v){
+    const a=Math.abs(v);
+    return a<0.01 ? 'ingen' : a<0.06 ? 'liten' : a<0.14 ? 'middels' : 'stor';
+  }
+  const t=document.getElementById('effTab');
+  if(t){
+    let r='<table class="tt" style="font-size:16px;width:100%">'+
+      '<tr><th>Effekt</th><th>SS</th><th>η²</th><th>η²<sub>p</sub></th>'+
+      '<th>ω²</th><th>Tolkning</th></tr>';
+    D.anova.filter(function(x){ return x.F!==null; }).forEach(function(x){
+      r+='<tr><td>'+esc(x.kilde)+'</td><td>'+fmt(x.SS)+'</td>'+
+         '<td class="c-eff">'+fmt(x.SS/D.SST,3)+'</td>'+
+         '<td class="c-eff">'+fmt(x.etap,3)+'</td>'+
+         '<td class="c-eff">'+fmt(x.omega,3)+'</td>'+
+         '<td>'+merkelapp(x.etap)+'</td></tr>';
+    });
+    const rader=D.anova.filter(x=>x.F!==null);
+    const sumEta=rader.reduce((a,x)=>a+x.SS/D.SST,0);
+    const sumEtap=rader.reduce((a,x)=>a+x.etap,0);
+    t.innerHTML=r+'</table>'+
+      '<p class="muted" style="font-size:13.5px;margin:6px 0 0">Sum η² = '+fmt(sumEta,3)+
+      ' (resten, '+fmt(1-sumEta,3)+', er residualvariasjon). Sum η²<sub>p</sub> = '+
+      fmt(sumEtap,3)+' — den summen betyr ingenting, fordi hver av dem har sin egen nevner.</p>';
+  }
+  const t2=document.getElementById('effDTab');
+  if(t2){
+    const rad=[
+      [D.faktorA.navn+' innenfor '+B0, enkelA(B0)],
+      [D.faktorA.navn+' innenfor '+B1, enkelA(B1)],
+      [D.faktorB.navn+' innenfor '+A0, enkelB(A0)],
+      [D.faktorB.navn+' innenfor '+A1, enkelB(A1)]
+    ];
+    let r='<table class="tt" style="font-size:16px;width:100%">'+
+      '<tr><th>Sammenligning</th><th>Poeng</th><th>95 % KI</th>'+
+      '<th>Cohens <i>d</i></th><th></th></tr>';
+    rad.forEach(function(x){
+      const e=x[1], usikker=(e.lo<0&&e.hi>0);
+      r+='<tr><td>'+esc(x[0])+'</td><td>'+tegnFor(e.diff)+'</td>'+
+         '<td class="c-ki">['+fmt(e.lo)+', '+fmt(e.hi)+']</td>'+
+         '<td class="c-eff">'+tegnFor(e.d)+'</td>'+
+         '<td class="muted">'+merkelapp(e.d*e.d/(e.d*e.d+4))+
+         (usikker?', men usikker':'')+'</td></tr>';
+    });
+    t2.innerHTML=r+'</table>';
+  }
+})();
+
+/* ================= fane: forut ================= */
+(function(){
+  const t=document.getElementById('forutLevene');
+  if(t){
+    const L=D.levene;
+    let r='<table class="tt" style="font-size:16px;width:100%">'+
+      '<tr><th>Celle</th><th><i>n</i></th><th><i>SD</i></th><th>Varians</th></tr>';
+    celler().forEach(function(c){
+      r+='<tr><td>'+esc(c.a)+' / '+esc(c.b)+'</td><td>'+c.n+'</td>'+
+         '<td>'+fmt(c.SD)+'</td><td>'+fmt(c.SD*c.SD)+'</td></tr>';
+    });
+    const sd=celler().map(function(c){ return c.SD; });
+    const forhold=Math.max.apply(null,sd)/Math.min.apply(null,sd);
+    t.innerHTML=r+'</table>'+
+      '<p style="font-size:16px;margin:8px 0 0">Største standardavvik er '+
+      fmt(forhold)+' ganger det minste. Levenes test (medianbasert): '+
+      '<span class="m-tstat"><i>F</i>('+L.df1+', '+L.df2+') = '+fmt(L.F,3)+'</span>, '+
+      '<span class="m-p"><i>p</i> '+pLik(L.p)+'</span> — '+
+      (parseFloat(String(L.p).replace('<','').replace(' ',''))<0.05
+        ? 'her <b>er</b> det holdepunkter for ulik varians.'
+        : 'ingen holdepunkter for ulik varians.')+'</p>';
+  }
+  const t2=document.getElementById('forutResid');
+  if(t2){
+    const R=D.residual;
+    t2.innerHTML='<table class="tt" style="font-size:16px;width:100%">'+
+      '<tr><th>Mål</th><th>Verdi</th><th>Grense å reagere på</th></tr>'+
+      '<tr><td>Skjevhet</td><td>'+fmt(R.skjev)+'</td><td class="muted">|skjevhet| &gt; 2</td></tr>'+
+      '<tr><td>Kurtose (eksess)</td><td>'+fmt(R.kurtose)+'</td>'+
+      '<td class="muted">|kurtose| &gt; 7</td></tr></table>';
+  }
+  const bal=document.getElementById('forutBalanse');
+  if(bal){
+    const cs=celler(), n0=cs[0].n;
+    const balansert=cs.every(function(c){ return c.n===n0; });
+    bal.innerHTML = balansert
+      ? '<h3>Dette designet er balansert</h3>Alle fire cellene har '+n0+
+        ' personer. Da gir Type I, II og III kvadratsummer <b>nøyaktig samme svar</b>, '+
+        'og valget spiller ingen rolle. Bytt til terapistudien øverst for å se et '+
+        'ubalansert design, der det gjør det.'
+      : '<h3>Dette designet er ubalansert</h3>Cellene har '+
+        cs.map(function(c){ return c.n; }).join(', ')+' personer. Da er de to faktorene '+
+        'korrelert med hverandre, og Type I, II og III gir <b>ulike</b> svar. '+
+        'Alle tall her er Type III.';
+  }
+
+  function qnorm(p){
+    const a=[-39.6968302866538,220.946098424521,-275.928510446969,
+             138.357751867269,-30.6647980661472,2.50662827745924];
+    const b=[-54.4760987982241,161.585836858041,-155.698979859887,
+             66.8013118877197,-13.2806815528857];
+    const c=[-0.00778489400243029,-0.322396458041136,-2.40075827716184,
+             -2.54973253934373,4.37466414146497,2.93816398269878];
+    const d=[0.00778469570904146,0.32246712907004,2.445134137143,3.75440866190742];
+    const pl=0.02425; let q,r;
+    if(p<pl){ q=Math.sqrt(-2*Math.log(p));
+      return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/
+             ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1); }
+    if(p<=1-pl){ q=p-0.5; r=q*q;
+      return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/
+             (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1); }
+    q=Math.sqrt(-2*Math.log(1-p));
+    return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/
+            ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+  }
+  const cv=document.getElementById('cvQQ');
+  function tegn(){
+    if(!cv) return;
+    const RES=D.res;
+    const r=window.devicePixelRatio||1, w=cv.clientWidth||400, h=+(cv.dataset.h||280);
+    cv.width=w*r; cv.height=h*r; cv.style.height=h+'px';
+    const c=cv.getContext('2d'); c.setTransform(r,0,0,r,0,0); c.clearRect(0,0,w,h);
+    const x0=46, y0=h-38, pw=w-x0-18, ph=y0-18;
+    const nn=RES.length;
+    const teo=RES.map(function(_,i){ return qnorm((i+0.5)/nn); });
+    const gr=Math.ceil(Math.max(Math.abs(RES[0]), Math.abs(RES[nn-1])));
+    const XLO=-3, XHI=3, YLO=-gr, YHI=gr;
+    const X=v=>x0+(v-XLO)/(XHI-XLO)*pw, Y=v=>y0-(v-YLO)/(YHI-YLO)*ph;
+    c.strokeStyle='#e5e9f0'; c.lineWidth=1; c.fillStyle='#5C6A80'; c.font='12px sans-serif';
+    c.textAlign='right';
+    const steg=Math.max(1, Math.round(gr/2));
+    for(let v=-gr; v<=gr; v+=steg){ const y=Y(v);
+      c.beginPath(); c.moveTo(x0,y); c.lineTo(x0+pw,y); c.stroke();
+      c.fillText(String(v), x0-7, y+4); }
+    c.textAlign='center';
+    for(let v=XLO; v<=XHI; v+=1.5) c.fillText(fmt(v,1), X(v), y0+16);
+    c.font='bold 12.5px sans-serif';
+    c.fillText('Forventet kvantil', x0+pw/2, y0+33);
+    c.save(); c.translate(13, y0-ph/2); c.rotate(-Math.PI/2);
+    c.fillText('Residual', 0, 0); c.restore();
+    const sd=Math.sqrt(RES.reduce(function(a,v){return a+v*v;},0)/(nn-1));
+    c.strokeStyle='#C0392B'; c.lineWidth=2; c.setLineDash([5,4]);
+    c.beginPath(); c.moveTo(X(XLO), Y(sd*XLO)); c.lineTo(X(XHI), Y(sd*XHI)); c.stroke();
+    c.setLineDash([]);
+    RES.forEach(function(v,i){
+      c.beginPath(); c.arc(X(teo[i]), Y(v), 3.2, 0, 6.284);
+      c.fillStyle='#1F3864'; c.fill();
+    });
+  }
+  window.addEventListener('resize', tegn); tegn();
+})();
+
+/* ================= fane: ekte ================= */
+(function(){
+  const d=document.getElementById('ekteDeskr');
+  if(d) d.innerHTML=jaspDeskriptiv();
+  const a=document.getElementById('ekteAnova');
+  if(a) a.innerHTML=jaspAnovaTabell();
+
+  const hist=document.getElementById('ekteHistorie');
+  if(hist) hist.innerHTML='<p style="font-size:16.5px;line-height:1.55">'+
+    esc(D.historie)+'</p><p class="muted" style="font-size:14.5px">'+esc(D.kilde)+'</p>';
+
+  const kl=document.getElementById('ekteKlikksti');
+  if(kl) kl.innerHTML=
+    '<b>ANOVA → ANOVA</b><br>Dependent Variable: <b>'+esc(D.utfall)+'</b><br>'+
+    'Fixed Factors: <b>'+esc(D.faktorA.navn)+'</b>, <b>'+esc(D.faktorB.navn)+'</b><br>'+
+    'Display: ☑ Descriptive statistics &nbsp; ☑ Estimates of effect size '+
+    '(η²<sub>p</sub> og ω²)<br>'+
+    'Assumption Checks: ☑ Homogeneity tests &nbsp; ☑ Q-Q plot of residuals<br>'+
+    'Descriptives Plots: Horizontal axis <b>'+esc(D.faktorB.navn)+'</b>, '+
+    'Separate lines <b>'+esc(D.faktorA.navn)+'</b>, ☑ Display error bars → '+
+    '<b>Confidence interval</b><br>'+
+    'Simple Main Effects: Simple effect factor <b>'+esc(D.faktorA.navn)+
+    '</b>, Moderator factor <b>'+esc(D.faktorB.navn)+'</b>';
+
+  const l=document.getElementById('ekteLevene');
+  if(l){
+    const L=D.levene;
+    l.innerHTML='<div class="jasp"><p class="tit">Test for Equality of Variances (Levene’s)</p>'+
+      '<table><thead><tr><th>F</th><th>df1</th><th>df2</th><th>p</th></tr></thead>'+
+      '<tbody><tr><td>'+fmt(L.F,3)+'</td><td>'+L.df1+'</td><td>'+L.df2+'</td>'+
+      '<td>'+L.p+'</td></tr></tbody></table></div>';
+  }
+
+  const e=document.getElementById('ekteEnkle');
+  if(e){
+    const g1=enkelA(B0), g2=enkelA(B1);
+    function F(x){ return x.t*x.t; }
+    e.innerHTML='<div class="jasp"><p class="tit">Simple Main Effects — '+
+      esc(D.faktorA.navn)+'</p>'+
+      '<table><thead><tr><th class="venstre">Level of '+esc(D.faktorB.navn)+'</th>'+
+      '<th>Sum of Squares</th><th>df</th><th>Mean Square</th><th>F</th><th>p</th>'+
+      '</tr></thead><tbody>'+
+      [[B0,g1],[B1,g2]].map(function(x,i){
+        return '<tr'+(i?' class="stripe"':'')+'><td class="venstre">'+esc(x[0])+'</td>'+
+          '<td>'+fmt(F(x[1])*D.MSE,3)+'</td><td>1</td><td>'+fmt(F(x[1])*D.MSE,3)+'</td>'+
+          '<td class="c-tstat">'+fmt(F(x[1]),3)+'</td><td class="c-p">'+x[1].p+'</td></tr>';
+      }).join('')+
+      '</tbody></table><p class="note">Felles feilledd: MS<sub>residual</sub> = '+
+      fmt(D.MSE)+', df = '+D.dfE+'</p></div>';
+  }
+
+  const o=document.getElementById('ekteOppsum');
+  if(o){
+    const k=D.kontrast, g1=enkelA(B0), g2=enkelA(B1);
+    function rad(navn,x){
+      return '<tr><td>'+esc(navn)+'</td><td><i>F</i>(1, '+D.dfE+') = '+fmt(x.F)+
+             ', <i>p</i> '+pLik(x.p)+
+             ', η²<sub>p</sub> = '+fmt(x.etap,3)+'</td></tr>';
+    }
+    o.innerHTML='<table class="tt" style="font-size:16px;width:100%">'+
+      '<tr><th>Det du skal rapportere</th><th>Tall</th></tr>'+
+      rad('Hovedeffekt av '+D.faktorA.navn.toLowerCase(), D.anova[0])+
+      rad('Hovedeffekt av '+D.faktorB.navn.toLowerCase(), D.anova[1])+
+      '<tr><td><b>Interaksjon</b></td><td><b><i>F</i>(1, '+D.dfE+') = '+fmt(D.anova[2].F)+
+      ', <i>p</i> '+pLik(D.anova[2].p)+
+      ', η²<sub>p</sub> = '+fmt(D.anova[2].etap,3)+'</b></td></tr>'+
+      '<tr><td>'+esc(D.faktorA.navn)+'-forskjell innenfor '+esc(B0)+'</td><td>'+
+      tegnFor(g1.diff)+', 95 % KI ['+fmt(g1.lo)+', '+fmt(g1.hi)+'], <i>d</i> = '+fmt(g1.d)+'</td></tr>'+
+      '<tr><td>'+esc(D.faktorA.navn)+'-forskjell innenfor '+esc(B1)+'</td><td>'+
+      tegnFor(g2.diff)+', 95 % KI ['+fmt(g2.lo)+', '+fmt(g2.hi)+'], <i>d</i> = '+fmt(g2.d)+'</td></tr>'+
+      '<tr><td>Interaksjonskontrast</td><td>'+fmt(k.verdi)+', 95 % KI ['+fmt(k.lo)+
+      ', '+fmt(k.hi)+']</td></tr>'+
+      '<tr><td>Forutsetninger</td><td>Levene <i>p</i> '+pLik(D.levene.p)+
+      ', skjevhet '+fmt(D.residual.skjev)+'</td></tr></table>';
+  }
+})();
+
+/* ================= fane: rapport ================= */
+(function(){
+  /* Resultatsetningen bygges av datasettets egne tall, slik at den følger med
+     når man bytter datasett. Rekkefølgen er alltid: interaksjonen først, så
+     enkle effekter, så hovedeffektene med forbehold. */
+  const t=document.getElementById('rapTekst');
+  if(t){
+    const int=D.anova[2], hA=D.anova[0], hB=D.anova[1];
+    const g1=enkelA(B0), g2=enkelA(B1), e1=enkelB(A0), e2=enkelB(A1), k=D.kontrast;
+    const sig = int.pTall < 0.05;
+    function sp(navn,v,kl){ return '<span class="sp '+kl+'" data-sp="'+navn+'">'+v+'</span>'; }
+    function F(navn,x,kl){
+      return sp(navn,'<i>F</i>(1, '+D.dfE+') = '+fmt(x.F),kl)+', '+
+             sp(navn+'p','<i>p</i> '+pLik(x.p),'s-p')+', '+
+             sp(navn+'e','η²<sub>p</sub> = '+fmt(x.etap,2).replace(/^0/,''),'s-eff');
+    }
+    function KI(navn,x){
+      return sp(navn,fmt(x.diff)+' '+D.utfallKort,'s-sig')+', '+
+             sp(navn+'k','95 % KI ['+fmt(x.lo)+', '+fmt(x.hi)+']','s-tstat')+', '+
+             sp(navn+'p','<i>p</i> '+pLik(x.p),'s-p');
+    }
+    let ut='';
+    if(sig){
+      ut += 'Analysen viste en signifikant interaksjon mellom '+
+        esc(D.faktorA.navn.toLowerCase())+' og '+esc(D.faktorB.navn.toLowerCase())+', '+
+        F('int',int,'s-eff')+'. Effekten av det ene avhang altså av det andre.'+
+        '<br><br>Enkle effekter ble undersøkt med felles feilledd. '+
+        'Innenfor '+esc(B0.toLowerCase())+' var forskjellen '+KI('d1',g1)+'. '+
+        'Innenfor '+esc(B1.toLowerCase())+' var den '+KI('d2',g2)+'. '+
+        'Forskjellen mellom de to enkle effektene av '+esc(D.faktorB.navn.toLowerCase())+
+        ' var '+sp('kon',fmt(k.verdi),'s-eff')+', '+
+        sp('konki','95 % KI ['+fmt(k.lo)+', '+fmt(k.hi)+']','s-tstat')+'.'+
+        '<br><br>Hovedeffekten av '+esc(D.faktorA.navn.toLowerCase())+' var '+
+        F('me1',hA,'s-sig')+', og hovedeffekten av '+esc(D.faktorB.navn.toLowerCase())+
+        ' var '+F('me2',hB,'s-stoy')+'. Begge må leses i lys av interaksjonen: '+
+        'de er gjennomsnitt over to grupper der effekten ikke var den samme.';
+      if(hB.pTall>0.05 && ((e1.diff>0)!==(e2.diff>0))){
+        ut += ' At hovedeffekten av '+esc(D.faktorB.navn.toLowerCase())+
+          ' ikke er signifikant, betyr her <b>ikke</b> at den er uten betydning: '+
+          'de to enkle effektene ('+tegnFor(e1.diff)+' og '+tegnFor(e2.diff)+
+          ') peker i hver sin retning og utligner hverandre i marginalen.';
+      }
+    } else {
+      ut += 'Interaksjonen mellom '+esc(D.faktorA.navn.toLowerCase())+' og '+
+        esc(D.faktorB.navn.toLowerCase())+' var ikke signifikant, '+
+        F('int',int,'s-stoy')+'. Konfidensintervallet for interaksjonskontrasten, '+
+        sp('konki','['+fmt(k.lo)+', '+fmt(k.hi)+']','s-tstat')+
+        ', utelukker verken at effekten er den samme i begge grupper eller at den '+
+        'varierer betydelig — studien har ikke styrke til å skille de to.'+
+        '<br><br>Hovedeffektene tolkes derfor som de står. '+
+        esc(D.faktorA.navn)+': '+F('me1',hA,'s-sig')+'. '+
+        esc(D.faktorB.navn)+': '+F('me2',hB,'s-stoy')+'.';
+    }
+    if(!D.ekte){
+      ut += '<br><br><span class="muted">(Tallene i dette datasettet er simulert. '+
+        'Setningen viser formen en resultatdel skal ha, ikke et publisert funn.)</span>';
+    }
+    t.innerHTML=ut;
+  }
+
+  const tb=document.getElementById('rapTabell');
+  if(tb){
+    let r='<div class="jasp"><p class="tit">Tabell 1<br>'+
+      '<span style="font-style:normal">Variansanalyse av '+esc(D.utfall.toLowerCase())+
+      '</span></p>'+
+      '<table><thead><tr><th class="venstre">Kilde</th><th><i>SS</i></th><th><i>df</i></th>'+
+      '<th><i>MS</i></th><th><i>F</i></th><th><i>p</i></th><th>η²<sub>p</sub></th>'+
+      '</tr></thead><tbody>';
+    D.anova.forEach(function(x){
+      r+='<tr><td class="venstre">'+esc(x.kilde.replace('✻','×'))+'</td><td>'+fmt(x.SS)+'</td>'+
+         '<td>'+x.df+'</td><td>'+fmt(x.MS)+'</td>'+
+         '<td>'+(x.F!==null?fmt(x.F):'')+'</td>'+
+         '<td>'+(x.p!==null?x.p:'')+'</td>'+
+         '<td>'+(x.F!==null?fmt(x.etap,3):'')+'</td></tr>';
+    });
+    tb.innerHTML=r+'</tbody></table>'+
+      '<p class="note"><i>Merk.</i> <i>N</i> = '+D.N+'. Type III kvadratsummer.</p></div>';
+  }
+
+  const ft=document.getElementById('rapFigurtekst');
+  if(ft) ft.innerHTML='<i>Figur 1.</i> '+esc(D.utfall)+' etter '+
+    esc(D.faktorA.navn.toLowerCase())+' og '+esc(D.faktorB.navn.toLowerCase())+
+    '. Feilfeltene viser 95 % konfidensintervall rundt cellegjennomsnittene, '+
+    'basert på felles feilvarians (<i>MS</i><sub>residual</sub> = '+fmt(D.MSE)+
+    ', <i>df</i> = '+D.dfE+').';
+
+  const cv=document.getElementById('cvRap');
+  function tegn(){ if(cv) tegnInteraksjon(cv,{}); }
+  window.addEventListener('resize', tegn); tegn();
+
+  document.addEventListener('mouseover', function(e){
+    const el=e.target.closest ? e.target.closest('.sp') : null;
+    if(!el) return;
+    document.querySelectorAll('.sp[data-sp="'+el.dataset.sp+'"]')
+      .forEach(function(x){ x.classList.add('pa'); });
+  });
+  document.addEventListener('mouseout', function(e){
+    const el=e.target.closest ? e.target.closest('.sp') : null;
+    if(!el) return;
+    document.querySelectorAll('.sp.pa').forEach(function(x){ x.classList.remove('pa'); });
+  });
+})();
+
+/* ================= fane: kji ================= */
+(function(){
+  /* Denne fanen står på terapistudiens krysstabell uansett hvilket datasett
+     som er valgt — dykkerdataene har ingen kategorisk utfall å vise. */
+  const K={a:26, b:10, c:32, d:7, X2:1.032, df:1, p:'.310', OR:0.569};
+  const NAVN={A:['ISTDP','Venteliste'], B:['Ja','Nei'],
+              tittel:'Gruppe × Medisinbruk (terapistudien, N = 75)'};
+  const r1=K.a+K.b, r2=K.c+K.d, k1=K.a+K.c, k2=K.b+K.d, N=r1+r2;
+
+  const t=document.getElementById('kjiTab');
+  if(t) t.innerHTML=
+    '<div class="jasp"><p class="tit">Contingency Table — '+NAVN.tittel+'</p>'+
+    '<table><thead><tr><th class="venstre">Gruppe</th><th>Ja</th><th>Nei</th>'+
+    '<th>Total</th></tr></thead><tbody>'+
+    '<tr><td class="venstre">ISTDP</td><td>'+K.a+'</td><td>'+K.b+'</td><td>'+r1+'</td></tr>'+
+    '<tr class="stripe"><td class="venstre">Venteliste</td><td>'+K.c+'</td><td>'+K.d+'</td>'+
+    '<td>'+r2+'</td></tr>'+
+    '<tr><td class="venstre">Total</td><td>'+k1+'</td><td>'+k2+'</td><td>'+N+'</td></tr>'+
+    '</tbody></table></div>'+
+    '<div class="jasp"><p class="tit">Chi-Squared Tests</p>'+
+    '<table><thead><tr><th class="venstre"></th><th>Value</th><th>df</th><th>p</th>'+
+    '</tr></thead><tbody>'+
+    '<tr><td class="venstre">χ²</td><td class="c-tstat">'+fmt(K.X2,3)+'</td>'+
+    '<td>'+K.df+'</td><td class="c-p">'+K.p+'</td></tr>'+
+    '<tr class="stripe"><td class="venstre">N</td><td>'+N+'</td><td></td><td></td></tr>'+
+    '</tbody></table></div>';
+
+  const f=document.getElementById('kjiForv');
+  if(f){
+    function E(r,k){ return r*k/N; }
+    const O=[[K.a,K.b],[K.c,K.d]], R=[r1,r2], Kk=[k1,k2];
+    let r='<table class="tt" style="font-size:16px;width:100%">'+
+      '<tr><th>Celle</th><th>Observert</th><th>Forventet</th>'+
+      '<th>(O − F)² / F</th></tr>';
+    let sum=0;
+    NAVN.A.forEach(function(g,i){
+      NAVN.B.forEach(function(m,j){
+        const e=E(R[i],Kk[j]), b=Math.pow(O[i][j]-e,2)/e; sum+=b;
+        r+='<tr><td>'+g+' / '+m.toLowerCase()+'</td><td>'+O[i][j]+'</td>'+
+           '<td>'+fmt(e)+'</td><td>'+fmt(b,3)+'</td></tr>';
+      });
+    });
+    f.innerHTML=r+'<tr><td colspan="3" style="text-align:right"><b>χ² =</b></td>'+
+      '<td class="c-tstat"><b>'+fmt(sum,3)+'</b></td></tr></table>'+
+      '<p class="muted" style="font-size:13.5px;margin:6px 0 0">Minste forventede '+
+      'frekvens: '+fmt(Math.min(E(r1,k1),E(r1,k2),E(r2,k1),E(r2,k2)))+' — over 5, '+
+      'så kjikvadrat er forsvarlig.</p>';
+  }
+})();
+
+</script>
+</body></html>
