@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY300 &middot; Sim 36 &mdash; Moderasjon: virker det like godt for alle?</title>
+<style>
+:root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--orange:#B26A00;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+:root{--sig:#1E7A3C;--sig-bg:#E7F4EA;--stoy:#C0392B;--stoy-bg:#FBEDEB;
+      --tstat:#1F3864;--pverdi:#6A3D9A;--pverdi-bg:#F1EAF8;}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
+header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:20.5px;margin:0;font-weight:700}
+header p{margin:2px 0 0;font-size:15.5px;opacity:.85}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.card h2{font-size:19px;margin:0 0 8px;color:var(--navy)}
+.card h3{font-size:16.5px;margin:14px 0 4px;color:var(--navy)}
+button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+.btn{background:var(--blue);color:#fff}
+.btn2{background:#eef1f7;color:var(--navy)}
+.fane{background:#eef1f7;color:var(--navy);font-size:16.5px}
+.fane.on{background:var(--navy);color:#fff}
+.keybox{background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:12px 14px;margin:14px 0;font-size:16.5px}
+.keybox .lbl{display:block;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--blue);margin-bottom:3px}
+.advarsel{background:#FFF6E8;border-left:5px solid var(--orange);border-radius:0 10px 10px 0;padding:12px 14px;margin:12px 0;font-size:16.5px}
+.klikksti{background:#f7f9ff;border:1px solid #e3e7ea;border-radius:8px;padding:9px 12px;font-size:15px;line-height:1.6;margin:8px 0}
+.mallbl{display:block;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:#2E5496;font-weight:700;margin-bottom:3px}
+.note{background:#f6f8fa;border:1px solid #e3e7ea;border-radius:10px;padding:11px 13px;margin:10px 0;font-size:15.5px}
+label{font-size:16px;color:var(--navy);font-weight:600}
+input[type=range]{width:180px;vertical-align:middle}
+canvas{width:100%;display:block;border-radius:8px}
+.muted{color:#62708a;font-size:15.5px}
+.ctrl{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:10px 0}
+.sl{display:flex;align-items:center;gap:10px;margin:7px 0;flex-wrap:wrap}
+.sl label{min-width:250px}
+.sl output{font-weight:700;color:var(--navy);min-width:52px;display:inline-block}
+.tall{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0}
+.tallkort{border:1px solid var(--line);border-radius:10px;padding:8px 14px;min-width:120px;background:#fbfcfe}
+.tallkort .v{font-size:25px;font-weight:700;color:var(--navy);line-height:1.1}
+.tallkort .l{font-size:13.5px;color:#62708a}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:8px 0}
+th,td{border-bottom:1px solid #e3e7ea;padding:6px 8px;text-align:right}
+th:first-child,td:first-child{text-align:left}
+thead th{color:var(--navy);border-bottom:2px solid #c7d6ec}
+.tabrull{overflow-x:auto}
+details.mer{margin-top:8px;font-size:15.5px}
+details.mer summary{cursor:pointer;color:var(--blue);font-weight:600}
+details.mer>div{padding:8px 0 0}
+.ovkort{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f6f8fa;
+ border:1px solid #dde3e8;border-left:5px solid #C8102E;border-radius:10px;padding:10px 13px;margin:14px 0;font-size:15px}
+.ovkort .ovlbl{font-weight:700;color:#5B6670;letter-spacing:.02em;text-transform:uppercase;font-size:11.5px}
+.ovkort a.ovlenke{display:inline-block;background:#fff;border:1px solid #c7d6ec;border-radius:999px;
+ padding:3px 11px;color:#174A6B;text-decoration:none;font-size:14.5px}
+.ovkort a.ovlenke:hover{background:#eef3fb;border-color:#8fb0d6}
+.ovkort .ovhint{color:#6B767D;font-size:13px}
+a{color:var(--blue)}
+.hide{display:none}
+.toko{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:700px){.toko{grid-template-columns:1fr}.sl label{min-width:0}}
+
+.hvgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.hvkort{border-radius:10px;padding:11px 13px;font-size:16px;line-height:1.5}
+.hvkort h3{margin:0 0 6px;font-size:16.5px}
+.hvkort ul{margin:0;padding-left:18px}
+.hvkort li{margin-bottom:7px}
+.hver{background:#eaf6ea;border:1px solid #bcdcbc;border-left:5px solid #2E7D32}
+.hver h3{color:#1E5C22}
+.hvikke{background:#fbeceb;border:1px solid #edc9c5;border-left:5px solid #C0392B}
+.hvikke h3{color:#9B2D20}
+.eks{display:block;color:#5A6B7B;font-size:14.5px;margin-top:2px}
+.hvnaar{width:100%;border-collapse:collapse;font-size:15.5px;margin-top:8px}
+.hvnaar th{text-align:left;background:#eef2f8;border-bottom:2px solid #c7d6ec;padding:6px 8px;font-size:14.5px}
+.hvnaar td{border-bottom:1px solid #d9dee8;padding:6px 8px;vertical-align:top}
+.hvnaar tr.na{background:#eef3fb;font-weight:500}
+@media(max-width:760px){.hvgrid{grid-template-columns:1fr}}
+</style>
+</head><body>
+<header>
+<h1>Sim 36 &middot; Moderasjon: virker det like godt for alle?</h1>
+<p>PSY300 &middot; Seminar 6&ndash;7 og arbeidskravet &middot; Fra &laquo;virker tiltaket?&raquo; til &laquo;for hvem virker det?&raquo; &mdash; produktleddet, sentrering, enkle hellinger og de ekte tallene fra arbeidskravet</p>
+</header>
+<div class="wrap">
+<div class="faner">
+<button class="fane on" data-fane="hvorfor">1 &middot; Hvorfor moderasjon?</button>
+<button class="fane" data-fane="produkt">2 &middot; Produktleddet</button>
+<button class="fane" data-fane="sentrer">3 &middot; Sentrering</button>
+<button class="fane" data-fane="hellinger">4 &middot; Enkle hellinger</button>
+<button class="fane" data-fane="ekte">5 &middot; Arbeidskravet, ekte tall</button>
+<button class="fane" data-fane="dikotomi">6 &middot; Ikke del moderatoren i to</button>
+<button class="fane" data-fane="rapport">7 &middot; Slik rapporteres det</button>
+</div>
+
+<div id="fane-hvorfor">
+<div class="card">
+<h2>Et gjennomsnitt kan skjule to historier</h2>
+<p class="muted">En vanlig <i>t</i>-test eller regresjon svarer på <b>&laquo;virker tiltaket, i gjennomsnitt?&raquo;</b>
+Den gir ett tall for hele utvalget. Men det tallet er et gjennomsnitt av alle de ulike
+effektene tiltaket har for ulike mennesker &mdash; og et gjennomsnitt kan ligge midt mellom to
+grupper uten å beskrive noen av dem.</p>
+<p class="muted">Klikk gjennom de tre verdenene. I alle tre er <b>gjennomsnittseffekten den samme</b>.
+Det eneste som skiller dem, er hvordan effekten fordeler seg.</p>
+<div class="ctrl">
+<button class="btn2 verden on" data-v="0">Verden A: virker likt for alle</button>
+<button class="btn2 verden" data-v="1">Verden B: virker mer for noen</button>
+<button class="btn2 verden" data-v="2">Verden C: virker motsatt for noen</button>
+</div>
+<canvas id="hvCv" height="280"></canvas>
+<div class="note" id="hvLes"></div>
+</div>
+
+<div class="card">
+<h2>Hva ordet betyr</h2>
+<p class="muted">En <b>moderator</b> er en variabel som endrer <i>styrken</i> eller <i>retningen</i>
+på sammenhengen mellom to andre variabler. &laquo;Effekten av X på Y avhenger av Z&raquo; er en
+moderasjonshypotese, og Z er moderatoren. Statistisk er det nøyaktig det samme som en
+<b>interaksjon</b> &mdash; det er samme sak sett fra to fag: «moderasjon» er språket i
+regresjon og i teoretiske modeller, «interaksjon» er språket i ANOVA.</p>
+<div class="toko">
+<div class="note"><b>Moderasjon er ikke mediering.</b> En moderator sier <i>for hvem</i> eller
+<i>under hvilke betingelser</i> effekten finnes. En <b>mediator</b> sier <i>hvordan</i> effekten
+går &mdash; den er et mellomledd i årsakskjeden. «Nederlag svekker selvtilliten mest hos
+perfeksjonister» er moderasjon. «Nederlag svekker selvtilliten <i>fordi</i> det utløser
+selvkritiske tanker» er mediering.</div>
+<div class="note"><b>Du har stilt moderasjonsspørsmål før, uten å kalle dem det.</b> «Er sammenhengen mellom øving og karakter sterkere hos menn enn hos kvinner?» er et moderasjonsspørsmål &mdash; kjønn er moderatoren. Det samme er «holder effekten seg i oppfølgingen?» (tid modererer) og «virker tiltaket best for de sykeste?» (alvorlighet ved oppstart modererer). Når du sammenligner to korrelasjoner mellom undergrupper, er det ikke to analyser &mdash; det er <b>én</b> moderasjonsanalyse, og den har en test. Se Sim 11 fane 10 om hva som ellers kan skje når man deler utvalget i grupper.</div>
+<div class="note"><b>Moderatoren trenger ikke være en årsak til noe.</b> Kjønn modererer
+gjerne effekter uten å forårsake dem; det er en markør for noe annet. En moderasjonsanalyse
+forteller deg <i>at</i> effekten varierer, ikke <i>hvorfor</i>.</div>
+</div>
+<div class="advarsel"><b>Der dette treffer deg direkte:</b> arbeidskravets H2 og H3 er
+moderasjonshypoteser. H2 spør om perfeksjonisme modererer effekten av vanskelighetsgrad på
+selvtillit, H3 spør om kjønn gjør det. Fane 5 kjører begge på de ekte dataene.</div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>Moderasjon er spørsmålet «for hvem?». Den samme gjennomsnittseffekten kan dekke over at
+tiltaket virker sterkt for noen, svakt for andre, og motsatt for en tredje gruppe &mdash;
+og den forskjellen er ofte det klinisk interessante.</b></div></div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C9">C9 Interaksjon og faktorielle design &rarr;</a> <a class="ovlenke" data-begrep="C6">C6 Multippel regresjon og statistisk kontroll &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+<div class="card">
+<h2>Hva moderasjon svarer på — og hva den ikke gjør</h2>
+<div class="hvgrid">
+<div class="hvkort hver"><h3>✓ Den forteller deg</h3><ul>
+<li><b>Om effekten av noe avhenger av noe annet.</b> «Virker terapien like godt for alle, eller
+bedre for noen?»
+<span class="eks">Det er hele spørsmålet. Alt annet i appen er maskineri.</span></li>
+<li><b>Hvor stor effekten er ved ulike verdier av moderatoren.</b> Enkle hellinger ved
+&minus;1 <i>SD</i>, gjennomsnittet og +1 <i>SD</i>.
+<span class="eks">Fane 4.</span></li>
+<li><b>I hvilket område moderatoren faktisk gjør en forskjell.</b> Johnson&ndash;Neyman gir deg
+grensen, ikke bare tre vilkårlige punkter.</li>
+<li><b>At en ikke-signifikant interaksjon ikke er det samme som ingen interaksjon.</b>
+Interaksjoner trenger mange flere deltakere enn hovedeffekter.</li>
+</ul></div>
+<div class="hvkort hvikke"><h3>✗ Den forteller deg ikke</h3><ul>
+<li><b>At moderatoren forårsaker noe.</b> Bare betingelsen er manipulert. Perfeksjonisme og kjønn er
+<i>målt</i>, så en interaksjon med dem sier <b>for hvem</b>, ikke <b>hvorfor</b>.</li>
+<li><b>Hvordan effekten virker.</b> Det er mediering, et annet spørsmål og en annen modell.</li>
+<li><b>Noe pålitelig når moderatoren er målt med stor feil.</b> Målefeil rammer produktleddet
+hardere enn noe annet ledd.
+<span class="eks">Sim 11, fane 9.</span></li>
+<li><b>Mer ved å dele moderatoren i to.</b> Mediansplitt kaster bort informasjon og styrke &mdash;
+og kan lage en «effekt» som ikke er der.
+<span class="eks">Fane 6 viser det.</span></li>
+</ul></div>
+</div>
+
+<div class="note" style="margin-top:12px"><b>Den viktigste av dem:</b> en interaksjon med en
+<i>målt</i> moderator er beskrivende, selv i et randomisert eksperiment. Randomiseringen gjelder
+betingelsen, ikke hvem som er perfeksjonist. «Terapien virket best for de minst selvkritiske» er
+riktig; «lav selvkritikk gjorde terapien mer effektiv» er det ikke.</div>
+</div>
+
+<div class="card">
+<h2>Hvor dette står i forhold til de andre metodene</h2>
+<p style="font-size:16.5px;line-height:1.55">Moderasjon er ikke en ny test &mdash; det er et ledd til
+i en regresjonsmodell. Her er plasseringen:</p>
+<table class="hvnaar">
+<tr><th>Spørsmålet ditt</th><th>Metoden</th><th>Hvor</th></tr>
+<tr><td>Henger to tallvariabler sammen?</td><td>Korrelasjon</td><td>Sim 11</td></tr>
+<tr><td>Kan jeg predikere et tall fra et annet?</td><td>Enkel regresjon</td><td>Sim 5</td></tr>
+<tr><td>Holder sammenhengen når jeg kontrollerer for noe?</td><td>Multippel regresjon</td><td>Sim 5, fane 6 · Sim 15</td></tr>
+<tr class="na"><td><b>Avhenger effekten av en tredje variabel?</b></td><td>Moderasjon (produktledd)</td><td>denne appen</td></tr>
+<tr><td>Samme spørsmål, men begge variablene er grupper</td><td>Faktoriell ANOVA</td><td>Sim 24</td></tr>
+<tr><td>Endret effekten seg over tid, ulikt i to grupper?</td><td>Blandet ANOVA (tid &times; gruppe)</td><td>Sim 25, fane 7</td></tr>
+<tr><td>Hvorfor trenger interaksjoner så mange deltakere?</td><td>Statistisk styrke</td><td>Sim 7, fane 2</td></tr>
+</table>
+<div class="note" style="margin-top:12px"><b>Kjenn igjen mønsteret:</b> moderasjon og interaksjon er
+samme sak. Er begge variablene kategoriske, kaller vi det faktoriell ANOVA og tegner et
+interaksjonsplott. Er minst &eacute;n kontinuerlig, kaller vi det moderasjon og regner enkle
+hellinger. Modellen under er den samme.</div>
+</div>
+</div>
+
+<div id="fane-produkt" class="hide">
+<div class="card">
+<h2>Interaksjonen <i>er</i> en forskjell i hellinger</h2>
+<p class="muted">Modellen er en vanlig multippel regresjon med ett ledd ekstra:</p>
+<div class="note" style="font-size:17px;text-align:center">
+Y = b<sub>0</sub> + b<sub>1</sub>&middot;X + b<sub>2</sub>&middot;Z + <b style="color:var(--red)">b<sub>3</sub>&middot;(X &times; Z)</b></div>
+<p class="muted">Produktleddet er hele moderasjonen. Skru på <b>b<sub>3</sub></b> og se hva som
+skjer med de tre linjene: de viser sammenhengen mellom X og Y for tre nivåer av moderatoren Z.
+Er b<sub>3</sub> = 0, er linjene <b>parallelle</b> &mdash; effekten av X er den samme uansett Z.
+Er b<sub>3</sub> ulik 0, vifter de.</p>
+<div class="sl"><label>b<sub>1</sub> &mdash; effekten av X når Z = 0</label><input type="range" id="pX" min="-0.6" max="0.9" step="0.05" value="0.35"><output id="pXo">0.35</output></div>
+<div class="sl"><label>b<sub>2</sub> &mdash; effekten av Z når X = 0</label><input type="range" id="pZ" min="-0.6" max="0.9" step="0.05" value="0.20"><output id="pZo">0.20</output></div>
+<div class="sl"><label>b<sub>3</sub> &mdash; produktleddet (moderasjonen)</label><input type="range" id="pXZ" min="-0.6" max="0.6" step="0.05" value="0"><output id="pXZo">0.00</output></div>
+<div class="sl"><label>Støy i Y</label><input type="range" id="pS" min="0.2" max="1.6" step="0.1" value="0.8"><output id="pSo">0.80</output></div>
+<button class="btn" id="pNy">Trekk nytt utvalg (<i>n</i> = 300)</button>
+<canvas id="pCv" height="300"></canvas>
+<div class="note" id="pLes"></div>
+</div>
+
+<div class="card">
+<h2>Det er tre spørsmål i modellen, ikke ett</h2>
+<div class="tabrull"><table>
+<thead><tr><th>Ledd</th><th style="text-align:left">Hva det svarer på</th><th style="text-align:left">Når er det interessant?</th></tr></thead>
+<tbody>
+<tr><td><b>b<sub>1</sub></b></td><td style="text-align:left">effekten av X <b>for dem som har Z = 0</b></td><td style="text-align:left">bare hvis Z = 0 er en meningsfull verdi &mdash; derfor fane 3</td></tr>
+<tr><td><b>b<sub>2</sub></b></td><td style="text-align:left">effekten av Z <b>for dem som har X = 0</b></td><td style="text-align:left">samme forbehold</td></tr>
+<tr><td><b style="color:var(--red)">b<sub>3</sub></b></td><td style="text-align:left">hvor mye effekten av X <b>endrer seg</b> per enhet Z</td><td style="text-align:left">alltid &mdash; dette er moderasjonstesten, og den er ikke avhengig av hvor nullpunktet ligger</td></tr>
+</tbody></table></div>
+<div class="advarsel"><b>Symmetrien er ekte og overraskende:</b> b<sub>3</sub> er like mye
+«hvordan Z endrer effekten av X» som «hvordan X endrer effekten av Z». Hvilken av de to du
+kaller moderator, er et <b>teoretisk</b> valg, ikke et statistisk et. Modellen skiller dem ikke.</div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>Moderasjon testes med ett eneste ledd: produktet av de to variablene. Er koeffisienten til
+produktet null, er linjene parallelle og effekten den samme for alle. Er den ikke null, vifter
+linjene &mdash; og da er det hellingene, ikke hovedeffektene, du skal snakke om.</b></div></div>
+</div>
+
+<div id="fane-sentrer" class="hide">
+<div class="card">
+<h2>Hvorfor arbeidskravet ber deg sentrere</h2>
+<p class="muted">Å <b>sentrere</b> vil si å trekke gjennomsnittet fra: Z<sub>sentrert</sub> = Z &minus; <i>M</i><sub>Z</sub>.
+Da blir 0 den gjennomsnittlige personen i stedet for en verdi som kanskje ikke finnes.
+Her er den <b>samme</b> modellen, kjørt på de samme dataene, med og uten sentrering.</p>
+<div class="sl"><label>Moderatorens gjennomsnitt</label><input type="range" id="sM" min="0" max="6" step="0.5" value="3"><output id="sMo">3.0</output></div>
+<div class="sl"><label>Sann moderasjon (b<sub>3</sub>)</label><input type="range" id="sB3" min="-0.5" max="0.5" step="0.05" value="0.30"><output id="sB3o">0.30</output></div>
+<button class="btn" id="sNy">Trekk nytt utvalg</button>
+<div class="tabrull"><table id="sTab"></table></div>
+<div class="note" id="sLes"></div>
+</div>
+
+<div class="card">
+<h2>Hva sentrering gjør &mdash; og hva den ikke gjør</h2>
+<div class="toko">
+<div class="note"><b>Endres:</b> b<sub>1</sub> og b<sub>2</sub>, og tolkningen av dem. De er
+betingede effekter, altså «effekten av den ene når den andre er 0». Flytter du nullpunktet,
+flytter du hvilken gruppe de beskriver.</div>
+<div class="note"><b>Endres ikke:</b> b<sub>3</sub>, standardfeilen til b<sub>3</sub>,
+<i>t</i>-verdien, <i>p</i>-verdien og modellens <i>R</i>². Selve moderasjonstesten er
+<b>upåvirket</b> av sentrering. Det er den samme modellen, bare med et annet nullpunkt.</div>
+</div>
+<div class="advarsel"><b>Den vanligste misforståelsen:</b> at sentrering «løser»
+multikollinearitet. Produktleddet korrelerer naturligvis høyt med X og Z, og sentrering får den
+korrelasjonen til å falle dramatisk. Men det er en <b>kosmetisk</b> endring: estimatet og testen
+av b<sub>3</sub> er nøyaktig det samme før og etter. Det sentrering faktisk gir deg, er
+<b>tolkbare</b> hovedeffekter. Det er grunn nok.</div>
+<details class="mer"><summary>Og hvorfor effektkode betingelsen?</summary><div>
+Arbeidskravet ber dere effekt-kode betingelsen (&minus;0.5 / +0.5) i stedet for dummykode (0 / 1).
+Grunnen er den samme: med effektkoding ligger 0 midt mellom de to gruppene, så b<sub>2</sub>
+(moderatorens effekt) gjelder <b>gjennomsnittet av begge betingelser</b> og ikke bare
+kontrollgruppa. Med dummykoding er 0 = den ene gruppa, og hovedeffekten gjelder bare den.
+Produktleddet er heller ikke her påvirket av valget &mdash; med &minus;0.5/+0.5 er avstanden
+mellom gruppene fortsatt 1, så b<sub>3</sub> blir <b>nøyaktig det samme tallet</b> som med
+dummykode. Det er grunnen til at arbeidskravet bruker &minus;0.5/+0.5 og ikke &minus;1/+1:
+du får tolkbare hovedeffekter uten at interaksjonskoeffisienten bytter skala.
+<div class="advarsel" style="margin-top:10px"><b>Pass på med &minus;1/+1:</b> der er avstanden
+mellom gruppene 2, og b<sub>3</sub> blir derfor <b>halvparten</b> så stor &mdash; ikke dobbelt.
+En koeffisient er alltid «per enhet», og når enheten blir dobbelt så bred, blir tallet halvparten
+så stort. <i>t</i>- og <i>p</i>-verdien er de samme uansett koding; det er bare tallet som flytter
+seg. På arbeidskravets H2 med selvkritisk perfeksjonisme: b<sub>3</sub> = &minus;0.115 med
+både dummy og &minus;0.5/+0.5, men &minus;0.058 med &minus;1/+1 &mdash; alle tre med
+<i>t</i>(386) = &minus;1.61.</div>
+</div></details>
+</div>
+
+<div class="card">
+<h2>Slik gjør du det i JASP</h2>
+<p class="muted">Moderasjon har ingen egen meny i JASPs standardoppsett. Du lager de to nye
+variablene selv og kjører en helt vanlig multippel regresjon. Eksempelet er arbeidskravets H2
+med selvkritisk perfeksjonisme som moderator.</p>
+
+<div class="klikksti"><span class="mallbl">1 · Effektkod betingelsen</span>
+I datavisningen: <b>+</b> til høyre for siste kolonne &rarr; navn <code>Bet_ek</code> &rarr;
+<b>R</b>-fanen &rarr; skriv <code>Lett_vanskelig_quiz - 0.5</code> &rarr; <b>Compute column</b>.<br>
+<span class="muted">Variabelen er kodet 0 = lett, 1 = vanskelig, så dette gir &minus;0.5 og +0.5.</span></div>
+
+<div class="klikksti"><span class="mallbl">2 · Sentrer moderatoren</span>
+Ny kolonne <code>Perf_sent</code> &rarr;
+<code>Selvkritisk_perfeksjonisme_trait - mean(Selvkritisk_perfeksjonisme_trait)</code></div>
+
+<div class="klikksti"><span class="mallbl">3 · Lag produktleddet</span>
+Ny kolonne <code>Bet_x_Perf</code> &rarr; <code>Bet_ek * Perf_sent</code><br>
+<span class="muted">Produktleddet lages av de <b>sentrerte</b> variablene, ikke av råskårene.</span></div>
+
+<div class="klikksti"><span class="mallbl">4 · Kjør modellen</span>
+<b>Regression &rarr; Linear Regression</b> &middot; <code>Selvtillit_post</code> i
+<b>Dependent Variable</b> &middot; <code>Selvtillit_pre</code>, <code>Bet_ek</code>,
+<code>Perf_sent</code> og <code>Bet_x_Perf</code> i <b>Covariates</b>.<br>
+Under <b>Statistics</b>: hak av <b>Confidence intervals</b> og <b>Collinearity diagnostics</b>.</div>
+
+<div class="note"><b>Les av raden <code>Bet_x_Perf</code>.</b> Det er moderasjonstesten, og
+ingenting annet i tabellen er det. De tre andre koeffisientene er betingede effekter, og hva de
+betyr avhenger av nullpunktet &mdash; som er hele poenget med fanen du står i.</div>
+
+<div class="advarsel"><b>Hvis du legger inn to blokker:</b> sett <code>Selvtillit_pre</code>,
+<code>Bet_ek</code> og <code>Perf_sent</code> i <b>Block 1</b> og produktleddet alene i
+<b>Block 2</b>. Da gir JASP deg &Delta;<i>R</i>² for interaksjonen &mdash; akkurat det tallet
+resultatdelen skal oppgi. <i>F</i>-testen for &Delta;<i>R</i>² og <i>t</i>-testen for
+b<sub>3</sub> er den samme testen; <i>F</i> = <i>t</i>².</div>
+
+<details class="mer"><summary>Og Process-modulen?</summary><div>
+JASP har en <b>Process</b>-modul (slå den på med det blå <b>+</b>-tegnet øverst til høyre) som gjør
+alt dette i én meny, og som i tillegg gir enkle hellinger ferdig utregnet. Den er ikke pensum, og
+den oppfører seg litt annerledes enn <code>Linear Regression</code>: den sentrerer selv, den
+rapporterer <i>z</i>-verdier i stedet for <i>t</i>-verdier, og den gir hellinger ved 16., 50. og
+84. persentil i stedet for ved &plusmn;1 <i>SD</i>.<br><br>
+Moderasjonstesten blir den samme. Men hvis du bruker Process, må du vite hvorfor tallene i
+kolonnen heter noe annet enn de gjør i resten av emnet.
+</div></details>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>Sentrering endrer ikke moderasjonstesten i det hele tatt &mdash; b<sub>3</sub>, SE, t og p er
+bit for bit de samme. Den gjør hovedeffektene tolkbare, ved å flytte nullpunktet til en person
+som faktisk finnes.</b></div></div>
+</div>
+
+<div id="fane-hellinger" class="hide">
+<div class="card">
+<h2>Et signifikant produktledd er ikke et svar &mdash; det er et spørsmål</h2>
+<p class="muted">b<sub>3</sub> sier bare <i>at</i> effekten varierer med moderatoren. Det du
+faktisk vil vite, er <b>hvor stor effekten er for ulike mennesker</b>. Det er <b>enkle
+hellinger</b> (simple slopes): effekten av X regnet ut ved bestemte verdier av Z &mdash;
+tradisjonelt ved gjennomsnittet og ett standardavvik over og under.</p>
+<div class="note" style="text-align:center;font-size:17px">
+enkel helling ved Z = z: &nbsp; b<sub>1</sub> + b<sub>3</sub>&middot;z</div>
+<div class="sl"><label>b<sub>1</sub> (effekt ved Z = gjennomsnitt)</label><input type="range" id="hB1" min="-0.6" max="0.9" step="0.05" value="0.30"><output id="hB1o">0.30</output></div>
+<div class="sl"><label>b<sub>3</sub> (moderasjonen)</label><input type="range" id="hB3" min="-0.6" max="0.6" step="0.05" value="0.30"><output id="hB3o">0.30</output></div>
+<div class="sl"><label>Utvalgsstørrelse <i>n</i></label><input type="range" id="hN" min="50" max="600" step="25" value="250"><output id="hNo">250</output></div>
+<button class="btn" id="hNy">Trekk nytt utvalg</button>
+<canvas id="hCv" height="300"></canvas>
+<div class="tabrull"><table id="hTab"></table></div>
+<div class="note" id="hLes"></div>
+</div>
+
+<div class="card">
+<h2>Johnson&ndash;Neyman: hvor går grensen?</h2>
+<p class="muted">&plusmn;1 SD er en konvensjon, ikke en lov &mdash; og den kan være misvisende,
+for hvorfor akkurat der? <b>Johnson&ndash;Neyman-metoden</b> snur spørsmålet: for hvilke verdier
+av moderatoren er effekten av X signifikant? Det grå båndet er konfidensintervallet rundt den
+enkle hellingen, tegnet for <i>alle</i> verdier av Z. Der båndet krysser null, går grensen.</p>
+<canvas id="jnCv" height="260"></canvas>
+<div class="note" id="jnLes"></div>
+<details class="mer"><summary>Hva området faktisk betyr</summary><div>
+Området sier <b>ikke</b> at effekten forsvinner utenfor grensen. Den enkle hellingen er fortsatt
+estimert der &mdash; den er bare ikke lenger til å skille fra null med de dataene du har. Og
+fordi det er færre personer ytterst på moderatorskalaen, er konfidensintervallet bredest der,
+som båndets timeglassform viser. En «ikke-signifikant region» i halen kan like gjerne bety få
+observasjoner som ingen effekt.
+</div></details>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>Når produktleddet er signifikant, er jobben så vidt begynt: regn ut enkle hellinger og si hvor
+stor effekten er for hvem. Et moderasjonsfunn som bare rapporterer b<sub>3</sub> og en
+<i>p</i>-verdi har ikke besvart spørsmålet det stilte.</b></div></div>
+</div>
+
+<div id="fane-ekte" class="hide">
+<div class="card">
+<h2>H2 og H3 på de ekte arbeidskravdataene</h2>
+<p class="muted">Dette er datasettet dere faktisk skal analysere: <i>N</i> = 391 studenter,
+tilfeldig fordelt til en <b>lett</b> eller <b>vanskelig</b> statistikkprøve, med
+statistikk-selvtillit målt før og etter. Modellen er den arbeidskravet ber om:
+selvtillit etter prøven, med selvtillit før som kontroll, betingelsen effektkodet (&minus;0.5/+0.5),
+moderatoren sentrert, og produktleddet.</p>
+<div class="ctrl">
+<label>Moderator:
+<select id="eMod">
+<option value="3">Selvkritisk perfeksjonisme (H2)</option>
+<option value="4">Rigid perfeksjonisme (H2)</option>
+<option value="5">Angstsensitivitet (H2)</option>
+<option value="6">Kjønn (H3)</option>
+</select></label>
+</div>
+<canvas id="eCv" height="300"></canvas>
+<div class="tabrull"><table id="eTab"></table></div>
+<div class="note" id="eLes"></div>
+</div>
+
+<div class="card">
+<h2>Hva dere skal gjøre med et resultat som dette</h2>
+<div class="note"><b>Tre av de fire moderatorene gir ikke signifikant interaksjon.</b> Det er
+ikke en feil i analysen, og det er ikke noe å gjemme bort. Det er et funn, og det er det
+vanligste utfallet i moderasjonsstudier: interaksjoner krever langt større utvalg enn
+hovedeffekter for å kunne oppdages, ofte flere ganger så mange deltakere. Med <i>n</i> = 391 og
+en liten sann interaksjon er studien rett og slett ikke stor nok.</div>
+<div class="advarsel"><b>Fellen å unngå i diskusjonen:</b> å skrive «perfeksjonisme modererte
+ikke effekten» som om fraværet av signifikans beviste fravær av moderasjon. Det riktige er å si
+hva dere fant, hvor stort intervallet rundt estimatet er, og at studien hadde begrenset styrke
+til å oppdage en liten interaksjon. Se Sim 7 fane 2 om styrke.</div>
+<div class="note"><b>Og legg merke til hovedeffekten:</b> uansett moderator er effekten av
+vanskelighetsgrad tydelig og negativ. Manipulasjonen virket. Spørsmålet H2 og H3 stiller er
+bare om den virket <i>ulikt</i> for ulike studenter.</div>
+</div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C6">C6 Multippel regresjon og statistisk kontroll &rarr;</a> <a class="ovlenke" data-begrep="B6">B6 Statistisk styrke og type II-feil &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+<div id="fane-dikotomi" class="hide">
+<div class="card">
+<h2>Mediansplitt: det som ser enklere ut, koster deg funnet</h2>
+<p class="muted">Det er fristende å dele moderatoren i «høy» og «lav» og kjøre en faktoriell
+ANOVA i stedet. Datasettet har til og med en ferdig tredeling liggende. Men å gjøre en
+kontinuerlig variabel om til to grupper kaster bort informasjon &mdash; alle i «høy»-gruppa
+behandles som like, enten de ligger så vidt over midten eller helt ytterst.</p>
+<p class="muted">Her kjøres <b>begge</b> analysene på de samme simulerte dataene, mange ganger.
+Søylene viser hvor ofte hver av dem oppdager moderasjonen som faktisk er der.</p>
+<div class="sl"><label>Sann moderasjon (b<sub>3</sub>)</label><input type="range" id="dB3" min="0.05" max="0.6" step="0.05" value="0.25"><output id="dB3o">0.25</output></div>
+<div class="sl"><label>Utvalgsstørrelse <i>n</i></label><input type="range" id="dN" min="50" max="500" step="25" value="200"><output id="dNo">200</output></div>
+<button class="btn" id="dKjor">Kjør 400 studier</button>
+<canvas id="dCv" height="230"></canvas>
+<div class="note" id="dLes"></div>
+</div>
+
+<div class="card">
+<h2>Hvorfor det koster</h2>
+<div class="toko">
+<div class="note"><b>Informasjonen du kaster.</b> En mediansplitt erstatter en skala med ett bit:
+over eller under. Spredningen innad i hver gruppe forsvinner fra modellen, og med den en god del
+av den variasjonen som skulle fanget interaksjonen. Tapet svarer typisk til å kaste bort rundt
+en tredel av deltakerne.</div>
+<div class="note"><b>Grensen er tilfeldig.</b> Medianen i <i>ditt</i> utvalg er ikke et
+teoretisk skille mellom perfeksjonister og ikke-perfeksjonister &mdash; den er der halvparten av
+akkurat disse 391 personene tilfeldigvis havnet. Et nytt utvalg gir en ny grense, og dermed nye
+grupper for de samme menneskene.</div>
+</div>
+<div class="advarsel"><b>Det motsatte kan også skje.</b> Dikotomisering gir ikke bare tap av
+styrke; i modeller med flere prediktorer kan den også skape <b>falske</b> interaksjoner som ikke
+finnes i de kontinuerlige dataene. Det er derfor MacCallum og kolleger (2002) anbefaler at man
+rett og slett lar være &mdash; og derfor arbeidskravet ber dere bruke regresjon.</div>
+<div class="note" style="font-size:14.5px">MacCallum, R. C., Zhang, S., Preacher, K. J., &amp;
+Rucker, D. D. (2002). On the practice of dichotomization of quantitative variables.
+<i>Psychological Methods, 7</i>(1), 19&ndash;40.</div>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>Å dele en kontinuerlig moderator i to gjør ikke analysen enklere &mdash; den gjør den svakere.
+Du kaster bort informasjon du har betalt for å samle inn, og setter en grense der medianen
+tilfeldigvis falt.</b></div></div>
+</div>
+
+<div id="fane-rapport" class="hide">
+<div class="card">
+<h2>Rekkefølgen i en moderasjonsrapport</h2>
+<div class="note"><b>1 &middot; Si hva modellen er, før tallene.</b> «Vi regresserte selvtillit
+etter prøven på selvtillit før prøven, betingelse (effektkodet), sentrert selvkritisk
+perfeksjonisme og produktleddet betingelse &times; perfeksjonisme.»</div>
+<div class="note"><b>2 &middot; Rapporter produktleddet med alt som hører til:</b> koeffisient,
+standardfeil eller konfidensintervall, <i>t</i> med frihetsgrader, og eksakt <i>p</i>. Ikke bare
+«p &lt; .05» eller «ns».</div>
+<div class="note"><b>3 &middot; Er det en interaksjon: bryt den ned.</b> Enkle hellinger ved
+&minus;1 SD, gjennomsnittet og +1 SD, hver med sin egen test &mdash; og en figur. En
+moderasjonseffekt uten figur er nesten umulig å lese.</div>
+<div class="note"><b>4 &middot; Er det ingen interaksjon: si det presist.</b> Oppgi estimatet og
+intervallet, og si at studien hadde begrenset styrke. Ikke konkluder med at moderasjon ikke
+finnes.</div>
+<div class="note"><b>5 &middot; Hold årsaksspråket rett.</b> Bare betingelsen er manipulert.
+Perfeksjonisme og kjønn er målt, så en interaksjon med dem sier <i>for hvem</i> effekten var
+størst, ikke at egenskapen forårsaket noe.</div>
+</div>
+
+<div class="card">
+<h2>To ferdige setninger, i APA-stil</h2>
+<p class="muted">Begge er regnet ut fra de ekte dataene i fane 5. Velg hvilken du vil se.</p>
+<div class="ctrl">
+<button class="btn2 rapvalg on" data-r="6">Med interaksjon (kjønn, H3)</button>
+<button class="btn2 rapvalg" data-r="3">Uten interaksjon (perfeksjonisme, H2)</button>
+</div>
+<div class="note" id="rapTekst" style="font-size:16.5px;background:#fff"></div>
+<div class="note" id="rapKomm"></div>
+</div>
+
+<div class="card">
+<h2>Hvor dette hører hjemme i de andre appene</h2>
+<p class="muted">
+<a href="PSY300_Sim_MinsteKvadrater.html#fane=multippel">Sim 5 &middot; Regresjon, fane 6</a>
+bygger den multiple modellen som moderasjon er en utvidelse av.
+<a href="PSY300_Sim_Faktoriell.html#fane=lese">Sim 24 &middot; Faktoriell ANOVA, fane 8</a>
+viser den samme interaksjonen når begge variablene er kategoriske &mdash; det er samme sak, bare
+med grupper i stedet for skalaer.
+<a href="PSY300_Sim_Pverdimaskinen.html#fane=styrke">Sim 7 &middot; p-verdien, fane 2</a>
+forklarer hvorfor interaksjoner trenger så mange deltakere.
+<a href="PSY300_Sim_Korrelasjonsdansen.html#fane=maalefeil">Sim 11 &middot; fane 9</a>
+viser hvorfor målefeil rammer produktleddet hardere enn noe annet ledd i modellen.</p>
+</div>
+
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget i denne fanen</span>
+<b>En moderasjonsanalyse er ikke ferdig når produktleddet er testet. Den er ferdig når leseren
+vet hvor stor effekten var for hvem &mdash; og det krever enkle hellinger, en figur, og et
+ærlig avsnitt om styrke hvis interaksjonen ikke nådde signifikans.</b></div></div>
+
+<details class="mer" style="margin:14px 0"><summary>Ordforklaringer</summary><div class="note">
+<b>Dikotomisering</b> &mdash; å gjøre en kontinuerlig variabel om til to grupper, for eksempel ved mediansplitt.<br>
+<b>Effektkoding</b> &mdash; å kode to grupper som &minus;1 og +1 i stedet for 0 og 1, slik at 0 blir midtpunktet.<br>
+<b>Enkel helling</b> (simple slope) &mdash; effekten av X regnet ut ved én bestemt verdi av moderatoren.<br>
+<b>Interaksjon</b> &mdash; at effekten av én variabel avhenger av en annen. Samme sak som moderasjon.<br>
+<b>Johnson&ndash;Neyman</b> &mdash; metode som finner de verdiene av moderatoren der effekten av X er signifikant.<br>
+<b><i>M</i></b> &mdash; gjennomsnittet. <b><i>SD</i></b> &mdash; standardavviket. <b><i>SE</i></b> &mdash; standardfeilen.<br>
+<b>Mediator</b> &mdash; et mellomledd i årsakskjeden; svarer på «hvordan», ikke «for hvem».<br>
+<b>Moderator</b> &mdash; en variabel som endrer styrken eller retningen på en sammenheng.<br>
+<b>Produktledd</b> &mdash; X &times; Z, variabelen som bærer moderasjonen i regresjonsmodellen.<br>
+<b>Sentrering</b> &mdash; å trekke gjennomsnittet fra en variabel, slik at 0 blir gjennomsnittspersonen.<br>
+</div></details>
+</div>
+<script>
+/* =====================================================================
+   Sim 36 · Moderasjonslaben
+   Rad i DATA: [betingelse 0=lett/1=vanskelig, selvtillit_pre,
+                selvtillit_post, selvkritisk, rigid, angstsens, kjønn 1/2]
+   Kilde: PSY300_arbeidskrav_datasett.csv, N = 391, uendret.
+   Alle modeller er OLS løst via normallikningene med invertert X'X;
+   p-verdier fra t-fordelingen via den regulariserte inkomplette
+   betafunksjonen — ikke normaltilnærming, siden df kan bli små.
+   ===================================================================== */
+(function(){
+"use strict";
+const DATA = [[1,3.71,2.07,2.17,2.3,0.83,1],[0,3.79,4.14,2.39,2.6,0.62,1],[0,4.0,4.21,2.72,1.9,0.54,2],[0,3.29,3.71,2.78,2.9,1.88,2],[1,4.36,4.36,1.56,3.4,1.04,1],[1,2.93,2.86,3.78,3.4,2.42,2],[0,2.64,2.93,4.0,3.8,1.67,2],[0,2.57,3.36,3.06,3.4,1.0,1],[0,2.43,2.93,3.72,2.8,1.78,1],[1,3.79,4.0,2.39,2.7,0.92,2],[0,3.79,4.71,3.11,4.4,0.54,2],[0,3.93,4.64,1.83,4.1,1.75,1],[1,3.64,4.14,2.83,2.5,0.21,2],[0,3.36,3.79,2.89,2.0,0.71,1],[1,3.57,2.78,3.29,3.67,2.36,1],[0,3.29,3.93,3.78,3.8,1.46,2],[0,3.43,3.64,3.0,3.1,0.42,1],[0,3.21,4.21,3.22,3.2,1.29,1],[0,4.36,4.36,2.0,3.1,1.04,1],[1,3.86,2.43,2.44,2.2,1.25,2],[1,4.07,3.5,3.28,3.6,0.54,1],[0,2.93,3.93,2.72,1.9,0.33,2],[1,4.07,4.07,3.56,2.6,1.21,1],[0,3.57,4.57,3.11,3.1,0.46,2],[1,3.14,3.21,2.33,2.5,0.96,2],[0,3.14,3.5,3.56,2.2,1.67,2],[1,3.79,3.0,3.44,4.0,1.58,2],[0,3.5,3.36,2.72,2.2,1.33,2],[1,2.21,1.79,3.5,2.6,2.21,1],[1,2.43,3.14,3.28,3.4,1.21,2],[0,4.14,4.5,2.39,1.6,0.38,1],[0,5.0,4.93,1.94,3.5,0.54,1],[0,2.57,3.5,3.78,3.0,2.46,2],[1,4.14,4.5,1.94,2.9,1.21,1],[1,3.79,2.64,2.72,3.8,1.04,1],[0,3.0,2.93,3.17,2.2,1.08,2],[0,3.21,3.86,3.12,2.7,1.17,1],[1,1.93,1.36,3.89,4.1,2.75,2],[0,4.07,4.5,2.78,2.5,1.5,2],[0,3.43,3.57,3.67,3.6,0.83,2],[1,3.07,2.71,2.78,3.0,1.67,2],[1,2.79,2.93,3.06,2.0,1.54,2],[1,2.93,2.71,3.06,1.7,0.83,2],[0,3.43,3.36,2.0,1.8,1.12,2],[1,2.14,1.07,4.44,4.7,3.17,2],[0,2.46,2.43,4.53,2.9,1.17,2],[1,3.36,1.36,4.06,3.7,0.83,2],[1,3.36,3.07,3.06,1.9,1.46,1],[0,2.5,2.71,3.28,3.6,0.96,1],[0,3.14,2.79,3.83,4.2,3.21,1],[1,4.0,3.93,1.33,1.6,0.42,2],[1,3.93,4.5,1.83,1.6,1.04,1],[1,3.07,2.07,3.28,2.0,0.96,2],[1,3.93,3.36,2.22,2.1,1.04,1],[0,2.14,2.5,4.83,4.7,3.38,2],[0,3.64,1.79,3.89,5.0,3.58,2],[0,2.29,2.43,3.89,3.8,3.21,2],[1,3.29,2.29,3.11,4.0,1.62,2],[1,2.93,3.21,3.72,3.9,1.83,1],[1,2.79,3.07,2.11,2.9,1.79,1],[0,3.36,3.93,3.06,3.8,1.46,2],[1,3.25,3.21,3.06,2.0,1.33,1],[1,2.57,1.71,3.56,1.9,1.88,2],[1,2.43,1.0,3.78,3.4,2.29,1],[0,3.64,3.0,2.67,3.1,1.83,2],[0,4.64,5.0,3.0,2.1,1.29,1],[1,3.64,2.93,3.11,3.0,0.67,2],[1,2.86,2.57,4.06,4.2,3.25,1],[0,3.29,3.07,3.28,3.0,1.62,1],[1,3.14,4.57,2.89,2.4,2.04,1],[0,3.36,3.43,2.28,2.1,0.58,1],[0,3.29,3.29,2.67,3.4,3.38,2],[1,2.79,2.14,3.0,3.2,1.25,2],[0,2.5,2.57,3.0,3.0,1.54,2],[1,3.43,2.07,3.06,3.4,1.67,2],[0,2.36,2.57,4.5,3.8,3.0,2],[1,3.07,3.07,2.67,3.3,2.88,2],[0,4.43,4.5,2.56,3.4,1.21,2],[1,2.86,2.0,3.11,4.1,1.58,1],[0,1.36,3.79,4.17,2.5,1.88,2],[1,2.36,3.29,3.56,3.4,1.88,2],[0,3.07,3.14,2.06,2.9,0.38,2],[0,3.93,5.0,2.33,2.7,0.58,2],[0,1.71,1.79,4.11,3.8,2.25,2],[0,2.64,2.71,4.0,2.89,2.59,1],[0,2.38,3.43,3.78,3.9,1.92,2],[0,3.36,4.57,4.06,4.1,3.38,2],[0,4.43,4.5,2.44,3.3,3.29,2],[1,2.57,2.86,1.89,3.3,2.62,1],[1,2.43,2.86,2.72,3.6,1.58,2],[0,3.79,4.71,2.78,2.7,1.46,2],[1,3.14,2.71,3.5,3.7,2.83,1],[1,2.5,3.07,3.11,2.3,1.42,2],[0,1.57,1.64,4.67,3.6,2.73,2],[1,4.14,4.14,2.28,3.0,3.04,1],[1,1.86,1.21,4.28,3.2,3.17,2],[1,3.57,2.57,3.61,2.9,1.75,2],[1,2.71,1.71,3.67,3.8,1.58,1],[1,4.79,3.0,3.28,3.9,1.5,2],[1,3.0,2.64,4.0,3.8,1.75,1],[1,2.14,2.64,2.39,2.6,0.96,1],[0,3.5,4.29,1.44,2.3,1.54,2],[0,3.57,4.29,2.89,4.5,1.83,2],[1,3.79,3.5,3.28,3.0,1.96,1],[1,3.29,2.93,1.94,2.8,1.21,2],[0,1.86,2.07,3.61,4.3,2.17,2],[1,3.0,1.57,3.83,4.9,4.0,2],[0,3.29,3.21,1.94,2.6,1.92,1],[1,4.09,4.67,2.5,1.8,0.83,2],[1,1.71,1.14,3.89,4.2,2.71,2],[0,2.64,2.43,3.44,3.9,1.48,2],[0,4.21,4.43,1.83,1.2,1.42,2],[0,2.64,3.57,4.06,3.7,2.58,1],[1,2.79,2.93,3.77,3.7,3.04,1],[0,2.64,2.57,3.78,2.8,2.12,2],[1,4.0,3.86,1.94,2.5,1.29,1],[1,2.57,1.86,3.25,4.0,1.83,2],[0,3.29,4.29,3.33,3.3,2.17,2],[1,2.29,1.57,3.53,2.9,1.62,2],[1,3.71,3.38,2.88,1.7,2.17,1],[1,4.29,4.07,2.33,2.4,1.96,1],[0,3.71,4.86,3.39,3.6,0.88,1],[1,4.21,3.36,2.5,1.7,1.71,2],[0,2.64,2.5,3.56,3.5,2.33,2],[1,5.0,5.0,1.44,1.2,0.42,1],[1,3.57,3.43,2.39,2.5,0.75,2],[0,2.5,3.93,3.72,3.7,1.5,2],[1,3.93,4.21,2.0,2.6,0.33,1],[1,4.29,2.79,2.78,3.5,1.62,1],[1,2.36,1.5,3.72,3.4,1.71,2],[1,2.14,1.21,3.5,3.2,2.67,2],[1,2.79,1.86,3.83,3.3,2.21,2],[0,3.93,4.29,1.83,2.7,1.92,2],[1,3.93,3.0,2.56,3.0,1.38,2],[0,3.86,4.21,1.06,1.9,0.54,1],[1,3.86,2.57,2.83,2.9,1.71,1],[0,3.86,4.0,2.5,3.3,0.67,2],[0,2.14,2.29,3.72,2.7,1.08,1],[1,3.21,3.29,1.61,1.3,2.5,1],[0,3.92,4.36,2.83,2.6,1.67,2],[1,3.07,3.14,3.33,2.3,1.17,2],[0,4.54,4.77,3.17,3.3,1.25,1],[1,2.71,1.93,2.94,2.0,0.96,2],[0,2.93,2.36,4.61,4.3,3.38,2],[1,2.71,2.36,3.5,3.6,1.96,2],[0,3.07,3.0,2.89,2.9,1.25,1],[1,2.86,3.0,2.17,1.9,1.62,1],[0,4.29,4.43,1.94,3.2,0.46,1],[0,3.15,2.64,3.59,3.11,1.04,1],[1,2.57,2.43,3.78,3.9,2.38,2],[1,4.21,3.71,1.61,1.0,1.5,1],[1,1.86,1.43,4.39,4.0,2.33,2],[0,2.79,3.64,3.33,2.6,2.39,1],[0,3.0,3.5,3.11,3.8,2.08,1],[0,3.36,4.29,3.22,2.4,0.54,2],[1,1.43,1.07,3.33,2.0,2.0,2],[1,3.29,2.71,2.11,2.7,1.0,1],[1,2.36,2.0,3.44,4.1,1.0,2],[0,4.0,4.21,2.88,3.8,1.33,2],[1,4.21,3.07,1.94,3.3,1.0,2],[1,1.71,1.43,4.94,4.5,1.46,2],[1,2.07,1.29,4.11,4.4,3.08,2],[1,2.36,2.14,3.39,2.7,2.33,1],[1,3.21,2.43,3.72,3.1,1.29,2],[0,3.71,4.07,2.56,2.5,0.62,2],[0,3.07,3.64,2.28,2.0,2.21,2],[1,2.36,2.36,4.39,4.0,2.25,2],[1,3.71,2.79,3.83,3.6,2.54,2],[0,4.0,4.07,3.39,3.8,1.75,2],[0,2.71,4.07,3.67,4.2,1.42,2],[0,2.14,2.57,3.89,3.6,2.9,2],[0,3.57,4.14,2.56,3.0,1.21,1],[0,2.93,4.21,3.5,3.2,0.42,1],[0,3.0,3.29,4.5,3.6,1.25,2],[0,2.71,3.64,2.78,2.9,2.21,2],[1,3.64,3.79,2.22,2.5,0.46,2],[1,4.07,2.93,2.94,3.8,1.96,1],[0,3.14,2.5,3.5,3.6,3.0,1],[0,3.07,3.5,3.06,2.9,1.75,1],[1,1.64,3.93,2.9,1.0,1.83,1],[0,4.07,4.36,3.17,1.8,1.12,2],[0,3.93,2.29,3.61,3.5,1.21,2],[1,2.14,1.29,3.78,4.8,1.17,2],[1,3.14,2.93,3.94,4.22,2.75,2],[1,3.36,2.64,3.11,3.6,1.71,2],[0,2.79,2.86,3.67,3.3,0.83,2],[0,2.29,3.36,3.33,3.5,1.88,2],[1,1.64,1.64,4.22,2.3,2.71,2],[1,2.21,2.14,4.11,3.9,2.13,2],[1,2.36,2.86,4.28,4.6,1.04,2],[0,3.86,3.64,3.06,3.7,2.83,1],[1,3.93,3.21,1.94,2.7,0.83,2],[1,4.29,4.36,1.56,2.4,0.38,1],[0,3.57,4.29,2.83,2.5,1.04,1],[1,1.93,1.64,3.94,3.9,3.25,2],[1,3.79,3.86,2.67,3.4,0.71,2],[1,3.5,2.57,2.5,3.0,1.83,1],[1,3.57,2.79,2.72,1.9,0.96,2],[0,2.43,3.21,3.5,3.3,1.96,2],[0,2.93,2.93,2.44,2.7,1.83,1],[0,2.14,3.86,4.61,3.5,2.5,1],[1,1.79,2.21,4.83,3.1,1.0,2],[0,3.07,2.93,4.78,4.8,1.75,2],[1,4.36,4.14,2.17,3.0,0.83,1],[1,2.29,2.29,4.6,2.3,2.86,2],[0,3.71,3.71,1.44,3.3,2.0,2],[1,4.29,1.93,2.39,2.0,2.17,2],[0,4.0,4.29,3.22,3.5,1.46,1],[1,2.43,2.0,3.2,2.4,2.0,2],[0,3.64,4.07,2.0,2.7,1.08,1],[1,3.29,3.71,2.71,3.5,1.17,1],[0,1.93,2.79,3.61,3.7,1.88,2],[0,3.36,4.0,1.61,2.4,1.42,2],[1,3.43,1.57,3.56,3.4,0.54,2],[1,4.29,2.29,3.17,4.2,1.87,2],[0,3.14,3.14,4.28,4.7,2.87,2],[1,4.07,2.57,1.78,2.8,1.21,2],[1,4.14,4.36,1.61,3.6,1.46,2],[1,2.93,2.64,3.39,3.2,1.42,2],[0,3.5,3.86,2.78,2.0,1.0,2],[0,4.36,4.71,1.39,1.3,0.21,2],[0,4.29,4.14,1.33,1.4,0.21,1],[0,2.57,3.79,2.11,1.4,0.38,1],[1,2.07,2.21,3.94,3.0,1.46,1],[1,1.79,1.29,4.22,4.8,2.06,2],[1,2.93,1.0,2.44,3.6,1.83,2],[1,3.5,2.93,3.5,4.1,1.41,1],[0,4.86,4.86,2.0,1.8,1.88,2],[0,3.0,2.29,4.75,5.0,1.91,2],[0,3.14,2.79,3.0,3.2,0.68,1],[1,3.71,2.25,2.17,1.9,2.21,2],[0,4.86,4.79,1.11,1.8,0.29,1],[1,3.57,2.5,2.28,3.2,1.21,2],[1,2.0,2.07,3.89,3.6,2.58,1],[0,2.79,3.21,3.83,3.7,2.88,1],[1,2.86,2.0,2.61,3.4,0.75,1],[1,4.29,1.57,2.83,5.0,3.42,2],[1,2.0,2.15,2.83,3.0,2.21,2],[1,3.14,2.64,3.5,2.4,1.0,2],[0,1.86,1.86,4.44,3.7,2.83,1],[1,3.71,3.36,2.67,4.0,1.54,1],[1,2.5,1.71,4.35,4.4,1.62,2],[0,3.5,3.64,2.67,2.6,1.17,1],[0,3.21,3.5,2.61,3.6,0.29,2],[0,3.14,3.57,2.83,2.8,1.42,2],[1,1.93,2.0,4.22,3.7,2.62,2],[1,4.07,4.21,2.56,1.5,0.46,2],[1,2.86,2.79,3.28,2.6,0.96,2],[1,3.71,3.29,2.44,4.3,2.08,2],[0,4.21,4.21,1.56,1.2,1.33,1],[0,2.57,3.29,4.06,3.4,1.46,1],[1,3.5,4.29,2.17,2.9,0.96,1],[1,2.5,2.5,3.33,2.6,1.17,1],[1,3.07,1.5,3.28,2.1,2.12,2],[1,1.21,1.71,4.22,4.3,2.62,2],[1,1.43,1.0,4.44,3.2,2.62,2],[1,1.93,1.43,3.67,4.5,2.67,2],[1,2.5,1.0,3.67,3.4,0.75,2],[0,3.64,4.57,2.83,3.5,1.54,1],[1,4.07,4.29,3.39,3.5,1.04,2],[0,2.86,3.79,3.11,2.4,1.92,2],[1,4.0,3.14,1.67,2.8,2.17,2],[1,3.43,2.93,4.0,2.5,0.67,2],[0,2.0,2.86,3.61,3.1,1.58,2],[1,2.5,1.5,4.0,3.6,3.17,2],[0,4.36,4.83,2.06,3.4,0.62,1],[1,3.0,2.71,3.56,4.4,0.62,2],[0,3.29,3.14,2.22,2.0,0.26,2],[1,4.21,4.36,1.44,1.3,0.46,1],[0,3.14,3.57,2.72,2.5,1.62,1],[1,4.15,4.57,2.89,3.2,0.21,2],[0,3.21,3.07,3.28,2.9,2.33,2],[0,3.29,3.71,3.5,4.1,0.62,1],[1,2.79,3.0,3.22,3.0,2.21,2],[0,4.5,4.86,3.61,3.8,2.67,2],[0,2.93,3.86,2.72,3.7,2.21,2],[1,2.86,2.93,3.39,2.9,2.25,1],[0,2.07,2.21,2.44,1.3,2.74,2],[1,1.21,1.29,3.83,3.9,3.04,2],[1,2.79,2.36,3.64,4.33,1.38,1],[0,4.07,3.79,1.83,2.1,0.88,2],[1,3.93,2.93,3.06,2.5,1.78,1],[0,2.38,3.14,3.22,2.9,1.7,1],[0,2.29,2.57,4.06,4.0,1.79,2],[0,4.14,4.64,3.44,3.3,1.17,2],[1,4.14,4.0,1.72,2.5,2.21,1],[1,1.57,1.14,4.5,3.9,3.42,2],[1,3.0,2.86,3.67,2.0,1.04,2],[0,3.5,4.29,3.17,3.2,1.75,2],[1,2.71,2.07,3.44,3.1,2.54,2],[1,4.0,2.79,1.83,1.4,0.29,2],[1,3.57,3.79,2.67,3.5,1.46,2],[0,3.93,4.57,2.72,2.5,2.88,2],[1,4.43,3.0,1.94,3.2,0.21,2],[1,2.79,3.36,3.22,3.8,0.88,2],[1,3.14,2.79,2.67,3.4,2.21,1],[1,2.93,2.86,3.61,3.7,2.54,1],[0,2.93,3.43,3.17,4.5,3.17,2],[1,3.14,3.07,3.17,3.2,3.67,1],[1,2.5,1.86,4.11,5.0,3.25,2],[0,4.64,4.71,2.94,3.2,0.88,2],[1,1.57,2.5,3.8,2.6,3.2,1],[0,2.93,3.71,3.44,2.2,3.25,2],[0,3.93,4.43,2.06,4.1,0.33,1],[0,1.77,1.5,4.11,3.2,2.75,1],[1,3.43,3.14,3.5,3.9,2.25,2],[0,2.62,3.57,4.33,3.1,2.67,2],[0,4.07,3.79,3.72,3.8,2.09,2],[0,4.57,4.71,1.67,2.5,0.17,1],[0,4.14,4.14,2.56,4.1,1.83,1],[0,3.57,4.71,1.78,3.2,1.42,2],[0,3.14,3.57,2.22,4.1,2.0,2],[1,2.93,2.5,2.83,2.7,1.79,2],[0,3.0,3.29,3.56,5.0,1.96,1],[0,3.71,3.86,1.06,1.3,2.22,1],[1,3.86,3.07,3.39,3.2,2.38,2],[0,2.36,2.93,4.88,null,2.61,2],[1,3.43,3.5,2.78,3.3,0.42,1],[1,2.14,1.71,4.73,2.7,1.58,1],[0,3.93,3.86,2.78,2.5,1.25,2],[1,4.0,3.0,2.22,2.2,1.12,1],[0,4.07,3.79,3.17,4.1,2.88,1],[0,3.79,4.07,2.5,2.2,0.79,2],[0,4.36,3.71,1.94,2.8,1.29,2],[0,4.0,4.07,3.06,4.5,3.04,2],[0,3.21,3.86,2.5,2.3,0.75,1],[1,2.57,3.71,3.11,2.0,0.33,2],[1,4.36,4.0,1.65,3.2,0.67,1],[1,3.79,4.14,2.39,2.5,1.42,2],[0,2.86,1.86,2.89,3.0,1.96,2],[1,3.14,3.14,3.06,2.4,2.08,1],[1,3.14,2.86,3.17,4.1,1.12,1],[0,2.5,3.71,4.5,4.0,2.62,2],[0,3.07,3.29,3.67,2.9,0.58,2],[1,2.93,1.29,3.17,2.6,2.42,2],[1,2.0,1.36,3.67,4.1,2.58,2],[0,2.93,2.71,3.78,3.7,1.38,2],[0,2.21,4.07,3.11,2.7,2.88,2],[0,3.14,2.57,3.89,3.8,1.42,1],[0,3.14,2.64,4.39,4.2,2.13,2],[0,2.43,3.0,4.61,4.5,2.25,2],[1,3.71,4.07,1.89,2.8,2.35,2],[1,1.79,1.93,3.56,3.6,2.21,1],[1,3.5,3.21,3.06,3.7,1.96,1],[1,3.14,2.43,3.67,4.2,1.58,2],[0,2.86,2.43,4.33,4.8,1.46,2],[1,3.29,3.29,3.78,4.0,2.75,2],[0,2.86,4.29,3.11,3.9,1.5,1],[1,3.86,3.0,4.06,4.2,1.67,2],[0,2.86,4.57,2.83,2.5,2.04,2],[0,2.5,3.0,3.78,2.9,1.33,2],[0,1.5,1.64,4.88,4.5,3.56,2],[0,2.43,3.07,3.67,2.5,1.79,1],[1,2.57,2.64,3.0,2.8,2.52,2],[0,2.21,2.14,4.11,3.5,3.29,2],[1,3.29,2.43,3.61,4.2,2.62,2],[1,4.0,3.79,2.53,2.8,1.2,2],[1,1.93,1.0,4.67,4.2,3.38,2],[0,3.79,4.07,2.67,4.5,1.92,1],[0,3.07,3.64,2.94,3.78,2.76,1],[1,4.29,3.0,2.72,2.6,1.04,2],[1,2.79,2.14,2.22,3.5,1.0,1],[0,2.36,2.79,4.33,3.4,2.33,2],[1,3.85,3.0,2.0,2.6,1.58,1],[1,3.14,2.43,3.33,3.4,2.58,2],[0,4.5,4.64,1.11,1.1,0.21,1],[0,3.0,3.0,3.56,4.1,1.08,2],[0,3.07,4.0,3.78,3.3,2.21,2],[0,3.36,3.64,2.39,3.1,0.26,1],[0,4.43,4.71,1.0,2.3,0.75,2],[0,3.21,3.07,2.5,2.4,2.12,1],[0,3.86,3.57,3.56,2.0,1.29,2],[1,2.64,1.71,4.06,2.8,1.88,2],[1,3.29,2.71,3.67,4.2,0.96,2],[0,3.15,3.43,2.88,3.22,1.14,1],[1,3.64,4.14,2.44,2.3,0.7,2],[0,3.36,3.64,1.11,1.0,0.29,2],[0,4.14,4.0,2.61,1.5,1.12,1],[0,3.64,2.5,3.78,3.9,1.25,2],[0,3.14,3.21,3.28,2.0,1.92,2],[1,3.43,2.79,3.11,2.5,1.58,1],[0,2.93,4.07,2.17,1.7,1.08,1],[1,4.0,3.5,1.94,3.2,2.29,2],[0,3.0,4.0,2.06,1.6,0.79,2],[1,4.71,4.31,1.89,3.2,0.83,2],[0,4.14,3.86,2.72,2.4,1.58,2],[0,4.14,4.43,2.5,3.1,1.33,2],[1,2.43,2.21,4.22,4.0,2.58,1],[0,3.5,4.36,3.44,3.7,2.42,2],[0,3.43,4.21,3.83,3.5,1.38,2],[0,4.21,4.64,1.89,2.7,0.79,2]];
+const $=id=>document.getElementById(id);
+const $$=s=>Array.prototype.slice.call(document.querySelectorAll(s));
+// minustegn, ikke bindestrek — resten av emnet skriver tall slik
+const fmt=(x,d=2)=>(isFinite(x)?x:0).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:false}).replace('-','\u2212');
+const pTxt=p=>p<0.001?'&lt; .001':('= '+fmt(p,3).replace(/^0/,''));
+function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function fit(cv){const r=window.devicePixelRatio||1,w=cv.clientWidth||600,
+  h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';
+  const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);c.clearRect(0,0,w,h);return [c,w,h];}
+const NAVY='#1F3864', BLUE='#2E5496', RED='#C0392B', GREEN='#1E7A3C', ORANGE='#B26A00', GREY='#9AA5AD';
+
+/* ---------- t-fordelingens tosidige p ---------- */
+function betacf(a,b,x){const T=1e-30;let qab=a+b,qap=a+1,qam=a-1,c=1,d=1-qab*x/qap;
+  if(Math.abs(d)<T)d=T; d=1/d; let h=d;
+  for(let m=1;m<300;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));
+    d=1+aa*d;c=1+aa/c;if(Math.abs(d)<T)d=T;if(Math.abs(c)<T)c=T;d=1/d;h*=d*c;
+    aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
+    d=1+aa*d;c=1+aa/c;if(Math.abs(d)<T)d=T;if(Math.abs(c)<T)c=T;d=1/d;
+    const de=d*c;h*=de;if(Math.abs(de-1)<3e-12)break;}
+  return h;}
+function lgam(z){const g=[676.5203681218851,-1259.1392167224028,771.32342877765313,
+  -176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,
+  1.5056327351493116e-7];
+  if(z<0.5)return Math.log(Math.PI/Math.sin(Math.PI*z))-lgam(1-z);
+  z-=1;let x=0.99999999999980993;for(let i=0;i<8;i++)x+=g[i]/(z+i+1);
+  const t=z+7.5;return 0.5*Math.log(2*Math.PI)+(z+0.5)*Math.log(t)-t+Math.log(x);}
+function ibeta(a,b,x){if(x<=0)return 0;if(x>=1)return 1;
+  const lb=lgam(a+b)-lgam(a)-lgam(b)+a*Math.log(x)+b*Math.log(1-x);
+  return x<(a+1)/(a+b+2)?Math.exp(lb)*betacf(a,b,x)/a:1-Math.exp(lb)*betacf(b,a,1-x)/b;}
+function tp(t,df){if(!isFinite(t)||df<1)return 1;return ibeta(df/2,0.5,df/(df+t*t));}
+
+/* ---------- OLS med kovariansmatrise ---------- */
+function ols(X,y){
+  const n=X.length,k=X[0].length,A=[];
+  for(let i=0;i<k;i++)A.push(new Float64Array(k+1));
+  for(let r=0;r<n;r++){const xr=X[r];
+    for(let i=0;i<k;i++){for(let j=i;j<k;j++)A[i][j]+=xr[i]*xr[j];A[i][k]+=xr[i]*y[r];}}
+  for(let i=0;i<k;i++)for(let j=0;j<i;j++)A[i][j]=A[j][i];
+  const M=[];for(let i=0;i<k;i++){M.push(new Float64Array(2*k));
+    for(let j=0;j<k;j++)M[i][j]=A[i][j];M[i][k+i]=1;}
+  for(let i=0;i<k;i++){let p=i;for(let r=i+1;r<k;r++)if(Math.abs(M[r][i])>Math.abs(M[p][i]))p=r;
+    const t=M[i];M[i]=M[p];M[p]=t;if(Math.abs(M[i][i])<1e-12)return null;
+    const pv=M[i][i];for(let j=0;j<2*k;j++)M[i][j]/=pv;
+    for(let r=0;r<k;r++){if(r===i)continue;const f=M[r][i];
+      for(let j=0;j<2*k;j++)M[r][j]-=f*M[i][j];}}
+  const inv=[];for(let i=0;i<k;i++){inv.push(new Float64Array(k));
+    for(let j=0;j<k;j++)inv[i][j]=M[i][k+j];}
+  const b=new Float64Array(k);
+  for(let i=0;i<k;i++){let s=0;for(let j=0;j<k;j++)s+=inv[i][j]*A[j][k];b[i]=s;}
+  let sse=0,sst=0,my=0;
+  for(let r=0;r<n;r++)my+=y[r]/n;
+  for(let r=0;r<n;r++){let f=0;for(let j=0;j<k;j++)f+=X[r][j]*b[j];
+    sse+=(y[r]-f)*(y[r]-f); sst+=(y[r]-my)*(y[r]-my);}
+  const df=n-k, s2=sse/df, se=new Float64Array(k), t=new Float64Array(k), p=new Float64Array(k);
+  const V=[];for(let i=0;i<k;i++){V.push(new Float64Array(k));
+    for(let j=0;j<k;j++)V[i][j]=s2*inv[i][j];}
+  for(let i=0;i<k;i++){se[i]=Math.sqrt(Math.max(V[i][i],0));t[i]=b[i]/se[i];p[i]=tp(t[i],df);}
+  return {b,se,t,p,df,n,R2:1-sse/sst,V,s2};
+}
+/* enkel helling b[i] + z·b[j], med riktig varians */
+function helling(m,i,j,z){
+  const est=m.b[i]+z*m.b[j];
+  const v=m.V[i][i]+2*z*m.V[i][j]+z*z*m.V[j][j];
+  const s=Math.sqrt(Math.max(v,0));
+  return {est,se:s,t:est/s,p:tp(est/s,m.df)};
+}
+function gjsn(a){let s=0;for(let i=0;i<a.length;i++)s+=a[i];return s/a.length;}
+function sd(a){const m=gjsn(a);let s=0;for(let i=0;i<a.length;i++)s+=(a[i]-m)*(a[i]-m);
+  return Math.sqrt(s/(a.length-1));}
+
+/* ---------- faner ---------- */
+const FANER=['hvorfor','produkt','sentrer','hellinger','ekte','dikotomi','rapport'];
+function visFane(f){
+  if(FANER.indexOf(f)<0)f='hvorfor';
+  FANER.forEach(x=>{const e=$('fane-'+x); if(e)e.classList.toggle('hide',x!==f);});
+  $$('.fane').forEach(b=>b.classList.toggle('on',b.dataset.fane===f));
+  try{history.replaceState(null,'','#fane='+f);}catch(e){}
+  window.dispatchEvent(new Event('resize'));
+}
+$$('.fane').forEach(b=>b.addEventListener('click',()=>visFane(b.dataset.fane)));
+
+/* ====================== fane 1 ====================== */
+const VERDEN=[
+ {t:'Verden A', b1:0.45, b3:0.00,
+  f:'Effekten er <b>0.45</b> for alle, uansett hvor de ligger på moderatoren. De tre linjene er parallelle. Her er gjennomsnittet en ærlig beskrivelse av hver enkelt.'},
+ {t:'Verden B', b1:0.45, b3:0.40,
+  f:'Gjennomsnittseffekten er fortsatt <b>0.45</b>, men den dekker over at tiltaket knapt virker for dem lavt på moderatoren (<b>0.05</b>) og virker kraftig for dem høyt oppe (<b>0.85</b>). Gjennomsnittet beskriver ingen av dem godt.'},
+ {t:'Verden C', b1:0.45, b3:0.80,
+  f:'Her er effekten <b>negativ</b> for dem lavt på moderatoren (<b>&minus;0.35</b>) og sterkt positiv høyt oppe (<b>1.25</b>). Et tiltak som hjelper noen og skader andre vil se moderat nyttig ut i et gjennomsnitt. Dette er grunnen til at «virker det?» sjelden er et godt nok spørsmål.'}
+];
+let hvValgt=0, hvD=null;
+function hvTrekk(){
+  const v=VERDEN[hvValgt];
+  hvD=[];
+  for(let i=0;i<240;i++){
+    const x=Math.random()<0.5?0:1, z=rnorm();
+    hvD.push([x,z,v.b1*x+0.2*z+v.b3*x*z+0.55*rnorm()]);
+  }
+}
+function hvTegn(){
+  const [c,w,h]=fit($('hvCv')); if(!hvD)return;
+  const v=VERDEN[hvValgt];
+  const L=56,R=w-14,T=16,B=h-38, X=u=>L+0.28*(R-L)+u*0.44*(R-L), lo=-2.1, hi=2.9;
+  const Y=u=>B-(u-lo)/(hi-lo)*(B-T);
+  c.strokeStyle='#E9ECEE';c.lineWidth=1;
+  for(let u=-2;u<=2;u++){c.beginPath();c.moveTo(L,Y(u));c.lineTo(R,Y(u));c.stroke();
+    c.fillStyle='#8C979E';c.font='11px sans-serif';c.textAlign='right';c.fillText(u,L-6,Y(u)+4);}
+  c.fillStyle='#62708a';c.font='12.5px sans-serif';c.textAlign='center';
+  c.fillText('kontroll',X(0),h-18);c.fillText('tiltak',X(1),h-18);
+  c.save();c.translate(14,(T+B)/2);c.rotate(-Math.PI/2);c.textAlign='center';
+  c.fillText('utfall (Y)',0,0);c.restore();
+  const NIV=[{z:-1,f:BLUE},{z:0,f:GREY},{z:1,f:RED}];
+  hvD.forEach(d=>{
+    const naer=NIV.reduce((a,n)=>Math.abs(d[1]-n.z)<Math.abs(d[1]-a.z)?n:a,NIV[0]);
+    c.fillStyle=naer.f;c.globalAlpha=0.16;
+    c.beginPath();c.arc(X(d[0])+(Math.random()-0.5)*44,Y(d[2]),2.6,0,6.2832);c.fill();});
+  c.globalAlpha=1;
+  NIV.forEach(n=>{
+    const y0=0.2*n.z, y1=v.b1+0.2*n.z+v.b3*n.z;
+    c.strokeStyle=n.f;c.lineWidth=2.6;c.beginPath();c.moveTo(X(0),Y(y0));c.lineTo(X(1),Y(y1));c.stroke();
+    c.fillStyle=n.f;c.beginPath();c.arc(X(0),Y(y0),4,0,6.2832);c.fill();
+    c.beginPath();c.arc(X(1),Y(y1),4,0,6.2832);c.fill();
+    c.font='bold 11.5px sans-serif';c.textAlign='left';
+    c.fillText(fmt(v.b1+v.b3*n.z,2),X(1)+6,Y(y1)+4);});
+  c.strokeStyle='#2B3940';c.lineWidth=1.6;c.setLineDash([5,3]);
+  c.beginPath();c.moveTo(X(0),Y(0));c.lineTo(X(1),Y(v.b1));c.stroke();c.setLineDash([]);
+  c.font='11.5px sans-serif';c.textAlign='left';c.fillStyle='#2B3940';
+  c.fillText('gjennomsnittet: '+fmt(v.b1,2),X(0)+8,Y(v.b1/2)-6);
+  c.textAlign='left';c.font='bold 11.5px sans-serif';
+  c.fillStyle=BLUE;c.fillText('lav på moderatoren',L+4,T+2);
+  c.fillStyle=GREY;c.fillText('gjennomsnittlig',L+4,T+16);
+  c.fillStyle=RED;c.fillText('høy på moderatoren',L+4,T+30);
+}
+$$('.verden').forEach(b=>b.addEventListener('click',function(){
+  $$('.verden').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  hvValgt=+b.dataset.v; hvTrekk(); hvTegn();
+  $('hvLes').innerHTML='<b>'+VERDEN[hvValgt].t+'.</b> '+VERDEN[hvValgt].f+
+    ' Tallene ved linjene er effekten for hvert nivå av moderatoren.';
+}));
+
+/* ====================== fane 2 ====================== */
+let pD=null;
+const stoy=new WeakMap();
+function stoyFor(d){ if(!stoy.has(d)) stoy.set(d, rnorm()); return stoy.get(d); }
+function pTrekk(){
+  pD=[];
+  for(let i=0;i<300;i++){const d=[rnorm(),rnorm()];pD.push(d);stoy.set(d,rnorm());}
+  pOppdater();
+}
+function pOppdater(){
+  const b1=+$('pX').value,b2=+$('pZ').value,b3=+$('pXZ').value,s=+$('pS').value;
+  $('pXo').textContent=fmt(b1,2);$('pZo').textContent=fmt(b2,2);
+  $('pXZo').textContent=fmt(b3,2);$('pSo').textContent=fmt(s,2);
+  const [c,w,h]=fit($('pCv')); if(!pD)return;
+  const L=56,R=w-124,T=14,B=h-38;
+  const X=u=>L+(u+2.6)/5.2*(R-L), lo=-3.4,hi=3.4, Y=u=>B-(u-lo)/(hi-lo)*(B-T);
+  c.strokeStyle='#E9ECEE';
+  for(let u=-3;u<=3;u++){c.beginPath();c.moveTo(L,Y(u));c.lineTo(R,Y(u));c.stroke();
+    c.fillStyle='#8C979E';c.font='11px sans-serif';c.textAlign='right';c.fillText(u,L-6,Y(u)+4);}
+  c.textAlign='center';c.fillStyle='#62708a';c.font='12.5px sans-serif';
+  c.fillText('X',(L+R)/2,h-16);
+  c.save();c.translate(14,(T+B)/2);c.rotate(-Math.PI/2);c.textAlign='center';c.fillText('Y',0,0);c.restore();
+  const NIV=[{z:-1,f:BLUE,l:'Z = −1 SD'},{z:0,f:GREY,l:'Z = gj.snitt'},{z:1,f:RED,l:'Z = +1 SD'}];
+  pD.forEach(d=>{
+    const y=b1*d[0]+b2*d[1]+b3*d[0]*d[1]+s*stoyFor(d);
+    const n=NIV.reduce((a,x)=>Math.abs(d[1]-x.z)<Math.abs(d[1]-a.z)?x:a,NIV[0]);
+    c.fillStyle=n.f;c.globalAlpha=0.17;
+    c.beginPath();c.arc(X(d[0]),Y(y),2.4,0,6.2832);c.fill();});
+  c.globalAlpha=1;
+  NIV.forEach((n,i)=>{
+    c.strokeStyle=n.f;c.lineWidth=2.8;c.beginPath();
+    c.moveTo(X(-2.6),Y(b1*-2.6+b2*n.z+b3*-2.6*n.z));
+    c.lineTo(X(2.6),Y(b1*2.6+b2*n.z+b3*2.6*n.z));c.stroke();
+    c.fillStyle=n.f;c.font='bold 12px sans-serif';c.textAlign='left';
+    c.fillText(n.l,R+10,T+18+i*34);
+    c.font='11.5px sans-serif';c.fillStyle='#62708a';
+    c.fillText('helling '+fmt(b1+b3*n.z,2),R+10,T+32+i*34);});
+  $('pLes').innerHTML = Math.abs(b3)<0.001
+    ? '<b>b<sub>3</sub> = 0:</b> linjene er parallelle. Effekten av X er <b>'+fmt(b1,2)+
+      '</b> uansett hvor du står på Z. Det er ingen moderasjon, og da er hovedeffektene hele historien.'
+    : '<b>b<sub>3</sub> = '+fmt(b3,2)+':</b> for hver enhet opp på Z endrer effekten av X seg med '+
+      fmt(b3,2)+'. Ved Z = &minus;1 SD er hellingen <b>'+fmt(b1-b3,2)+'</b>, ved gjennomsnittet <b>'+
+      fmt(b1,2)+'</b> og ved +1 SD <b>'+fmt(b1+b3,2)+'</b>. '+
+      ((b1-b3)*(b1+b3)<0 ? 'Legg merke til at hellingen <b>skifter fortegn</b> — tiltaket trekker i hver sin retning i de to endene av moderatoren.' : '');
+}
+['pX','pZ','pXZ','pS'].forEach(id=>$(id).addEventListener('input',pOppdater));
+$('pNy').addEventListener('click',pTrekk);
+
+/* ====================== fane 3 ====================== */
+let sD=null;
+function sTrekk(){
+  const n=250,M=+$('sM').value,b3=+$('sB3').value;
+  sD=[];
+  for(let i=0;i<n;i++){
+    const x=Math.random()<0.5?-1:1, z=M+rnorm();
+    sD.push([x,z,0.30*x+0.25*(z-M)+b3*x*(z-M)+0.7*rnorm()]);
+  }
+  sVis();
+}
+function sVis(){
+  const M=+$('sM').value;
+  $('sMo').textContent=fmt(M,1);$('sB3o').textContent=fmt(+$('sB3').value,2);
+  if(!sD)return;
+  const y=sD.map(d=>d[2]);
+  const Xr=sD.map(d=>[1,d[0],d[1],d[0]*d[1]]);
+  const mz=gjsn(sD.map(d=>d[1]));
+  const Xs=sD.map(d=>[1,d[0],d[1]-mz,d[0]*(d[1]-mz)]);
+  const a=ols(Xr,y), b=ols(Xs,y);
+  const rad=(nv,i)=>'<tr><td>'+nv+'</td>'+
+    '<td>'+fmt(a.b[i],3)+'</td><td>'+fmt(a.se[i],3)+'</td><td>'+fmt(a.t[i],2)+'</td>'+
+    '<td>'+fmt(b.b[i],3)+'</td><td>'+fmt(b.se[i],3)+'</td><td>'+fmt(b.t[i],2)+'</td></tr>';
+  $('sTab').innerHTML='<thead><tr><th>Ledd</th>'+
+    '<th colspan="3" style="text-align:center">Usentrert Z</th>'+
+    '<th colspan="3" style="text-align:center;color:var(--sig)">Sentrert Z</th></tr>'+
+    '<tr><th></th><th>b</th><th>SE</th><th>t</th><th>b</th><th>SE</th><th>t</th></tr></thead><tbody>'+
+    rad('konstant',0)+rad('betingelse (X)',1)+rad('moderator (Z)',2)+
+    rad('<b style="color:var(--red)">X &times; Z</b>',3)+
+    '<tr><td><i>R</i>²</td><td colspan="3">'+fmt(a.R2,4)+'</td><td colspan="3">'+fmt(b.R2,4)+'</td></tr>'+
+    '</tbody>';
+  const lik = Math.abs(a.b[3]-b.b[3])<1e-9 && Math.abs(a.t[3]-b.t[3])<1e-7;
+  $('sLes').innerHTML='<b>Se på nederste rad.</b> Produktleddet er '+
+    (lik?'<b style="color:var(--sig)">bit for bit identisk</b>':'praktisk talt identisk')+
+    ' i de to modellene: b = '+fmt(a.b[3],3)+' mot '+fmt(b.b[3],3)+', t = '+fmt(a.t[3],2)+
+    ' mot '+fmt(b.t[3],2)+'. Det samme gjelder <i>R</i>². '+
+    '<b>Hovedeffektene derimot flytter seg</b>: effekten av betingelsen er '+fmt(a.b[1],3)+
+    ' usentrert og '+fmt(b.b[1],3)+' sentrert. Usentrert beskriver effekten hos en person med '+
+    'moderatorverdi <b>0</b> — og med gjennomsnitt '+fmt(M,1)+' er det '+
+    (M>1?'en person som knapt finnes i utvalget':'nær gjennomsnittet her')+
+    '. Sentrert beskriver gjennomsnittspersonen. Det er hele forskjellen.';
+}
+['sM','sB3'].forEach(id=>$(id).addEventListener('input',sTrekk));
+$('sNy').addEventListener('click',sTrekk);
+
+/* ====================== fane 4 ====================== */
+let hD=null,hM=null;
+function hTrekk(){
+  const n=+$('hN').value,b1=+$('hB1').value,b3=+$('hB3').value;
+  hD=[];
+  for(let i=0;i<n;i++){const x=rnorm(),z=rnorm();
+    hD.push([x,z,b1*x+0.2*z+b3*x*z+0.9*rnorm()]);}
+  hVis();
+}
+function hVis(){
+  $('hB1o').textContent=fmt(+$('hB1').value,2);
+  $('hB3o').textContent=fmt(+$('hB3').value,2);
+  $('hNo').textContent=$('hN').value;
+  if(!hD)return;
+  hM=ols(hD.map(d=>[1,d[0],d[1],d[0]*d[1]]), hD.map(d=>d[2]));
+  if(!hM)return;
+  const s=sd(hD.map(d=>d[1]));
+  const rader=[['&minus;1 SD',-s],['gjennomsnittet',0],['+1 SD',s]];
+  let t='<thead><tr><th>Enkel helling</th><th>b</th><th>SE</th><th>t</th><th>p</th></tr></thead><tbody>';
+  rader.forEach(r=>{const e=helling(hM,1,3,r[1]);
+    t+='<tr><td>effekt av X ved Z = '+r[0]+'</td><td>'+fmt(e.est,3)+'</td><td>'+fmt(e.se,3)+
+       '</td><td>'+fmt(e.t,2)+'</td><td'+(e.p<0.05?' style="color:var(--sig);font-weight:700"':'')+
+       '>'+pTxt(e.p)+'</td></tr>';});
+  t+='<tr><td><b style="color:var(--red)">produktleddet X &times; Z</b></td><td>'+fmt(hM.b[3],3)+
+     '</td><td>'+fmt(hM.se[3],3)+'</td><td>'+fmt(hM.t[3],2)+'</td><td'+
+     (hM.p[3]<0.05?' style="color:var(--sig);font-weight:700"':'')+'>'+pTxt(hM.p[3])+'</td></tr></tbody>';
+  $('hTab').innerHTML=t;
+  hTegn(); jnTegn();
+  const e1=helling(hM,1,3,-s), e3=helling(hM,1,3,s);
+  $('hLes').innerHTML='<b>Produktleddet er '+(hM.p[3]<0.05?'signifikant':'ikke signifikant')+
+    ' (p '+pTxt(hM.p[3])+').</b> Effekten av X er '+fmt(e1.est,2)+' for dem ett standardavvik '+
+    'under gjennomsnittet på moderatoren, og '+fmt(e3.est,2)+' for dem ett over. '+
+    (e1.p<0.05&&e3.p>=0.05 ? 'Legg merke til at effekten bare er signifikant i den ene enden — det er nettopp slike utsagn enkle hellinger finnes for.' :
+     e1.p>=0.05&&e3.p<0.05 ? 'Effekten er bare signifikant i den øvre enden av moderatoren.' :
+     'Begge endene peker i samme retning her.');
+}
+function hTegn(){
+  const [c,w,h]=fit($('hCv')); if(!hD||!hM)return;
+  const L=54,R=w-116,T=14,B=h-36;
+  const X=u=>L+(u+3)/6*(R-L), Y=u=>B-(u+3.6)/7.2*(B-T);
+  c.strokeStyle='#E9ECEE';
+  for(let u=-3;u<=3;u++){c.beginPath();c.moveTo(L,Y(u));c.lineTo(R,Y(u));c.stroke();
+    c.fillStyle='#8C979E';c.font='11px sans-serif';c.textAlign='right';c.fillText(u,L-6,Y(u)+4);}
+  c.textAlign='center';c.fillStyle='#62708a';c.font='12.5px sans-serif';c.fillText('X',(L+R)/2,h-14);
+  const s=sd(hD.map(d=>d[1]));
+  const NIV=[{z:-s,f:BLUE,l:'−1 SD'},{z:0,f:GREY,l:'gj.snitt'},{z:s,f:RED,l:'+1 SD'}];
+  hD.forEach(d=>{const n=NIV.reduce((a,x)=>Math.abs(d[1]-x.z)<Math.abs(d[1]-a.z)?x:a,NIV[0]);
+    c.fillStyle=n.f;c.globalAlpha=0.15;c.beginPath();c.arc(X(d[0]),Y(d[2]),2.3,0,6.2832);c.fill();});
+  c.globalAlpha=1;
+  NIV.forEach((n,i)=>{
+    const e=helling(hM,1,3,n.z), ic=hM.b[0]+hM.b[2]*n.z;
+    c.strokeStyle=n.f;c.lineWidth=2.8;c.beginPath();
+    c.moveTo(X(-3),Y(ic+e.est*-3));c.lineTo(X(3),Y(ic+e.est*3));c.stroke();
+    c.fillStyle=n.f;c.font='bold 12px sans-serif';c.textAlign='left';
+    c.fillText('Z = '+n.l,R+10,T+20+i*36);
+    c.font='11.5px sans-serif';c.fillStyle='#62708a';
+    c.fillText('b = '+fmt(e.est,2)+(e.p<0.05?' *':''),R+10,T+34+i*36);});
+}
+function jnTegn(){
+  const [c,w,h]=fit($('jnCv')); if(!hM)return;
+  const L=56,R=w-14,T=16,B=h-38;
+  const zlo=-2.5,zhi=2.5, X=u=>L+(u-zlo)/(zhi-zlo)*(R-L);
+  let mx=0.1, pts=[];
+  for(let i=0;i<=120;i++){const z=zlo+(zhi-zlo)*i/120, e=helling(hM,1,3,z);
+    pts.push([z,e.est,e.se]); mx=Math.max(mx,Math.abs(e.est)+2.2*e.se);}
+  const Y=u=>B-(u+mx)/(2*mx)*(B-T);
+  c.strokeStyle='#E9ECEE';
+  for(let k=-2;k<=2;k++){const u=mx*k/2;c.beginPath();c.moveTo(L,Y(u));c.lineTo(R,Y(u));c.stroke();
+    c.fillStyle='#8C979E';c.font='11px sans-serif';c.textAlign='right';c.fillText(fmt(u,1),L-6,Y(u)+4);}
+  c.fillStyle='rgba(46,84,150,0.16)';c.beginPath();
+  pts.forEach((p,i)=>{const y=Y(p[1]+1.96*p[2]);i?c.lineTo(X(p[0]),y):c.moveTo(X(p[0]),y);});
+  for(let i=pts.length-1;i>=0;i--)c.lineTo(X(pts[i][0]),Y(pts[i][1]-1.96*pts[i][2]));
+  c.closePath();c.fill();
+  c.strokeStyle=NAVY;c.lineWidth=2.4;c.beginPath();
+  pts.forEach((p,i)=>{const y=Y(p[1]);i?c.lineTo(X(p[0]),y):c.moveTo(X(p[0]),y);});c.stroke();
+  c.strokeStyle='#2B3940';c.lineWidth=1.4;c.setLineDash([5,3]);
+  c.beginPath();c.moveTo(L,Y(0));c.lineTo(R,Y(0));c.stroke();c.setLineDash([]);
+  c.fillStyle='#62708a';c.font='12.5px sans-serif';c.textAlign='center';
+  c.fillText('moderatoren Z (i standardavvik)',(L+R)/2,h-16);
+  c.save();c.translate(14,(T+B)/2);c.rotate(-Math.PI/2);c.textAlign='center';
+  c.fillText('effekten av X',0,0);c.restore();
+  const sig=pts.filter(p=>Math.abs(p[1])-1.96*p[2]>0);
+  if(sig.length && sig.length<pts.length){
+    const a=sig[0][0], b=sig[sig.length-1][0];
+    [a,b].forEach(g=>{ if(g>zlo+0.02 && g<zhi-0.02){
+      c.strokeStyle=ORANGE;c.lineWidth=1.8;c.beginPath();c.moveTo(X(g),T);c.lineTo(X(g),B);c.stroke();
+      c.fillStyle=ORANGE;c.font='bold 11px sans-serif';c.textAlign='center';
+      c.fillText(fmt(g,2),X(g),T+11);}});
+    $('jnLes').innerHTML='<b>Effekten av X er signifikant for Z mellom '+fmt(a,2)+' og '+fmt(b,2)+
+      ' standardavvik</b> (de oransje strekene). Utenfor dette området er konfidensintervallet '+
+      'rundt den enkle hellingen bredt nok til å dekke null.';
+  } else if(sig.length===pts.length){
+    $('jnLes').innerHTML='<b>Effekten er signifikant for hele moderatorens spennvidde.</b> '+
+      'Båndet krysser aldri null. Det er ikke uvanlig når hovedeffekten er sterk — da forteller '+
+      'moderasjonen om hvor mye effekten varierer, ikke om den finnes.';
+  } else {
+    $('jnLes').innerHTML='<b>Effekten er ikke signifikant noe sted på moderatorskalaen.</b> '+
+      'Båndet dekker null hele veien.';
+  }
+}
+['hB1','hB3','hN'].forEach(id=>$(id).addEventListener('input',hTrekk));
+$('hNy').addEventListener('click',hTrekk);
+
+/* ====================== fane 5 ====================== */
+const MODNAVN={3:'selvkritisk perfeksjonisme',4:'rigid perfeksjonisme',
+               5:'angstsensitivitet',6:'kjønn'};
+function ekteModell(kol){
+  const rader=DATA.filter(r=>r[kol]!==null);
+  const y=rader.map(r=>r[2]);
+  const pre=rader.map(r=>r[1]), mpre=gjsn(pre);
+  const D=rader.map(r=>r[0]-0.5);   /* effektkoding -0.5/+0.5, som i losningsforslaget */
+  const Z=rader.map(r=>r[kol]), mz=gjsn(Z), sz=sd(Z);
+  const X=rader.map((r,i)=>[1,pre[i]-mpre,D[i],Z[i]-mz,D[i]*(Z[i]-mz)]);
+  return {m:ols(X,y),mz,sz,n:rader.length,rader,D,Z,y,pre,mpre};
+}
+function ekteVis(){
+  const kol=+$('eMod').value, R=ekteModell(kol), m=R.m;
+  const er=['konstant','selvtillit før (sentrert)','betingelse (&minus;0.5 lett / +0.5 vanskelig)',
+            MODNAVN[kol]+' (sentrert)','<b style="color:var(--red)">betingelse &times; '+MODNAVN[kol]+'</b>'];
+  let t='<thead><tr><th>Ledd</th><th>b</th><th>SE</th><th>t</th><th>p</th></tr></thead><tbody>';
+  er.forEach((nv,i)=>{t+='<tr><td>'+nv+'</td><td>'+fmt(m.b[i],3)+'</td><td>'+fmt(m.se[i],3)+
+    '</td><td>'+fmt(m.t[i],2)+'</td><td'+(m.p[i]<0.05?' style="color:var(--sig);font-weight:700"':'')+
+    '>'+pTxt(m.p[i])+'</td></tr>';});
+  t+='<tr><td colspan="5" style="text-align:left;color:#62708a;font-size:13.5px">'+
+     'n = '+R.n+', df = '+m.df+', R² = '+fmt(m.R2,3)+'</td></tr></tbody>';
+  $('eTab').innerHTML=t;
+  const niv = kol===6 ? [['menn',1-R.mz],['kvinner',2-R.mz]]
+                      : [['&minus;1 SD',-R.sz],['gjennomsnittet',0],['+1 SD',R.sz]];
+  let s='';
+  niv.forEach(n=>{const e=helling(m,2,4,n[1]);
+    s+='<b>'+n[0]+':</b> b = '+fmt(e.est,3)+' (SE '+fmt(e.se,3)+'), t = '+fmt(e.t,2)+
+       ', p '+pTxt(e.p)+'. &nbsp;';});
+  const sig=m.p[4]<0.05;
+  $('eLes').innerHTML='<b>Produktleddet: b = '+fmt(m.b[4],3)+', t('+m.df+') = '+fmt(m.t[4],2)+
+    ', p '+pTxt(m.p[4])+' — '+(sig?'<span style="color:var(--sig)">signifikant</span>':
+    'ikke signifikant')+'.</b><br>Effekten av betingelsen, delt på moderatoren: '+s+
+    '<br>'+(sig
+      ? 'Her varierer effekten av manipulasjonen med moderatoren. Siden betingelsen er kodet &minus;0.5/+0.5, er avstanden mellom gruppene nøyaktig 1, og koeffisienten kan leses rett av: '+fmt(Math.abs(m.b[2]),2)+' skalapoeng mellom lett og vanskelig prøve.'
+      : 'Den beste tolkningen er at vi ikke har grunnlag for å si at effekten varierte med denne moderatoren — ikke at den er lik for alle. Konfidensintervallet rundt b strekker seg fra '+fmt(m.b[4]-1.96*m.se[4],3)+' til '+fmt(m.b[4]+1.96*m.se[4],3)+', og det rommer både null og effekter det ville vært verdt å vite om.');
+  ekteTegn(R,kol);
+}
+function ekteTegn(R,kol){
+  const [c,w,h]=fit($('eCv'));
+  const m=R.m, L=58,Rt=w-130,T=14,B=h-40;
+  const X=u=>L+(u+1)/2*(Rt-L);
+  const lo=2.2, hi=4.0, Y=u=>B-(u-lo)/(hi-lo)*(B-T);
+  c.strokeStyle='#E9ECEE';
+  for(let u=2.5;u<=4.001;u+=0.5){c.beginPath();c.moveTo(L,Y(u));c.lineTo(Rt,Y(u));c.stroke();
+    c.fillStyle='#8C979E';c.font='11px sans-serif';c.textAlign='right';c.fillText(fmt(u,1),L-6,Y(u)+4);}
+  c.textAlign='center';c.fillStyle='#62708a';c.font='12.5px sans-serif';
+  c.fillText('lett prøve',X(-1),h-18);c.fillText('vanskelig prøve',X(1),h-18);
+  c.save();c.translate(15,(T+B)/2);c.rotate(-Math.PI/2);c.textAlign='center';
+  c.fillText('selvtillit etter prøven',0,0);c.restore();
+  const niv = kol===6 ? [{z:1-R.mz,f:BLUE,l:'menn'},{z:2-R.mz,f:RED,l:'kvinner'}]
+    : [{z:-R.sz,f:BLUE,l:'−1 SD'},{z:0,f:GREY,l:'gj.snitt'},{z:R.sz,f:RED,l:'+1 SD'}];
+  R.rader.forEach((r,i)=>{
+    const z=R.Z[i]-R.mz;
+    const n=niv.reduce((a,x)=>Math.abs(z-x.z)<Math.abs(z-a.z)?x:a,niv[0]);
+    c.fillStyle=n.f;c.globalAlpha=0.13;
+    c.beginPath();c.arc(X(R.D[i])+(Math.random()-0.5)*52,Y(R.y[i]),2.3,0,6.2832);c.fill();});
+  c.globalAlpha=1;
+  niv.forEach((n,i)=>{
+    const pred=d=>m.b[0]+m.b[2]*d+m.b[3]*n.z+m.b[4]*d*n.z;
+    c.strokeStyle=n.f;c.lineWidth=2.8;c.beginPath();
+    c.moveTo(X(-1),Y(pred(-1)));c.lineTo(X(1),Y(pred(1)));c.stroke();
+    c.fillStyle=n.f;c.beginPath();c.arc(X(-1),Y(pred(-1)),4.2,0,6.2832);c.fill();
+    c.beginPath();c.arc(X(1),Y(pred(1)),4.2,0,6.2832);c.fill();
+    c.font='bold 12px sans-serif';c.textAlign='left';c.fillText(n.l,Rt+10,T+20+i*34);
+    const e=helling(m,2,4,n.z);
+    c.font='11.5px sans-serif';c.fillStyle='#62708a';
+    c.fillText('b = '+fmt(e.est,2)+(e.p<0.05?' *':''),Rt+10,T+34+i*34);});
+}
+$('eMod').addEventListener('change',ekteVis);
+
+/* ====================== fane 6 ====================== */
+function dKjor(){
+  const b3=+$('dB3').value, n=+$('dN').value, M=400;
+  let regTreff=0, splTreff=0;
+  for(let k=0;k<M;k++){
+    const X=[],Y=[],Z=[];
+    for(let i=0;i<n;i++){const x=Math.random()<0.5?-1:1, z=rnorm();
+      X.push(x);Z.push(z);Y.push(0.3*x+0.2*z+b3*x*z+1.0*rnorm());}
+    const mr=ols(X.map((x,i)=>[1,x,Z[i],x*Z[i]]),Y);
+    if(mr && mr.p[3]<0.05) regTreff++;
+    const srt=Z.slice().sort((a,b)=>a-b), med=srt[Math.floor(n/2)];
+    const Zd=Z.map(z=>z>med?1:-1);
+    const ms=ols(X.map((x,i)=>[1,x,Zd[i],x*Zd[i]]),Y);
+    if(ms && ms.p[3]<0.05) splTreff++;
+  }
+  dTegn(regTreff/M, splTreff/M, b3, n);
+}
+function dTegn(a,b,b3,n){
+  const [c,w,h]=fit($('dCv'));
+  const L=Math.min(200,w*0.33), R=w-70, T=26, B=h-30, hoyde=(B-T)/2-16;
+  const X=u=>L+u*(R-L);
+  c.strokeStyle='#E9ECEE';
+  for(let u=0;u<=1.001;u+=0.25){c.beginPath();c.moveTo(X(u),T-8);c.lineTo(X(u),B);c.stroke();
+    c.fillStyle='#8C979E';c.font='11px sans-serif';c.textAlign='center';
+    c.fillText(Math.round(u*100)+' %',X(u),B+16);}
+  [['Regresjon, kontinuerlig Z',a,GREEN],['Mediansplitt + 2 × 2 ANOVA',b,RED]].forEach((r,i)=>{
+    const y=T+i*((B-T)/2);
+    c.fillStyle=r[2];c.fillRect(L,y,Math.max(0,X(r[1])-L),hoyde);
+    c.fillStyle='#2B3940';c.font='bold 12px sans-serif';c.textAlign='right';
+    c.fillText(r[0],L-10,y+hoyde/2+5);
+    c.fillStyle=r[2];c.font='bold 13px sans-serif';c.textAlign='left';
+    c.fillText(Math.round(r[1]*100)+' %',X(r[1])+8,y+hoyde/2+5);});
+  c.fillStyle='#62708a';c.font='12px sans-serif';c.textAlign='center';
+  c.fillText('andel av 400 studier der moderasjonen ble oppdaget (styrke)',(L+R)/2,h-2);
+  const tap=a>0?Math.round((1-b/a)*100):0;
+  $('dLes').innerHTML='<b>Med b<sub>3</sub> = '+fmt(b3,2)+' og n = '+n+' fant regresjonen '+
+    'moderasjonen i '+Math.round(a*100)+' % av studiene, mediansplitten i '+Math.round(b*100)+' %.</b> '+
+    (tap>4 ? 'Det er et tap på omtrent '+tap+' % av styrken — de samme dataene, den samme sanne effekten, '+
+             'men en analyse som kaster bort informasjon. Tapet må tas igjen med flere deltakere.'
+           : 'Forskjellen er liten her; prøv en mindre b<sub>3</sub> eller et mindre utvalg, så vokser den. '+
+             'Tapet er størst nettopp der det gjør mest vondt: når effekten er liten og utvalget er lite.');
+}
+['dB3','dN'].forEach(id=>$(id).addEventListener('input',function(){
+  $('dB3o').textContent=fmt(+$('dB3').value,2);$('dNo').textContent=$('dN').value;}));
+$('dKjor').addEventListener('click',dKjor);
+
+/* ====================== fane 7 ====================== */
+function rapVis(kol){
+  const R=ekteModell(kol), m=R.m, navn=MODNAVN[kol], sig=m.p[4]<0.05;
+  let s='Selvtillit etter prøven ble regressert på selvtillit før prøven (sentrert), '+
+    'betingelse (effektkodet: &minus;1 = lett, +1 = vanskelig), sentrert '+navn+
+    ' og produktleddet. Modellen forklarte '+fmt(m.R2*100,1)+' % av variansen, '+
+    '<i>R</i>² = '+fmt(m.R2,3).replace(/^0/,'')+'. Deltakere i den vanskelige betingelsen '+
+    'rapporterte lavere selvtillit etter prøven, <i>b</i> = '+fmt(m.b[2],3)+', <i>SE</i> = '+
+    fmt(m.se[2],3)+', <i>t</i>('+m.df+') = '+fmt(m.t[2],2)+', <i>p</i> '+pTxt(m.p[2])+'. ';
+  if(sig){
+    const n1=helling(m,2,4,kol===6?1-R.mz:-R.sz), n2=helling(m,2,4,kol===6?2-R.mz:R.sz);
+    const l1=kol===6?'menn':'studenter ett standardavvik under gjennomsnittet',
+          l2=kol===6?'kvinner':'studenter ett standardavvik over';
+    s+='Interaksjonen mellom betingelse og '+navn+' var signifikant, <i>b</i> = '+fmt(m.b[4],3)+
+      ', <i>SE</i> = '+fmt(m.se[4],3)+', <i>t</i>('+m.df+') = '+fmt(m.t[4],2)+', <i>p</i> '+pTxt(m.p[4])+
+      '. Enkle hellinger viste at effekten av vanskelighetsgrad var <i>b</i> = '+fmt(n1.est,3)+
+      ' (<i>p</i> '+pTxt(n1.p)+') for '+l1+' og <i>b</i> = '+fmt(n2.est,3)+' (<i>p</i> '+pTxt(n2.p)+
+      ') for '+l2+'; effekten av manipulasjonen var altså sterkest for den sistnevnte gruppen.';
+    $('rapKomm').innerHTML='<b>Hva som gjør dette til en god rapportering:</b> interaksjonen er '+
+      'oppgitt med koeffisient, standardfeil, <i>t</i> med frihetsgrader og eksakt <i>p</i>; '+
+      'den er brutt ned i enkle hellinger med hver sin test; og retningen er sagt i klartekst, '+
+      'ikke bare i fortegn. Det eneste som mangler, er figuren — og den er obligatorisk.';
+  } else {
+    s+='Interaksjonen mellom betingelse og '+navn+' nådde ikke signifikans, <i>b</i> = '+
+      fmt(m.b[4],3)+', <i>SE</i> = '+fmt(m.se[4],3)+', <i>t</i>('+m.df+') = '+fmt(m.t[4],2)+
+      ', <i>p</i> '+pTxt(m.p[4])+', 95 % KI ['+fmt(m.b[4]-1.96*m.se[4],3)+', '+
+      fmt(m.b[4]+1.96*m.se[4],3)+']. Intervallet rommer både null og effekter av en størrelse '+
+      'som ville vært praktisk relevant, så studien gir ikke grunnlag for å konkludere med at '+
+      'effekten av vanskelighetsgrad er den samme uavhengig av '+navn+'.';
+    $('rapKomm').innerHTML='<b>Hva som gjør dette til en god rapportering:</b> den sier ikke '+
+      '«ingen moderasjon», men oppgir estimatet og intervallet og lar leseren se hvor mye som '+
+      'fortsatt er mulig. «Ikke signifikant» er et utsagn om hva dataene kunne skille fra null, '+
+      'ikke om hva som finnes i verden.';
+  }
+  $('rapTekst').innerHTML=s;
+}
+$$('.rapvalg').forEach(b=>b.addEventListener('click',function(){
+  $$('.rapvalg').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  rapVis(+b.dataset.r);}));
+
+/* ---------- oppstart ---------- */
+function alt(){ hvTegn(); pOppdater(); sVis(); hVis(); ekteVis(); }
+window.addEventListener('resize',alt);
+hvTrekk(); $('hvLes').innerHTML='<b>'+VERDEN[0].t+'.</b> '+VERDEN[0].f;
+pTrekk(); sTrekk(); hTrekk(); ekteVis(); rapVis(6);
+$('dB3o').textContent=fmt(+$('dB3').value,2);$('dNo').textContent=$('dN').value;
+dKjor();
+hvTegn();
+const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,''));
+const f0=q.get('fane'); if(f0) visFane(f0);
+})();
+</script>
+
+<script id="ovbegrep-js">
+(function(){
+  var p = location.pathname.indexOf('/PSY300_Sim_Apps/') >= 0 ? '../PSY300_online/' : './';
+  var a = document.querySelectorAll('a.ovlenke[data-begrep]');
+  for (var i=0;i<a.length;i++){
+    a[i].href = p + 'PSY300_MCQ_Online.html?begrep=' + a[i].getAttribute('data-begrep');
+    a[i].target = '_blank'; a[i].rel = 'noopener';
+  }
+})();
+</script>
+</div>
+<script>
+/* BRUKSBEACON-START (lagt inn 12.10.2026) */
+/* ===== PSY300 anonym bruksstatistikk =====================================
+   Sender to signaler til det samme Apps Script-endepunktet som MCQ-appen:
+   ett når appen åpnes, ett når fanen lukkes (med antall sekunder aktiv og
+   antall interaksjoner). Ingen navn, ingen kode, ingen IP — bare app-id,
+   tidspunkt og varighet. Lim inn /exec-URL-en under; står plassholderen
+   igjen, sendes ingenting og appen fungerer helt som før.                */
+const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA05xK7n1rC0ex_UVpNAjJPYNmRqvGfgUGuXp0EclxmyFUeKeVktMfg5YQ/exec";
+(function(){
+  if(!PSY300_USAGE_URL || PSY300_USAGE_URL.indexOf("PASTE_")>=0) return;
+  var APP="Sim 36", NAVN="Moderasjon";
+  var t0=Date.now(), aktiv=0, sist=Date.now(), interaksjoner=0, sendt=false;
+  var sid=Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8);
+  // tell bare tid der fanen faktisk er synlig
+  function tikk(){ if(!document.hidden){ var na=Date.now(); aktiv+=Math.min(30000,na-sist); sist=na; } else { sist=Date.now(); } }
+  setInterval(tikk, 5000);
+  document.addEventListener("visibilitychange", tikk);
+  ["click","input","change","touchstart"].forEach(function(ev){
+    document.addEventListener(ev, function(){ interaksjoner++; }, {passive:true, capture:true});
+  });
+
+  /* Skiller underviserens egen bruk fra studentenes. Åpne en app én gang med
+     ?rolle=underviser, så huskes det i denne nettleseren til du åpner med
+     ?rolle=student. Ingen innlogging, ingen personopplysninger.            */
+  function PSY300_ROLLE(){
+    try{
+      var q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'')).get("rolle");
+      if(q==="underviser"||q==="student"){ localStorage.setItem("psy300_rolle",q); }
+      return localStorage.getItem("psy300_rolle")||"student";
+    }catch(e){ return "student"; }
+  }
+  function send(type){
+    if(type==="lukket"){ if(sendt) return; sendt=true; tikk(); }
+    var payload=JSON.stringify({kind:"usage", app:APP, navn:NAVN, event:type,
+      session_id:sid, sekunder:Math.round(aktiv/1000), interaksjoner:interaksjoner,
+      innebygd:(window.top!==window.self)?1:0, rolle:PSY300_ROLLE()});
+    try{
+      if(type==="lukket" && navigator.sendBeacon){
+        navigator.sendBeacon(PSY300_USAGE_URL, new Blob([payload],{type:"text/plain;charset=utf-8"}));
+      } else {
+        fetch(PSY300_USAGE_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:payload, keepalive:true}).catch(function(){});
+      }
+    }catch(e){}
+  }
+  send("apnet");
+  window.addEventListener("pagehide", function(){ send("lukket"); });
+  document.addEventListener("visibilitychange", function(){ if(document.hidden) send("lukket"); });
+})();
+/* BRUKSBEACON-SLUTT */
+</script>
+</body></html>
