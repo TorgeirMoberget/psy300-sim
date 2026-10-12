@@ -1317,6 +1317,7 @@ alltid.</b></div></div>
   <button id="fPrev" title="Forrige (venstrepil)">◀</button>
   <span id="fTeller">1 / 1</span>
   <button id="fNext" title="Neste (høyrepil eller mellomrom)">▶</button>
+  <button id="fFull" title="Fullskjerm (F)">&#9974;</button>
   <span style="opacity:.6">O oversikt · <i>N</i> notater · <i>F</i> fullskjerm · Esc ut</span>
 
 </div>
@@ -1373,15 +1374,60 @@ function rapport(t,tittel){
 }
 
 let cur=null;
+/* ===== felles y-akse for depresjonsfigurene ==============================
+   Alle figurer som viser depresjonsskåren fra terapi-RCT-en skal ha SAMME
+   y-akse, så en forskjell på to poeng ser like stor ut i alle fanene. Skalaen
+   er 0–35 (observert 9–35 i de 36 komplette ISTDP-radene).
+
+   Regelen generelt: aksen går fra skalaens minimum til skalaens maksimum —
+   og utvides bare om noe ligger utenfor. Utvidelsen er nødvendig fordi de
+   SIMULERTE pasientene i fane 1 og 7 har M = 30 og SD = 6, så en tilfeldig
+   pasient kan havne over 35; en hard 0–35 ville klippet punktet uten å si
+   fra. Mangler skalaen (en figur med en oppdiktet 50/10-skala, som
+   simuleringssiden i regresjonsfanen), brukes observert min–maks i stedet,
+   og det er `obsAkse()`.                                                   */
+window.PSY300_DEP_SKALA = [0, 35];
+window.depAkse = function(verdier){
+  var s = window.PSY300_DEP_SKALA, lo = s[0], hi = s[1], i, v;
+  for(i=0;i<verdier.length;i++){
+    v = verdier[i];
+    if(!isFinite(v)) continue;
+    if(v < lo) lo = Math.floor(v);
+    if(v > hi) hi = Math.ceil(v);
+  }
+  return [lo, hi];
+};
+/* Observert min–maks, rundet utover til nærmeste `st` med litt luft. Brukes
+   der det ikke finnes noen kjent skala. */
+window.obsAkse = function(verdier, st){
+  st = st || 5;
+  var lo = Infinity, hi = -Infinity, i, v;
+  for(i=0;i<verdier.length;i++){
+    v = verdier[i];
+    if(!isFinite(v)) continue;
+    if(v < lo) lo = v; if(v > hi) hi = v;
+  }
+  if(!isFinite(lo)) return [0, st];
+  return [Math.floor(lo/st)*st, Math.ceil(hi/st)*st];
+};
+
 function drawSpaghetti(pre,post){
   const cv=$('cv'),r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
   cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';
   const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);
   c.clearRect(0,0,w,h);
   const all=pre.concat(post);
-  let lo=Math.min(...all)-2,hi=Math.max(...all)+2;
+  const ak=window.depAkse(all), lo=ak[0], hi=ak[1];
   const x1=w*0.28,x2=w*0.72;
   const Y=v=>h-32-(v-lo)/(hi-lo)*(h-50);
+  /* Aksemerkene gjør den faste skalaen synlig — uten dem ser figuren likedan
+     ut enten aksen står fast eller ikke. */
+  c.strokeStyle='#EDF2F7';c.lineWidth=1;
+  c.fillStyle='#8894ad';c.font='13px sans-serif';c.textAlign='right';
+  for(let v=lo;v<=hi;v+=5){
+    c.beginPath();c.moveTo(34,Y(v));c.lineTo(w-10,Y(v));c.stroke();
+    c.fillText(String(v),30,Y(v)+4);
+  }
   c.fillStyle='#62708a';c.font='bold 16px sans-serif';c.textAlign='center';
   c.fillText('Pre',x1,h-14);c.fillText('Post',x2,h-14);
   c.strokeStyle='rgba(46,84,150,0.35)';c.lineWidth=1.2;
@@ -2591,8 +2637,14 @@ var MODUS='data';
 function plott(cv,R,modus,indiv){
   var res=lerret(cv), c=res[0], W=res[1], H=res[2], L=48, Rr=W<560?16:130, T=18, B=40, basis=H-B;
   var alle=[]; R.cell.forEach(function(r){ alle=alle.concat(r); });
-  var lo=indiv?8:Math.min.apply(null,alle)-3, hi=indiv?40:Math.max.apply(null,alle)+3;
-  lo=Math.floor(lo/2)*2; hi=Math.ceil(hi/2)*2;
+  /* Fast akse over hele depresjonsskalaen, uavhengig av om de individuelle
+     forløpene vises eller bare gruppesnittene — før sprang aksen fra 8–40 til
+     snitt ±3 når man krysset av «vis alle pasientene», så de samme linjene
+     skiftet helning av en grunn som ikke lå i dataene. Pasientene regnes med
+     i utvidelsen UANSETT om de vises, så avkryssingen ikke kan flytte
+     aksen. */
+  R.G.forEach(function(a){ a.forEach(function(p){ alle=alle.concat(p); }); });
+  var ak=window.depAkse(alle), lo=ak[0], hi=ak[1];
   var X=function(t){ return L+(W-L-Rr)*(0.12+0.76*t/(R.k-1)); };
   var Y=function(v){ return basis-(v-lo)/(hi-lo)*(basis-T); };
   c.strokeStyle='#EDF2F7'; c.lineWidth=1; c.fillStyle='#5A6B7B'; c.font='12px system-ui,sans-serif'; c.textAlign='right';
@@ -2799,7 +2851,19 @@ function draw(){
   if(!data){run();return;}
   const [c,w,h]=fit($('cv'));
   const real=data.mode==='real';
-  const ymin=real?8:15,ymax=real?38:85;
+  /* Ekte ventelistepasienter måles i depresjonspoeng, så de får samme faste
+     akse som alle de andre depresjonsfigurene (0–35). Simuleringssiden står
+     på en oppdiktet 50/10-skala uten kjent minimum og maksimum, og får
+     observert min–maks i stedet — det er den eneste ærlige aksen der.
+     De ekte verdiene rundes før aksen regnes: mikrojitteret på ±0.25 er bare
+     til visning og sortering, og skulle ikke kunne skyve aksen til 0–36. */
+  const alle=[];
+  data.pers.forEach(p=>{
+    alle.push(real?Math.round(p.pre):p.pre);
+    alle.push(real?Math.round(p.post):p.post);
+  });
+  const ak=real?window.depAkse(alle):window.obsAkse(alle,10);
+  const ymin=ak[0],ymax=ak[1];
   const mid=real?WL_R.mPre:50;
   const Y=v=>h-30-(v-ymin)/(ymax-ymin)*(h-55);
   const x1=w*0.24,x2=w*0.76;
@@ -2998,4 +3062,52 @@ document.querySelectorAll('.fane[data-fane="rmg"]').forEach(b=>b.addEventListene
 })();
 </script>
 
+
+<script>
+/* FULLSKJERMKNAPP-START */
+/* ===== FULLSKJERMKNAPP ===================================================
+   F-tasten fantes fra foer; dette er bare knappen ved siden av pilene, saa
+   man slipper aa huske tastetrykket foran salen. Lagt til 12. oktober 2026,
+   samme blokk i alle fem forelesningsappene.
+
+   TO TING ER VERDT AA VITE:
+   1. Appenes egne tegnerutiner henger paa `resize`, og scenen skaleres etter
+      vindusformatet. **Fullskjermbyttet fyrer ikke alltid resize selv**, saa
+      blokka sender ett — da gjoer hver app sin egen omtegning uten at denne
+      koden maa kjenne noen av dem.
+   2. Esc maa lukke fullskjerm FOER den avslutter dekket. Uten det gaar ett
+      trykk ut av begge deler. Lytteren staar i kapringsfasen (`true`) og
+      stopper videre haandtering bare naar fullskjerm faktisk er paa.        */
+(function(){
+  var b = document.getElementById('fFull');
+  function paa(){ return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  function veksle(){
+    var el = document.documentElement;
+    if(!paa()){
+      if(el.requestFullscreen) el.requestFullscreen();
+      else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+  }
+  function merke(){
+    if(!b) return;
+    b.innerHTML = paa() ? '&#10005;' : '&#9974;';
+    b.title = (paa() ? 'Avslutt fullskjerm' : 'Fullskjerm') + ' (F)';
+  }
+  if(b) b.addEventListener('click', function(){ veksle(); b.blur(); });
+  ['fullscreenchange','webkitfullscreenchange'].forEach(function(ev){
+    document.addEventListener(ev, function(){
+      merke();
+      setTimeout(function(){ window.dispatchEvent(new Event('resize')); }, 60);
+    });
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && paa()){ e.stopPropagation(); veksle(); }
+  }, true);
+  merke();
+})();
+/* FULLSKJERMKNAPP-SLUTT */
+</script>
 </body></html>

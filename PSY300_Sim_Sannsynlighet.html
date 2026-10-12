@@ -132,6 +132,303 @@ a{color:var(--blue)}
  font-variant-numeric:tabular-nums}
 .dtab td:first-child{text-align:left}
 .dtab tr.mark{background:#fdf3f2;font-weight:600}
+
+/* SIM35-FMODUS-CSS START */
+/* =====================================================================
+   FORELESNINGSMODUS — 16:9-scene skalert til lerretet
+   Aktiveres med ?modus=forelesning. Scenen er 1280 × 720 logiske piksler
+   og skaleres opp eller ned til den fyller vinduet, med sorte marger.
+   Simuleringsblokkene LÅNES inn i sliden fra utforskerdelen og leveres
+   tilbake etterpå, så det finnes bare én kopi av koden.
+   ===================================================================== */
+body.fmodus{background:#0d1526;overflow:hidden}
+body.fmodus>header,body.fmodus>.wrap,body.fmodus>.presbtn{display:none}
+#scene{display:none}
+/* Bredden settes av skaler() ut fra vinduets format; hoyden er alltid
+   720 logiske piksler, som er maalestokken all typografien er satt i. */
+body.fmodus #scene{display:block;position:fixed;left:0;top:0;width:1280px;height:720px;
+  transform-origin:0 0;background:#fff;overflow:hidden;
+  box-shadow:0 0 60px rgba(0,0,0,.55);font-size:19px}
+.slide{position:absolute;inset:0;padding:44px 60px 62px;display:flex;flex-direction:column}
+.slide h1{font-size:40px;line-height:1.15;color:var(--navy);margin:0 0 6px;font-weight:700}
+.slide h2{font-size:26px;color:var(--blue);margin:0 0 18px;font-weight:600}
+.slide p{font-size:23px;line-height:1.5;margin:0 0 14px}
+.slide ul{font-size:23px;line-height:1.5;margin:4px 0 14px;padding-left:28px}
+.slide li{margin-bottom:11px}
+.slide b{color:var(--navy)}
+.slide .stor{font-size:30px;line-height:1.4}
+.slide .liten{font-size:19px;line-height:1.45;color:#3F4E63}
+.slide table{font-size:21px;border-collapse:collapse;width:100%}
+.slide table th,.slide table td{border-bottom:1px solid #dbe1ec;padding:8px 11px;text-align:left}
+.slide table th{font-size:17px;color:#2B3648;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.slide table td.r,.slide table th.r{text-align:right;font-variant-numeric:tabular-nums}
+.slide table tr.uthev td{background:rgba(46,84,150,.10);font-weight:700;color:var(--navy)}
+
+/* slidetyper */
+.sl-tittel{justify-content:center;align-items:flex-start;
+  background:linear-gradient(135deg,#1F3864 0%,#2E5496 100%);color:#fff}
+.sl-tittel h1{color:#fff;font-size:58px;margin-bottom:14px}
+.sl-tittel .under{font-size:27px;opacity:.9}
+.sl-tittel .merke{font-size:19px;opacity:.65;margin-top:30px;letter-spacing:.07em;text-transform:uppercase}
+.sl-sitat{justify-content:center;align-items:center;text-align:center;background:#f7f9ff}
+.sl-sitat .ord{font-size:44px;line-height:1.28;color:var(--navy);font-weight:700;max-width:1000px}
+.sl-sitat .kilde{font-size:21px;color:#3F4E63;margin-top:26px}
+/* Klikk fram: et element med klassen .avslor står usynlig til neste
+   piltrykk. Det tar plassen sin med én gang, så resten av sliden ikke
+   hopper når det dukker opp. */
+.slide .avslor{opacity:0;transition:opacity .25s}
+.slide .avslor.vist{opacity:1}
+.slide.stort-tall{justify-content:center;align-items:center;text-align:center}
+.talldu{display:flex;gap:70px;justify-content:center;align-items:flex-end;margin:18px 0}
+.talldu div{text-align:center}
+.talldu .tall{font-size:76px;font-weight:700;color:var(--navy);line-height:1;font-variant-numeric:tabular-nums}
+.talldu .tall.mut{color:#5F6A7E}
+.talldu .navn{font-size:21px;color:#3F4E63;margin-top:10px}
+.slide .todelt{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:6px}
+.slide .tabellnavn{font-size:18px;font-weight:600;color:#3F4E63;margin:0 0 6px;
+  letter-spacing:.01em}
+/* Sammenlikningssliden setter to tabeller ved siden av hverandre — da maa
+   de vaere litt mindre enn en tabell som staar alene. */
+.slide .todelt .tabellnavn+table{font-size:19px}
+/* JASP-output slik studentene ser den: tynne linjer, tall hoyrestilt,
+   kolonnenavnene paa engelsk fordi det er JASPs egne. */
+.slide .minitab{font-size:17px;border-collapse:collapse;width:100%;margin-top:2px}
+.slide .minitab th{font-size:14.5px;white-space:nowrap;padding:3px 7px;
+  color:#16203A;border-bottom:1.5px solid #16203A;font-weight:600}
+.slide .minitab td{padding:5px 7px;font-variant-numeric:tabular-nums;
+  border-bottom:1px solid #E1E6EF}
+.slide .minitab tr:last-child td{border-bottom:1.5px solid #16203A}
+.slide .minitab td:first-child,.slide .minitab th:first-child{text-align:left}
+.slide .minitab td:not(:first-child),
+.slide .minitab th:not(:first-child){text-align:right}
+.slide .minitab .kb1{color:var(--kb1,#1E8E4E);font-weight:700}
+.slide .minitab .valgt td{background:#f2f5fa}
+.slide .jaspnote{font-size:14.5px;color:#5C6A80;margin:5px 0 0;line-height:1.35}
+/* Bonusslides kan hoppes over. Plaketten sier det, saa underviseren
+   slipper aa slaa opp i kjoremanuset midt i timen. */
+.bonusmerke{position:absolute;top:22px;right:26px;background:#fff3d6;
+  border:1px solid #e6c982;color:#7a5a12;border-radius:8px;
+  padding:5px 12px;font-size:15px;font-weight:700;letter-spacing:.04em}
+.slide.bonus h1{font-size:34px}
+.slide.bonus .todelt{gap:20px;margin-top:10px}
+.slide.bonus .boks{font-size:18px;line-height:1.4;padding:12px 16px}
+.slide.bonus .boks h3{font-size:19px;margin-bottom:4px}
+/* Tre bokser i bredden. Boksene maa ned fra 21 til 18 px for aa faa
+   plass — tre spalter er en tredjedel av bredden hver. */
+.slide .tredelt{display:grid;grid-template-columns:repeat(3,1fr);
+  gap:16px;margin-top:12px}
+/* Forklaringsbaandet under en laant simuleringsfigur: tre korte bokser
+   som sier hva tallene over betyr. order:3 er det som faktisk plasserer
+   dem UNDER figuren — .simvert settes inn sist i DOM-en, men uten en
+   order havner baandet likevel over den. */
+.slide .ordbaand{order:3;display:grid;grid-template-columns:repeat(3,1fr);
+  gap:14px;margin-top:14px}
+.slide .ordbaand .boks{padding:11px 14px;font-size:18px;line-height:1.4}
+.slide .ordbaand .boks h3{font-size:18px;margin-bottom:4px}
+/* Cohens d-sliden: figuren er poenget, de tre metaanalysene er fotnoter
+   til den. Baandet settes ned saa lerretet faar hoyden. */
+.slide.tvslide .ordbaand{gap:11px;margin-top:10px}
+.slide.tvslide .ordbaand .boks{font-size:15.5px;line-height:1.35;padding:9px 12px}
+.slide.tvslide .ordbaand .boks h3{font-size:16.5px;margin-bottom:2px}
+.slide.dslide .ordbaand{gap:11px;margin-top:10px}
+.slide.dslide .ordbaand .boks{font-size:15.5px;line-height:1.35;padding:9px 12px}
+.slide.dslide .ordbaand .boks h3{font-size:16.5px;margin-bottom:2px}
+/* Notatlinja under figuren sier det samme som den forste boksen i
+   baandet. Paa lerretet er den en gjentakelse som spiser hoyde; i
+   utforskeren staar den. De tre tallbrikkene blir staaende — de er
+   levende og endrer seg mens glideren dras. */
+.slide.dslide #efTall .note{display:none}
+/* Snittet under hver bunke med lapper, og summen av alle tolv. */
+/* De to fordelingsslidene baerer en bred figur og en paastand som er
+   for lang til 40 px uten aa brekke. 36 px holder den paa én linje. */
+.slide.fordelingsfigur h1{font-size:36px;line-height:1.15}
+.slide.fordelingsfigur .figurark{margin:6px 0 0}
+.slide .lappsnitt{margin-top:9px;font-size:19px;color:#3F4E63}
+.slide .lappsnitt b{font-size:23px;color:var(--navy)}
+.slide .lappalle{margin-top:14px;font-size:21px;color:#16203A;text-align:center}
+/* Deskriptivtabellen: tall i lesestorrelse, grupperadene uthevet. */
+.slide table.deskr{font-size:23px;margin-top:10px}
+.slide table.deskr th{font-size:17px}
+.slide table.deskr td.r,.slide table.deskr th.r{text-align:right;
+  font-variant-numeric:tabular-nums}
+.slide table.deskr tr.sum td{color:#3F4E63;border-top:2px solid #16203A}
+.slide .tredelt .boks{font-size:18px;line-height:1.4;padding:13px 16px}
+.slide .tredelt .boks h3{font-size:19px;margin-bottom:4px}
+.slide.bonus .formel{font-size:26px;margin:12px 0 4px;padding:12px 16px;
+  text-align:center}
+.slide .boks{border-radius:12px;padding:16px 20px;font-size:21px;line-height:1.45}
+.slide .boks h3{margin:0 0 8px;font-size:22px;color:var(--navy)}
+.slide .boks ul{font-size:20px;padding-left:22px;margin:0}
+.slide .boks li{margin-bottom:8px}
+.boks.gul{background:#fff8ec;border:1px solid #f0d9a8}
+.boks.bla{background:#eef3fb;border:1px solid #c7d6ec}
+.boks.gronn{background:#eaf6ea;border:1px solid #bcdcbc}
+.boks.rod{background:#fbeceb;border:1px solid #edc9c5}
+/* Simuleringsblokken lånes inn hit. Den er bygget for en nettside der man
+   kan rulle; på en slide finnes ingen rulling. Derfor to ting: kontrollene
+   pakkes tettere, og tilpassBlokk() nedskalerer resten hvis det fortsatt
+   ikke går opp. Uten dette blir nedre halvdel av figuren klippet bort. */
+/* Stegknappene er underviserens verktoy i utforskeren. Paa sliden
+   styres trinnene av klikk-fram, saa raden skal ikke spise hoyde. */
+.slide #blokk-nhsteg .rad{display:none !important}
+/* Paa stegsliden styrer klikk-fram alt. Underviserens glidere og
+   knapper hoerer til utforskeren og skal ikke ta hoyde her. */
+.slide.stegslide #blokk-nhst .sl,
+.slide.stegslide #blokk-nhst .rad{display:none !important}
+.slide .simvert{flex:1;min-height:0;overflow:hidden;margin-top:2px}
+.slide .simvert .simblokk{font-size:17px;transform-origin:top left}
+.slide .simvert .sl{margin:4px 0}
+.slide .simvert .sl{grid-template-columns:264px 1fr 84px}
+.slide .simvert .sl label{font-size:17px}
+.slide .simvert .sl output{font-size:18px}
+.slide .simvert button{font-size:17px;padding:5px 13px;margin:2px}
+.slide .simvert .rad{margin-top:2px!important}
+.slide .simvert .stat{font-size:17px;padding:2px 9px;margin:2px 4px 2px 0}
+.slide .simvert .note{font-size:17px;padding:7px 11px;margin-top:6px!important}
+.slide .simvert canvas{margin-top:4px!important}
+.slide .simvert table.tt{font-size:17px}
+.slide .simvert .steg{margin-bottom:6px}
+/* Alt som hører til utforskerversjonen og bare stjeler høyde på en slide. */
+.slide .simvert .keybox,.slide .simvert details.mer,.slide .simvert h3{display:none}
+.slide .lead{font-size:22px;color:#3F4E63;margin:0 0 10px;line-height:1.4}
+.slide.tett h1{font-size:34px;margin-bottom:2px}
+.slide.tett .lead{font-size:20px;margin-bottom:4px}
+/* Fasitsliden gjentar rutenettet fra avstemningen, med det riktige
+   alternativet markert og de andre dempet. Uten det maa studenten huske
+   hva «A og C» var mens hun leser hvorfor de er feil. */
+.slide.fasitsvar h1{font-size:32px;line-height:1.15}
+.slide.fasitsvar .avstsvar{gap:9px;margin-top:10px}
+.slide.fasitsvar .avstsvar div{font-size:19px;padding:8px 14px}
+.slide.fasitsvar .avstsvar div.rett{border-color:#2E7D32;
+  background:rgba(46,125,50,.10);font-weight:600}
+.slide.fasitsvar .avstsvar div.feil{opacity:.6}
+.slide.fasitsvar .todelt{gap:18px;margin-top:14px}
+.slide.fasitsvar .todelt .boks{font-size:18px;padding:11px 15px;line-height:1.4}
+.slide.fasitsvar .todelt .boks h3{font-size:19px;margin-bottom:3px}
+.slide.fasitsvar .liten{margin-top:12px}
+.avstsvar{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:14px}
+.avstsvar div{border:2px solid #BCC6D6;border-radius:11px;padding:12px 16px;font-size:22px}
+.avstsvar div b{color:var(--blue);margin-right:9px}
+.qrboks{position:absolute;right:52px;top:44px;text-align:center}
+.qrboks img{width:168px;height:168px;display:block;border:5px solid #fff;border-radius:8px;
+  box-shadow:0 2px 10px rgba(0,0,0,.16)}
+.qrboks .txt{font-size:16px;color:#3F4E63;margin-top:7px;font-weight:600}
+/* QR-boksen ligger absolutt plassert oppe til høyre. Plassen må reserveres
+   for HELE sliden, ikke bare for overskriften: svaralternativene og
+   tabellene er fullbredde-elementer, og de la seg rett under koden.
+   Absolutt plassering måles fra slidens ytterkant, så boksen står støtt
+   selv om innholdet trekkes inn. */
+.slide.harqr{padding-right:290px}
+/* ---- live avstemning: panelet under QR-koden ---- */
+.avstpanel{display:none;margin-top:12px;width:178px}
+.avstpanel.vist{display:block}
+.avstgraf{width:100%;display:block;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.16);border-radius:8px}
+.avststatus{font-size:12.5px;color:#b9c8e2;margin-top:5px;line-height:1.35;
+  font-weight:600;text-align:center}
+.qrboks .avsthint{font-size:12.5px;color:#8fa0bd;margin-top:7px;font-weight:600}
+
+/* ---- svarene malt rett inn i alternativkortene ---- */
+.slide .svaralt .opt{position:relative;overflow:hidden;transition:border-color .2s}
+.slide .svaralt .opt.svart{border-color:#6e93c8}
+.slide .svaralt .opt.svart::before{content:'';position:absolute;left:0;top:0;bottom:0;
+  width:var(--andel,0%);background:#a9c8ec;transition:width .45s ease;z-index:0}
+.slide .svaralt .opt > *{position:relative;z-index:1}
+.slide .svaralt .opt .pst{margin-left:auto;padding-left:14px;font-weight:700;
+  color:#2E5496;font-variant-numeric:tabular-nums;white-space:nowrap}
+/* panelet under QR-koden krymper til bare statuslinja naar kortene brukes */
+.avstpanel.kunstatus .avstgraf{display:none}
+.avstpanel.kunstatus{width:178px;margin-top:10px}
+.fasitmerke{display:inline-block;background:#2E7D32;color:#fff;border-radius:8px;
+  padding:5px 15px;font-size:21px;font-weight:700;margin-bottom:12px}
+
+/* chrome */
+#fnav{display:none}
+body.fmodus #fnav{display:flex;position:fixed;right:14px;bottom:11px;z-index:60;
+  align-items:center;gap:11px;color:#8fa0bd;font-size:14px;font-weight:600}
+#fnav button{background:rgba(255,255,255,.10);color:#cfdaeb;border:1px solid rgba(255,255,255,.20);
+  border-radius:8px;padding:5px 12px;font-size:14px;margin:0}
+#fnav button:hover{background:rgba(255,255,255,.20)}
+#fbar{position:fixed;left:0;bottom:0;height:4px;background:#4d7fd4;z-index:60;transition:width .18s}
+body:not(.fmodus) #fbar{display:none}
+#fnotat{display:none}
+body.fmodus.notat #fnotat{display:block;position:fixed;left:0;right:0;bottom:26px;z-index:59;
+  background:rgba(13,21,38,.94);color:#dbe4f2;padding:11px 22px;font-size:15.5px;line-height:1.45;
+  border-top:1px solid rgba(255,255,255,.14)}
+#fnotat b{color:#9fc0f5}
+#foversikt{display:none}
+body.fmodus.oversikt #foversikt{display:grid;position:fixed;inset:0;z-index:70;
+  background:rgba(13,21,38,.97);padding:26px 30px;overflow:auto;
+  grid-template-columns:repeat(4,1fr);gap:9px;align-content:start}
+#foversikt button{background:rgba(255,255,255,.07);color:#cfdaeb;border:1px solid rgba(255,255,255,.14);
+  border-radius:9px;padding:9px 12px;font-size:14px;text-align:left;margin:0;font-weight:600;line-height:1.3}
+#foversikt button:hover{background:rgba(77,127,212,.35)}
+#foversikt button .nr{color:#7e90ad;margin-right:8px;font-variant-numeric:tabular-nums}
+#foversikt .tittelrad{grid-column:1/-1;color:#9fc0f5;font-size:15px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;margin:14px 0 2px}
+#foversikt .tittelrad:first-child{margin-top:0}
+
+
+
+/* TRYKK-CSS-START */
+/* ===== TRYKKMODUS =========================================================
+   ?modus=trykk legger alle slidene under hverandre som ferdige ark, med
+   alle klikk-trinn utfoldet og figurene frosset til bilder. Da kan
+   nettleseren skrive dem ut: Cmd/Ctrl + P -> Lagre som PDF.
+
+   Hvorfor bilder og ikke levende canvas: en canvas som ikke er tegnet paa
+   nytt etter at utskriftsdialogen endret sidebredden, kommer ut blank.
+   Et <img> gjoer ikke det.
+
+   Maalene: A4 liggende med 6 mm marg gir 285 x 198 mm trykkflate. 285 mm
+   er 1077 px ved 96 dpi; skalaen regnes ut i JS og settes som --k.      */
+body.trykk{overflow:auto;background:#e9edf4}
+body.trykk>header,body.trykk>.wrap,body.trykk>.presbtn{display:none}
+body.trykk #scene,body.trykk #fnav,body.trykk #fbar,body.trykk #fnotat,
+body.trykk #foversikt,body.trykk #modusBtn{display:none!important}
+#trykkark{padding:20px 0 40px}
+.trykkside{position:relative;width:var(--sb,1280px);height:720px;margin:0 auto 20px;
+  background:#fff;box-shadow:0 2px 16px rgba(20,30,60,.18);overflow:hidden}
+.trykkside .skala{position:absolute;left:0;top:0;
+  width:var(--sb,1280px);height:720px;transform-origin:top left}
+.trykkside .slide{position:absolute;inset:0}
+.trykknr{position:absolute;right:16px;bottom:9px;z-index:5;
+  font-size:13px;font-weight:700;color:#93a2bd}
+.trykkfeil{position:absolute;left:40px;right:40px;bottom:40px;z-index:6;
+  padding:14px 16px;background:#fdecea;border-left:5px solid #C0392B;
+  font:600 15px/1.5 sans-serif;color:#8c2b20}
+.trykkhode{max-width:1280px;margin:0 auto 18px;padding:14px 18px;background:#fff;
+  border-left:5px solid #1E7A3C;box-shadow:0 2px 16px rgba(20,30,60,.18);
+  font-size:15px;line-height:1.5;color:#3F4E63}
+.trykkhode b{color:#1F3864}
+/* .skjul lar en slide ta bort en enkelt del av en LAANT blokk. */
+.skjul{display:none!important}
+@media print{
+  @page{size:A4 landscape;margin:6mm}
+  body.trykk{background:#fff}
+  #trykkark{padding:0}
+  .trykkhode{display:none}
+  .trykkside{width:285mm;height:198mm;margin:0;box-shadow:none;
+    page-break-after:always;break-after:page}
+  .trykkside:last-child{page-break-after:auto;break-after:auto}
+  .trykkside .skala{transform:scale(var(--k,0.841))}
+}
+/* TRYKK-CSS-SLUTT */
+
+/* ===== modusbryter =====
+   Samme knapp begge veier. I appmodus ligger den nede til hoyre som en
+   diskret pille; i forelesningsmodus flytter den seg til venstre side og
+   blir moerk, saa den ikke kolliderer med slide-navigasjonen til hoyre. */
+#modusBtn{position:fixed;right:12px;bottom:12px;z-index:80;
+  background:var(--navy,#1F3864);color:#fff;border:0;border-radius:20px;
+  padding:8px 16px;font-size:14px;font-weight:700;font-family:inherit;
+  box-shadow:0 2px 10px rgba(0,0,0,.20);cursor:pointer;opacity:.9}
+#modusBtn:hover{opacity:1}
+body.fmodus #modusBtn{left:14px;right:auto;bottom:11px;
+  background:rgba(255,255,255,.10);color:#cfdaeb;
+  border:1px solid rgba(255,255,255,.20);box-shadow:none;font-weight:600}
+
+/* SIM35-FMODUS-CSS SLUTT */
 </style>
 </head><body>
 <header><h1>Sim 35 &middot; Sannsynlighet: fra myntkast til p-verdi</h1>
@@ -290,6 +587,7 @@ anslag: det er <i>andelen</i> som stabiliserer seg, ikke antallet.</p>
 
 <p>Kast mynten. Øverst ser du <b>andelen kron</b>, nederst <b>differansen i antall</b> mellom
 kron og mynt. De to kurvene gjør ikke det samme &mdash; og det er hele poenget med denne fanen.</p>
+<div id="blokk-mynt">
 <div class="ctrl">
   <button class="btn" id="m1">Kast 1</button>
   <button class="btn" id="m10">Kast 10</button>
@@ -316,6 +614,7 @@ kron og mynt. De to kurvene gjør ikke det samme &mdash; og det er hele poenget 
 <p class="muted" style="margin:4px 0 10px">Andel kron. Den stiplede linja er sannsynligheten mynten faktisk har.</p>
 <canvas id="mcDiff" height="150"></canvas>
 <p class="muted" style="margin:4px 0 0">Differanse i antall. Den stiplede kurven er &plusmn;&radic;<i>n</i>.</p>
+</div><!-- /blokk-mynt -->
 <div class="keybox"><span class="lbl">Sagt på én linje</span>
 <b>Loven om store tall gjelder andelen, ikke antallet.</b> Andelen klemmes mot 0.50, mens
 differansen i antall typisk vokser &mdash; omtrent som &radic;<i>n</i>. Det er den samme &radic;<i>n</i>
@@ -382,6 +681,7 @@ bidragene ser ut som.</p>
 <p>Kast to terninger og legg sammen. Klikk på en sum i rutenettet for å se <b>hvilke</b> utfall
 som gir den. Alle 36 rutene er like sannsynlige &mdash; det er antallet veier til en sum som
 varierer.</p>
+<div id="blokk-terning">
 <div class="ctrl">
   <button class="btn" id="t1">Kast 1</button>
   <button class="btn" id="t100">Kast 100</button>
@@ -406,6 +706,7 @@ teoretiske fordelingen &mdash; andelen av alle mulige utfall som gir hver sum.</
 <div class="gitter" id="tgitter"></div>
 <div class="ctrl" id="tsummer" style="gap:4px"></div>
 </div>
+</div><!-- /blokk-terning -->
 <div class="keybox"><span class="lbl">Sagt på én linje</span>
 <b>Sannsynligheten for en sum er en telling av veier.</b> Sum 7 kan lages på seks måter,
 sum 2 på én. Ingen av utfallene er mer «spesielle» enn de andre &mdash; det er bare flere som
@@ -558,6 +859,7 @@ feil som når vi ser et mønster i en figur, en pasientjournal eller en behandli
 og konkluderer at det må ha en årsak. Spørsmålet er alltid det samme: hvor ofte lager
 slumpen alene noe som ser slik ut?</p>
 
+<div id="blokk-serie">
 <div class="ctrl">
   <button class="btn" id="sserie">Kast 200 ganger</button>
   <button class="btn2" id="sserie2">Kjør 2 000 runder à 200 kast</button>
@@ -569,6 +871,7 @@ slumpen alene noe som ser slik ut?</p>
   <div class="tallkort"><div class="v" id="sandel5">—</div><div class="l">runder med serie ≥ 5</div></div>
   <div class="tallkort"><div class="v" id="sandel8">—</div><div class="l">runder med serie ≥ 8</div></div>
 </div>
+</div><!-- /blokk-serie -->
 <div class="keybox"><span class="lbl">Sagt på én linje</span>
 <b>Fem like på rad er ikke et varsel om noe — det er det du skal forvente.</b>
 I 200 kast er den lengste serien typisk rundt åtte, og nesten hver eneste runde har en
@@ -608,6 +911,7 @@ skal legge seg rundt 0.52.</span>
 
 <p>Hvor mange kast trengs for at sannsynligheten for <b>minst én sekser</b> skal passere 50 %?
 Gjett først, så simulerer vi.</p>
+<div id="blokk-mere">
 <div class="ctrl">
   <label>Antall kast <input type="range" id="un" min="1" max="20" value="4"> <b id="unv">4</b></label>
   <button class="btn" id="usim">Simuler 5 000 serier</button>
@@ -617,6 +921,7 @@ Gjett først, så simulerer vi.</p>
   <div class="tallkort"><div class="v" id="uteori">—</div><div class="l">1 − (5/6)<sup>n</sup></div></div>
 </div>
 <canvas id="uc" height="170"></canvas>
+</div><!-- /blokk-mere -->
 <div class="keybox"><span class="lbl">Sagt på én linje</span>
 <b>«Minst én» regnes via komplementet:</b> 1 minus sannsynligheten for ingen. Å legge sammen
 1/6 per kast overteller alle utfallene med mer enn én sekser &mdash; og gir over 100 % ved
@@ -672,6 +977,7 @@ patologens funn var holdt tilbake, ikke på grunn av statistikken.</p>
 
 <p>Hver rute er én person av 1 000. Skyv på forekomsten og se hva som skjer med andelen av de
 positive som faktisk har tilstanden.</p>
+<div id="blokk-basis">
 <div class="ctrl">
   <label>Forekomst i befolkningen <input type="range" id="bprev" min="1" max="300" value="20"> <b id="bprevv">2.0 %</b></label>
   <label>Testen fanger opp <input type="range" id="bsens" min="50" max="100" value="95"> <b id="bsensv">95 %</b></label>
@@ -689,6 +995,7 @@ positive som faktisk har tilstanden.</p>
   <div class="tallkort"><div class="v" id="bpos">—</div><div class="l">av 1 000 får utslag</div></div>
   <div class="tallkort"><div class="v" id="bsyk">—</div><div class="l">av dem har tilstanden</div></div>
 </div>
+</div><!-- /blokk-basis -->
 <h3 style="margin:16px 0 0">De samme 1 000 personene som tabell</h3>
 <p class="muted" style="margin:2px 0 6px">Dette er en krysstabell &mdash; nøyaktig formen
 du møter igjen i kjikvadrattesten. De to prosentene nederst er de to betingede
@@ -753,6 +1060,7 @@ er 0.0958 uansett hva du gjør med intervallet. Bredden er det som krymper. Og e
 med noe som går mot null, går mot null. «Sannsynligheten for å skåre nøyaktig 30» er
 grensen av denne krympingen, og den er null.</p>
 
+<div id="blokk-tetthet">
 <div class="ctrl">
   <label>Intervall rundt 30
     <input type="range" id="dw" min="0" max="9" value="1" step="1">
@@ -765,6 +1073,7 @@ grensen av denne krympingen, og den er null.</p>
   <div class="tallkort"><div class="v" id="dtett">—</div><div class="l">tetthet i 30 (høyden)</div></div>
   <div class="tallkort"><div class="v" id="dprod">—</div><div class="l">høyde &times; bredde</div></div>
 </div>
+</div><!-- /blokk-tetthet -->
 <div class="keybox"><span class="lbl">Legg merke til</span>
 <b>Når intervallet halveres, halveres sannsynligheten.</b> Høyden endrer seg ikke &mdash;
 bare bredden. Og «nøyaktig 30» er bredde null.</div>
@@ -847,6 +1156,7 @@ andel i en simulert verden der ingenting virket, blir resten av faget varianter 
 <p>Anta at behandlingen ikke virker. Da er «ble bedre» et myntkast. Vi kaster mynten for hver
 pasient, teller hvor mange som ble bedre, og gjentar det mange ganger. Det vi får, er
 <b>nullfordelingen</b> &mdash; og <i>p</i>-verdien er en haleandel i den.</p>
+<div id="blokk-pverdi">
 <div class="ctrl">
   <label>Antall pasienter <input type="range" id="pn" min="10" max="60" value="20"> <b id="pnv">20</b></label>
   <label>Observert antall bedre <input type="range" id="pobs" min="0" max="60" value="15"> <b id="pobsv">15</b></label>
@@ -865,6 +1175,7 @@ pasient, teller hvor mange som ble bedre, og gjentar det mange ganger. Det vi f�
   <div class="tallkort"><div class="v" id="pandel">—</div><div class="l">observert andel bedre</div></div>
   <div class="tallkort"><div class="v" id="pn2">—</div><div class="l">studier simulert</div></div>
 </div>
+</div><!-- /blokk-pverdi -->
 <div class="keybox"><span class="lbl">Sagt på én linje</span>
 <b>En <i>p</i>-verdi er en andel av en simulert verden der ingenting virket.</b> Den er regnet ut
 på nøyaktig samme måte som andelen kron i fane 1 &mdash; bare at vi teller studier i stedet for kast.</div>
@@ -880,6 +1191,24 @@ for antall.</div>
 </div>
 
 </div>
+
+<!-- SIM35-FORELESNING START -->
+<button id="modusBtn" type="button">Start forelesning</button>
+
+<!-- ===== forelesningsmodus ===== -->
+<div id="scene"></div>
+<div id="fbar"></div>
+<div id="fnotat"></div>
+<div id="foversikt"></div>
+<div id="fnav">
+  <button id="fPrev" title="Forrige (venstrepil)">◀</button>
+  <span id="fTeller">1 / 1</span>
+  <button id="fNext" title="Neste (høyrepil eller mellomrom)">▶</button>
+  <button id="fFull" title="Fullskjerm (F)">&#9974;</button>
+  <span style="opacity:.6">O oversikt · <i>N</i> notater · <i>F</i> fullskjerm · Esc ut</span>
+</div>
+<!-- SIM35-FORELESNING SLUTT -->
+
 <script>
 const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
 const FARGE={navy:'#1F3864',blue:'#2E5496',gronn:'#1E7A3C',rod:'#C0392B',
@@ -897,7 +1226,7 @@ function lerret(cv){
 function akser(c,w,h,xl,yl,ymin,ymax,steg){
   const L=52,R=14,T=12,B=30;
   c.strokeStyle='#e9ecee'; c.lineWidth=1; c.fillStyle='#62708a';
-  c.font='11.5px sans-serif'; c.textAlign='right'; c.textBaseline='middle';
+  c.font=(window.__aksefont||11.5)+'px sans-serif'; c.textAlign='right'; c.textBaseline='middle';
   for(let v=ymin; v<=ymax+1e-9; v+=steg){
     const y=T+(h-T-B)*(1-(v-ymin)/(ymax-ymin));
     c.beginPath(); c.moveTo(L,y); c.lineTo(w-R,y); c.stroke();
@@ -1430,6 +1759,1012 @@ window.addEventListener('resize',()=>{
 })();
 </script>
 
+
+<!-- SIM35-FORELESNING-JS START -->
+<script>
+/* =====================================================================
+   FORELESNINGSMODUS · F8 blokk 1 · sannsynlighet (60 minutter)
+   ---------------------------------------------------------------------
+   Dekket følger PSY300_F8_sannsynlighetsokt_2026.md minutt for minutt, og
+   alle tall står verifisert i manusets §5. Endrer du rekkefølgen her, endre
+   den der også — manuset er kjøremanuset underviseren har foran seg.
+
+   Motoren er KOPIERT fra Sim 25 av PSY300_Testverktoy/bygg_f8_dekk.py, ikke
+   skrevet på nytt: scenen, lånet av levende blokker, klikk-fram, avstemningen
+   og trykkmodusen er de samme som i de fem andre forelesningsappene, med de
+   samme feilene alt funnet og rettet. Kjør skriptet på nytt i stedet for å
+   redigere motoren her.
+
+   To ting er særegne for denne appen:
+     · `S` er alt i bruk som global i Sim 35 (seriesimuleringen, `let S={runder:[]}`).
+       Slide-arrayen må derfor bo inne i denne IIFE-en. Den heter også `S`, og
+       det er trygt bare fordi den er lokal — legg den aldri på toppnivå.
+     · `$` er querySelector i resten av appen, men motoren er skrevet mot
+       getElementById. Den lokale `$` under skygger den globale, og det er
+       grunnen til at kopien kan limes inn uendret.
+   ===================================================================== */
+(function(){
+const $=id=>document.getElementById(id);
+const fmt=(x,d=2)=>x.toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:false});
+
+/* Både input OG change: et <select> lytter på change, en range på input. */
+function sett(id,v){ const e=$(id); if(e){ e.value=v;
+  e.dispatchEvent(new Event('input')); e.dispatchEvent(new Event('change')); } }
+function klikk(id){ const e=$(id); if(e) e.click(); }
+function kryss(id,paa){ const e=$(id); if(e && e.checked!==paa){ e.checked=paa;
+  e.dispatchEvent(new Event('change')); } }
+
+/* Lånte blokker tegnes på nytt når de er flyttet inn i sliden: lerretet har
+   fått en annen bredde, og tegnekoden leser clientWidth selv. Hver blokk sier
+   hvilken fane-tegner som eier den. Serieblokka står ikke her — den er HTML,
+   ikke canvas, og trenger ingen omtegning. */
+const TEGN = {
+  mynt:    function(){ mTegn(); },
+  terning: function(){ tTegn(); tSummer(); },
+  uavh:    function(){ const e=$('un'); uTegn(e?+e.value:4); },
+  betinget:function(){ bTegn(); },
+  tetthet: function(){ dTegn(); },
+  pverdi:  function(){ pTegn(); }
+};
+const BLOKKFANE = {
+  'blokk-mynt':'mynt', 'blokk-terning':'terning', 'blokk-mere':'uavh',
+  'blokk-basis':'betinget', 'blokk-tetthet':'tetthet', 'blokk-pverdi':'pverdi'
+};
+
+/* QR-bildene er tomme her, som i de andre appene: avstemningen hentes med V
+   på id-en i `qr`-feltet, og de to id-ene (F8-S1, F8-S2) må legges inn i
+   prediksjonsappen før salen kan svare. Uten dem sier panelet «ingen svar
+   registrert», og håndsopprekning virker som før. */
+const QR = {};
+const ROLLENOKKEL='psy300_rolle';
+const UNDERVISER=(function(){
+  const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+
+                              (location.hash||'').replace(/^#/,''));
+  const r=q.get('rolle');
+  try{
+    if(r==='underviser'){ localStorage.setItem(ROLLENOKKEL,'underviser'); return true; }
+    if(r==='student'){ localStorage.removeItem(ROLLENOKKEL); return false; }
+    return localStorage.getItem(ROLLENOKKEL)==='underviser';
+  }catch(e){ return r==='underviser'; }
+})();
+window.__erUnderviser=function(){ return UNDERVISER; };
+
+/* Undervisernotatene er det eneste i appen som ikke er ment for studentene.
+   Åpne ?rolle=underviser én gang, så huskes det i denne nettleseren;
+   ?rolle=student glemmer det igjen (delt maskin). */
+const S = [];
+function slide(o){ S.push(o); }
+
+/* ---------- 0–6 · avstemningen alle svarer riktig på og føler feil ---------- */
+slide({del:'0–6 · Følelsen som har et navn', t:'Tittel', klasse:'sl-tittel', html:
+ '<h1>Sannsynlighet</h1>'+
+ '<div class="under">Fra ett myntkast til en <i>p</i>-verdi</div>'+
+ '<div class="merke">PSY300 · forelesning 8 · 60 minutter</div>',
+ notat:'Ikke si hva timen handler om først. Start med avstemningen på neste slide — '+
+       'poenget er at de skal kjenne feilen i kroppen før den får et navn.'});
+
+slide({t:'AVSTEMNING S1', klasse:'harqr', qr:'F8-S1', html:
+ '<h1>En mynt har gitt <b>kron fem ganger på rad</b>. Hva er mest sannsynlig på neste kast?</h1>'+
+ '<div class="svaralt">'+
+ '<div class="opt"><b>A</b> Mynt — den må jevne seg ut</div>'+
+ '<div class="opt"><b>B</b> Kron — den er tydeligvis skjev</div>'+
+ '<div class="opt"><b>C</b> Like sannsynlig</div>'+
+ '<div class="opt"><b>D</b> Umulig å si uten flere kast</div>'+
+ '</div>',
+ notat:'Håndsopprekning eller V for salens svar. Nesten alle svarer C — og nesten alle '+
+       'kjenner samtidig at mynt burde komme. Det er den følelsen timen handler om. '+
+       'Ikke røp fasiten her.'});
+
+slide({t:'Fasit S1', klasse:'fasitsvar', html:
+ '<h1>C · like sannsynlig</h1>'+
+ '<p class="lead">Mynten husker ingenting. Den har ingen gjeld å betale tilbake.</p>'+
+ '<p class="liten avslor">Og likevel kjente de fleste av dere at mynt burde komme. '+
+ 'Følelsen heter <b>spillerens feilslutning</b>, den har kostet folk formuer — og den har '+
+ 'en tvilling i forskning: <b>«det blir nok signifikant med litt mer data»</b>.</p>'+
+ '<p class="liten avslor">Å samle mer data flytter ikke et resultat mot signifikans. '+
+ 'Det gjør anslaget mer presist — og presisjonen kan peke begge veier.</p>',
+ notat:'Den siste setningen er broen til hele emnet. Si den sakte.'});
+
+slide({t:'Hva sannsynlighet er', klasse:'sl-sitat', html:
+ '<div class="ord">Andelen av gangene noe skjer når du gjentar mange nok ganger.</div>'+
+ '<div class="kilde avslor">Det er alt. Resten av emnet bygger på den ene ideen — og faget '+
+ 'ble født ved spillebordet, i brev mellom <b>Pascal og Fermat i 1654</b> om et veddemål '+
+ 'chevalier de Méré tapte penger på. «Er dette spillet rigget?» har samme form som '+
+ '«virket behandlingen?».</div>',
+ notat:'Femten sekunder, ikke mer. De Mérés eget regnestykke kommer i minutt 30 og er '+
+       'bedre der.'});
+
+slide({t:'Timen i seks steg', klasse:'tett', html:
+ '<h1>Dette er veien</h1>'+
+ '<table class="minitab" style="font-size:20px;width:92%">'+
+ '<tr><th>min</th><th>hva</th><th>og hvorfor det kommer igjen</th></tr>'+
+ '<tr><td>6–18</td><td>Mynten kastet tusen ganger</td><td>der √<i>n</i> kommer fra</td></tr>'+
+ '<tr><td>18–30</td><td>Utvalgsfordelingen, igjen</td><td>standardfeilen</td></tr>'+
+ '<tr><td>30–40</td><td>Serier og «minst én»</td><td>familievis feilrate</td></tr>'+
+ '<tr><td>40–50</td><td>Basisraten</td><td><i>p</i> = P(data | H₀)</td></tr>'+
+ '<tr><td>50–58</td><td>Nullhypotesen er en mynt</td><td>hele faget i én figur</td></tr>'+
+ '</table>'+
+ '<div class="note avslor">Legg merke til høyre kolonne: ingenting i dag er nytt stoff. '+
+ 'Det er gulvet under alt dere alt har gjort.</div>',
+ notat:'Denne sliden er til for å gi dem et kart. Bruk tjue sekunder.'});
+
+/* ---------- 6–18 · mynten: andelen roer seg, differansen gjør det ikke ---------- */
+slide({del:'6–18 · Mynten · P1 og P3', t:'SIM · kast mynten', blokk:'blokk-mynt', html:
+ '<h1>Kast én gang. Så tusen.</h1>'+
+ '<div class="note avslor" data-gjor="klikk:m1">Først <b>ett</b> kast — så de ser at '+
+ 'det faktisk er en mynt, ikke en kurve.</div>'+
+ '<div class="note avslor" data-gjor="klikk:m1000">Så <b>1 000</b> kast. Følg de to '+
+ 'kurvene: øverst andelen kron, nederst differansen i antall.</div>',
+ notat:'La dem gjette hva differansen gjør før du trykker. Nesten alle tror begge roer seg.'});
+
+slide({t:'De to kurvene', klasse:'stort-tall', html:
+ '<h1>Bare den øverste roer seg</h1>'+
+ '<div class="tallrad">'+
+ '<div class="tall"><b>→ 0.50</b><span>andelen kron</span></div>'+
+ '<div class="tall avslor"><b>20–40</b><span>differansen i antall etter 1 000 kast</span></div>'+
+ '</div>'+
+ '<p class="liten avslor">Loven om store tall gjelder <b>andelen</b>, ikke antallet. '+
+ 'Differansen vokser — typisk som √<i>n</i>, og det er den stiplede kurven i figuren.</p>',
+ notat:'P1. Mynten jevner ikke ut et gammelt avvik; den drukner det i flere kast.'});
+
+slide({t:'Limet i hele økta', klasse:'sl-sitat', html:
+ '<div class="ord">Den √<i>n</i> skal dere kjenne igjen.</div>'+
+ '<div class="kilde avslor">Det er den samme √<i>n</i> som står i nevneren til '+
+ '<b>standardfeilen</b>, i <b><i>t</i>-brøken</b>, og i bredden på hvert '+
+ '<b>konfidensintervall</b> dere har regnet ut i høst. Her ser dere hvor den kommer fra '+
+ '— før noen har skrevet formelen.</div>',
+ notat:'Dette er øktas viktigste setning. Den kommer igjen i minutt 24 og i minutt 56.'});
+
+slide({t:'Er mynten rigget?', klasse:'tett', html:
+ '<h1>En nullhypotesetest, uten en eneste formel</h1>'+
+ '<p class="lead">1 000 kast, rettferdig mynt. Standardavviket til <i>antallet</i> er '+
+ '√(1 000 · 0.5 · 0.5) = <b>15.8</b>.</p>'+
+ '<table class="minitab" style="font-size:21px;width:88%">'+
+ '<tr><th>du observerer</th><th>avvik fra 500</th><th>i antall <i>SD</i></th></tr>'+
+ '<tr><td>515 kron</td><td>+15</td><td>0.9</td></tr>'+
+ '<tr><td>530 kron</td><td>+30</td><td>1.9</td></tr>'+
+ '<tr><td>540 kron</td><td>+40</td><td>2.5</td></tr>'+
+ '<tr><td>600 kron</td><td>+100</td><td>6.3</td></tr>'+
+ '</table>'+
+ '<div class="keybox avslor">Kolonnen til høyre er en <i>z</i>-verdi. Det er alt en '+
+ '<b>teststatistikk</b> er: avvik delt på hvor mye slump pleier å lage.</div>',
+ notat:'P3. Gå gjennom tabellen rad for rad. Nullhypotesen er «mynten er rettferdig», '+
+       'og ingen har skrevet en formel.'});
+
+slide({t:'Det vanskelige er ikke 600', klasse:'stort-tall', html:
+ '<h1>Det vanskelige er 540</h1>'+
+ '<div class="tallrad">'+
+ '<div class="tall"><b>55 %</b><span>mynten gir kron så ofte</span></div>'+
+ '<div class="tall avslor"><b>780</b><span>kast for 80 % sjanse til å avsløre den</span></div>'+
+ '</div>'+
+ '<p class="liten avslor">Det er <b>statistisk styrke</b>, og det er grunnen til at små '+
+ 'studier overser ekte effekter. En tydelig rigget mynt kan se helt vanlig ut i 300 kast.</p>',
+ notat:'Eksakt binomialtest, tosidig α = .05: styrken er .796 ved n = 780. '+
+       'Normalapproksimasjonen gir .788 — bruk det eksakte tallet om noen spør. Se Sim 7.'});
+
+/* ---------- 18–30 · recap: utvalgsfordelingen og standardfeilen ---------- */
+slide({del:'18–30 · Utvalgsfordelingen, igjen · P2', t:'Siste setning i forelesning 1',
+ klasse:'sl-sitat', html:
+ '<div class="ord"><i>SE</i> er <i>SD</i> delt på roten av <i>n</i>, og det tallet er broen '+
+ 'fra deres 75 til alle de ti tusen.</div>'+
+ '<div class="kilde avslor">Det er tolv uker siden. Nå har dere sett hvor roten av <i>n</i> '+
+ 'kommer fra — så la oss bygge broen én gang til.</div>',
+ notat:'Recapen kommer HER og ikke først, fordi fane 1 nettopp har vist √n uten å '+
+       'kalle den det.'});
+
+slide({t:'Tre fordelinger, ikke én', klasse:'tett', html:
+ '<h1>Bytt til <b>Sim 3 · fane 1</b> og trekk utvalg</h1>'+
+ '<table class="minitab" style="font-size:20px;width:94%">'+
+ '<tr><th>fordeling</th><th>hva spredningen heter</th><th>har dere sett den?</th></tr>'+
+ '<tr><td>Populasjonen (10 000)</td><td><i>SD</i></td><td>nei</td></tr>'+
+ '<tr><td>Det ene utvalget (<i>n</i> = 75)</td><td><i>SD</i></td><td>ja — det er dataene</td></tr>'+
+ '<tr><td>Fordelingen av gjennomsnitt</td><td><b><i>SE</i></b></td><td>aldri, og kommer aldri til</td></tr>'+
+ '</table>'+
+ '<div class="keybox avslor">Den tredje er likevel den eneste av de tre som '+
+ '<i>p</i>-verdien handler om.</div>'+
+ '<div class="note avslor"><b><i>SD</i> beskriver menneskene. <i>SE</i> beskriver hvor mye '+
+ 'gjennomsnittet ditt hopper.</b> Det er ulike spørsmål — og distraktør-galleriet i '+
+ 'neste forelesning er fullt av oppgaver som bytter dem om.</div>',
+ notat:'Fem–seks minutter i Sim 3: ett utvalg n = 75, så 10 000 utvalg, så n = 300. '+
+       'Si de tre tingene høyt mens det kjører. Populasjonen er skjev — '+
+       'utvalgsfordelingen blir normal likevel.'});
+
+slide({t:'SIM · hvorfor klokkeformen i det hele tatt oppstår', blokk:'blokk-terning',
+ forbered:function(){ sett('tant','2'); klikk('tnull'); }, html:
+ '<h1>Seks av de 36 rutene gir 7. Én gir 2.</h1>'+
+ '<div class="note avslor" data-gjor="klikk:t5000">Kast 5 000 ganger med <b>to</b> terninger. '+
+ 'Klikk på sum 7 og sum 2 i rutenettet.</div>'+
+ '<div class="note avslor" data-gjor="sett:tant:5;klikk:t5000">Bytt til <b>fem</b> terninger. '+
+ 'Ingenting nytt ble lagt til — det er fortsatt bare telling av veier.</div>',
+ notat:'Ingen utfall er mer spesielle enn andre; det er bare flere veier til midten. '+
+       'Det er sentralgrenseteoremet, sett før formelen. Erstatt «sum av fem terninger» '+
+       'med «gjennomsnitt av 75 pasienter», og dere har utvalgsfordelingen.'});
+
+slide({t:'Og mens vi er her: konfidensintervallet', klasse:'sl-sitat', html:
+ '<div class="ord">95 % er en egenskap ved <b>prosedyren</b>, ikke ved intervallet dere sitter med.</div>'+
+ '<div class="kilde avslor">Gjentar dere studien i det lange løp, treffer 95 % av '+
+ 'intervallene. Deres ene intervall treffer eller treffer ikke, og dere får aldri vite '+
+ 'hvilket.</div>',
+ notat:'Étt minutt. Dette er FL-232 i øvingsbanken: 59 % av kullet leste intervallet '+
+       'som en sannsynlighet.'});
+
+/* ---------- 30–40 · uavhengighet og komplementet ---------- */
+slide({del:'30–40 · Serier og «minst én» · P4 og P5', t:'AVSTEMNING S2',
+ klasse:'harqr', qr:'F8-S2', html:
+ '<h1>I 200 myntkast — hvor lang blir den <b>lengste serien</b> av like?</h1>'+
+ '<div class="svaralt">'+
+ '<div class="opt"><b>A</b> 3–4</div>'+
+ '<div class="opt"><b>B</b> 5–6</div>'+
+ '<div class="opt"><b>C</b> 7–9</div>'+
+ '<div class="opt"><b>D</b> 12 eller mer</div>'+
+ '</div>',
+ notat:'La dem gjette før simuleringen. De fleste gjetter for lavt — og det er hele '+
+       'poenget: serier er normalen, ikke varselet.'});
+
+slide({t:'SIM · hvor lange serier lager flaks alene?', blokk:'blokk-serie', html:
+ '<h1>Kjør det, og se på medianen</h1>'+
+ '<div class="note avslor" data-gjor="klikk:sserie">200 kast. Den lengste serien er ringet '+
+ 'i rødt i stripa.</div>'+
+ '<div class="note avslor" data-gjor="klikk:sserie2">2 000 runder. Typisk lengste serie er '+
+ '<b>åtte</b>, og så godt som hver runde har en serie på minst fem.</div>',
+ notat:'Fem like på rad er ikke et varsel om noe — det er det de skal forvente. Samme feil '+
+       'som når vi ser et mønster i en figur, en journal eller en behandlingsrespons og '+
+       'konkluderer at det må ha en årsak.'});
+
+slide({t:'De Mérés veddemål', klasse:'tett', html:
+ '<h1>Regnestykket som startet faget</h1>'+
+ '<table class="minitab" style="font-size:21px;width:90%">'+
+ '<tr><th>veddemål</th><th>regnestykke</th><th>P(minst én)</th></tr>'+
+ '<tr><td>Minst én sekser i 4 kast</td><td>1 − (5/6)⁴</td><td><b>0.5177</b></td></tr>'+
+ '<tr><td>Minst én dobbel sekser i 24 kast</td><td>1 − (35/36)²⁴</td><td><b>0.4914</b></td></tr>'+
+ '<tr><td>… i 25 kast</td><td>1 − (35/36)²⁵</td><td>0.5055</td></tr>'+
+ '</table>'+
+ '<div class="note avslor">Resonnementet hans virker rimelig: én terning har 6 utfall og '+
+ 'krever 4 kast, to terninger har 36 utfall og burde kreve 24. Han tapte penger, forsto det '+
+ 'ikke, og skrev til Pascal.</div>',
+ notat:'Det tar 25 kast å vippe det over. Forskjellen mellom 0.5177 og 0.4914 er hele '+
+       'saken — og den er for liten å se uten å regne.'});
+
+slide({t:'SIM · minst én sekser', blokk:'blokk-mere',
+ forbered:function(){ sett('un','4'); }, html:
+ '<h1>Simuler det, og se at formelen holder</h1>'+
+ '<div class="note avslor" data-gjor="klikk:usim">5 000 serier à 4 kast. Den simulerte '+
+ 'andelen legger seg på 1 − (5/6)⁴.</div>'+
+ '<div class="keybox avslor"><b>«Minst én» regnes aldri ved å legge sammen.</b> Det '+
+ 'regnes som <b>1 − P(ingen)</b>. Legger dere sammen 1/6 per kast, overteller dere alle '+
+ 'utfallene med mer enn én sekser — og får over 100 % ved sju kast.</div>',
+ notat:'Skriv regelen på tavla. Den er P5, og den kommer igjen på neste slide i en helt '+
+       'annen drakt.'});
+
+slide({t:'Broen: familievis feilrate', klasse:'stort-tall', html:
+ '<h1>Samme formel, annet navn</h1>'+
+ '<p class="lead">1 − (1 − α)<sup><i>k</i></sup></p>'+
+ '<div class="tallrad">'+
+ '<div class="tall"><b>23 %</b><span>5 tester à α = .05</span></div>'+
+ '<div class="tall avslor"><b>64 %</b><span>20 tester à α = .05</span></div>'+
+ '</div>'+
+ '<p class="liten avslor">La dem regne 1 − 0.95²⁰ på kalkulatoren selv. Det er samme '+
+ 'regnestykke som de Mérés seksere, med α i stedet for 1/6.</p>',
+ notat:'BRUK TID HER. Dette er empirisk det vanskeligste punktet i hele området: '+
+       'oppgaven i øvingsbanken som spør om nettopp 20 tester (FL-388) har riktigandel '+
+       '.09, og 11 av 23 studenter valgte «omtrent 5 %». Kullet leser familievis '+
+       'feilrate som alfa. Å se at halve kullet før dem tok feil virker bedre enn å '+
+       'høre at det er vanskelig.'});
+
+/* ---------- 40–50 · basisraten ---------- */
+slide({del:'40–50 · Basisraten · P6 og P7', t:'SIM · 1 000 personer, én test',
+ blokk:'blokk-basis',
+ forbered:function(){ sett('bprev','20'); sett('bsens','95'); sett('bfp','10'); }, html:
+ '<h1>Testen treffer 95 %. Hvor mange av dem som får utslag, har tilstanden?</h1>'+
+ '<div class="note avslor">Forekomst 2 %, treffsikkerhet 95 %, falskt utslag hos friske '+
+ '10 %. Les av tallet nede til venstre: <b>16 %</b>.</div>'+
+ '<div class="note avslor" data-gjor="sett:bprev:10">Dra forekomsten ned mot 1 %, og se de '+
+ 'røde rutene overdøve de mørkegrønne.</div>',
+ notat:'20 syke, testen fanger 19. 980 friske, 98 får utslag likevel. 117 mennesker får '+
+       'et positivt svar, og 19 av dem er syke. PPV = .162.'});
+
+slide({t:'To spørsmål som ikke er det samme', klasse:'sl-sitat', html:
+ '<div class="ord">P(utslag | syk) er ikke P(syk | utslag).</div>'+
+ '<div class="kilde avslor">Testen «treffer 95 %» — og er pålitelig, på det '+
+ 'spørsmålet den faktisk svarer på. Den sier hvor ofte den slår ut <i>gitt at du er '+
+ 'syk</i>. Pasienten vil vite noe annet: hvor ofte man er syk <i>gitt at den slo ut</i>. '+
+ 'Basisraten avgjør hvor langt fra hverandre de to ligger.</div>',
+ notat:'P6. Skriv de to uttrykkene på tavla over hverandre.'});
+
+slide({t:'Sally Clark', klasse:'tett', html:
+ '<h1>Da aktoratets feilslutning kostet en kvinne fire år</h1>'+
+ '<p class="lead">Dømt i England i 1999 for å ha drept sine to barn. Barnelegen Meadow '+
+ 'vitnet om at sjansen for to krybbedødsfall i en familie som hennes var 1 av 73 '+
+ 'millioner — 1 av 8 543 kvadrert, altså <b>72 982 849</b>.</p>'+
+ '<div class="note avslor"><b>1 · Kvadreringen antar uavhengighet.</b> Finnes det en '+
+ 'arvelig eller felles årsak i familien, er dødsfallene ikke uavhengige, og tallet er for '+
+ 'lite. Det er P4, en halvtime gammelt.</div>'+
+ '<div class="note avslor"><b>2 · Tallet ble lest som sannsynligheten for at hun var '+
+ 'uskyldig.</b> Det er P(data | uskyldig). Retten skulle svart på P(uskyldig | data), og '+
+ 'til det trengs basisraten: hvor sjeldent er det at en mor dreper to barn? Også det er '+
+ 'sjeldent.</div>'+
+ '<div class="kilde avslor">Royal Statistical Society uttalte offentlig at tallet manglet '+
+ 'statistisk grunnlag. Dommen ble opphevet i 2003 — formelt fordi patologens funn var '+
+ 'holdt tilbake, ikke på grunn av statistikken.</div>',
+ notat:'Fortell den, ikke les den. Tre minutter.'});
+
+slide({t:'Bytt ut to ord', klasse:'stort-tall', html:
+ '<h1>Da står <i>p</i>-verdien der</h1>'+
+ '<div class="tallrad">'+
+ '<div class="tall"><b>«har tilstanden»</b><span>blir «H₀ er usann»</span></div>'+
+ '<div class="tall avslor"><b>«får utslag»</b><span>blir «<i>p</i> &lt; .05»</span></div>'+
+ '</div>'+
+ '<p class="liten avslor">En lav <i>p</i>-verdi forteller dere hvor ofte testen slår ut '+
+ '<b>når H₀ er sann</b>. Den forteller dere ikke hvor sannsynlig H₀ er — til det trengs '+
+ 'basisraten, og den har dere så godt som aldri.</p>'+
+ '<p class="liten avslor">Når noen sier «<i>p</i> = .03, så det er 3 % sjanse for at jeg '+
+ 'tar feil», er det <b>denne</b> feilen, i annet kostyme.</p>',
+ notat:'P7. Skriv byttet opp på tavla mens du sier det.'});
+
+/* ---------- 50–58 · nullhypotesen er en mynt ---------- */
+slide({del:'50–58 · Nullhypotesen er en mynt · P8', t:'SIM · 20 pasienter, 15 ble bedre',
+ blokk:'blokk-pverdi',
+ forbered:function(){ sett('pn','20'); sett('pobs','15'); }, html:
+ '<h1>Vi antar at behandlingen ikke virker. Da er «ble bedre» et myntkast.</h1>'+
+ '<div class="note avslor" data-gjor="klikk:psim">Kast mynten for hver av de 20, tell gull, '+
+ 'og gjenta 5 000 ganger. Fordelingen dere ser er <b>nullfordelingen</b>.</div>'+
+ '<div class="keybox avslor"><i>p</i> er andelen av de 5 000 som er <b>minst så ekstreme</b> '+
+ 'som 15. Tosidig gir det <i>p</i> = <b>.041</b>.</div>',
+ notat:'Appen viser .042 — simuleringsstøy fra 5 000 runder. Den eksakte tosidige '+
+       'binomialverdien er .041. Si det høyt hvis noen spør.'});
+
+slide({t:'Sløyfa lukkes', klasse:'sl-sitat', html:
+ '<div class="ord">Dette er mynten fra minutt sju, om igjen.</div>'+
+ '<div class="kilde avslor">Der var nullhypotesen «mynten er rettferdig» og dataene var '+
+ 'kron. Her er nullhypotesen «behandlingen virker ikke» og dataene er pasienter som ble '+
+ 'bedre. <b>Regnestykket er identisk.</b> Når dere først har sett at en <i>p</i>-verdi er '+
+ 'en andel i en simulert verden der ingenting virket, blir resten av faget varianter av det '+
+ 'samme — med <i>t</i>, <i>F</i> eller χ² i stedet for et antall.</div>',
+ notat:'Dette er grunnen til at emnet begynner med sannsynlighet. La det stå noen sekunder.'});
+
+slide({t:'En siste ting: tetthet', klasse:'tett', html:
+ '<h1>Hva er sannsynligheten for å skåre <i>nøyaktig</i> 30?</h1>'+
+ '<p class="lead">Depresjonsskåren ved oppstart i terapistudien: <i>N</i> = 86, '+
+ '<i>M</i> = 30.23, <i>SD</i> = 4.16.</p>'+
+ '<div class="keybox avslor"><b>Null.</b> Ikke omtrent null — eksakt null. Skårer man 30, '+
+ 'eller 30.0000001? For en størrelse som kan ta uendelig mange verdier, har hver enkelt '+
+ 'verdi sannsynlighet null. <b>Bare intervaller har sannsynlighet.</b></div>'+
+ '<div class="note avslor">Høyden på kurven heter <b>tetthet</b>, og i 30 er den 0.0958 '+
+ 'uansett hvor smalt intervall dere velger — det er bredden som krymper. Derfor er hver '+
+ '<i>p</i>-verdi dere møter et <b>haleareal</b>, og derfor sier vi alltid «minst så '+
+ 'ekstremt», aldri «akkurat dette».</div>',
+ notat:'To minutter. Vil du VISE det, står figuren i fane 5 — men den er hjemmelekse, og '+
+       'poenget tåler å bli sagt.'});
+
+slide({del:'58–60 · Avslutning', t:'Avslutning', klasse:'sl-tittel', html:
+ '<h1>Sannsynlighet er hva slump pleier å lage i det lange løp</h1>'+
+ '<div class="under">Alt annet i dag var den setningen i forskjellige klær — √<i>n</i> i '+
+ 'standardfeilen, komplementet i familievis feilrate, basisraten i <i>p</i>-verdien.</div>'+
+ '<div class="merke">Hjemmelekse: fane 2 (Weldon og Labby) og fane 5 (tetthet)</div>',
+ notat:'Fane 2 er historien om at et signifikant funn ikke forteller deg hvorfor — direkte '+
+       'relevant for frafallstabellen i arbeidskravet. Fane 5 er figuren bak hver '+
+       'z-tabell de har brukt. Overgang til blokk 2: «Alt vi har gjort i høst har hvilt '+
+       'på det regnestykket. Nå skal vi velge mellom testene som bruker det.»'});
+
+const scene=$('scene'), fnav=$('fnav'), fbar=$('fbar'),
+      fnotat=$('fnotat'), foversikt=$('foversikt');
+const HJEM={};      // blokk-id -> {forelder, neste}
+let laant=[];       // blokk-id-er som står i scenen nå
+let n=0;
+let sisteTegn=null;   // tegnefunksjonen for sliden vi staar paa
+let avsloert=0;       // hvor mange .avslor som er klikket fram
+
+/* Noen blokker holder paa en tilstand som ikke skal folge med til
+   neste slide — frosne kurver, et trukket utvalg. Hver av dem melder
+   inn sin egen nullstilling; motoren kaller den naar blokka laanes ut. */
+const BLOKKNULL = {};
+/* Testharnessen maa kunne kjore den EKTE nullstillingen. */
+window.__blokkNull=function(b){ const f=BLOKKNULL[b]; if(f) f(); };
+
+function laan(bid,vert){
+  const node=$(bid); if(!node) return;
+  if(!HJEM[bid]) HJEM[bid]={forelder:node.parentNode, neste:node.nextSibling};
+  vert.appendChild(node); laant.push(bid);
+}
+function lever(){
+  laant.forEach(function(bid){
+    const node=$(bid), h=HJEM[bid];
+    if(!node) return;
+    /* nullstill tilpassningen, ellers følger den med tilbake til utforskeren */
+    node.style.transform=''; node.style.width='';
+    if(h&&h.forelder) h.forelder.insertBefore(node,h.neste);
+  });
+  laant=[];
+}
+/* Scenen er 720 logiske piksler hoy, alltid. Bredden folger skjermens
+   format, slik at sliden fyller lerretet enten det er 16:9, 16:10 (som en
+   MacBook), 3:2 eller noe annet. Uten dette ble alt utenom 16:9 staaende
+   med marger, og paa en lav skjerm krympet hele sliden unodig mye.       */
+const SCENE_H=720, SCENE_MIN=1000, SCENE_MAKS=1600;
+function sceneBredde(){
+  const forhold=window.innerWidth/Math.max(1,window.innerHeight);
+  return Math.round(Math.max(SCENE_MIN,Math.min(SCENE_MAKS,SCENE_H*forhold)));
+}
+function skaler(){
+  const B=sceneBredde();
+  scene.style.width=B+'px';
+  scene.style.height=SCENE_H+'px';
+  const k=Math.min(window.innerWidth/B, window.innerHeight/SCENE_H);
+  window.__sceneskala=k;
+  window.__scenebredde=B;
+  scene.style.transform='translate('+((window.innerWidth-B*k)/2)+'px,'+
+    ((window.innerHeight-SCENE_H*k)/2)+'px) scale('+k+')';
+}
+/* Får blokken plass på sliden?
+   Simuleringsblokkene er tegnet for en rullbar nettside. En slide er 720 px
+   høy, punktum. Er blokken høyere enn plassen den har fått, skaleres den ned
+   til den passer — og gjøres tilsvarende bredere først, så figuren fyller
+   sliden i full bredde og canvas tegnes på nytt i riktig oppløsning.
+   Uten dette forsvant nedre halvdel av figuren og alle tallene under den. */
+function tilpassBlokk(tegnPaaNytt){
+  const vert=scene.querySelector('.simvert'); if(!vert) return;
+  const blokk=vert.firstElementChild; if(!blokk) return;
+  blokk.style.transform=''; blokk.style.width='';
+  const H=vert.clientHeight, B=vert.clientWidth;
+  if(!H||!B) return;
+  let k=1;
+  for(let runde=0;runde<3;runde++){
+    const h=blokk.scrollHeight;             // uskalert høyde ved gjeldende bredde
+    if(h*k<=H+0.5) break;                   // passer allerede
+    k=Math.max(0.55,Math.min(1,H/h));
+    blokk.style.width=(B/k)+'px';
+    blokk.style.transform='scale('+k+')';
+    if(tegnPaaNytt) tegnPaaNytt();          // canvas er nå bredere — tegn om
+  }
+  window.__blokkskala=k;
+}
+/* Er det noe igjen å klikke fram på denne sliden, gjør vi det først —
+   ellers går vi videre til neste slide. */
+function fram(){
+  const skjult=[...scene.querySelectorAll('.avslor:not(.vist)')];
+  if(!skjult.length) return false;
+  /* Elementer merket med samme data-trinn kommer fram sammen. En figur og
+     tekstboksen som forklarer den hoerer til samme klikk, selv om de staar
+     langt fra hverandre i markupen. */
+  const t=skjult[0].dataset.trinn;
+  const gruppe=t?skjult.filter(e=>e.dataset.trinn===t):[skjult[0]];
+  gruppe.forEach(e=>{ e.classList.add('vist'); gjor(e.dataset.gjor); });
+  avsloert+=gruppe.length;
+  return true;
+}
+/* Et trinn kan stille inn simuleringen samtidig som det viser en tekstboks.
+   Skrivemaaten er «sett:id:verdi», «kryss:id:1» eller «klikk:id», flere
+   adskilt med semikolon. Uten denne sto de usynlige trinnene paa
+   steg-sliden og gjorde ingenting naar de ble klikket fram. */
+function gjor(kommando){
+  if(!kommando) return;
+  kommando.split(';').forEach(function(k){
+    const d=k.split(':');
+    if(d[0]==='sett')  sett(d[1], d.slice(2).join(':'));
+    if(d[0]==='kryss') kryss(d[1], d[2]==='1');
+    if(d[0]==='klikk') klikk(d[1]);
+    /* Absolutt steg i en flerstegssimulering. Maa vaere absolutt, ikke
+       «neste», for at tilbake() skal kunne spole riktig vei. */
+    if(d[0]==='steg' && window.__stSett) window.__stSett(d[1]);
+  });
+}
+/* Motstykket til fram(): venstrepil tar bort det siste du klikket fram,
+   og bytter foerst slide naar det ikke er noe igjen aa ta bort. Da kan du
+   gaa tilbake og vise et poeng en gang til uten aa miste resten. */
+function tilbake(){
+  const vist=[...scene.querySelectorAll('.avslor.vist')];
+  if(!vist.length) return false;
+  const siste=vist[vist.length-1], t=siste.dataset.trinn;
+  (t?vist.filter(e=>e.dataset.trinn===t):[siste])
+    .forEach(e=>e.classList.remove('vist'));
+  /* Tilbake til innstillingen trinnet foer — eller til utgangspunktet. */
+  const igjen=[...scene.querySelectorAll('.avslor.vist[data-gjor]')];
+  gjor(igjen.length ? igjen[igjen.length-1].dataset.gjor
+                    : (scene.querySelector('.slide')||{dataset:{}}).dataset.gjor0);
+  return true;
+}
+function settSlide(i){
+  n=Math.max(0,Math.min(S.length-1,i));
+  const s=S[n];
+  lever();
+  scene.innerHTML='';
+  const d=document.createElement('div');
+  d.className='slide '+(s.klasse||'')+(s.blokk?' tett':'');
+  /* tilbake() spoler til denne naar det ikke er flere trinn aa ta bort. */
+  if(s.gjor0) d.dataset.gjor0=s.gjor0;
+  d.innerHTML=(s.qr&&QR[s.qr]
+      ? '<div class="qrboks"><img alt="QR til avstemningen" src="'+QR[s.qr]+'">'+
+        '<div class="txt">Svar på mobilen</div><div class="avsthint">V viser svarene</div></div>' : '')+(window.SLIDETEKST?window.SLIDETEKST(n,s.html):s.html);
+  scene.appendChild(d);
+  /* En slide kan laane flere blokker — de stables i samme innpakning,
+     slik at tilpassBlokk() maaler dem under ett. */
+  const blokker = s.blokk ? (Array.isArray(s.blokk)?s.blokk:[s.blokk]) : [];
+  if(blokker.length){
+    const vert=document.createElement('div'); vert.className='simvert';
+    d.appendChild(vert);
+    blokker.forEach(function(b){ laan(b,vert); });
+  }
+  skaler();
+  /* Nullstill for forbered(): sliden skal kunne slaa noe paa etterpaa,
+     men aldri arve en tilstand fra sliden for. */
+  blokker.forEach(function(b){
+    if(BLOKKNULL[b]){ try{ BLOKKNULL[b](); }catch(e){} }
+  });
+  if(s.forbered){ try{ s.forbered(); }catch(e){} }
+  sisteTegn=null;
+  if(blokker.length){
+    /* Flere blokker kan dele tegnefunksjon — kall hver bare én gang. */
+    const fns=[];
+    blokker.forEach(function(b){
+      const fane=BLOKKFANE[b], t=(fane&&TEGN[fane])||null;
+      if(t && fns.indexOf(t)<0) fns.push(t);
+    });
+    const tegn=fns.length?function(){ fns.forEach(function(t){ t(); }); }:null;
+    sisteTegn=tegn;
+    if(tegn) tegn();
+    /* Måling må skje etter at nettleseren har lagt ut sliden, ellers er
+       høydene fortsatt null. Derfor to bilder fram. */
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ tilpassBlokk(tegn); });
+    });
+  }
+  AVSTEMNING.nySlide(s);
+  avsloert=0;
+  $('fTeller').textContent=(n+1)+' / '+S.length;
+  fbar.style.width=((n+1)/S.length*100)+'%';
+  /* Ikke bare skjult med CSS: for en student legges teksten aldri inn. */
+  fnotat.innerHTML=(UNDERVISER&&s.notat)
+    ? '<b>'+s.t+':</b> '+(window.NOTATTEKST?window.NOTATTEKST(n,s.notat):s.notat)
+    : '<b>'+s.t+'</b>';
+  try{ history.replaceState(null,'','?modus=forelesning#slide='+(n+1)); }catch(e){}
+}
+function byggOversikt(){
+  foversikt.innerHTML='';
+  S.forEach(function(s,i){
+    if(s.del){ const h=document.createElement('div'); h.className='tittelrad';
+      h.textContent=s.del; foversikt.appendChild(h); }
+    const b=document.createElement('button');
+    b.innerHTML='<span class="nr">'+(i+1)+'</span>'+s.t;
+    b.addEventListener('click',function(){
+      document.body.classList.remove('oversikt'); settSlide(i);
+    });
+    foversikt.appendChild(b);
+  });
+}
+function start(){
+  document.body.classList.add('fmodus');
+  window.__aksefont=19;          // storre akseskrift paa lerretet
+  byggOversikt();
+  const q=new URLSearchParams((location.hash||'').replace(/^#/,''));
+  const nr=parseInt(q.get('slide'),10);
+  /* Er det en slide i adressen, gaa dit. Ellers fortsett der du slapp:
+     n er 0 foerste gang, men beholder verdien om du hoppet ut i appen for
+     aa vise noe og saa kom tilbake. */
+  settSlide(isFinite(nr)&&nr>0?nr-1:n);
+}
+function avslutt(){
+  window.__aksefont=13;          // tilbake til nettsidestorrelse
+  lever();
+  document.body.classList.remove('fmodus','oversikt','notat');
+  scene.innerHTML='';
+  try{ history.replaceState(null,'','#fane=hvorfor'); }catch(e){}
+  visFane('hvorfor');
+}
+$('fPrev').addEventListener('click',function(){ if(!tilbake()) settSlide(n-1); });
+$('fNext').addEventListener('click',function(){ if(!fram()) settSlide(n+1); });
+/* Endres vinduet, endres scenebredden - og dermed bredden paa canvas.
+   Da maa figuren tegnes om og passformen maales paa nytt. Vi venter litt,
+   saa vi ikke gjor det for hvert eneste piksel mens brukeren drar.        */
+let __resizeT=null;
+window.addEventListener('resize',function(){
+  if(!document.body.classList.contains('fmodus')) return;
+  skaler();
+  clearTimeout(__resizeT);
+  __resizeT=setTimeout(function(){
+    if(sisteTegn) sisteTegn();
+    tilpassBlokk(sisteTegn);
+  },160);
+});
+/* =====================================================================
+   LIVE AVSTEMNING I FORELESNINGSMODUS
+   ---------------------------------------------------------------------
+   Studentene svarer i prediksjonsappen, som skriver til Apps Script.
+   Her hentes den samme aggregerte fordelingen tilbake og tegnes ved
+   siden av QR-koden, slik at salen ser fordelingen vokse mens de svarer.
+
+   Kobling: slidene har allerede feltet «qr», og verdien er prediksjons-
+   IDen (F4-S1, PRED-F4-01 …). Den IDen er nøkkelen backenden aggregerer
+   på, så det trengs ingen ny kobling — bare et kall.
+
+       V   hent svarene / skjul dem igjen
+       R   hent på nytt nå (venter ellers på neste runde)
+
+   Ingenting her kan spores til en person: backenden returnerer bare
+   antall per bokstav. Fasiten markeres ikke — den kommer på neste slide,
+   og røper man den her, er peer instruction over.
+   ===================================================================== */
+const AVSTEMNING = (function(){
+const BACKEND = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA05xK7n1rC0ex_UVpNAjJPYNmRqvGfgUGuXp0EclxmyFUeKeVktMfg5YQ/exec";
+const TAKT = 5000;              /* hvor ofte tallene hentes mens panelet staar aapent */
+const BOKSTAVER = ['A','B','C','D'];
+
+let paa = false, timer = null, id = null, data = null, status = '', henter = false;
+
+function slide(){ return document.querySelector('#scene .slide'); }
+function boks(){ const d=slide(); return d && d.querySelector('.qrboks'); }
+
+/* Panelet bygges under QR-koden, i den kolonnen som allerede er reservert. */
+function panel(){
+  const q = boks(); if(!q) return null;
+  let p = q.querySelector('.avstpanel');
+  if(!p){
+    p = document.createElement('div');
+    p.className = 'avstpanel';
+    p.innerHTML = '<canvas class="avstgraf" height="132"></canvas>'+
+                  '<div class="avststatus"></div>';
+    q.appendChild(p);
+  }
+  return p;
+}
+
+function hent(){
+  if(!id || henter) return;
+  henter = true;
+  status = 'henter …'; tegn();
+  fetch(BACKEND+'?action=pred&id='+encodeURIComponent(id)+'&vis=student')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      henter = false;
+      if(!d || !d.ok){ data=null; status='ingen svar registrert på «'+id+'» ennå'; tegn(); return; }
+      data = d;
+      status = (d.n||0)+' svar'+((d.n2||0) ? ' · runde 2: '+d.n2 : '');
+      tegn();
+    })
+    .catch(function(){
+      henter = false; data = null;
+      /* Den vanligste grunnen er at Apps Script-utrullingen er gammel.
+         Si det, i stedet for «noe gikk galt». */
+      status = 'fikk ikke kontakt — er Apps Script redeployet?';
+      tegn();
+    });
+}
+
+
+/* Naar sliden har .svaralt-kort, tegnes ikke en figur ved siden av — da
+   fylles kortene selv. Hvert alternativ faar en vannrett stolpe bak
+   teksten og prosenten til hoyre. Det er mye lettere aa lese fra bakerste
+   rad enn et lite diagram, og oyet slipper aa flytte seg mellom figur og
+   tekst for aa vite hvilken bokstav som er hvilken.
+
+   Fasiten markeres ikke. Den kommer paa fasitsliden. */
+function malKort(){
+  const sl=slide(); if(!sl) return false;
+  const kort=[].slice.call(sl.querySelectorAll('.svaralt .opt'));
+  if(!kort.length) return false;
+  if(!paa || !data){
+    kort.forEach(function(e){
+      e.classList.remove('svart');
+      e.style.removeProperty('--andel');
+      const t=e.querySelector('.pst'); if(t) t.remove();
+    });
+    return true;
+  }
+  const f=data.fordeling||{}, f2=data.fordeling2||{};
+  const n=data.n||0, n2=data.n2||0, to=n2>0;
+  const kilde=to?f2:f, nn=to?n2:n;
+  const maks=Math.max(1, BOKSTAVER.reduce(function(a,b){
+    return Math.max(a, kilde[b]||0); },0));
+  BOKSTAVER.forEach(function(b,i){
+    const e=kort[i]; if(!e) return;
+    const v=kilde[b]||0, pst=nn?Math.round(v/nn*100):0;
+    e.classList.add('svart');
+    e.style.setProperty('--andel', (v/maks*100)+'%');
+    let t=e.querySelector('.pst');
+    if(!t){ t=document.createElement('span'); t.className='pst'; e.appendChild(t); }
+    t.textContent=pst+' %';
+  });
+  return true;
+}
+
+function tegn(){
+  const harKort = malKort();
+  const p = panel(); if(!p) return;
+  /* Har sliden svaralternativ-kort, trengs bare statuslinja under QR-koden. */
+  p.classList.toggle('vist', paa);
+  p.classList.toggle('kunstatus', harKort);
+  if(!paa) return;
+  p.querySelector('.avststatus').textContent = status;
+  if(harKort) return;
+  const cv = p.querySelector('.avstgraf');
+  const w = cv.clientWidth || 178, h = 132;
+  const r = window.devicePixelRatio || 1;
+  cv.width = w*r; cv.height = h*r; cv.style.height = h+'px';
+  const c = cv.getContext('2d');
+  c.setTransform(r,0,0,r,0,0); c.clearRect(0,0,w,h);
+  if(!data){ return; }
+
+  const f = data.fordeling || {A:0,B:0,C:0,D:0};
+  const f2 = data.fordeling2 || {A:0,B:0,C:0,D:0};
+  const n = data.n||0, n2 = data.n2||0, to = n2>0;
+  const y0 = h-20, ph = y0-16, x0 = 4, pw = w-8, gap = pw/4;
+  const maks = Math.max(1, f.A,f.B,f.C,f.D, to?Math.max(f2.A,f2.B,f2.C,f2.D):0);
+  const bw = gap*(to?0.32:0.56);
+  c.font = 'bold 12px -apple-system,Segoe UI,Arial';
+  BOKSTAVER.forEach(function(b,i){
+    const midt = x0+gap*i+gap/2;
+    const v = f[b]||0, bh = v/maks*ph;
+    const bx = to ? midt-bw-2 : midt-bw/2;
+    c.fillStyle = '#7fa8dd';
+    c.fillRect(bx, y0-bh, bw, bh);
+    if(to){
+      const v2 = f2[b]||0, bh2 = v2/maks*ph;
+      c.fillStyle = '#2E5496';
+      c.fillRect(midt+2, y0-bh2, bw, bh2);
+    }
+    c.fillStyle = '#e8eefb'; c.textAlign = 'center';
+    c.fillText(b, midt, y0+15);
+    if(n){ c.fillStyle='#b9c8e2'; c.font='11px -apple-system,Segoe UI,Arial';
+           c.fillText(Math.round(v/n*100)+'%', midt, y0-Math.max(bh,0)-4);
+           c.font='bold 12px -apple-system,Segoe UI,Arial'; }
+  });
+  if(to){
+    c.fillStyle='#9fb6d8'; c.font='10.5px -apple-system,Segoe UI,Arial';
+    c.textAlign='left'; c.fillText('lys = runde 1 · mørk = runde 2', x0, 11);
+  }
+}
+
+function stopp(){ if(timer){ clearInterval(timer); timer=null; } }
+
+/* Kalles fra settSlide: ny slide, nytt spørsmål — eller ingen. */
+function nySlide(s){
+  stopp(); paa=false; data=null; status='';
+  malKort();                       /* rydd kortene fra forrige slide */
+  id = (s && s.qr) ? s.qr : null;
+  const p = panel(); if(p) p.classList.remove('vist');
+}
+
+function veksle(){
+  if(!id) return false;
+  paa = !paa;
+  if(paa){ hent(); timer = setInterval(hent, TAKT); }
+  else { stopp(); }
+  tegn();
+  return true;
+}
+
+return {nySlide:nySlide, veksle:veksle, hentNa:function(){ if(paa) hent(); },
+        stopp:function(){ stopp(); paa=false; }, harId:function(){ return !!id; }};
+})();
+
+document.addEventListener('keydown',function(e){
+  if(!document.body.classList.contains('fmodus')) return;
+  const t=e.target.tagName;
+  if(t==='INPUT'&&e.target.type==='range'&&(e.key==='ArrowLeft'||e.key==='ArrowRight')) return;
+  switch(e.key){
+    case 'ArrowRight': case 'PageDown': if(!fram()) settSlide(n+1); e.preventDefault(); break;
+    case ' ': if(!fram()) settSlide(n+1); e.preventDefault(); break;
+    case 'ArrowLeft': case 'PageUp': if(!tilbake()) settSlide(n-1); e.preventDefault(); break;
+    case 'Home': settSlide(0); break;
+    case 'End': settSlide(S.length-1); break;
+    case 'o': case 'O': document.body.classList.toggle('oversikt'); break;
+    case 'v': case 'V':
+      /* Vis salens svar. Gjor ingenting paa slides uten prediksjons-ID. */
+      AVSTEMNING.veksle(); break;
+    case 'r': case 'R': AVSTEMNING.hentNa(); break;
+    case 'n': case 'N':
+      /* Sier fra hva som mangler i stedet for aa gjoere ingenting — ellers
+         staar du foran salen og lurer paa om tasten er oede. */
+      if(!UNDERVISER){
+        document.body.classList.add('notat');
+        fnotat.innerHTML='<b>Notatene er for underviser.</b> '+
+          'Åpne appen én gang med <code>?rolle=underviser</code> i adressen, '+
+          'så huskes det i denne nettleseren.';
+        setTimeout(function(){ document.body.classList.remove('notat'); },4000);
+        break;
+      }
+      document.body.classList.toggle('notat'); break;
+    case 'f': case 'F':
+      if(!document.fullscreenElement){ document.documentElement.requestFullscreen&&
+        document.documentElement.requestFullscreen(); }
+      else { document.exitFullscreen&&document.exitFullscreen(); }
+      break;
+    case 'Escape':
+      if(document.body.classList.contains('oversikt')) document.body.classList.remove('oversikt');
+      else avslutt();
+      break;
+  }
+});
+/* eksporter for oppstartsblokken nederst */
+window.__startForelesning=start;
+window.__F8slides=S;          /* for testharnessen og spraaklaget */
+/* TRYKK-JS-START */
+/* ===================== TRYKKMODUS =====================================
+   Bygger hele dekket som statiske ark ved aa kjoere appens EGEN settSlide()
+   for hver slide, folde ut alle klikk-trinn med appens egen fram(), og
+   fryse resultatet. Da ser arket ut som lerretet — samme layout, samme
+   figurer, samme tall — og trykkmodusen trenger ikke vite noe om hvordan
+   den enkelte appen monterer blokkene sine.
+
+   Bygget gaar ett bilde om gangen (requestAnimationFrame), fordi
+   settSlide() maaler hoeyder og det krever at nettleseren har lagt ut
+   sliden foerst. Du ser slidene bla forbi mens det staar paa; det er
+   framdriftsindikatoren.
+
+   ?modus=trykk            hele dekket
+   ?modus=trykk&fasit=nei  uten fasitslidene                            */
+let trykkark=null;
+function trykkFrys(kilde){
+  const orig=[].slice.call(kilde.querySelectorAll('canvas'));
+  const klon=kilde.cloneNode(true);
+  const kopi=[].slice.call(klon.querySelectorAll('canvas'));
+  kopi.forEach(function(c,i){
+    const o=orig[i]; if(!o||!c.parentNode) return;
+    const img=document.createElement('img');
+    try{ img.src=o.toDataURL('image/png'); }catch(e){ return; }
+    img.style.width=o.style.width||'100%';
+    img.style.height=o.style.height||(o.clientHeight+'px');
+    img.style.display='block';
+    c.parentNode.replaceChild(img,c);
+  });
+  return klon;
+}
+/* Simuleringer som maa kjoeres for aa vise noe. I salen trykker du paa
+   knappen; her gjoeres det for deg. En slide som VIL vise den tomme
+   tilstanden, sier trykkfyll:false. */
+function trykkFyll(){
+  [].slice.call(scene.querySelectorAll('[data-trykk="kjor"]'))
+    .forEach(function(b){ try{ b.click(); }catch(e){} });
+}
+function trykkErFasit(s){
+  return /^Fasit/.test(s.t||'')||/fasitsvar/.test(s.klasse||'');
+}
+function trykk(utenFasit){
+  const gammelt=trykkark||document.getElementById('trykkark');
+  if(gammelt&&gammelt.remove) gammelt.remove();
+  const ark=document.createElement('div'); ark.id='trykkark'; trykkark=ark;
+  ark.style.display='none';
+  const hode=document.createElement('div'); hode.className='trykkhode';
+  hode.innerHTML='<b>Trykkmodus.</b> Alle slidene ligger under hverandre, ferdig '+
+    'utfoldet. Skriv ut med <b>Cmd/Ctrl + P</b> og velg <b>Lagre som PDF</b> — '+
+    'A4 liggende, og slå på bakgrunnsgrafikk. '+
+    (utenFasit ? '<b>Fasitslidene er utelatt</b> (studentversjon).'
+               : 'Fasitslidene er med. Vil du ha versjonen uten, legg til '+
+                 '<code>&amp;fasit=nei</code> i adressen.')+
+    ' <a href="'+location.pathname+'" style="color:#2E5496;font-weight:700">'+
+    'Tilbake til appen</a>';
+  ark.appendChild(hode);
+  document.body.appendChild(ark);
+
+  /* Bygges i forelesningsmodus: scenen maa vaere synlig og utlagt, ellers
+     er alle bredder null og figurene kommer ut tomme. */
+  document.body.classList.remove('trykk','oversikt','notat');
+  document.body.classList.add('fmodus');
+  window.__aksefont=19;
+
+  const BREDDE=1280;                 // fast, uavhengig av vindusformatet
+  const liste=[];
+  S.forEach(function(s,i){ if(!(utenFasit&&trykkErFasit(s))) liste.push(i); });
+  let k=0, feilet=0;
+
+  function ferdig(){
+    try{ lever(); }catch(e){}
+    ark.style.setProperty('--sb', BREDDE+'px');
+    ark.style.setProperty('--k', (1077/BREDDE).toFixed(4));
+    ark.style.display='';
+    document.body.classList.remove('fmodus');
+    document.body.classList.add('trykk');
+    window.scrollTo(0,0);
+    if(feilet&&window.console) console.error('trykkmodus: '+feilet+' slide(r) feilet');
+  }
+  function neste(){
+    if(k>=liste.length){ ferdig(); return; }
+    const i=liste[k++];
+    const side=document.createElement('div'); side.className='trykkside';
+    const nr=document.createElement('div'); nr.className='trykknr';
+    nr.textContent='Slide '+(i+1);
+    ark.appendChild(side); side.appendChild(nr);
+    /* Én slide som kaster skal koste én slide — ikke resten av dekket. */
+    try{
+      settSlide(i);
+      scene.style.width=BREDDE+'px';          // samme bredde paa alle ark
+      let vakt=0; while(fram() && ++vakt<300){}
+      if(S[i].trykkfyll!==false) trykkFyll();
+      const tegn=(typeof sisteTegn==='function')?sisteTegn:null;
+      if(tegn) tegn();
+      tilpassBlokk(tegn);
+      const kilde=scene.querySelector('.slide');
+      if(kilde){
+        const skala=document.createElement('div'); skala.className='skala';
+        skala.appendChild(trykkFrys(kilde));
+        side.insertBefore(skala,nr);
+      }
+    }catch(e){
+      feilet++;
+      const boks=document.createElement('div'); boks.className='trykkfeil';
+      boks.textContent='Slide '+(i+1)+' kunne ikke bygges: '+((e&&e.message)||e);
+      side.appendChild(boks);
+      if(window.console) console.error('trykkmodus · slide '+(i+1), e);
+    }
+    requestAnimationFrame(function(){ requestAnimationFrame(neste); });
+  }
+  neste();
+}
+window.__trykkModus=trykk;
+/* TRYKK-JS-SLUTT */
+window.__avsluttForelesning=avslutt;
+})();
+
+(function(){
+  const b=document.getElementById('modusBtn');
+  if(!b) return;
+  function iF(){ return document.body.classList.contains('fmodus'); }
+  function opp(){ b.textContent = iF() ? '\u2715  Tilbake til appen' : 'Start forelesning'; }
+  b.addEventListener('click',function(){
+    if(iF()){ if(window.__avsluttForelesning) window.__avsluttForelesning(); }
+    else    { if(window.__startForelesning)   window.__startForelesning(); }
+    b.blur(); opp();
+  });
+  new MutationObserver(opp).observe(document.body,{attributes:true,attributeFilter:['class']});
+  opp();
+})();
+
+(function(){
+  const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+
+                              (location.hash||'').replace(/^#/,''));
+  if(q.get('modus')==='trykk' && window.__trykkModus){
+    window.__trykkModus(q.get('fasit')==='nei');
+  }
+  if(q.get('modus')==='forelesning' && window.__startForelesning){ window.__startForelesning(); }
+})();
+</script>
+<script>
+/* FULLSKJERMKNAPP-START */
+/* ===== FULLSKJERMKNAPP ===================================================
+   F-tasten fantes fra foer; dette er bare knappen ved siden av pilene, saa
+   man slipper aa huske tastetrykket foran salen. Lagt til 12. oktober 2026,
+   samme blokk i alle fem forelesningsappene.
+
+   TO TING ER VERDT AA VITE:
+   1. Appenes egne tegnerutiner henger paa `resize`, og scenen skaleres etter
+      vindusformatet. **Fullskjermbyttet fyrer ikke alltid resize selv**, saa
+      blokka sender ett — da gjoer hver app sin egen omtegning uten at denne
+      koden maa kjenne noen av dem.
+   2. Esc maa lukke fullskjerm FOER den avslutter dekket. Uten det gaar ett
+      trykk ut av begge deler. Lytteren staar i kapringsfasen (`true`) og
+      stopper videre haandtering bare naar fullskjerm faktisk er paa.        */
+(function(){
+  var b = document.getElementById('fFull');
+  function paa(){ return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  function veksle(){
+    var el = document.documentElement;
+    if(!paa()){
+      if(el.requestFullscreen) el.requestFullscreen();
+      else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+  }
+  function merke(){
+    if(!b) return;
+    b.innerHTML = paa() ? '&#10005;' : '&#9974;';
+    b.title = (paa() ? 'Avslutt fullskjerm' : 'Fullskjerm') + ' (F)';
+  }
+  if(b) b.addEventListener('click', function(){ veksle(); b.blur(); });
+  ['fullscreenchange','webkitfullscreenchange'].forEach(function(ev){
+    document.addEventListener(ev, function(){
+      merke();
+      setTimeout(function(){ window.dispatchEvent(new Event('resize')); }, 60);
+    });
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && paa()){ e.stopPropagation(); veksle(); }
+  }, true);
+  merke();
+})();
+/* FULLSKJERMKNAPP-SLUTT */
+</script>
+<!-- SIM35-FORELESNING-JS SLUTT -->
 <script id="ovbegrep-js">
 (function(){
   // Lokalt: appene ligger i PSY300_Sim_Apps/, MCQ-appen i PSY300_online/.
@@ -1442,5 +2777,57 @@ window.addEventListener('resize',()=>{
     a[i].target = '_blank'; a[i].rel = 'noopener';
   }
 })();
+</script>
+<script>
+/* BRUKSBEACON-START (lagt inn 12.10.2026) */
+/* ===== PSY300 anonym bruksstatistikk =====================================
+   Sender to signaler til det samme Apps Script-endepunktet som MCQ-appen:
+   ett når appen åpnes, ett når fanen lukkes (med antall sekunder aktiv og
+   antall interaksjoner). Ingen navn, ingen kode, ingen IP — bare app-id,
+   tidspunkt og varighet. Lim inn /exec-URL-en under; står plassholderen
+   igjen, sendes ingenting og appen fungerer helt som før.                */
+const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA05xK7n1rC0ex_UVpNAjJPYNmRqvGfgUGuXp0EclxmyFUeKeVktMfg5YQ/exec";
+(function(){
+  if(!PSY300_USAGE_URL || PSY300_USAGE_URL.indexOf("PASTE_")>=0) return;
+  var APP="Sim 35", NAVN="Sannsynlighet";
+  var t0=Date.now(), aktiv=0, sist=Date.now(), interaksjoner=0, sendt=false;
+  var sid=Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8);
+  // tell bare tid der fanen faktisk er synlig
+  function tikk(){ if(!document.hidden){ var na=Date.now(); aktiv+=Math.min(30000,na-sist); sist=na; } else { sist=Date.now(); } }
+  setInterval(tikk, 5000);
+  document.addEventListener("visibilitychange", tikk);
+  ["click","input","change","touchstart"].forEach(function(ev){
+    document.addEventListener(ev, function(){ interaksjoner++; }, {passive:true, capture:true});
+  });
+
+  /* Skiller underviserens egen bruk fra studentenes. Åpne en app én gang med
+     ?rolle=underviser, så huskes det i denne nettleseren til du åpner med
+     ?rolle=student. Ingen innlogging, ingen personopplysninger.            */
+  function PSY300_ROLLE(){
+    try{
+      var q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'')).get("rolle");
+      if(q==="underviser"||q==="student"){ localStorage.setItem("psy300_rolle",q); }
+      return localStorage.getItem("psy300_rolle")||"student";
+    }catch(e){ return "student"; }
+  }
+  function send(type){
+    if(type==="lukket"){ if(sendt) return; sendt=true; tikk(); }
+    var payload=JSON.stringify({kind:"usage", app:APP, navn:NAVN, event:type,
+      session_id:sid, sekunder:Math.round(aktiv/1000), interaksjoner:interaksjoner,
+      innebygd:(window.top!==window.self)?1:0, rolle:PSY300_ROLLE()});
+    try{
+      if(type==="lukket" && navigator.sendBeacon){
+        navigator.sendBeacon(PSY300_USAGE_URL, new Blob([payload],{type:"text/plain;charset=utf-8"}));
+      } else {
+        fetch(PSY300_USAGE_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:payload, keepalive:true}).catch(function(){});
+      }
+    }catch(e){}
+  }
+  send("apnet");
+  window.addEventListener("pagehide", function(){ send("lukket"); });
+  document.addEventListener("visibilitychange", function(){ if(document.hidden) send("lukket"); });
+})();
+/* BRUKSBEACON-SLUTT */
 </script>
 </body></html>

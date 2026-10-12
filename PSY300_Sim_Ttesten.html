@@ -2629,6 +2629,7 @@ varianser. Se fane 9.</p>
   <button id="fPrev" title="Forrige (venstrepil)">◀</button>
   <span id="fTeller">1 / 1</span>
   <button id="fNext" title="Neste (høyrepil eller mellomrom)">▶</button>
+  <button id="fFull" title="Fullskjerm (F)">&#9974;</button>
   <span style="opacity:.6">O oversikt · <i>N</i> notater · <i>F</i> fullskjerm · Esc ut</span>
 </div>
 <script>
@@ -7198,5 +7199,53 @@ document.querySelectorAll('.fane[data-fane="perm"]').forEach(b=>b.addEventListen
     a[i].target = '_blank'; a[i].rel = 'noopener';
   }
 })();
+</script>
+
+<script>
+/* FULLSKJERMKNAPP-START */
+/* ===== FULLSKJERMKNAPP ===================================================
+   F-tasten fantes fra foer; dette er bare knappen ved siden av pilene, saa
+   man slipper aa huske tastetrykket foran salen. Lagt til 12. oktober 2026,
+   samme blokk i alle fem forelesningsappene.
+
+   TO TING ER VERDT AA VITE:
+   1. Appenes egne tegnerutiner henger paa `resize`, og scenen skaleres etter
+      vindusformatet. **Fullskjermbyttet fyrer ikke alltid resize selv**, saa
+      blokka sender ett — da gjoer hver app sin egen omtegning uten at denne
+      koden maa kjenne noen av dem.
+   2. Esc maa lukke fullskjerm FOER den avslutter dekket. Uten det gaar ett
+      trykk ut av begge deler. Lytteren staar i kapringsfasen (`true`) og
+      stopper videre haandtering bare naar fullskjerm faktisk er paa.        */
+(function(){
+  var b = document.getElementById('fFull');
+  function paa(){ return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  function veksle(){
+    var el = document.documentElement;
+    if(!paa()){
+      if(el.requestFullscreen) el.requestFullscreen();
+      else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+  }
+  function merke(){
+    if(!b) return;
+    b.innerHTML = paa() ? '&#10005;' : '&#9974;';
+    b.title = (paa() ? 'Avslutt fullskjerm' : 'Fullskjerm') + ' (F)';
+  }
+  if(b) b.addEventListener('click', function(){ veksle(); b.blur(); });
+  ['fullscreenchange','webkitfullscreenchange'].forEach(function(ev){
+    document.addEventListener(ev, function(){
+      merke();
+      setTimeout(function(){ window.dispatchEvent(new Event('resize')); }, 60);
+    });
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && paa()){ e.stopPropagation(); veksle(); }
+  }, true);
+  merke();
+})();
+/* FULLSKJERMKNAPP-SLUTT */
 </script>
 </body></html>

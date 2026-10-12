@@ -481,6 +481,13 @@ body.fmodus #scene{display:block;position:fixed;left:0;top:0;width:1280px;height
    plass enn tabellen fordi den er det som er vanskeligst aa lese smaatt. */
 .slide .rapdel{display:grid;grid-template-columns:1.15fr 1fr;gap:26px;
   align-items:center;margin:6px 0 2px}
+/* RAPPORTFANEN har sin egen `.rapdel b` som setter versaler og egen liten
+   skrift (linje ~157). Den gjelder paa klassenavnet alene, saa den traff
+   ogsaa slidene — «<b>b₄</b>» kom ut som «B₄», og en halv setning i fet
+   ble til en etikett i versaler. Nullstilles her, ikke der: fanen skal
+   beholde sin. */
+.slide .rapdel b{display:inline;font-size:inherit;letter-spacing:normal;
+  text-transform:none;margin-bottom:0}
 
 .slide .studie{margin:0}
 .slide .studie > div{background:none;border:0;border-radius:0;padding:0;
@@ -646,6 +653,25 @@ body.fmodus #scene{display:block;position:fixed;left:0;top:0;width:1280px;height
 .slide.stegslide #blokk-nhst .sl,
 .slide.stegslide #blokk-nhst .rad{display:none !important}
 .slide .simvert{flex:1;min-height:0;overflow:hidden;margin-top:2px}
+/* Foten under den laante blokka paa sluttsliden: tabellen fra slide 8 og
+   differanse-mellom-differanser-regnestykket fra slide 10, side om side.
+   `flex:0 0 auto` er noedvendig — `.simvert` har `flex:1`, saa uten dette
+   ville foten blitt klemt av blokka i stedet for omvendt. */
+.slide .fotdel{display:grid;grid-template-columns:1.05fr 1fr;gap:26px;
+  align-items:center;flex:0 0 auto;margin:6px 0 0}
+/* `.simvert.fast` gir figuren NOEYAKTIG samme hoeyde og plass paa slide 39
+   og 40. Uten den hadde `flex:1` gitt blokka det som ble til overs etter
+   foten, og de to fotene er ulikt hoeye (fire mot fem tabellrader) — saa
+   `tilpassBlokk()` skalerte blokka ulikt, og figuren hoppet litt naar man
+   bladde mellom de to slidene. Det er den samme figuren; den skal ikke
+   flytte seg. 392 px er valgt saa den hoeyeste foten (fem rader) faar
+   plass under: 720 − 44 − 62 padding − 44 overskrift − 392 = 178 px. */
+.slide .simvert.fast{flex:0 0 392px}
+.slide .fotdel .minitab{margin:0}
+.slide .fotdel .regn{font-size:20px;line-height:1.45;color:var(--navy)}
+.slide .fotdel .regn b{color:#16203A}
+.slide .fotdel .regn .sum{display:block;margin-top:6px;padding-left:14px;
+  border-left:4px solid #C0392B;font-size:21px}
 /* .skjul lar en slide ta bort en enkelt del av en LAANT blokk. Blokka er
    den samme DOM-noden paa alle slidene som bruker den, saa den kan ikke
    varieres i markupen — bare slaas av her, og slaas paa igjen av
@@ -3731,6 +3757,13 @@ steg3Boks
                              : 'Linjene spriker, men ikke nok til å utelukke tilfeldighet.');
     }
     geo = tegnInteraksjon(cv, fastAkse({M:MM, mse:msr}));
+    /* Kroken som lar en SLIDE lese cellesnittene mens de dras. Den kalles
+       her, nederst i oppdater(), saa den fyres baade ved lasting, ved
+       dra-og-slipp, ved knappene og naar variansskyveren flyttes — altsaa
+       hver gang tallene faktisk endrer seg. Mottakeren maa selv sjekke at
+       elementet finnes: sliden kan vaere borte. */
+    if(window.__F6koefUt)
+      window.__F6koefUt(MM[A0][B0], MM[A0][B1], MM[A1][B0], MM[A1][B1]);
   }
 
   /* --- dra-og-slipp -------------------------------------------------- */
@@ -4395,7 +4428,9 @@ steg3Boks
   <span id="fTeller">1 / 1</span>
   <span id="fTrinn"></span>
   <button id="fNext" title="Neste (h&oslash;yrepil eller mellomrom)">&#9654;</button>
-  <span style="opacity:.6">&#9664; &#9654; g&aring;r trinn for trinn &middot; O oversikt &middot; Esc avslutter</span>
+  <button id="fFull" title="Fullskjerm (F)">&#9974;</button>
+  <span style="opacity:.6">&#9664; &#9654; g&aring;r trinn for trinn &middot; O oversikt &middot;
+    F fullskjerm &middot; Esc avslutter</span>
 </div>
 
 <script>
@@ -4716,6 +4751,133 @@ function avslutt(){
   document.body.classList.remove('fmodus');
   var o = $('foversikt'); if(o) o.style.display = 'none';
 }
+
+/* TRYKK-JS-START */
+/* ===== TRYKKMODUS =========================================================
+   ?modus=trykk            hele dekket (foelger ?del=1 / ?del=2)
+   ?modus=trykk&fasit=nei  studentversjon
+
+   Alle slidene legges under hverandre som ferdige ark, med alle klikktrinn
+   utfoldet og figurene frosset til <img>. Da kan nettleseren skrive dem ut:
+   Cmd/Ctrl + P -> Lagre som PDF. Samme motor, samme figurer, samme tall som
+   i salen — det er hele poenget med aa gjoere det slik og ikke bygge heftet
+   et annet sted.
+
+   TRE TING ER ANNERLEDES ENN I SIM 16 OG SIM 22, og alle tre ville gitt
+   blanke eller halve ark om de ble oversett:
+   1. `settSlide()` tegner inne i en dobbel requestAnimationFrame. Her maa
+      tegningen gjoeres SYNKRONT etterpaa (sisteTegn, tegnSteg, laanInn),
+      ellers fryses sliden foer figuren finnes.
+   2. To slides LAANER den levende blokka fra fane 7. Den maa laanes inn
+      foer frysing og leveres hjem etterpaa — ellers staar fanen tom.
+   3. Fasiten ligger TO steder: egne «Fasit …»-slides, og dommer som
+      `<span class="dom">` inne i svaralternativene paa de sammenslaatte
+      avstemningene. Finner du bare den foerste, lekker studentversjonen
+      svaret paa tre avstemninger.                                        */
+function trykkFrys(kilde){
+  var orig = [].slice.call(kilde.querySelectorAll('canvas'));
+  var klon = kilde.cloneNode(true);
+  var kopi = [].slice.call(klon.querySelectorAll('canvas'));
+  kopi.forEach(function(c,i){
+    var o = orig[i]; if(!o || !c.parentNode) return;
+    var img = document.createElement('img');
+    try{ img.src = o.toDataURL('image/png'); }catch(e){ return; }
+    img.style.width  = o.style.width || '100%';
+    img.style.height = o.style.height || (o.clientHeight + 'px');
+    img.style.display = 'block';
+    c.parentNode.replaceChild(img, c);
+  });
+  return klon;
+}
+function trykkErFasit(s){
+  return /^Fasit/.test(s.t||'') || /fasitsvar/.test(s.klasse||'');
+}
+function trykkStrippDom(el){
+  [].slice.call(el.querySelectorAll('.dom')).forEach(function(d){
+    if(d.parentNode) d.parentNode.removeChild(d);
+  });
+}
+function trykk(utenFasit){
+  velgDel();
+  var gammelt = document.getElementById('trykkark');
+  if(gammelt && gammelt.remove) gammelt.remove();
+  var ark = document.createElement('div');
+  ark.id = 'trykkark'; ark.style.display = 'none';
+  var hode = document.createElement('div');
+  hode.className = 'trykkhode';
+  hode.innerHTML = '<b>Trykkmodus.</b> Alle slidene ligger under hverandre, ferdig '+
+    'utfoldet. Skriv ut med <b>Cmd/Ctrl + P</b> og velg <b>Lagre som PDF</b> — '+
+    'A4 liggende, og slå på bakgrunnsgrafikk. '+
+    (utenFasit ? '<b>Fasiten er utelatt</b> (studentversjon): både fasitslidene '+
+                 'og dommene inne i avstemningene.'
+               : 'Fasiten er med. Vil du ha studentversjonen, legg til '+
+                 '<code>&amp;fasit=nei</code> i adressen.')+
+    ' <a href="'+location.pathname+location.search+'" '+
+    'style="color:#2E5496;font-weight:700">Tilbake til appen</a>';
+  ark.appendChild(hode);
+  document.body.appendChild(ark);
+
+  /* Bygges i forelesningsmodus: scenen maa vaere synlig og utlagt, ellers
+     er alle bredder null og figurene kommer ut tomme. */
+  document.body.classList.remove('trykk');
+  document.body.classList.add('fmodus');
+
+  var ARK_B = 1280;                      // fast, uavhengig av vindusformatet
+  var sc = $('scene');
+  var liste = [];
+  S.forEach(function(s,i){ if(!(utenFasit && trykkErFasit(s))) liste.push(i); });
+  var k = 0, feilet = 0;
+
+  function ferdig(){
+    laanHjem();
+    ark.style.setProperty('--sb', ARK_B+'px');
+    ark.style.setProperty('--k', (1077/ARK_B).toFixed(4));
+    ark.style.display = '';
+    document.body.classList.remove('fmodus');
+    document.body.classList.add('trykk');
+    window.scrollTo(0,0);
+    if(feilet && window.console) console.error('trykkmodus: '+feilet+' slide(r) feilet');
+  }
+  function neste(){
+    if(k >= liste.length){ ferdig(); return; }
+    var i = liste[k++];
+    var side = document.createElement('div'); side.className = 'trykkside';
+    var nr = document.createElement('div'); nr.className = 'trykknr';
+    nr.textContent = 'Slide ' + (i+1);
+    ark.appendChild(side); side.appendChild(nr);
+    /* Én slide som kaster skal koste én slide — ikke resten av dekket. */
+    try{
+      settSlide(i);
+      sc.style.width = ARK_B + 'px';
+      sc.style.transform = '';
+      var vakt = 0; while(fram() && ++vakt < 300){}
+      /* Synkron tegning: settSlide() utsetter sin egen til neste frame. */
+      if(sisteTegn) sisteTegn();
+      tegnSteg();
+      if(S[i].laan) laanInn(S[i].laan);
+      var kilde = sc.querySelector('.slide');
+      if(kilde){
+        var skala = document.createElement('div'); skala.className = 'skala';
+        var frosset = trykkFrys(kilde);
+        if(utenFasit) trykkStrippDom(frosset);
+        skala.appendChild(frosset);
+        side.insertBefore(skala, nr);
+      }
+      laanHjem();
+    }catch(e){
+      feilet++;
+      var boks = document.createElement('div'); boks.className = 'trykkfeil';
+      boks.textContent = 'Slide '+(i+1)+' kunne ikke bygges: '+((e&&e.message)||e);
+      side.appendChild(boks);
+      if(window.console) console.error('trykkmodus · slide '+(i+1), e);
+    }
+    requestAnimationFrame(function(){ requestAnimationFrame(neste); });
+  }
+  neste();
+}
+window.__trykkModus = trykk;
+/* TRYKK-JS-SLUTT */
+
 window.__startForelesning = start;
 window.__avsluttForelesning = avslutt;
 window.__F6antall = function(){ velgDel(); return {del:S.length, alle:ALLE.length}; };
@@ -4728,24 +4890,53 @@ document.addEventListener('keydown', function(e){
   var k = e.key;
   if(k === 'ArrowRight' || k === ' ' || k === 'PageDown'){ e.preventDefault(); neste(); }
   else if(k === 'ArrowLeft' || k === 'PageUp'){ e.preventDefault(); forrige(); }
-  else if(k === 'Escape'){ avslutt(); }
+  /* Esc lukker fullskjerm foer den avslutter dekket. Nettleseren tar Esc
+     selv i fullskjerm, saa denne grenen er for sikkerhets skyld — uten den
+     ville ETT trykk bade gaatt ut av fullskjerm OG ut av forelesningen. */
+  else if(k === 'Escape'){ if(document.fullscreenElement) fullskjerm(); else avslutt(); }
+  else if(k === 'f' || k === 'F'){ e.preventDefault(); fullskjerm(); }
   else if(k === 'o' || k === 'O'){ oversikt(); }
   else if(k === 'Home'){ settSlide(0); }
   else if(k === 'End'){ settSlide(S.length-1); }
 });
-window.addEventListener('resize', function(){
-  if(document.body.classList.contains('fmodus')){
-    skaler();
-    if(sisteTegn) try { sisteTegn(); } catch(err){}
-    tegnSteg();
-    skalerLaant();
+/* Fullskjerm. Scenen er 1280 x 720 LOGISKE piksler og skaleres til vinduet
+   av `skaler()`, saa et bytte til fullskjerm endrer bade skalafaktoren og
+   `sceneBredde()` (som leser vindusformatet). Derfor maa alt tegnes paa nytt
+   — ikke bare skaleres. `fullscreenchange` fyrer paalitelig; `resize` gjoer
+   det ikke alltid naar nettleseren gaar i fullskjerm. */
+function omtegn(){
+  if(!document.body.classList.contains('fmodus')) return;
+  skaler();
+  if(sisteTegn) try { sisteTegn(); } catch(err){ if(window.console) console.error(err); }
+  tegnSteg();
+  skalerLaant();
+}
+function fullskjerm(){
+  var el = document.documentElement;
+  if(!document.fullscreenElement){
+    if(el.requestFullscreen) el.requestFullscreen();
+    else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();   /* Safari */
+  } else {
+    if(document.exitFullscreen) document.exitFullscreen();
+    else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
   }
-});
+}
+function fullMerke(){
+  var b = $('fFull'); if(!b) return;
+  var i = !!document.fullscreenElement;
+  b.innerHTML = i ? '&#10005;' : '&#9974;';
+  b.title = (i ? 'Avslutt fullskjerm' : 'Fullskjerm') + ' (F)';
+}
+document.addEventListener('fullscreenchange', function(){ fullMerke(); omtegn(); });
+document.addEventListener('webkitfullscreenchange', function(){ fullMerke(); omtegn(); });
+window.addEventListener('resize', omtegn);
 
 document.addEventListener('DOMContentLoaded', function(){
   var p = $('fPrev'), nx2 = $('fNext');
   if(p) p.addEventListener('click', forrige);
   if(nx2) nx2.addEventListener('click', neste);
+  var ff = $('fFull');
+  if(ff){ ff.addEventListener('click', function(){ fullskjerm(); ff.blur(); }); fullMerke(); }
   var mb = $('modusBtn');
   if(mb){
     function oppd(){
@@ -4759,6 +4950,7 @@ document.addEventListener('DOMContentLoaded', function(){
     new MutationObserver(oppd).observe(document.body,{attributes:true,attributeFilter:['class']});
     oppd();
   }
+  if(Q.get('modus') === 'trykk'){ trykk(Q.get('fasit') === 'nei'); return; }
   if(Q.get('modus') === 'forelesning') start();
 });
 })();
@@ -5578,28 +5770,85 @@ s1({t:'JASP-outputen', html:
 
 /* ---------- 34 ---------- */
 s1({t:'GLM: to dummyer og et produktledd', html:
- '<h2>Det er den samme modellen</h2>'+
- '<div class="formel" style="text-align:center;font-size:23px;margin:12px 0">'+
- 'utfall = <i>b</i><sub>0</sub> + <i>b</i><sub>1</sub>A + <i>b</i><sub>2</sub>B + '+
- '<i>b</i><sub>3</sub>(A × B) + feil</div>'+
- '<table class="minitab" style="font-size:22px;width:92%">'+
- '<tr><th>Ledd</th><th>Hva det er</th></tr>'+
- '<tr><td><i>b</i><sub>0</sub></td><td>Snittet i basiscella &mdash; der begge dummyene er 0.</td></tr>'+
- '<tr><td><i>b</i><sub>1</sub></td><td>Effekten av A, <b>i basisnivået av B</b>.</td></tr>'+
- '<tr><td><i>b</i><sub>2</sub></td><td>Effekten av B, <b>i basisnivået av A</b>.</td></tr>'+
- '<tr style="background:#f3f6fb"><td><b><i>b</i><sub>3</sub></b></td><td><b>Differansen mellom differansene.</b> Interaksjonen.</td></tr>'+
+ '<h2>Det er den samme modellen &mdash; og her er koeffisientene</h2>'+
+ '<div class="formel" style="text-align:center;font-size:21px;margin:6px 0 2px">'+
+ 'vurdering = <i>b</i><sub>0</sub> + <i>b</i><sub>1</sub>Ansikt + '+
+ '<i>b</i><sub>2</sub>Lav + <i>b</i><sub>3</sub>Høy + '+
+ '<i>b</i><sub>4</sub>(Ansikt×Lav) + <i>b</i><sub>5</sub>(Ansikt×Høy) + feil</div>'+
+ '<div class="rapdel">'+
+ '<div><canvas id="f6c14" height="262" data-h="262"></canvas></div>'+
+ '<table class="minitab" style="font-size:17.5px;width:100%">'+
+ '<tr><th></th><th>Verdi</th><th>Hva det er</th></tr>'+
+ '<tr><td><i>b</i><sub>0</sub></td><td>6.375</td>'+
+ '<td>Basiscella: attraktive, placebo</td></tr>'+
+ '<tr><td><i>b</i><sub>1</sub></td><td>−2.875</td>'+
+ '<td>Ansiktstype, <b>i placebo</b></td></tr>'+
+ '<tr><td><i>b</i><sub>2</sub></td><td>+0.125</td>'+
+ '<td>Lav dose, <b>for attraktive</b></td></tr>'+
+ '<tr><td><i>b</i><sub>3</sub></td><td>−0.25</td>'+
+ '<td>Høy dose, <b>for attraktive</b></td></tr>'+
+ '<tr style="background:#f3f6fb"><td><b><i>b</i><sub>4</sub></b></td><td><b>+1.25</b></td>'+
+ '<td><b>Ansikt × lav</b> &mdash; avviket fra den stiplede</td></tr>'+
+ '<tr style="background:#f3f6fb"><td><b><i>b</i><sub>5</sub></b></td><td><b>+3.375</b></td>'+
+ '<td><b>Ansikt × høy</b> &mdash; samme, større</td></tr>'+
  '</table>'+
- '<div class="flat">'+
- '<div class="sum avslor">Kjører du de samme dataene i <b>regresjonsmenyen</b> med disse '+
- 'tre prediktorene, får du <b>identiske tall</b>. Faktoriell ANOVA <i>er</i> regresjon '+
- 'med dummyer.</div>'+
  '</div>'+
- '<p class="kilde">Field §13.4 og <code>goggles_regression.jasp</code>.</p>',
- notat:'Dette er stedet å si at ANOVA og regresjon er samme maskin. MEN: GLM-rammen er '+
- '**lavvektet for 2026-kullet** — den er bygget inn i appene i etterkant og har ikke '+
- 'styrt undervisningen i år, saa den PRØVES IKKE paa eksamen (den fases inn i 2027). '+
- 'Notatet sa tidligere det motsatte. Vis sliden som en bro, ikke som pensum: ingen skal '+
- 'tro de maa kunne dummykode for å bestaa.'});
+ '<div class="flat">'+
+ '<div class="sum avslor">Den <b>stiplede</b> linja er modellen <i>uten</i> '+
+ 'produktledd. Avstanden opp til de observerte punktene <b>er</b> '+
+ '<i>b</i><sub>4</sub> og <i>b</i><sub>5</sub>. Faktoriell ANOVA <i>er</i> '+
+ 'regresjon med dummyer &mdash; samme tall, annen meny.</div>'+
+ '</div>'+
+ '<p class="kilde">Field §13.4 og <code>goggles_regression.jasp</code>. '+
+ 'Koeffisientene er regnet fra de seks cellesnittene.</p>',
+ /* Figuren er den samme som paa slide 27 — samme M, samme akse — men med
+    modellen tegnet oppaa. Den stiplede linja er b0 + b1 + alkoholeffektene
+    slik de er MAALT paa de attraktive ansiktene; at de observerte punktene
+    ligger over den, er hele interaksjonen. Koeffisientene regnes her i
+    koden fra M, ikke skrevet av, saa tabellen og figuren ikke kan skille lag. */
+ e:function(){
+   var M=[[6.375,6.5,6.125],[3.5,4.875,6.625]];
+   var g=IA('f6c14',{M:M,
+      xlab:['Placebo','Lav dose','Høy dose'],
+      serie:['Attraktive ansikter','Uattraktive ansikter'],
+      ylab:'Attraktivitetsvurdering', ylo:2, yhi:8});
+   if(!g){ if(window.console) console.error('slide 34: fant ikke f6c14'); return; }
+   var c=g.c;
+   var b1=M[1][0]-M[0][0];
+   var uten=[M[0][0]+b1, M[0][1]+b1, M[0][2]+b1];   /* uten produktledd */
+   var i;
+   for(i=0;i<2;i++) L(c,g.X(i),g.Y(uten[i]),g.X(i+1),g.Y(uten[i+1]),'#8899AD',2,true);
+   for(i=0;i<3;i++) P(c,g.X(i),g.Y(uten[i]),'#8899AD',4,false);
+   T(c,'uten produktledd',g.X(2),g.Y(uten[2])+18,14,'#8899AD','end');
+   /* b0 */
+   T(c,'b\u2080 = 6.375',g.X(0)+12,g.Y(M[0][0])-18,15,C.NAVY,'start');
+   /* b1: loddrett i basisnivaaet */
+   L(c,g.X(0),g.Y(M[0][0]),g.X(0),g.Y(M[1][0]),C.NAVY,2,false);
+   T(c,'b\u2081 = \u22122.875',g.X(0)+10,(g.Y(M[0][0])+g.Y(M[1][0]))/2,15,C.NAVY,'start');
+   /* b2 og b3: alkoholeffekten MAALT paa de attraktive */
+   T(c,'b\u2082 = +0.125',g.X(1),g.Y(M[0][1])-18,14,C.GRAA||'#5a6880','center');
+   /* b3 sto rett over punktet ved hoey dose, vegg i vegg med linjenavnene
+      til hoeyre for plottet. Den staar naa midt paa strekket mellom lav og
+      hoey, der det er luft. */
+   T(c,'b\u2083 = \u22120.25',(g.X(1)+g.X(2))/2,
+     g.Y((M[0][1]+M[0][2])/2)-20,14,C.GRAA||'#5a6880','center');
+   /* b4 og b5: fra den stiplede opp til det observerte */
+   [[1,'b\u2084 = +1.25'],[2,'b\u2085 = +3.375']].forEach(function(q){
+     var x=g.X(q[0]);
+     L(c,x,g.Y(uten[q[0]]),x,g.Y(M[1][q[0]]),C.ROED,3,false);
+     T(c,q[1],x-8,(g.Y(uten[q[0]])+g.Y(M[1][q[0]]))/2,15,C.ROED,'end');
+   });
+ },
+ notat:'Dette er stedet å si at ANOVA og regresjon er samme maskin, og nå kan du '+
+ 'PEKE på hver koeffisient i figuren. Gå i rekkefølge: b0 er punktet oppe til '+
+ 'venstre. b1 er den loddrette streken ned til de uattraktive i placebo. b2 og b3 '+
+ 'er hva alkoholen gjør MED DE ATTRAKTIVE — nesten ingenting. Den stiplede linja '+
+ 'er hva modellen ville spådd for de uattraktive hvis alkoholen gjorde det samme '+
+ 'for dem; de to røde strekene opp til de faktiske punktene er b4 og b5, altså '+
+ 'interaksjonen. MEN: GLM-rammen er **lavvektet for 2026-kullet** — den er bygget '+
+ 'inn i appene i etterkant og har ikke styrt undervisningen i år, så den PRØVES '+
+ 'IKKE på eksamen (den fases inn i 2027). Vis sliden som en bro, ikke som pensum: '+
+ 'ingen skal tro de må kunne dummykode for å bestå.'});
 
 /* ---------- 35 ---------- */
 s1({t:'Broen til moderasjon', html:
@@ -5735,11 +5984,63 @@ s1({t:'Tre feil som går igjen', html:
 /* ---------- 39 ---------- */
 s1({t:'Prøv selv til slutt', html:
  '<h2>Til slutt: flytt et punkt &mdash; hvilken <i>F</i> endrer seg?</h2>'+
- '<p class="lead">Dette er den samme figuren dere så tidlig i timen, men nå vet dere '+
- 'hva hvert tall i tabellen heter. Tre spørsmål, og dere svarer før jeg drar.</p>'+
- '<div class="simvert"></div>',
+ '<div class="simvert fast"></div>'+
+ /* Tabellen fra slide 8 og regnestykket fra slide 10 staar her sammen med
+    figuren, saa de tre spoersmaalene kan besvares uten aa bla tilbake.
+    Ingressen er sloeyfet med vilje: 720 px rekker ikke til baade den,
+    blokka og foten, og blokka er det sliden handler om.
+    ALLE TALLENE ER TOMME I MARKUPEN og fylles av `e()` gjennom samme krok
+    som slide 40 bruker — ellers ville tabellen staatt med de ekte tallene
+    mens figuren over viste noe annet, i det oeyeblikket noen dro i et punkt. */
+ '<div class="fotdel">'+
+ '<table class="minitab" style="font-size:18px">'+
+ '<tr><th></th><th>5 minutter</th><th>1 uke</th><th class="marg">Radsnitt</th></tr>'+
+ '<tr><th>Leste om igjen</th><td id="f6t00">—</td><td id="f6t01">—</td>'+
+ '<td class="marg" id="f6tr0">—</td></tr>'+
+ '<tr><th>Testet seg selv</th><td id="f6t10">—</td><td id="f6t11">—</td>'+
+ '<td class="marg" id="f6tr1">—</td></tr>'+
+ '<tr><th class="marg">Kolonnesnitt</th><td class="marg" id="f6tk0">—</td>'+
+ '<td class="marg" id="f6tk1">—</td><td></td></tr>'+
+ '</table>'+
+ '<div class="regn">'+
+ 'Radsnittene er <b>hovedeffekten av studiemetode</b>, kolonnesnittene '+
+ '<b>hovedeffekten av tidsintervall</b>.<br>'+
+ 'Interaksjonen er <b>differansen mellom differansene</b>:<br>'+
+ '<span id="f6td">&nbsp;</span>'+
+ '<span class="sum" id="f6tdd">&nbsp;</span>'+
+ '</div>'+
+ '</div>',
  laan:'blokk-2x2',
- notat:'Denne sliden er den samme lånte blokka som tidligere i timen, satt inn '+
+ /* Samme krok som slide 40. Den settes i e(), som kjoerer foer `laanInn()`,
+    og `laanInn()` kaller `__simOppdater()` — saa tabellen er fylt foer
+    sliden vises, og foelger deretter hvert dra. */
+ e:function(){
+   window.__F6koefUt = function(m00, m01, m10, m11){
+     var f = document.getElementById('f6t00');
+     if(!f) return;
+     function t(x){ return (Math.round(x*100)/100).toFixed(2); }
+     var par = [['f6t00',m00],['f6t01',m01],['f6t10',m10],['f6t11',m11],
+                ['f6tr0',(m00+m01)/2],['f6tr1',(m10+m11)/2],
+                ['f6tk0',(m00+m10)/2],['f6tk1',(m01+m11)/2]];
+     par.forEach(function(q){
+       var el = document.getElementById(q[0]);
+       if(el) el.textContent = t(q[1]);
+     });
+     /* Minustegnet er U+2212 (§2), og differansene kan bli negative naar
+        punktene dras — derfor formateres de, ikke skrives med bindestrek. */
+     function d(x){ return (x < 0 ? '\u2212' : '') + t(Math.abs(x)); }
+     var d0 = m00 - m01, d1 = m10 - m11;
+     var e1 = document.getElementById('f6td');
+     if(e1) e1.innerHTML = t(m00)+' \u2212 '+t(m01)+' = <b>'+d(d0)+'</b> mot '+
+                           t(m10)+' \u2212 '+t(m11)+' = <b>'+d(d1)+'</b>';
+     var e2 = document.getElementById('f6tdd');
+     if(e2) e2.innerHTML = d(d0)+' \u2212 '+d(d1)+' = <b>'+d(d0-d1)+'</b>';
+   };
+   if(window.__simOppdater) window.__simOppdater();
+ },
+ notat:'Tabellen og regnestykket under figuren er slide 8 og slide 10 satt '+
+ 'sammen, så de tre spørsmålene kan besvares uten å bla tilbake. '+
+ 'Denne sliden er den samme lånte blokka som tidligere i timen, satt inn '+
  'igjen helt til slutt. Grunnen er at den første gangen var figuren det nye — '+
  'nå er den kjent, og det er BEGREPENE som skal festes på den. Still de tre '+
  'spørsmålene som spørsmål, og la studentene svare før du drar: '+
@@ -5754,6 +6055,69 @@ s1({t:'Prøv selv til slutt', html:
  'klar for studentene som skanner QR-koden.'});
 
 /* ---------- 40 ---------- */
+/* Samme laante blokk en tredje gang, men nå lest som en REGRESJON. De fire
+   koeffisientene regnes av cellesnittene og oppdateres mens underviseren
+   drar i punktene — kroken ligger nederst i fane 7s oppdater(). b3 er det
+   samme tallet som sto på slide 39: differansen mellom differansene. */
+s1({t:'Den samme modellen som regresjon', html:
+ '<h2>De samme fire tallene, skrevet som en regresjon</h2>'+
+ '<div class="simvert fast"></div>'+
+ '<div class="fotdel">'+
+ '<table class="minitab" style="font-size:18px">'+
+ '<tr><th></th><th>Verdi</th><th>Hva det er</th></tr>'+
+ '<tr><td><i>b</i><sub>0</sub></td><td id="f6rb0">—</td>'+
+ '<td>Leste om igjen, etter 5 minutter</td></tr>'+
+ '<tr><td><i>b</i><sub>1</sub></td><td id="f6rb1">—</td>'+
+ '<td>Studiemetode, <b>etter 5 minutter</b></td></tr>'+
+ '<tr><td><i>b</i><sub>2</sub></td><td id="f6rb2">—</td>'+
+ '<td>Tidsintervall, <b>for omlesing</b></td></tr>'+
+ '<tr style="background:#f3f6fb"><td><b><i>b</i><sub>3</sub></b></td>'+
+ '<td id="f6rb3"><b>—</b></td><td><b>Interaksjonen</b></td></tr>'+
+ '</table>'+
+ '<div class="regn">'+
+ 'poeng = <i>b</i><sub>0</sub> + <i>b</i><sub>1</sub>Metode + '+
+ '<i>b</i><sub>2</sub>Tid + <i>b</i><sub>3</sub>(Metode×Tid)<br>'+
+ 'Dra et punkt, og se hvilke <i>b</i>-er som endrer seg.'+
+ '<span class="sum"><i>b</i><sub>3</sub> er differansen mellom '+
+ 'differansene &mdash; det samme tallet som på forrige slide.</span>'+
+ '</div>'+
+ '</div>',
+ laan:'blokk-2x2',
+ e:function(){
+   /* Kroken settes her og leses av fane 7s oppdater(). Den sjekker selv at
+      feltene finnes, saa den er ufarlig naar man har bladd videre. */
+   window.__F6koefUt = function(m00, m01, m10, m11){
+     var mal = document.getElementById('f6rb0');
+     if(!mal) return;
+     /* Fortegnet er informasjonen her, saa det staar ogsaa naar det er
+        positivt — men IKKE paa null: «+0.00» ville lest som en liten
+        positiv effekt, og null er nettopp poenget naar linjene er
+        parallelle. Minustegnet er U+2212, ikke bindestrek (§2). */
+     function f(x){
+       var r = Math.round(x*100)/100;
+       if(r === 0) return '0.00';
+       return (r > 0 ? '+' : '') + r.toFixed(2).replace('-', '\u2212');
+     }
+     document.getElementById('f6rb0').textContent =
+       (Math.round(m00*100)/100).toFixed(2);          /* konstantledd, uten fortegn */
+     document.getElementById('f6rb1').textContent = f(m10 - m00);
+     document.getElementById('f6rb2').textContent = f(m01 - m00);
+     document.getElementById('f6rb3').innerHTML =
+       '<b>' + f((m11 - m10) - (m01 - m00)) + '</b>';
+   };
+   if(window.__simOppdater) window.__simOppdater();
+ },
+ notat:'Tredje og siste gang blokka laanes, og nå med en annen lesning: de fire '+
+ 'cellesnittene ER fire regresjonskoeffisienter. Dra et punkt mens du snakker, '+
+ 'og la dem se hvilke b-er som flytter seg. Tre ting å få fram: (1) b0 er ikke '+
+ 'noe gjennomsnitt av alt — det er ÉN celle, den du har valgt som utgangspunkt. '+
+ '(2) b1 og b2 er effekter MÅLT PÅ ETT NIVÅ av den andre faktoren, ikke '+
+ 'hovedeffekter; det er derfor de ikke er 1.20 og 8.70. (3) b3 er 6.00, nøyaktig '+
+ 'det samme tallet som sto nederst på forrige slide. Gjør linjene parallelle, og '+
+ 'b3 går i null mens de tre andre står. Dette er lavvektet stoff for 2026-kullet '+
+ '(se slide 34) — vis det som en bro, ikke som pensum.'});
+
+/* ---------- 41 ---------- */
 s1({t:'Del 1 på én linje', klasse:'sl-tittel', html:
  '<h1>Del 1 på tre linjer</h1>'+
  '<div class="under" style="line-height:1.5">'+
@@ -6247,4 +6611,56 @@ s2({t:'Hele bolken', klasse:'sl-tittel', html:
 
 </script>
 
+<script>
+/* BRUKSBEACON-START (lagt inn 12.10.2026) */
+/* ===== PSY300 anonym bruksstatistikk =====================================
+   Sender to signaler til det samme Apps Script-endepunktet som MCQ-appen:
+   ett når appen åpnes, ett når fanen lukkes (med antall sekunder aktiv og
+   antall interaksjoner). Ingen navn, ingen kode, ingen IP — bare app-id,
+   tidspunkt og varighet. Lim inn /exec-URL-en under; står plassholderen
+   igjen, sendes ingenting og appen fungerer helt som før.                */
+const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA05xK7n1rC0ex_UVpNAjJPYNmRqvGfgUGuXp0EclxmyFUeKeVktMfg5YQ/exec";
+(function(){
+  if(!PSY300_USAGE_URL || PSY300_USAGE_URL.indexOf("PASTE_")>=0) return;
+  var APP="Sim 24", NAVN="Faktoriell ANOVA";
+  var t0=Date.now(), aktiv=0, sist=Date.now(), interaksjoner=0, sendt=false;
+  var sid=Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8);
+  // tell bare tid der fanen faktisk er synlig
+  function tikk(){ if(!document.hidden){ var na=Date.now(); aktiv+=Math.min(30000,na-sist); sist=na; } else { sist=Date.now(); } }
+  setInterval(tikk, 5000);
+  document.addEventListener("visibilitychange", tikk);
+  ["click","input","change","touchstart"].forEach(function(ev){
+    document.addEventListener(ev, function(){ interaksjoner++; }, {passive:true, capture:true});
+  });
+
+  /* Skiller underviserens egen bruk fra studentenes. Åpne en app én gang med
+     ?rolle=underviser, så huskes det i denne nettleseren til du åpner med
+     ?rolle=student. Ingen innlogging, ingen personopplysninger.            */
+  function PSY300_ROLLE(){
+    try{
+      var q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'')).get("rolle");
+      if(q==="underviser"||q==="student"){ localStorage.setItem("psy300_rolle",q); }
+      return localStorage.getItem("psy300_rolle")||"student";
+    }catch(e){ return "student"; }
+  }
+  function send(type){
+    if(type==="lukket"){ if(sendt) return; sendt=true; tikk(); }
+    var payload=JSON.stringify({kind:"usage", app:APP, navn:NAVN, event:type,
+      session_id:sid, sekunder:Math.round(aktiv/1000), interaksjoner:interaksjoner,
+      innebygd:(window.top!==window.self)?1:0, rolle:PSY300_ROLLE()});
+    try{
+      if(type==="lukket" && navigator.sendBeacon){
+        navigator.sendBeacon(PSY300_USAGE_URL, new Blob([payload],{type:"text/plain;charset=utf-8"}));
+      } else {
+        fetch(PSY300_USAGE_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:payload, keepalive:true}).catch(function(){});
+      }
+    }catch(e){}
+  }
+  send("apnet");
+  window.addEventListener("pagehide", function(){ send("lukket"); });
+  document.addEventListener("visibilitychange", function(){ if(document.hidden) send("lukket"); });
+})();
+/* BRUKSBEACON-SLUTT */
+</script>
 </body></html>
