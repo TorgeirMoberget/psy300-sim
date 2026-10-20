@@ -819,12 +819,13 @@ egentlig?</b> Her er hele kartet over metodene i emnet. Raden i blått er den du
 <tr><th>Spørsmålet ditt</th><th>Metoden</th><th>Hvor</th></tr>
 <tr><td>Henger disse to tallvariablene sammen?</td><td>Korrelasjon</td><td>Sim 11</td></tr>
 <tr><td>Hvor mye endrer den ene seg når den andre går opp ett hakk? Og hva gjetter jeg for en ny person?</td><td>Regresjon</td><td>Sim 5</td></tr>
-<tr><td>Henger de fortsatt sammen når jeg holder en tredje ting konstant?</td><td>Multippel regresjon</td><td>Sim 15</td></tr>
 <tr><td>Er <b>to grupper</b> forskjellige i gjennomsnitt?</td><td><i>t</i>-test</td><td>Sim 16</td></tr>
 <tr class="na"><td>Er <b>tre eller flere grupper</b> forskjellige?</td><td>Enveis-ANOVA</td><td>denne appen</td></tr>
 <tr><td>Avhenger effekten av den ene faktoren av den andre?</td><td>Faktoriell ANOVA</td><td>Sim 24</td></tr>
 <tr><td>Endret <b>de samme personene</b> seg fra før til etter?</td><td>Paret <i>t</i>-test</td><td>Sim 25</td></tr>
-<tr><td>Henger to <b>kategorier</b> sammen?</td><td>Kjikvadrat</td><td>Sim 29</td></tr>
+<tr data-blandet="1"><td>Endret <b>to grupper</b> seg ulikt over tid?</td><td>Blandet ANOVA</td><td>Sim 25, fane 10</td></tr>
+<tr><td>Henger to <b>kategorier</b> sammen?</td><td>Kjikvadrat, uavhengighetstest</td><td>Sim 29</td></tr>
+<tr data-kji="1"><td>Fordeler <b>én kategorivariabel</b> seg som forventet?</td><td>Kjikvadrat, tilpasningstest</td><td>Sim 29</td></tr>
 </table>
 </div>
 
@@ -876,11 +877,12 @@ Det modellen treffer, og det den bommer med.</p>
 <tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Faktoriell ANOVA (Sim 24)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">totalgjennomsnitt (grand mean) + rad + kolonne + samspill</td></tr>
 <tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Gjentatte målinger (Sim 25)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">tidspunktets snitt + personens eget nivå</td></tr>
 <tr data-blandet="1"><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Blandet ANOVA (Sim 25, fane 10)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">totalgjennomsnitt (grand mean) + gruppe + tidspunkt + samspill + personens eget niv&aring;</td></tr>
-<tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Regresjon (Sim 5, Sim 15)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px"><i>b</i><sub>0</sub> + <i>b</i><sub>1</sub><i>x</i><sub>1</sub> + …</td></tr>
+<tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Regresjon (Sim 5)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px"><i>b</i><sub>0</sub> + <i>b</i><sub>1</sub><i>x</i><sub>1</sub></td></tr>
 <tr><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Korrelasjon (Sim 11)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">den rette linja gjennom punktskyen</td></tr>
+<tr data-kji="1"><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">Kjikvadrat, tilpasningstest (Sim 29)</td><td style="border-bottom:1px solid #e2e6ee;padding:5px 8px">forventet antall i hver kategori hvis <i>H</i><sub>0</sub> stemmer</td></tr>
 </table>
 <p style="color:#62708a;font-size:15px;margin-top:10px">
-I alle sju er <span class="m-stoy">feilen</span> det samme: observert verdi &minus; det modellen gjettet.
+I alle &aring;tte er <span class="m-stoy">feilen</span> det samme: observert verdi &minus; det modellen gjettet.
 Det er residualen, og det er den vi kvadrerer og summerer n&aring;r vi regner ut
 <i>SS</i><sub>feil</sub>.</p>
 <div class="keybox"><span class="lbl">Sagt p&aring; &eacute;n linje</span>
@@ -1474,7 +1476,7 @@ trendkontrastene ortogonale, og kvadratsummene deres deler modellen eksakt i to.
 <i>n</i> er de ikke helt ortogonale, og da overlapper de litt &mdash; summen bommer med omtrent
 16 av 399.<br><br>
 Det er samme familie av poeng som i multippel regresjon: når prediktorer overlapper, kan du
-ikke legge sammen bidragene deres og få helheten. Se Sim 15 fane 4.
+ikke legge sammen bidragene deres og få helheten. Se Sim 5 fane 7.
 </div></details>
 
 <p style="font-size:16.5px;line-height:1.55;margin-top:10px">Legg merke til at Welch her gir en

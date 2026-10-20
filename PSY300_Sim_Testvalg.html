@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY300 · Sim 34 — Hvilken test når?</title>
+<style>
+
+:root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--orange:#B26A00;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+/* =====================================================================
+   PSY300 FARGEKODE — én betydning per farge, den samme i alle appene.
+   Poenget er at en student som har sett grønt over rødt i figuren, skal
+   kjenne igjen de samme fargene i JASP-tabellen og i den ferdige
+   setningen — og dermed se hvor hvert tall kommer fra.
+     grønn   variasjon MELLOM grupper · signal · det vi leter etter
+     rød     variasjon INNEN grupper · støy · residual
+     marine  teststatistikken (F, t, χ²) og frihetsgradene
+     lilla   p-verdien
+     rav     effektstørrelsen (η², ω², d, R²)
+     turkis  konfidensintervallet
+   ===================================================================== */
+:root{
+  --sig:#1E7A3C;    --sig-bg:#E7F4EA;    --sig-kant:#A9D6B6;
+  --stoy:#C0392B;   --stoy-bg:#FBEDEB;   --stoy-kant:#EEC3BD;
+  --tstat:#1F3864;  --tstat-bg:#E7ECF6;  --tstat-kant:#B9C8E2;
+  --pverdi:#7B3FA0; --pverdi-bg:#F3EAF8; --pverdi-kant:#D3BCE4;
+  --eff:#B26A00;    --eff-bg:#FDF2E2;    --eff-kant:#EBD0A6;
+  --ki:#0F6E7B;     --ki-bg:#E4F1F3;     --ki-kant:#AAD3D9;
+}
+.k-sig{color:var(--sig);font-weight:600}
+.k-stoy{color:var(--stoy);font-weight:600}
+.k-tstat{color:var(--tstat);font-weight:700}
+.k-p{color:var(--pverdi);font-weight:600}
+.k-eff{color:var(--eff);font-weight:600}
+.k-ki{color:var(--ki);font-weight:600}
+/* markert variant — brukes der et tall skal kunne spores fra tabell til setning */
+.m-sig,.m-stoy,.m-tstat,.m-p,.m-eff,.m-ki{border-radius:5px;padding:1px 5px;font-weight:600}
+.m-sig{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+.m-stoy{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+.m-tstat{background:var(--tstat-bg);color:var(--tstat);box-shadow:inset 0 0 0 1px var(--tstat-kant)}
+.m-p{background:var(--pverdi-bg);color:var(--pverdi);box-shadow:inset 0 0 0 1px var(--pverdi-kant)}
+.m-eff{background:var(--eff-bg);color:var(--eff);box-shadow:inset 0 0 0 1px var(--eff-kant)}
+.m-ki{background:var(--ki-bg);color:var(--ki);box-shadow:inset 0 0 0 1px var(--ki-kant)}
+
+/* ---- brøkfiguren: teller over streken, nevner under ---- */
+.brokfig{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 18px;
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 14px;margin:12px 0}
+.brokfig .brk{text-align:center;min-width:250px;flex:0 1 auto}
+.brokfig .tell,.brokfig .nevn{border-radius:8px;padding:8px 13px;font-size:15.5px;line-height:1.28}
+.brokfig .tell{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+.brokfig .nevn{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+.brokfig .strek{height:3px;background:#16203A;border-radius:2px;margin:6px 0}
+.brokfig .tall{display:block;font-size:23px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+.brokfig .lik{font-size:27px;color:#16203A;font-weight:600}
+.brokfig .res{font-size:17px;color:var(--tstat);text-align:center;line-height:1.3}
+.brokfig .res b{display:block;font-size:31px;font-weight:700;font-variant-numeric:tabular-nums}
+.brokfig .res .n{display:block;font-size:13.5px;color:#5C6A80;font-weight:400;margin-top:3px}
+.brokfig.smal .brk{min-width:210px}
+.brokfig.smal .tall{font-size:19px}
+.brokfig.smal .res b{font-size:25px}
+
+.stat.s-sig{background:var(--sig-bg);color:var(--sig)}
+.stat.s-stoy{background:var(--stoy-bg);color:var(--stoy)}
+.stat.s-tstat{background:var(--tstat-bg);color:var(--tstat)}
+.stat.s-p{background:var(--pverdi-bg);color:var(--pverdi)}
+.stat.s-eff{background:var(--eff-bg);color:var(--eff)}
+table.anova td.c-sig,table.tt td.c-sig{color:var(--sig);font-weight:700}
+table.anova td.c-stoy,table.tt td.c-stoy{color:var(--stoy);font-weight:700}
+table.anova td.c-tstat,table.tt td.c-tstat{color:var(--tstat);font-weight:700}
+table.anova td.c-p,table.tt td.c-p{color:var(--pverdi);font-weight:700}
+table.anova td.c-eff,table.tt td.c-eff{color:var(--eff);font-weight:700}
+/* ---- fargeforklaring ---- */
+.fargeliste{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:8px;margin-top:8px}
+.fargeliste div{border-radius:8px;padding:7px 11px;font-size:15px;line-height:1.35}
+.fargeliste b{display:block;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+
+/* ---- ANOVA-tabellen med fargede rader ---- */
+table.anova tr.r-sig td,table.tt tr.r-sig td{background:var(--sig-bg)}
+table.anova tr.r-stoy td,table.tt tr.r-stoy td{background:var(--stoy-bg)}
+table.anova tr.r-total td,table.tt tr.r-total td{color:#5F6A7E}
+table.anova tr.r-total td:first-child{font-weight:700}
+table.anova tr.r-sig td:first-child{color:var(--sig);font-weight:700}
+table.anova tr.r-stoy td:first-child{color:var(--stoy);font-weight:700}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:20.5px;margin:0;font-weight:700}
+header p{margin:2px 0 0;font-size:15.5px;opacity:.85}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+h2{color:var(--navy);margin:.2em 0 .5em;font-size:19px}
+button{cursor:pointer;border:0;border-radius:9px;padding:9px 16px;font-size:17px;font-weight:600;font-family:inherit;margin:3px}
+.btn{background:var(--blue);color:#fff}.btn:hover{background:var(--navy)}
+.btn2{background:#eef1f7;color:var(--navy)}.btn2:hover{background:var(--light)}
+.muted{color:#62708a;font-size:16px}
+canvas{width:100%;display:block;touch-action:none}
+.stat{display:inline-block;background:var(--light);color:var(--navy);border-radius:8px;padding:3px 10px;font-size:15.5px;font-weight:600;margin:3px 4px 3px 0;font-variant-numeric:tabular-nums}
+.stat.red{background:#fbeceb;color:var(--red)}
+.stat.green{background:#eaf6ea;color:var(--green)}
+.stat.orange{background:#fdf3e6;color:var(--orange)}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap}
+.sl label{min-width:250px;font-weight:600;font-size:16px;color:var(--navy)}
+.sl input[type=range]{flex:1;min-width:140px}
+.sl output{min-width:52px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--navy);font-size:17px}
+.note{background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:16px;margin-top:10px}
+.gloss{font-size:15.5px}
+.gloss b{color:var(--navy)}
+.keybox{background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:12px 14px;margin:14px 0;font-size:16.5px}
+.keybox .lbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:4px}
+
+/* ===== Presentasjonsmodus (P) — for lerret under forelesning =============== */
+.presbtn{position:fixed;right:12px;bottom:12px;z-index:50;background:#fff;color:var(--navy);
+  border:1px solid var(--line);border-radius:20px;padding:7px 14px;font-size:14px;font-weight:700;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer;opacity:.75}
+.presbtn:hover{opacity:1}
+body.pres header{padding:6px 14px}
+body.pres header h1{font-size:17px}
+body.pres header p{display:none}
+body.pres .wrap{max-width:1240px;padding:6px 14px}
+body.pres .card{padding:10px 12px;margin:8px 0}
+body.pres h2{font-size:16.5px;margin:.1em 0 .3em}
+body.pres .muted:not([id]){display:none}
+body.pres .card.docs{display:none}
+body.pres .stat{font-size:16.5px}
+body.pres .sl{margin:4px 0}
+body.pres .sl label{font-size:15px;min-width:210px}
+body.pres .note{padding:8px 11px;margin-top:7px}
+body.pres .keybox{font-size:18px}
+table.steg{border-collapse:collapse;width:100%;margin-top:10px;font-size:16px;font-variant-numeric:tabular-nums}
+table.steg th{text-align:right;font-weight:600;border-bottom:1px solid #333;padding:6px 8px}
+table.steg th:first-child{text-align:left}
+table.steg td{text-align:right;padding:5px 8px;border:0}
+table.steg td:first-child{text-align:left}
+table.steg td:nth-child(2){color:#62708a;font-size:15px}
+table.steg tr:last-child td{border-bottom:1px solid #333}
+
+.hvbig{font-size:20px;line-height:1.45;color:#1F3864;font-weight:600;margin:2px 0 10px}
+.hvgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.hvkort{border-radius:10px;padding:11px 13px;font-size:16px;line-height:1.5}
+.hvkort h3{margin:0 0 6px;font-size:16.5px}
+.hvkort ul{margin:0;padding-left:18px}
+.hvkort li{margin-bottom:7px}
+.hver{background:#eaf6ea;border:1px solid #bcdcbc;border-left:5px solid #2E7D32}
+.hver h3{color:#1E5C22}
+.hvikke{background:#fbeceb;border:1px solid #edc9c5;border-left:5px solid #C0392B}
+.hvikke h3{color:#9B2D20}
+.eks{display:block;color:#5A6B7B;font-size:14.5px;margin-top:2px}
+.hvnaar{width:100%;border-collapse:collapse;font-size:15.5px;margin-top:8px}
+.hvnaar th{text-align:left;background:#eef2f8;border-bottom:2px solid #c7d6ec;padding:6px 8px;font-size:14.5px}
+.hvnaar td{border-bottom:1px solid #d9dee8;padding:6px 8px;vertical-align:top}
+.hvnaar tr.na{background:#eef3fb;font-weight:500}
+@media(max-width:760px){.hvgrid{grid-template-columns:1fr}}
+.ovkort{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ovlbl{font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5A6B7B}
+.ovhint{font-size:13.5px;color:#8b949e}
+.ovlenke{color:#2E5496;font-weight:600;cursor:pointer;text-decoration:underline}
+</style><style>
+.fane{background:#eef1f7;color:var(--navy);font-size:16.5px}.fane.on{background:var(--navy);color:#fff}.hide{display:none}
+.tabrull{overflow-x:auto}
+.tvsti{font-size:14.5px;margin:6px 0 10px;color:#5A6B7B}
+.tvsti .tvsteg{cursor:pointer;background:#eef1f7;border-radius:12px;padding:2px 9px;display:inline-block;margin:2px 0;color:var(--navy)}
+.tvsti .tvsteg:hover{background:#DCE6F1}.tvsti .pil{color:#9AA7B4}
+.tvq{font-size:19px;font-weight:700;color:var(--navy);margin:6px 0 10px}
+.tvo{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid #d9dee8;border-radius:10px;padding:11px 14px;margin:7px 0;font-size:16.5px;font-weight:500;color:#1a2233}
+.tvo:hover{border-color:#2E5496;background:#f4f7ff}
+.tvblad{background:#E7F4EA;border:1px solid #A9D6B6;border-left:5px solid #1E7A3C;border-radius:10px;padding:12px 16px}
+.tvblad .lbl{font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:#1E7A3C;font-weight:700}
+.tvblad .navn{font-size:22px;font-weight:700;color:#1a2233;margin:2px 0 8px}
+.tvblad .rad2{font-size:15.5px;margin:3px 0}
+.ovspm{font-size:18px;line-height:1.5;background:#fffaf0;border:1px solid #e7d7b8;border-radius:10px;padding:12px 15px;margin:8px 0}
+.ovvalg{display:flex;flex-wrap:wrap;gap:4px}
+.ovvalg .ovb{font-size:15px;padding:7px 11px}
+.ovvalg .ovb.rett{background:#1E7A3C;color:#fff}.ovvalg .ovb.ok{background:#E7F4EA;color:#1E7A3C}.ovvalg .ovb.feil{background:#FBEDEB;color:#C0392B}
+table.ark{font-size:15px}table.ark td,table.ark th{text-align:left;vertical-align:top;padding:8px 10px}
+table.ark .res{display:block;color:#5A6B7B;font-size:13.5px}
+details.mer{margin:10px 0 0;border-top:1px solid rgba(0,0,0,.10);padding-top:7px}
+details.mer>summary{cursor:pointer;font-size:14.5px;font-weight:700;color:#1C7293}
+</style>
+<style id="ovbegrep-css">
+.ovkort{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f6f8fa;
+ border:1px solid #dde3e8;border-left:5px solid #C8102E;border-radius:10px;
+ padding:10px 13px;margin:14px 0;font-size:15px}
+.ovkort .ovlbl{font-weight:700;color:#5B6670;letter-spacing:.02em;
+ text-transform:uppercase;font-size:11.5px}
+.ovkort a.ovlenke{display:inline-block;background:#fff;border:1px solid #c7d6ec;
+ border-radius:999px;padding:3px 11px;color:#174A6B;text-decoration:none;font-size:14.5px}
+.ovkort a.ovlenke:hover{background:#eef3fb;border-color:#8fb0d6}
+.ovkort .ovhint{color:#6B767D;font-size:13px}
+</style>
+</head><body>
+<header><h1 data-t="a1">Sim 34 · Hvilken test når?</h1>
+<p data-t="a2">PSY300 · Forelesning 8 · Fra forskningsspørsmål til riktig analyse: beslutningstreet steg for steg, trening på ekte spørsmål fra emnets to datasett, og hele verktøykassa på ett ark</p></header>
+<div class="wrap">
+<div class="rad" style="gap:6px;margin:2px 0 6px">
+<button data-t="a3" class="fane on" data-fane="hvorfor">0 &middot; Hvorfor testvalg?</button>
+<button data-t="a4" class="fane" data-fane="tre">1 · Beslutningstreet</button>
+<button data-t="a5" class="fane" data-fane="ov">2 · Øv: hvilken test?</button>
+<button data-t="a6" class="fane" data-fane="ark">3 · Hele verktøykassa</button>
+</div>
+
+<div id="fane-hvorfor">
+
+<div class="card">
+<h2 data-t="a7">Spørsmålet denne appen svarer på</h2>
+<p data-t="a8" class="hvbig">«Hvilken test skal jeg bruke?»</p>
+<p data-t="a9" style="font-size:16.5px;line-height:1.55">Dette er det spørsmålet studenter stiller oftest, og det
+som oftest får feil svar &mdash; ikke fordi testene er vanskelige, men fordi spørsmålet stilles for
+sent. Testen følger av <b>designet</b>, og designet følger av <b>hypotesen</b>. Står du fast her, er
+det som regel fordi hypotesen ikke er spisset nok ennå.</p>
+
+<p data-t="a10" style="font-size:16.5px;line-height:1.55">Den gode nyheten er at valget nesten alltid avgjøres av
+tre spørsmål: <b>hva slags utfall</b> har du (tall eller kategori), <b>hvor mange grupper eller
+målinger</b>, og er det <b>samme personer</b> eller forskjellige? Svar på de tre, og listen over
+aktuelle tester er sjelden lengre enn &eacute;<i>n</i>.</p>
+
+<div data-t="a11" class="keybox"><span class="lbl">Sagt på &eacute;<i>n</i> linje</span>
+<b>Testen velges av designet, ikke av dataene. Og aldri etter at du har sett resultatet &mdash; da er
+<i>p</i>-verdien ikke lenger tolkbar.</b></div>
+
+<p data-t="a12" style="font-size:16.5px;line-height:1.55">Denne appen er oppslagsverket. Fane 1 er
+beslutningstreet du går gjennom steg for steg, fane 2 er øving på ekte eksempler, og fane 3 er hele
+verktøykassa på ett ark &mdash; den du kan ha oppe mens du skriver.</p>
+</div>
+
+<div class="card">
+<h2 data-t="a13">Hva som avgjør valget — og hva som ikke gjør det</h2>
+<div class="hvgrid">
+<div class="hvkort hver"><h3 data-t="a14">✓ Dette bestemmer testen</h3><ul>
+<li data-t="a15"><b>Målenivået på utfallet.</b> Tall eller kategori? Kategorisk utfall peker på kjikvadrat,
+kontinuerlig på <i>t</i>-test, ANOVA eller regresjon.</li>
+<li data-t="a16"><b>Antall grupper eller målinger.</b> To &rarr; <i>t</i>-test. Tre eller flere &rarr; ANOVA.
+Ingen grupper, bare to tallvariabler &rarr; korrelasjon eller regresjon.</li>
+<li data-t="a17"><b>Samme personer eller forskjellige?</b> Før og etter hos de samme er <b>paret</b>, selv om
+kolonnene heter noe ulikt.
+<span class="eks">Dette er det vanligste feilvalget i hele emnet.</span></li>
+<li data-t="a18"><b>Hva slags spørsmål du stiller.</b> «Er gruppene forskjellige?» og «henger disse to sammen?»
+er ikke samme spørsmål, og ikke samme test.</li>
+</ul></div>
+<div class="hvkort hvikke"><h3 data-t="a19">✗ Dette bestemmer den ikke</h3><ul>
+<li data-t="a20"><b>Hvordan dataene ser ut.</b> At fordelingen er skjev gjør ikke automatisk rangtest til riktig
+valg &mdash; med store og like store grupper er <i>t</i>-testen robust.
+<span class="eks">Ulik varians er et større problem, og der hjelper Welch. Sim 33.</span></li>
+<li data-t="a21"><b>Hvilken test som gir lavest <i>p</i>.</b> Å prøve flere og beholde den som «virket», er
+<i>p</i>-hacking &mdash; uansett hvor rimelig hver enkelt test virket isolert.</li>
+<li data-t="a22"><b>Hva som er lettest i JASP.</b> Menyene er organisert etter navn, ikke etter design.</li>
+<li data-t="a23"><b>Hva naboen brukte.</b> Samme fagfelt betyr ikke samme design.</li>
+</ul></div>
+</div>
+
+<div data-t="a24" class="note" style="margin-top:12px"><b>Den viktigste av dem:</b> «samme personer eller
+forskjellige?». Paret og uavhengig <i>t</i>-test svarer på ulike spørsmål og gir ulike svar på de
+samme tallene. Velger du feil her, er resten av analysen feil &mdash; og JASP sier ingenting.</div>
+</div>
+
+<div class="card">
+<h2 data-t="a25">Grovsorteringen, på fem linjer</h2>
+<p data-t="a26" style="font-size:16.5px;line-height:1.55">Før du går inn i beslutningstreet: dette er
+kartet i grove trekk. Hver rad peker til appen som behandler den.</p>
+<table class="hvnaar">
+<tr><th data-t="a27">Spørsmålet ditt</th><th data-t="a28">Metoden</th><th data-t="a29">Hvor</th></tr>
+<tr><td data-t="a30">Er <b>to grupper</b> forskjellige i gjennomsnitt?</td><td data-t="a31">Uavhengig <i>t</i>-test</td><td data-t="a32">Sim 16</td></tr>
+<tr><td data-t="a33">Endret <b>de samme personene</b> seg fra før til etter?</td><td data-t="a34">Paret <i>t</i>-test</td><td data-t="a35">Sim 16</td></tr>
+<tr><td data-t="a36">Er <b>tre eller flere grupper</b> forskjellige?</td><td data-t="a37">Enveis-ANOVA</td><td data-t="a38">Sim 22</td></tr>
+<tr><td data-t="a39">Virker to faktorer sammen?</td><td data-t="a40">Faktoriell ANOVA</td><td data-t="a41">Sim 24</td></tr>
+<tr><td data-t="a42">Flere målinger over tid, med og uten kontrollgruppe?</td><td data-t="a43">RM-ANOVA / blandet ANOVA</td><td data-t="a44">Sim 25</td></tr>
+<tr><td data-t="a45">Henger <b>to tallvariabler</b> sammen?</td><td data-t="a46">Korrelasjon</td><td data-t="a47">Sim 11</td></tr>
+<tr><td data-t="a48">Kan jeg <b>predikere</b> et tall, og hvor mye bommer jeg?</td><td data-t="a49">Regresjon</td><td data-t="a50">Sim 5</td></tr>
+<tr><td data-t="a51">Holder sammenhengen når jeg kontrollerer for noe?</td><td data-t="a52">Multippel regresjon</td><td data-t="a53">Sim 5, fane 7–9</td></tr>
+<tr><td data-t="a54">Henger <b>to kategorier</b> sammen?</td><td data-t="a55">Kjikvadrat</td><td data-t="a56">Sim 29</td></tr>
+<tr class="na"><td data-t="a57"><b>Jeg vet ikke hvilken av disse det er</b></td><td data-t="a58">Beslutningstreet</td><td data-t="a59">fane 1</td></tr>
+</table>
+<div data-t="a60" class="note" style="margin-top:12px"><b>Kjenn igjen mønsteret:</b> spør du om <b>grupper er
+forskjellige</b>, er det <i>t</i>-test eller ANOVA. Spør du om <b>to tallvariabler henger sammen</b>,
+er det korrelasjon eller regresjon. Spør du om <b>kategorier</b>, er det kjikvadrat. Den
+grovsorteringen løser de fleste tilfellene alene.</div>
+</div>
+
+<div data-t="a61" class="keybox"><span class="lbl">Klar for resten av appen?</span>
+<b>Ta med &eacute;<i>n</i> setning herfra: <i>utfall, antall grupper, samme eller forskjellige personer
+&mdash; de tre avgjør nesten alltid testen.</i> Fane 1 er treet. Fane 2 er øvingen. Fane 3 er arket du
+har oppe mens du skriver.</b></div>
+
+<div data-t="a62" class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="D1">D1 Å velge riktig analyse &rarr;</a><a class="ovlenke" data-begrep="A1">A1 Hypotese, teori og variabler &rarr;</a><a class="ovlenke" data-begrep="A2">A2 Målenivå &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+<div id="fane-tre" class="hide">
+<div class="card">
+<h2 data-t="a63">Svar på spørsmålene, ett om gangen</h2>
+<p data-t="a64" class="muted">Nesten alle testvalg i emnet avgjøres av fire spørsmål: <b>Hva vil du vite?</b> <b>Hva slags variabel er utfallet?</b> <b>Hvor mange grupper eller målinger?</b> <b>Er det de samme personene?</b> Klikk deg nedover. Du kan når som helst klikke på et tidligere steg for å gå tilbake.</p>
+<div id="tvSti" class="tvsti"></div>
+<div id="tvSpm"></div>
+<div class="rad"><button data-t="a65" class="btn2" id="tvNull">Start på nytt</button></div>
+</div>
+<div data-t="a66" class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span>
+<b>Testen velges av designet, ikke av dataene: hva slags utfall du har, hvor mange grupper eller målinger, og om det er de samme personene. Forutsetningene avgjør bare om du trenger reserven (Welch, rangtest, korreksjon).</b></div></div>
+
+<div data-t="a67" class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="D1">D1 Å velge riktig analyse &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+<div id="fane-ov" class="hide">
+<div class="card">
+<h2 data-t="a68">Hvilken analyse svarer på spørsmålet?</h2>
+<p data-t="a69" class="muted">Alle spørsmålene er hentet fra emnets to datasett: terapistudien (ISTDP mot venteliste, depresjon målt tre ganger) og arbeidskravet (statistikk-selvtillit før og etter en lett eller vanskelig prøve). Tenk gjennom de fire spørsmålene fra fane 1 før du velger.</p>
+<div data-t="a70" class="rad" style="gap:10px"><span class="stat" id="ovTeller">0 av 0</span><span class="muted" id="ovNr" style="font-size:14px"></span></div>
+<div id="ovSpm" class="ovspm"></div>
+<div id="ovValg" class="ovvalg"></div>
+<div id="ovSvar" class="note" style="display:none"></div>
+<div class="rad"><button data-t="a71" class="btn" id="ovNeste">Neste spørsmål</button><button data-t="a72" class="btn2" id="ovTre" style="display:none">Vis veien i beslutningstreet</button></div>
+</div>
+
+<div data-t="a73" class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="D1">D1 Å velge riktig analyse &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+<div id="fane-ark" class="hide">
+<div class="card">
+<h2 data-t="a74">Hele verktøykassa på ett ark</h2>
+<p data-t="a75" class="muted">Radene er hva du vil vite, kolonnene er designet. Reserven i parentes er det du bruker når forutsetningene ikke holder.</p>
+<div class="tabrull"><table class="ark">
+<thead><tr><th data-t="a76">Utfall og spørsmål</th><th data-t="a77">To grupper / målinger</th><th data-t="a78">Tre eller flere</th><th data-t="a79">To eller flere faktorer</th></tr></thead>
+<tbody>
+<tr><td data-t="a80"><b>Kontinuerlig utfall, ulike personer</b> (mellom)</td><td data-t="a81">Uavhengig <i>t</i>-test <span class="res">(Welch · Mann–Whitney)</span></td><td data-t="a82">Enveis-ANOVA <span class="res">(Welch-ANOVA · Kruskal–Wallis)</span></td><td data-t="a83">Faktoriell ANOVA</td></tr>
+<tr><td data-t="a84"><b>Kontinuerlig utfall, samme personer</b> (innen)</td><td data-t="a85">Paret <i>t</i>-test <span class="res">(Wilcoxon signed-rank)</span></td><td data-t="a86">ANOVA for gjentatte målinger <span class="res">(Greenhouse-Geisser · Friedman)</span></td><td data-t="a87">Blandet ANOVA (innen + mellom)</td></tr>
+<tr><td data-t="a88"><b>Kontinuerlig utfall mot en fast verdi</b></td><td data-t="a89" colspan="3">Én-utvalgs <i>t</i>-test <span class="res">(Wilcoxon signed-rank)</span></td></tr>
+<tr><td data-t="a90"><b>Sammenheng mellom to kontinuerlige</b></td><td data-t="a91" colspan="3">Pearsons <i>r</i> <span class="res">(Spearmans &rho; ved ordinaldata, uteliggere eller krum, men monoton sammenheng)</span></td></tr>
+<tr><td data-t="a92"><b>Predikere et kontinuerlig utfall</b></td><td data-t="a93" colspan="2">Enkel regresjon (én prediktor)</td><td data-t="a94">Multippel regresjon (flere prediktorer, «kontrollere for»)</td></tr>
+<tr><td data-t="a95"><b>Kategorisk utfall</b></td><td data-t="a96" colspan="2">Kjikvadrat: uavhengighetstest (to kategoriske variabler)</td><td data-t="a97">Kjikvadrat: tilpasningstest (én variabel mot forventede andeler)</td></tr>
+</tbody></table></div>
+<details class="mer"><summary data-t="a98">Mer om dette: fire feller i testvalget</summary><div>
+<ol style="margin:4px 0 0;padding-left:20px">
+<li data-t="a99"><b>«Samme personer» er det vanligste feilvalget.</b> Før og etter hos de samme studentene er paret, selv om kolonnene heter noe forskjellig i datasettet.</li>
+<li data-t="a100"><b>Mange <i>t</i>-tester i stedet for én ANOVA</b> blåser opp type I-feilen (Sim 7, fane 3).</li>
+<li data-t="a101"><b>«Virker behandlingen?» med kontrollgruppe og flere målinger er interaksjonen i en blandet ANOVA</b> — ikke hovedeffekten av tid (Sim 25, fane 7).</li>
+<li data-t="a102"><b>Skjeve data betyr ikke automatisk rangtest.</b> Med store og like store grupper er <i>t</i>-testen robust (Sim 33, fane 5). Ulik varians er et større problem — og der hjelper Welch, ikke Mann–Whitney.</li>
+</ol></div></details>
+</div>
+
+<div data-t="a103" class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="D1">D1 Å velge riktig analyse &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+</div>
+
+<script>
+"use strict";
+(function(){
+var $=document.getElementById.bind(document);
+/* ---------- beslutningstreet ---------- */
+var NODE={
+ start:{q:'Hva vil du vite?',o:[
+   ['Om grupper eller målinger er <b>forskjellige</b> (på et tallutfall)','utfall'],
+   ['Om to variabler <b>henger sammen</b>, eller om den ene kan <b>predikere</b> den andre','samm'],
+   ['Om fordelingen av en <b>kategorisk</b> variabel avviker fra en forventning','L:gof']]},
+ utfall:{q:'Hva slags variabel er utfallet (den avhengige variabelen)?',o:[
+   ['Et tall: intervall eller ratio (f.eks. depresjonsskår, selvtillit)','sml'],
+   ['Kategorier (f.eks. fullført ja/nei, fagfelt)','L:uavh'],
+   ['Ordinal med få trinn (f.eks. karakter 1–5, Likert-ledd)','ordinal']]},
+ ordinal:{q:'Ordinalt utfall: vil du behandle det som et tall?',o:[
+   ['Ja — mange trinn og omtrent like avstander, så den vanlige testen er rimelig','sml'],
+   ['Nei — bare rekkefølgen betyr noe: bruk rangtesten','rangvalg']]},
+ rangvalg:{q:'Hvilket design har du?',o:[
+   ['To uavhengige grupper','L:mw'],['Samme personer, to målinger','L:wil'],
+   ['Tre eller flere uavhengige grupper','L:kw'],['Samme personer, tre eller flere målinger','L:fri']]},
+ sml:{q:'Hva sammenligner du?',o:[
+   ['Ett utvalg mot en <b>fast verdi</b> (f.eks. skalamidtpunktet)','L:ett'],
+   ['Grupper eller målinger langs <b>én</b> faktor','antall'],
+   ['To eller flere faktorer samtidig (f.eks. tid <i>og</i> gruppe)','flere']]},
+ antall:{q:'Hvor mange grupper eller målinger?',o:[['To','to'],['Tre eller flere','tre']]},
+ to:{q:'Er det de samme personene i begge?',o:[['Nei — to ulike grupper av personer','L:uavht'],['Ja — samme personer målt to ganger (eller matchede par)','L:paret']]},
+ tre:{q:'Er det de samme personene i alle?',o:[['Nei — ulike grupper av personer','L:enveis'],['Ja — samme personer målt tre eller flere ganger','L:rm']]},
+ flere:{q:'Hvordan er faktorene?',o:[
+   ['Alle er mellom personer (ulike personer i hver celle)','L:fakt'],
+   ['Én er innen personer (tid), én er mellom (gruppe)','L:blandet'],
+   ['Alle er innen personer','L:rm2']]},
+ samm:{q:'Hva slags variabler?',o:[
+   ['Begge er kategoriske','L:uavh'],
+   ['Begge er tall (eller ordinale med mange trinn)','kont'],
+   ['Én er to kategorier, den andre er et tall','L:uavht2']]},
+ kont:{q:'Hva er spørsmålet?',o:[
+   ['Hvor sterkt henger de sammen? (symmetrisk)','korr'],
+   ['Hvor mye endrer utfallet seg per enhet av prediktoren?','L:reg'],
+   ['Predikere utfallet fra flere prediktorer, eller «kontrollere for» noe','L:mreg']]},
+ korr:{q:'Er sammenhengen rett og dataene uten store uteliggere?',o:[['Ja','L:pearson'],['Nei — ordinaldata, uteliggere eller en krum, men monoton sammenheng','L:spearman']]}
+};
+var BLAD={
+ gof:{n:'Kjikvadrat: tilpasningstest (goodness of fit)',j:'Frequencies → Multinomial Test',e:'Cohens <i>w</i>',f:'Forventet antall ≥ 5 i hver kategori',r:'Samle kategorier, eller eksakt test',a:['PSY300_Sim_Kjikvadratlaben.html','Sim 29 · Kjikvadrat: fra krysstabell til p-verdi']},
+ uavh:{n:'Kjikvadrat: uavhengighetstest',j:'Frequencies → Contingency Tables',e:'Cramérs <i>V</i> (eller &phi; for 2 × 2)',f:'Uavhengige observasjoner; forventet antall ≥ 5 i cellene',r:'Fishers eksakte test ved små forventede antall',a:['PSY300_Sim_Kjikvadratlaben.html','Sim 29 · Kjikvadrat: fra krysstabell til p-verdi']},
+ ett:{n:'Én-utvalgs <i>t</i>-test',j:'T-Tests → One Sample T-Test',e:'Cohens <i>d</i>',f:'Tilnærmet normalfordelt utfall (eller stort <i>n</i>)',r:'Wilcoxon signed-rank',a:['PSY300_Sim_Ttesten.html#fane=ettutvalg','Sim 16 · t-testen, fane 11']},
+ uavht:{n:'Uavhengig <i>t</i>-test',j:'T-Tests → Independent Samples T-Test',e:'Cohens <i>d</i>',f:'Uavhengige observasjoner, tilnærmet normale residualer, lik varians',r:'Welch ved ulik varians (bruk den gjerne alltid) · Mann–Whitney ved uteliggere/ordinaldata',a:['PSY300_Sim_Ttesten.html#fane=tverdi','Sim 16 · t-testen']},
+ uavht2:{n:'Uavhengig <i>t</i>-test (en sammenheng mellom en todelt og en kontinuerlig variabel er en gruppeforskjell)',j:'T-Tests → Independent Samples T-Test',e:'Cohens <i>d</i> (eller punkt-biseriell <i>r</i>)',f:'Som for uavhengig <i>t</i>-test',r:'Welch · Mann–Whitney',a:['PSY300_Sim_Korrelasjonsdansen.html','Sim 11 · Korrelasjon: hva r er, og hva som forstyrrer den, fane 12']},
+ paret:{n:'Paret <i>t</i>-test',j:'T-Tests → Paired Samples T-Test',e:'Cohens <i>d</i> (for differansene)',f:'Tilnærmet normalfordelte <b>differanser</b>',r:'Wilcoxon signed-rank',a:['PSY300_Sim_Ttesten.html#fane=paret','Sim 16 · t-testen, fane 10']},
+ enveis:{n:'Enveis-ANOVA',j:'ANOVA → ANOVA',e:'&eta;² eller &omega;²',f:'Uavhengige observasjoner, normale residualer, lik varians (Levene)',r:'Welch-ANOVA ved ulik varians · Kruskal–Wallis · post hoc med korreksjon',a:['PSY300_Sim_Anova.html','Sim 22 · Enveis ANOVA']},
+ rm:{n:'ANOVA for gjentatte målinger',j:'ANOVA → Repeated Measures ANOVA',e:'partiell &eta;²',f:'Sfærisitet (Mauchly), normale differanser',r:'Greenhouse-Geisser-korreksjon · Friedman',a:['PSY300_Sim_GjentatteMaalinger.html#fane=tre','Sim 25 · Gjentatte målinger, fane 3']},
+ rm2:{n:'ANOVA for gjentatte målinger med to innen-faktorer',j:'ANOVA → Repeated Measures ANOVA (to Repeated Measures Factors)',e:'partiell &eta;²',f:'Sfærisitet for hver faktor med mer enn to nivåer',r:'Greenhouse-Geisser-korreksjon',a:['PSY300_Sim_GjentatteMaalinger.html#fane=tre','Sim 25 · Gjentatte målinger']},
+ fakt:{n:'Faktoriell (toveis) ANOVA',j:'ANOVA → ANOVA (to Fixed Factors)',e:'partiell &eta;²',f:'Som enveis-ANOVA, i hver celle',r:'Robuste standardfeil / transformasjon; tolk interaksjonen før hovedeffektene',a:['PSY300_Sim_Faktoriell.html','Sim 24 · Faktoriell ANOVA']},
+ blandet:{n:'Blandet ANOVA (tid × gruppe)',j:'ANOVA → Repeated Measures ANOVA, med gruppe som Between Subject Factor',e:'partiell &eta;² — og det er <b>interaksjonen</b> som svarer på «virker det?»',f:'Sfærisitet, lik varians mellom gruppene på hvert tidspunkt',r:'Greenhouse-Geisser · med to tidspunkter: <i>t</i>-test på endringsskåren',a:['PSY300_Sim_GjentatteMaalinger.html#fane=blandet','Sim 25 · Gjentatte målinger, fane 7']},
+ reg:{n:'Enkel lineær regresjon',j:'Regression → Linear Regression',e:'<i>R</i>² og stigningstallet <i>b</i>',f:'Lineær sammenheng, uavhengige, normale og like spredte residualer',r:'Transformasjon, robuste standardfeil',a:['PSY300_Sim_MinsteKvadrater.html#fane=data','Sim 5 · Regresjon: fra én prediktor til flere']},
+ mreg:{n:'Multippel regresjon',j:'Regression → Linear Regression (flere Covariates)',e:'<i>R</i>², &Delta;<i>R</i>², standardiserte &beta;',f:'Som enkel regresjon, pluss lite multikollinearitet (VIF)',r:'Se Sim 5 fane 7–9 for hva «kontrollere for» gjør',a:['PSY300_Sim_MinsteKvadrater.html#fane=multippel','Sim 5 · Regresjon: fra én prediktor til flere, fane 6']},
+ pearson:{n:'Pearsons korrelasjon <i>r</i>',j:'Regression → Correlation',e:'<i>r</i> selv (og <i>r</i>²)',f:'Lineær sammenheng, ingen store uteliggere, tilnærmet normalfordelte variabler',r:'Spearmans &rho;',a:['PSY300_Sim_Korrelasjonsdansen.html','Sim 11 · Korrelasjon: hva r er, og hva som forstyrrer den']},
+ spearman:{n:'Spearmans &rho;',j:'Regression → Correlation → Spearman',e:'&rho; selv',f:'Monoton sammenheng',r:'—',a:['PSY300_Sim_Tiltakslaben.html#fane=rang','Sim 33 · Forutsetninger og tiltak, fane 4']},
+ mw:{n:'Mann–Whitney <i>U</i>',j:'T-Tests → Independent Samples T-Test → Mann-Whitney',e:'Rang-biseriell korrelasjon',f:'Samme form på fordelingene i begge grupper',r:'Rapporter medianer',a:['PSY300_Sim_Tiltakslaben.html#fane=rang','Sim 33 · Forutsetninger og tiltak, fane 4']},
+ wil:{n:'Wilcoxon signed-rank',j:'T-Tests → Paired Samples T-Test → Wilcoxon signed-rank',e:'Rang-biseriell korrelasjon',f:'Symmetriske differanser',r:'Rapporter medianer',a:['PSY300_Sim_Tiltakslaben.html#fane=rang','Sim 33 · Forutsetninger og tiltak, fane 4']},
+ kw:{n:'Kruskal–Wallis',j:'ANOVA → Nonparametrics → Kruskal-Wallis',e:'rangbasert &eta;², regnet fra <i>H</i>',f:'Samme form på fordelingene',r:'Dunns post hoc-test',a:['PSY300_Sim_Tiltakslaben.html#fane=rang','Sim 33 · Forutsetninger og tiltak, fane 4']},
+ fri:{n:'Friedman',j:'ANOVA → Repeated Measures ANOVA → Nonparametrics → Friedman',e:'Kendalls <i>W</i>',f:'—',r:'Conover post hoc-test',a:['PSY300_Sim_Tiltakslaben.html#fane=rang','Sim 33 · Forutsetninger og tiltak, fane 4']}
+};
+var STI=[];   /* [{node, valgtIndeks}] */
+var FERDIG=null;
+function vis(){
+  var sti='<span class="tvsteg'+(STI.length?'':' naa')+'" data-i="0">Start</span>';
+  STI.forEach(function(s,i){ var o=NODE[s.node].o[s.v]; sti+=' <span class="pil">›</span> <span class="tvsteg" data-i="'+(i+1)+'">'+o[0].replace(/<[^>]+>/g,'').replace(/\s*\(.*$/,'').replace(/ — .*$/,'')+'</span>'; });
+  $('tvSti').innerHTML=sti;
+  Array.prototype.forEach.call(document.querySelectorAll('#tvSti .tvsteg'),function(e){ e.onclick=function(){ STI=STI.slice(0,+e.getAttribute('data-i')); FERDIG=null; vis(); }; });
+  if(FERDIG){
+    var b=BLAD[FERDIG];
+    $('tvSpm').innerHTML='<div class="tvblad"><div class="lbl">Analysen</div><div class="navn">'+b.n+'</div>'
+      +'<div class="rad2"><b>I JASP:</b> '+b.j+'</div>'
+      +'<div class="rad2"><b>Effektstørrelse:</b> '+b.e+'</div>'
+      +'<div class="rad2"><b>Forutsetninger:</b> '+b.f+'</div>'
+      +'<div class="rad2"><b>Hvis de ikke holder:</b> '+b.r+'</div>'
+      +'<div class="rad2"><b>Se det i appen:</b> <a href="'+b.a[0]+'">'+b.a[1]+'</a></div></div>';
+    return;
+  }
+  var id=STI.length?null:'start';
+  if(STI.length){ var sist=STI[STI.length-1], nx=NODE[sist.node].o[sist.v][1]; id=nx; }
+  var n=NODE[id];
+  $('tvSpm').innerHTML='<div class="tvq">'+n.q+'</div>'+n.o.map(function(o,i){ return '<button class="tvo" data-v="'+i+'">'+o[0]+'</button>'; }).join('');
+  Array.prototype.forEach.call(document.querySelectorAll('#tvSpm .tvo'),function(b){
+    b.onclick=function(){ var v=+b.getAttribute('data-v'), nx=n.o[v][1]; STI.push({node:id,v:v});
+      if(nx.indexOf('L:')===0) FERDIG=nx.slice(2); vis(); };
+  });
+}
+$('tvNull').onclick=function(){ STI=[]; FERDIG=null; vis(); };
+/* sti til et blad (for «vis veien») */
+function finnSti(maal){
+  var res=null;
+  (function gaa(id,sti){ if(res) return; NODE[id].o.forEach(function(o,i){ var s2=sti.concat([{node:id,v:i}]);
+    if(o[1]==='L:'+maal){ if(!res) res=s2; } else if(o[1].indexOf('L:')!==0 && sti.length<8) gaa(o[1],s2); }); })('start',[]);
+  return res;
+}
+
+/* ---------- øving ---------- */
+var VALG=[['gof','Kjikvadrat: tilpasning'],['uavh','Kjikvadrat: uavhengighet'],['pearson','Pearsons r'],['spearman','Spearmans ρ'],['reg','Enkel regresjon'],['mreg','Multippel regresjon'],
+  ['ett','Én-utvalgs t-test'],['uavht','Uavhengig t-test'],['paret','Paret t-test'],['mw','Mann–Whitney'],['enveis','Enveis-ANOVA'],['rm','RM-ANOVA'],['fakt','Faktoriell ANOVA'],['blandet','Blandet ANOVA']];
+var SP=[
+ {q:'Arbeidskravet: 248 kvinner og 143 menn. Er det flere kvinner enn en 50/50-fordeling skulle tilsi?',a:['gof'],f:'Én kategorisk variabel mot forventede andeler: tilpasningstest.'},
+ {q:'Arbeidskravet: henger kjønn sammen med om studenten tar et STEM-fag?',a:['uavh'],f:'To kategoriske variabler: kjikvadrat-uavhengighetstest. Rapporter Cramérs <i>V</i>.'},
+ {q:'Terapistudien: henger undertrykkende forsvar sammen med depresjon ved oppstart?',a:['pearson','spearman'],f:'To kontinuerlige variabler, symmetrisk spørsmål: Pearsons <i>r</i> (Spearman hvis sammenhengen ikke er lineær eller det er store uteliggere).'},
+ {q:'Terapistudien: hvor mange poeng høyere depresjon kan vi vente for hvert poeng høyere undertrykkende forsvar?',a:['reg'],f:'«Hvor mye per enhet» er stigningstallet i en enkel regresjon.'},
+ {q:'Arbeidskravet: predikerer selvkritisk perfeksjonisme statistikk-selvtillit når vi tar hensyn til statistikkarakteren?',a:['mreg'],f:'«Når vi tar hensyn til» betyr en ekstra prediktor: multippel regresjon.'},
+ {q:'Terapistudien: skiller ISTDP- og ventelistegruppa seg i depresjon etter behandling?',a:['uavht','mw'],f:'Kontinuerlig utfall, to ulike grupper: uavhengig <i>t</i>-test (gjerne Welch). Mann–Whitney er en forsvarlig reserve fordi ventelistegruppa er skjev.'},
+ {q:'Arbeidskravet: endret statistikk-selvtilliten seg fra før til etter prøven, i hele utvalget?',a:['paret'],f:'Samme personer målt to ganger: paret <i>t</i>-test.'},
+ {q:'Arbeidskravet: ligger selvrapportert statistikkarakter (1–5) i snitt over skalamidtpunktet 3?',a:['ett'],f:'Ett utvalg mot en fast verdi: én-utvalgs <i>t</i>-test.'},
+ {q:'Arbeidskravet: skiller statistikk-selvtilliten før prøven seg mellom de fem fagfeltene?',a:['enveis'],f:'Én faktor med fem nivåer, ulike personer: enveis-ANOVA, med post hoc-tester.'},
+ {q:'Terapistudien: endret depresjonen seg hos de 36 ISTDP-pasientene fra oppstart til etter behandling til 3 måneder?',a:['rm'],f:'Samme personer, tre målinger: ANOVA for gjentatte målinger.'},
+ {q:'Terapistudien: falt depresjonen mer i ISTDP-gruppa enn i ventelistegruppa over de tre målingene?',a:['blandet'],f:'Tid (innen) og gruppe (mellom): blandet ANOVA, og svaret ligger i interaksjonen tid × gruppe.'},
+ {q:'Arbeidskravet: avhenger effekten av vanskelig prøve på selvtilliten (endringsskåren) av om studenten er kvinne eller mann?',a:['fakt'],f:'To mellom-faktorer (betingelse og kjønn) og spørsmålet «avhenger av»: faktoriell ANOVA, interaksjonen.'},
+ {q:'Terapistudien: er fordelingen av antall tidligere behandlingsforsøk (1, 2, 3 eller flere) lik i de to gruppene?',a:['uavh','mw'],f:'Randomiseringssjekk på en variabel med tre kategorier: kjikvadrat-uavhengighetstest. Siden kategoriene er ordnet, er Mann–Whitney også forsvarlig.'},
+ {q:'Terapistudien: var depresjonen ved oppstart forskjellig for pasienter med og uten medisinbruk?',a:['uavht','mw'],f:'Kontinuerlig utfall, to ulike grupper: uavhengig <i>t</i>-test.'},
+ {q:'Arbeidskravet: henger statistikkarakteren (1–5) sammen med karakterene generelt (1–5)?',a:['spearman','pearson'],f:'To ordinale variabler med fem trinn: Spearmans &rho; er det tryggeste. Pearson brukes ofte i praksis og gir her nesten samme svar.'},
+ {q:'Arbeidskravet: fikk studentene som fikk den vanskelige prøven lavere prøveskår (0–5) enn de som fikk den lette?',a:['uavht','mw'],f:'To ulike grupper og et tallutfall: uavhengig <i>t</i>-test. Skåren er diskret og skjev, men gruppene er store og like store, så <i>t</i>-testen er robust — Mann–Whitney gir samme konklusjon.'}
+];
+var OV={rekke:[],i:-1,riktig:0,svart:0,ferdig:false};
+function stokk(){ OV.rekke=SP.map(function(_,i){return i;}); for(var i=OV.rekke.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=OV.rekke[i]; OV.rekke[i]=OV.rekke[j]; OV.rekke[j]=t; } }
+function neste(){
+  OV.i++; if(OV.i>=OV.rekke.length){ stokk(); OV.i=0; }
+  var s=SP[OV.rekke[OV.i]]; OV.ferdig=false;
+  $('ovSpm').innerHTML=s.q; $('ovNr').textContent='spørsmål '+(OV.i+1)+' av '+SP.length;
+  $('ovValg').innerHTML=VALG.map(function(v){ return '<button class="btn2 ovb" data-k="'+v[0]+'">'+v[1]+'</button>'; }).join('');
+  $('ovSvar').style.display='none'; $('ovTre').style.display='none';
+  Array.prototype.forEach.call(document.querySelectorAll('#ovValg .ovb'),function(b){ b.onclick=function(){ svar(b.getAttribute('data-k')); }; });
+}
+function svar(k){
+  if(OV.ferdig) return; OV.ferdig=true;
+  var s=SP[OV.rekke[OV.i]], ok=s.a.indexOf(k)>=0; OV.svart++; if(ok) OV.riktig++;
+  $('ovTeller').textContent=OV.riktig+' av '+OV.svart;
+  Array.prototype.forEach.call(document.querySelectorAll('#ovValg .ovb'),function(b){ var kk=b.getAttribute('data-k');
+    if(s.a[0]===kk) b.classList.add('rett'); else if(s.a.indexOf(kk)>=0) b.classList.add('ok'); else if(kk===k) b.classList.add('feil'); });
+  $('ovSvar').style.display='block';
+  $('ovSvar').innerHTML=(ok?'<b>Riktig.</b> ':'<b>Ikke helt.</b> ')+s.f+(s.a.length>1&&ok&&k!==s.a[0]?' (Det beste svaret er '+VALG.filter(function(v){return v[0]===s.a[0];})[0][1]+'.)':'');
+  OV.maal=s.a[0]; $('ovTre').style.display='';
+}
+$('ovNeste').onclick=neste;
+$('ovTre').onclick=function(){ var st=finnSti(OV.maal); if(st){ STI=st; FERDIG=OV.maal; } visFane('tre'); vis(); window.scrollTo({top:0,behavior:'smooth'}); };
+
+/* ---------- faner ---------- */
+var FANER=['hvorfor','tre','ov','ark'];
+function visFane(f){ if(FANER.indexOf(f)<0) f='hvorfor';
+  FANER.forEach(function(x){ $('fane-'+x).classList.toggle('hide',x!==f); });
+  document.querySelectorAll('.fane').forEach(function(b){ b.classList.toggle('on',b.dataset.fane===f); });
+  try{ history.replaceState(null,'','#fane='+f); }catch(e){} }
+document.querySelectorAll('.fane').forEach(function(b){ b.onclick=function(){ visFane(b.dataset.fane); }; });
+var q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'')).get('fane');
+stokk(); neste(); vis(); visFane(q||'hvorfor');
+})();
+</script>
+
+<script>
+/* ===== PSY300 anonym bruksstatistikk =====================================
+   Sender to signaler til det samme Apps Script-endepunktet som MCQ-appen:
+   ett når appen åpnes, ett når fanen lukkes (med antall sekunder aktiv og
+   antall interaksjoner). Ingen navn, ingen kode, ingen IP — bare app-id,
+   tidspunkt og varighet. Lim inn /exec-URL-en under; står plassholderen
+   igjen, sendes ingenting og appen fungerer helt som før.                */
+const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA05xK7n1rC0ex_UVpNAjJPYNmRqvGfgUGuXp0EclxmyFUeKeVktMfg5YQ/exec";
+(function(){
+  if(!PSY300_USAGE_URL || PSY300_USAGE_URL.indexOf("PASTE_")>=0) return;
+  var APP="Sim 34", NAVN="Hvilken test når?";
+  var t0=Date.now(), aktiv=0, sist=Date.now(), interaksjoner=0, sendt=false;
+  var sid=Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8);
+  // tell bare tid der fanen faktisk er synlig
+  function tikk(){ if(!document.hidden){ var na=Date.now(); aktiv+=Math.min(30000,na-sist); sist=na; } else { sist=Date.now(); } }
+  setInterval(tikk, 5000);
+  document.addEventListener("visibilitychange", tikk);
+  ["click","input","change","touchstart"].forEach(function(ev){
+    document.addEventListener(ev, function(){ interaksjoner++; }, {passive:true, capture:true});
+  });
+
+  /* Skiller underviserens egen bruk fra studentenes. Åpne en app én gang med
+     ?rolle=underviser, så huskes det i denne nettleseren til du åpner med
+     ?rolle=student. Ingen innlogging, ingen personopplysninger.            */
+  function PSY300_ROLLE(){
+    try{
+      var q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'')).get("rolle");
+      if(q==="underviser"||q==="student"){ localStorage.setItem("psy300_rolle",q); }
+      return localStorage.getItem("psy300_rolle")||"student";
+    }catch(e){ return "student"; }
+  }
+  function send(type){
+    if(type==="lukket"){ if(sendt) return; sendt=true; tikk(); }
+    var payload=JSON.stringify({kind:"usage", app:APP, navn:NAVN, event:type,
+      session_id:sid, sekunder:Math.round(aktiv/1000), interaksjoner:interaksjoner,
+      innebygd:(window.top!==window.self)?1:0, rolle:PSY300_ROLLE()});
+    try{
+      if(type==="lukket" && navigator.sendBeacon){
+        navigator.sendBeacon(PSY300_USAGE_URL, new Blob([payload],{type:"text/plain;charset=utf-8"}));
+      } else {
+        fetch(PSY300_USAGE_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:payload, keepalive:true}).catch(function(){});
+      }
+    }catch(e){}
+  }
+  send("apnet");
+  window.addEventListener("pagehide", function(){ send("lukket"); });
+  document.addEventListener("visibilitychange", function(){ if(document.hidden) send("lukket"); });
+})();
+/* ===== slutt bruksstatistikk ============================================ */
+
+/* ===== Presentasjonsmodus: skjuler brødtekst og ordliste, strammer marger === */
+(function(){
+  var b=document.createElement("button");
+  b.className="presbtn"; b.type="button";
+  b.title="Skjuler forklarende tekst og ordlisten, slik at figuren og kontrollene fyller lerretet (snarvei: P)";
+  var av="Presentasjonsmodus", pa="Vis all tekst igjen";
+  b.textContent=av;
+  function veksle(){
+    var på=document.body.classList.toggle("pres");
+    b.textContent=på?pa:av;
+    window.dispatchEvent(new Event("resize"));
+  }
+  b.addEventListener("click",veksle);
+  document.addEventListener("keydown",function(e){
+    if((e.key==="p"||e.key==="P")&&!/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) veksle();
+  });
+  document.body.appendChild(b);
+})();
+
+</script>
+
+<script id="ovbegrep-js">
+(function(){
+  // Lokalt: appene ligger i PSY300_Sim_Apps/, MCQ-appen i PSY300_online/.
+  // Publisert: alt ligger flatt. Velg prefiks ut fra adressen.
+  var p = location.pathname.indexOf('/PSY300_Sim_Apps/') >= 0
+        ? '../PSY300_online/' : './';
+  var a = document.querySelectorAll('a.ovlenke[data-begrep]');
+  for (var i=0;i<a.length;i++){
+    a[i].href = p + 'PSY300_MCQ_Online.html?begrep=' + a[i].getAttribute('data-begrep');
+    a[i].target = '_blank'; a[i].rel = 'noopener';
+  }
+})();
+</script>
+<script>
+/* ===== PSY300 språklag ===== */
+/* Engelsk drakt oppå den norske. Norsk er kilden; engelsk ligger i ordbøkene
+   under. Valget huskes i nettleseren og deles mellom appene. */
+(function(){
+  var AVSNITT_EN = {"a1": "Sim 34 · Which test when?", "a2": "PSY300 · Lecture 8 · From research question to the right analysis: the decision tree step by step, practice on real questions from the course's two datasets, and the whole toolbox on one sheet", "a3": "0 &middot; Why test choice?", "a4": "1 · The decision tree", "a5": "2 · Practice: which test?", "a6": "3 · The whole toolbox", "a7": "The question this app answers", "a8": "“Which test should I use?”", "a9": "This is the question students ask most often, and the one that most often gets the wrong answer &mdash; not because the tests are hard, but because the question is asked too late. The test follows from the <b>design</b>, and the design follows from the <b>hypothesis</b>. If you are stuck here, it is usually because the hypothesis is not sharp enough yet.", "a10": "The good news is that the choice is almost always settled by three questions: <b>what kind of outcome</b> do you have (a number or a category), <b>how many groups or measurements</b>, and is it the <b>same people</b> or different ones? Answer those three, and the list of candidate tests is rarely longer than o<i>ne</i>.", "a12": "This app is the reference work. Tab 1 is the decision tree you walk through step by step, tab 2 is practice on real examples, and tab 3 is the whole toolbox on one sheet &mdash; the one to keep open while you write.", "a13": "What settles the choice — and what does not", "a14": "✓ This determines the test", "a15": "<b>The measurement level of the outcome.</b> Number or category? A categorical outcome points to chi-square, a continuous one to the <i>t</i>-test, ANOVA or regression.", "a16": "<b>The number of groups or measurements.</b> Two &rarr; <i>t</i>-test. Three or more &rarr; ANOVA. No groups, just two numerical variables &rarr; correlation or regression.", "a17": "<b>Same people or different ones?</b> Before and after in the same people is <b>paired</b>, even when the columns are named differently. <span class=\"eks\">This is the most common wrong choice in the whole course.</span>", "a18": "<b>What kind of question you are asking.</b> “Are the groups different?” and “do these two go together?” are not the same question, and not the same test.", "a19": "✗ This does not determine it", "a20": "<b>What the data look like.</b> A skewed distribution does not automatically make a rank test the right choice &mdash; with large and equally sized groups the <i>t</i>-test is robust. <span class=\"eks\">Unequal variance is a bigger problem, and there Welch helps. Sim 33.</span>", "a21": "<b>Which test gives the lowest <i>p</i>.</b> Trying several and keeping the one that “worked” is <i>p</i>-hacking &mdash; however reasonable each single test looked on its own.", "a22": "<b>What is easiest in JASP.</b> The menus are organised by name, not by design.", "a23": "<b>What your neighbour used.</b> The same field does not mean the same design.", "a25": "The rough sorting, in five lines", "a26": "Before you enter the decision tree: this is the map in broad strokes. Each row points to the app that covers it.", "a27": "Your question", "a28": "The method", "a29": "Where", "a30": "Do <b>two groups</b> differ on average?", "a31": "Independent <i>t</i>-test", "a32": "Sim 16", "a33": "Did <b>the same people</b> change from before to after?", "a34": "Paired <i>t</i>-test", "a35": "Sim 16", "a36": "Do <b>three or more groups</b> differ?", "a37": "One-way ANOVA", "a38": "Sim 22", "a39": "Do two factors work together?", "a40": "Factorial ANOVA", "a41": "Sim 24", "a42": "Several measurements over time, with and without a control group?", "a43": "RM-ANOVA / mixed ANOVA", "a44": "Sim 25", "a45": "Do <b>two numerical variables</b> go together?", "a46": "Correlation", "a47": "Sim 11", "a48": "Can I <b>predict</b> a number, and how far off am I?", "a49": "Regression", "a50": "Sim 5", "a51": "Does the relationship hold when I control for something?", "a52": "Multiple regression", "a53": "Sim 5, tabs 7–9", "a54": "Do <b>two categories</b> go together?", "a55": "Chi-square", "a56": "Sim 29", "a57": "<b>I do not know which of these it is</b>", "a58": "The decision tree", "a59": "tab 1", "a63": "Answer the questions, one at a time", "a64": "Almost every test choice in the course is settled by four questions: <b>What do you want to know?</b> <b>What kind of variable is the outcome?</b> <b>How many groups or measurements?</b> <b>Is it the same people?</b> Click your way down. You can click an earlier step at any time to go back.", "a65": "Start over", "a68": "Which analysis answers the question?", "a69": "All the questions are taken from the course's two datasets: the therapy study (ISTDP versus waiting list, depression measured three times) and the group assignment (statistics self-efficacy before and after an easy or a hard test). Think through the four questions from tab 1 before you choose.", "a71": "Next question", "a72": "Show the path through the decision tree", "a74": "The whole toolbox on one sheet", "a75": "The rows are what you want to know, the columns are the design. The fallback in brackets is what you use when the assumptions do not hold.", "a76": "Outcome and question", "a77": "Two groups / measurements", "a78": "Three or more", "a79": "Two or more factors", "a80": "<b>Continuous outcome, different people</b> (between)", "a81": "Independent <i>t</i>-test <span class=\"res\">(Welch · Mann–Whitney)</span>", "a82": "One-way ANOVA <span class=\"res\">(Welch ANOVA · Kruskal–Wallis)</span>", "a83": "Factorial ANOVA", "a84": "<b>Continuous outcome, same people</b> (within)", "a85": "Paired <i>t</i>-test <span class=\"res\">(Wilcoxon signed-rank)</span>", "a86": "Repeated-measures ANOVA <span class=\"res\">(Greenhouse-Geisser · Friedman)</span>", "a87": "Mixed ANOVA (within + between)", "a88": "<b>Continuous outcome against a fixed value</b>", "a89": "One-sample <i>t</i>-test <span class=\"res\">(Wilcoxon signed-rank)</span>", "a90": "<b>Relationship between two continuous variables</b>", "a91": "Pearson's <i>r</i> <span class=\"res\">(Spearman's &rho; for ordinal data, outliers, or a curved but monotonic relationship)</span>", "a92": "<b>Predicting a continuous outcome</b>", "a93": "Simple regression (one predictor)", "a94": "Multiple regression (several predictors, “controlling for”)", "a95": "<b>Categorical outcome</b>", "a96": "Chi-square: test of independence (two categorical variables)", "a97": "Chi-square: goodness-of-fit test (one variable against expected proportions)", "a98": "More on this: four traps in choosing a test", "a99": "<b>“Same people” is the most common wrong choice.</b> Before and after in the same students is paired, even when the columns are named differently in the dataset.", "a100": "<b>Many <i>t</i>-tests instead of one ANOVA</b> inflates the type I error rate (Sim 7, tab 3).", "a101": "<b>“Does the treatment work?” with a control group and several measurements is the interaction in a mixed ANOVA</b> — not the main effect of time (Sim 25, tab 7).", "a102": "<b>Skewed data does not automatically mean a rank test.</b> With large and equally sized groups the <i>t</i>-test is robust (Sim 33, tab 5). Unequal variance is a bigger problem — and there Welch helps, not Mann–Whitney.", "a11": "<span class=\"lbl\">In one line</span>\n<b>The test is chosen by the design, not by the data. And never after you have seen the result &mdash; at that point the <i>p</i>-value is no longer interpretable.</b>", "a24": "<b>The most important of them:</b> “same people or different ones?”. The paired and the independent <i>t</i>-test answer different questions and give different answers to the same numbers. Get this wrong and the rest of the analysis is wrong &mdash; and JASP says nothing.", "a60": "<b>Recognise the pattern:</b> if you are asking whether <b>groups differ</b>, it is a <i>t</i>-test or ANOVA. If you are asking whether <b>two numerical variables go together</b>, it is correlation or regression. If you are asking about <b>categories</b>, it is chi-square. That rough sorting settles most cases on its own.", "a61": "<span class=\"lbl\">Ready for the rest of the app?</span>\n<b>Take one sentence from here: <i>outcome, number of groups, same or different people &mdash; those three almost always settle the test.</i> Tab 1 is the tree. Tab 2 is the practice. Tab 3 is the sheet you keep open while you write.</b>", "a62": "<span class=\"ovlbl\">Practice this</span><a class=\"ovlenke\" data-begrep=\"D1\">D1 Choosing the right analysis &rarr;</a><a class=\"ovlenke\" data-begrep=\"A1\">A1 Hypothesis, theory and variables &rarr;</a><a class=\"ovlenke\" data-begrep=\"A2\">A2 Levels of measurement &rarr;</a><span class=\"ovhint\">opens the item bank filtered to these items only</span>", "a67": "<span class=\"ovlbl\">Practice this</span><a class=\"ovlenke\" data-begrep=\"D1\">D1 Choosing the right analysis &rarr;</a><span class=\"ovhint\">opens the item bank filtered to these items only</span>", "a73": "<span class=\"ovlbl\">Practice this</span><a class=\"ovlenke\" data-begrep=\"D1\">D1 Choosing the right analysis &rarr;</a><span class=\"ovhint\">opens the item bank filtered to these items only</span>", "a103": "<span class=\"ovlbl\">Practice this</span><a class=\"ovlenke\" data-begrep=\"D1\">D1 Choosing the right analysis &rarr;</a><span class=\"ovhint\">opens the item bank filtered to these items only</span>", "a66": "<div class=\"keybox\"><span class=\"lbl\">The main point</span>\n<b>The test is chosen by the design, not by the data: what kind of outcome you have, how many groups or measurements, and whether it is the same people. The assumptions only decide whether you need the fallback (Welch, a rank test, a correction).</b></div>", "a70": "<span class=\"stat\" id=\"ovTeller\">0 of 0</span><span class=\"muted\" id=\"ovNr\" style=\"font-size:14px\"></span>"};
+  var ORD_EN = {"PSY300 · Sim 34 — Hvilken test når?": "PSY300 · Sim 34 — Which test when?"};
+  var SPRAAK = 'no';
+  try { SPRAAK = localStorage.getItem('psy300_app_spraak') || 'no'; } catch(e) {}
+  var NO_TEKST = new WeakMap(), NO_AVSNITT = {};
+  function tekstnoder(rot){
+    var ut = [];
+    (function gaa(n){
+      for (var i = 0; i < n.childNodes.length; i++){
+        var b = n.childNodes[i];
+        if (b.nodeType === 3){ if (b.nodeValue.trim()) ut.push(b); }
+        else if (b.nodeType === 1 && b.tagName !== 'SCRIPT' && b.tagName !== 'STYLE'
+                 && !b.hasAttribute('data-t')) gaa(b);
+      }
+    })(rot);
+    return ut;
+  }
+  function oversettNode(t){
+    if (!NO_TEKST.has(t)) NO_TEKST.set(t, t.nodeValue);
+    var no = NO_TEKST.get(t);
+    if (SPRAAK !== 'en'){ t.nodeValue = no; return; }
+    var kjerne = no.trim(),
+        pre = no.slice(0, no.length - no.replace(/^\s+/, '').length),
+        post = no.slice(no.replace(/\s+$/, '').length),
+        flat = kjerne.replace(/\s+/g, ' ');
+    var ny = ORD_EN[kjerne] || ORD_EN[flat];
+    t.nodeValue = pre + (ny == null ? kjerne : ny) + post;
+  }
+  function oversettAlt(){
+    try {
+      var rot = document.body, blokker = rot.querySelectorAll('[data-t]');
+      for (var i = 0; i < blokker.length; i++){
+        var el = blokker[i], k = el.getAttribute('data-t');
+        if (NO_AVSNITT[k] == null) NO_AVSNITT[k] = el.innerHTML;
+        el.innerHTML = (SPRAAK === 'en' && AVSNITT_EN[k]) ? AVSNITT_EN[k] : NO_AVSNITT[k];
+      }
+      var noder = tekstnoder(rot);
+      for (var j = 0; j < noder.length; j++) oversettNode(noder[j]);
+      document.documentElement.lang = (SPRAAK === 'en') ? 'en' : 'no';
+      if (NO_AVSNITT.__tittel == null) NO_AVSNITT.__tittel = document.title;
+      var tEn = ORD_EN[NO_AVSNITT.__tittel];
+      document.title = (SPRAAK === 'en' && tEn) ? tEn : NO_AVSNITT.__tittel;
+      var b = document.getElementById('psy300LangBtn');
+      if (b) b.textContent = (SPRAAK === 'en') ? 'Norsk' : 'English';
+    } catch(e){ if (window.console) console.error('språkbytte feilet:', e); }
+  }
+  window.PSY300_T = function(s){ return (SPRAAK === 'en') ? (ORD_EN[s] || s) : s; };
+  window.PSY300_SPRAAK = function(){ return SPRAAK; };
+  window.PSY300_oversett = oversettAlt;
+
+  var knapp = document.createElement('button');
+  knapp.id = 'psy300LangBtn'; knapp.type = 'button';
+  knapp.title = 'Switch between Norwegian and English';
+  knapp.style.cssText = 'position:fixed;right:12px;top:12px;z-index:60;background:#fff;color:#1F3864;'
+    + 'border:1px solid #d9dee8;border-radius:20px;padding:7px 14px;font-size:14px;font-weight:700;'
+    + 'box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer;opacity:.85;font-family:inherit';
+  knapp.textContent = 'English';
+  knapp.addEventListener('click', function(){
+    SPRAAK = (SPRAAK === 'en') ? 'no' : 'en';
+    try { localStorage.setItem('psy300_app_spraak', SPRAAK); } catch(e){}
+    oversettAlt();
+    window.dispatchEvent(new Event('resize'));
+    setTimeout(oversettAlt, 30);
+  });
+  document.body.appendChild(knapp);
+
+  var planlagt = false;
+  window.addEventListener('resize', function(){
+    if (planlagt) return; planlagt = true;
+    setTimeout(function(){ planlagt = false; if (SPRAAK === 'en') oversettAlt(); }, 60);
+  });
+  document.addEventListener('click', function(){ if (SPRAAK === 'en') setTimeout(oversettAlt, 40); }, true);
+  document.addEventListener('change', function(){ if (SPRAAK === 'en') setTimeout(oversettAlt, 40); }, true);
+  oversettAlt();
+})();
+</script>
+</body></html>
