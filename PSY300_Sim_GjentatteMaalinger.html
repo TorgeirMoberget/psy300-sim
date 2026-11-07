@@ -806,6 +806,18 @@ details.mer>div>b{color:#16203A}
   font-size:16px;line-height:1.5}
 .pf7ok{border-left:4px solid #2E7D32;padding:4px 0 4px 12px;margin:10px 0;
   font-size:16px;line-height:1.5}
+/* ---------- FANEHJELP ---------- */
+.fhboks{background:var(--card,#fff);border:1px solid var(--line,#d9dee8);
+  border-left:5px solid var(--blue,#2E5496);border-radius:12px;padding:16px;
+  margin:0 0 14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.fhlbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--navy,#1F3864);font-weight:700;margin:0 0 4px}
+.fhlbl.sek{margin-top:12px}
+.fhkort{font-size:16px;margin:0}
+.fhsteg{font-size:16px;margin:0;padding-left:22px}
+.fhsteg li{margin:0 0 3px}
+.fhsee{font-size:16px;margin:0}
+/* ---------- FANEHJELP slutt ---------- */
 </style><style>#blSpm .btn2.on{background:var(--navy,#1F3864);color:#fff}</style><style>
 /* ---- innlemmet: rmg ---- */
 #fane-rmg .k-sig{color:var(--sig);font-weight:600}
@@ -1027,6 +1039,20 @@ Det er residualen, og det er den vi kvadrerer og summerer n&aring;r vi regner ut
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C10">C10 ANOVA med gjentatte målinger &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-hvorfor -->
 <div id="fane-sim" class="hide">
+<!-- FANEHJELP sim -->
+<div class="fhboks">
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Dra «Innen-person-korrelasjon r (pre, post)» fra lav til høy.</li>
+<li>Trykk «Ny simulering» noen ganger ved hver innstilling.</li>
+<li>Trykk «Kjør 2 000 simuleringer (styrke)».</li>
+<li>Trykk «Vis de EKTE ISTDP-pasientene», så FØR- og ETTER-knappen i figuren.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Signalet står stille mens støyen krymper. Jo sterkere før og etter henger sammen, desto større blir gevinsten — og med lav korrelasjon er det nesten ingenting å hente på designet.</p>
+</div>
+<!-- /FANEHJELP sim -->
+
 <div class="card intu"><!-- SIM25-INTUISJON -->
 <div class="intulbl">Kort fortalt</div>
 <p class="intutekst">Tenk på <i>F</i> som signal delt på støy. Signalet — endringen du vil måle — er det samme uansett hvordan du samler inn dataene.</p>
@@ -1105,6 +1131,20 @@ måletidspunkt, der RM-ANOVA er det eneste alternativet.</p>
 </div><!-- /fane-sim -->
 
 <div id="fane-hund" class="hide">
+<!-- FANEHJELP hund -->
+<div class="fhboks">
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Se på de åtte linjene: de starter på vidt forskjellige nivåer.</li>
+<li>Trykk «ETTER · hundeforskjellene trukket ut».</li>
+<li>Hold øye med de tykke prikkene mens du trykker.</li>
+<li>Trykk «FØR · rådata» og tilbake igjen et par ganger.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">De tykke betingelsessnittene rører seg ikke i det hele tatt, og aksen står stille. Det eneste som forsvinner, er at hundene er ulikt snakkesalige — og det er nettopp den biten som ellers ville ligget i nevneren.</p>
+</div>
+<!-- /FANEHJELP hund -->
+
 <div class="card intu"><!-- SIM25-INTUISJON -->
 <div class="intulbl">Kort fortalt</div>
 <p class="intutekst">Hundene gir ulikt mye lyd fra seg uansett hva de lukter: noen er bare mer snakkesalige enn andre. Den forskjellen har ingenting med spørsmålet å gjøre.</p>
@@ -1177,6 +1217,19 @@ på nytt fra de 32 rådataene.</p>
 
 
 <div id="fane-tre" class="hide">
+<!-- FANEHJELP tre -->
+<div class="fhboks">
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Se på de tre bjelkebreddene: tid, person, feil.</li>
+<li>Regn etter at de tre summerer til totalen.</li>
+<li>Åpne «Mer om dette» og les hvorfor frihetsgradene ser slik ut.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Personbiten tas ut av nevneren før <i>F</i> regnes, og den er stor — 1877 av 5843 i terapistudien. Det er hele gevinsten, og den koster frihetsgrader.</p>
+</div>
+<!-- /FANEHJELP tre -->
+
 <div class="card intu"><!-- SIM25-INTUISJON -->
 <div class="intulbl">Kort fortalt</div>
 <p class="intutekst">Med tre målinger kan du ikke bare kjøre tre tester mot hverandre — da blir sjansen for falsk alarm 14 % i stedet for 5 %. Du stiller étt spørsmål i stedet.</p>
@@ -1237,6 +1290,19 @@ overlever her fordi effekten er enorm. Med en typisk psykologieffekt ville den i
 </div><!-- /fane-tre -->
 
 <div id="fane-regnskap" class="hide">
+<!-- FANEHJELP regnskap -->
+<div class="fhboks">
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «Neste trinn» gjennom hele oppdelingen.</li>
+<li>Sammenlign de to nevnerne i effektstørrelsesfiguren.</li>
+<li>Trykk «Start forfra» og gå gjennom en gang til.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Samme teller, to nevnere, to helt ulike tall: .785 mot .533. JASP gir deg den ene uten å si fra — derfor må du alltid skrive hvilket effektmål du har brukt.</p>
+</div>
+<!-- /FANEHJELP regnskap -->
+
 <div class="card intu"><!-- SIM25-INTUISJON -->
 <div class="intulbl">Kort fortalt</div>
 <p class="intutekst">Effektstørrelsen svarer på «hvor mye av variasjonen henger sammen med tid?». Problemet er at det finnes <b>to rimelige måter å svare på</b>, og JASP gir deg den ene uten å si fra.</p>
@@ -1358,6 +1424,20 @@ Olejnik, S. &amp; Algina, J. (2003). Generalized eta and omega squared statistic
 </div><!-- /fane-regnskap -->
 
 <div id="fane-fabrikk" class="hide">
+<!-- FANEHJELP fabrikk -->
+<div class="fhboks">
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Dra «Avstand mellom betingelsessnittene» og se begge <i>F</i>-ene vokse.</li>
+<li>Dra «Spredning mellom personer» fram og tilbake.</li>
+<li>Dra «Antall personer n» og «Antall betingelser k».</li>
+<li>Trykk «Sett til snifferhundene».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Den andre skyveren er hele forelesningen: RM-<i>F</i> står bom stille mens <i>F</i> for uavhengige grupper kollapser. De tre andre skyverne oppfører seg som i de andre appene.</p>
+</div>
+<!-- /FANEHJELP fabrikk -->
+
 <div class="card intu"><!-- SIM25-INTUISJON -->
 <div class="intulbl">Kort fortalt</div>
 <p class="intutekst">Her kan du skru på tallene selv. Tre av skyverne oppfører seg som i ANOVA-appen: større forskjell gir større <i>F</i>, mer støy gir mindre, flere personer gir større.</p>
@@ -1416,6 +1496,20 @@ du måler &mdash; <i>n</i> lager ikke en effekt, den gjør bare en ekte effekt l
 
 
 <div id="fane-sfare" class="hide">
+<!-- FANEHJELP sfare -->
+<div class="fhboks">
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Se på de tre båndene øverst: tre differanser, tre spredninger.</li>
+<li>Les tabellen med de faktiske variansene i ISTDP-gruppa.</li>
+<li>Les hva Greenhouse-Geisser gjør med frihetsgradene.</li>
+<li>Les rådet om Mauchlys test til slutt.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">De tre differansene spriker ulikt, og det er det vanlige — målinger som ligger tett i tid henger tettere sammen. Da blir testen for snill, og korreksjonen strammer den inn ved å krympe frihetsgradene.</p>
+</div>
+<!-- /FANEHJELP sfare -->
+
 <div class="card intu"><!-- SIM25-INTUISJON -->
 <div class="intulbl">Kort fortalt</div>
 <p class="intutekst">Med tre målinger finnes det tre differanser: før–etter, før–3 måneder og etter–3 måneder. Testen går ut fra at de tre spriker like mye.</p>
@@ -1509,6 +1603,19 @@ snill mot deg &mdash; og Greenhouse-Geisser strammer den inn ved å ta frihetsgr
 </div><!-- /fane-sfare -->
 
 <div id="fane-posthoc" class="hide">
+<!-- FANEHJELP posthoc -->
+<div class="fhboks">
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Se på de tre sammenligningene i figuren.</li>
+<li>Les tabellen med korrigerte <i>p</i>-verdier og Cohens <i>d</i>.</li>
+<li>Merk deg hvilken av de tre som er den klinisk interessante.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Alle tre er signifikante, men den midterste er den som sier noe nytt: bedringen fortsatte etter at behandlingen var over. Og sammenligningene er parete — du betaler for at det er flere av dem.</p>
+</div>
+<!-- /FANEHJELP posthoc -->
+
 <div class="card intu"><!-- SIM25-INTUISJON -->
 <div class="intulbl">Kort fortalt</div>
 <p class="intutekst">Omnibustesten sier bare at <b>noe</b> endret seg et sted mellom de tre tidspunktene. Den sier ikke hvor.</p>
@@ -1545,6 +1652,19 @@ Tukey ikke tilbys her &mdash; den forutsetter uavhengige grupper. Bruk <b>Bonfer
 </div><!-- /fane-posthoc -->
 
 <div id="fane-ekte" class="hide">
+<!-- FANEHJELP ekte -->
+<div class="fhboks">
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Se på de to forløpene i figuren.</li>
+<li>Les tabellen med gjennomsnitt per gruppe og tidspunkt.</li>
+<li>Sammenlign de to <i>F</i>-ene og de to effektstørrelsene.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Begge linjene faller signifikant, men ventelistegruppa falt 1.2 poeng — det er ingen som ville merket. «Signifikant» og «betyr noe» er to ulike spørsmål, og her ser du dem skille lag.</p>
+</div>
+<!-- /FANEHJELP ekte -->
+
 <div class="card intu"><!-- SIM25-INTUISJON -->
 <div class="intulbl">Kort fortalt</div>
 <p class="intutekst">Begge gruppene ble bedre, og begge endringene er statistisk signifikante. Det høres ut som to funn, men er det ikke.</p>
@@ -1593,6 +1713,20 @@ dem.</b></div>
 </div><!-- /fane-ekte -->
 
 <div id="fane-blandet" class="hide">
+<!-- FANEHJELP blandet -->
+<div class="fhboks">
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk deg gjennom «Dataene», «Hovedeffekt: tid», «Hovedeffekt: gruppe» og «Interaksjonen tid × gruppe».</li>
+<li>Trykk «Alle blir bedre, terapien gjør ingenting» og se hva analysen sier.</li>
+<li>Trykk «Gruppene var ulike fra start», så «Terapien virker».</li>
+<li>Huk av «vis hver pasient som en tynn linje».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Bare interaksjonen svarer på om behandlingen virker. «Alle ble bedre» er ikke et funn, og «gruppene er ulike» kan skyldes at de var ulike fra start — de to knappene viser nettopp det.</p>
+</div>
+<!-- /FANEHJELP blandet -->
+
 <div class="card intu"><!-- SIM25-INTUISJON -->
 <div class="intulbl">Kort fortalt</div>
 <p class="intutekst">Når du har både flere målinger og flere grupper, gir analysen deg tre svar. To av dem er lette å misforstå.</p>
@@ -1688,6 +1822,19 @@ dem.</b></div>
 
 
 <div id="fane-feller" class="hide">
+<!-- FANEHJELP feller -->
+<div class="fhboks">
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les frafallsregnskapet øverst: 86 startet, 75 har alle tre målingene.</li>
+<li>Gå gjennom forutsetningene i rekkefølge.</li>
+<li>Merk deg hvilken som er ny i denne analysen.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Mangler en person én måling, faller hele personen ut av analysen — ikke bare den ene målingen. Elleve personer koster altså tre målinger hver, og de som faller fra er sjelden tilfeldige.</p>
+</div>
+<!-- /FANEHJELP feller -->
+
 <div class="card intu"><!-- SIM25-INTUISJON -->
 <div class="intulbl">Kort fortalt</div>
 <p class="intutekst">Gjentatte målinger kjøper deg styrke, og betaler med nye problemer. Ingen av dem er regnefeil — alle er ting du må ha tenkt på <b>før</b> du samler inn data.</p>
@@ -1746,6 +1893,20 @@ fire er designproblemer.</b></div>
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C13">C13 Forutsetninger og residualer &rarr;</a> <a class="ovlenke" data-begrep="C10">C10 ANOVA med gjentatte målinger &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div>
 <div id="fane-rmg" class="hide">
+<!-- FANEHJELP rmg -->
+<div class="fhboks">
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «Trekk nye personer og vis» med utgangsinnstillingene.</li>
+<li>Dra «Rekruttér de sykeste …» fra 25 % og oppover mot 100 %.</li>
+<li>Dra «Test–retest-korrelasjon (reliabilitet)» nedover.</li>
+<li>Les de to <i>F</i>-verdiene nederst — ingen fikk behandling.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Begge radene blir signifikante, og ingen har fått behandling. Jo dårligere reliabilitet, desto større blir den falske «bedringen» — og ved 100 % rekruttering forsvinner den helt.</p>
+</div>
+<!-- /FANEHJELP rmg -->
+
 <div class="card intu"><!-- SIM25-INTUISJON -->
 <div class="intulbl">Kort fortalt</div>
 <p class="intutekst">Rekrutterer du folk fordi de skårer høyt, kommer de til å skåre lavere neste gang — helt uten at du gjør noe. En ekstrem skåre er dels ekte nivå, dels uflaks i målingen, og uflaksen gjentar seg ikke.</p>
@@ -1801,6 +1962,19 @@ fire er designproblemer.</b></div>
 </div>
 
 <div id="fane-rapport" class="hide">
+<!-- FANEHJELP rapport -->
+<div class="fhboks">
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les de seks leddene i rekkefølgen de står.</li>
+<li>Merk deg hva som skal sies før det første tallet.</li>
+<li>Sjekk din egen resultatdel mot lista.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Sfærisiteten kommer før testen, og effektstørrelsen kommer med navn. «η² = .79» uten merkelapp kan ikke tolkes — det er to ulike mål, og de gir svært ulike tall på de samme dataene.</p>
+</div>
+<!-- /FANEHJELP rapport -->
+
 <div class="card intu"><!-- SIM25-INTUISJON -->
 <div class="intulbl">Kort fortalt</div>
 <p class="intutekst">En resultatdel er ikke en liste over alt programmet skrev ut. Den følger en fast rekkefølge, og hvert ledd gjør leseren klar for det neste.</p>

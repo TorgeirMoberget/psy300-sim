@@ -167,6 +167,18 @@ details.ordbok[open]>summary::before{content:"▾ "}
 .ovkort{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .ovlbl{font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5A6B7B}
 .ovhint{font-size:13.5px;color:#8b949e}
+/* ---------- FANEHJELP ---------- */
+.fhboks{background:var(--card,#fff);border:1px solid var(--line,#d9dee8);
+  border-left:5px solid var(--blue,#2E5496);border-radius:12px;padding:16px;
+  margin:0 0 14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.fhlbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--navy,#1F3864);font-weight:700;margin:0 0 4px}
+.fhlbl.sek{margin-top:12px}
+.fhkort{font-size:16px;margin:0}
+.fhsteg{font-size:16px;margin:0;padding-left:22px}
+.fhsteg li{margin:0 0 3px}
+.fhsee{font-size:16px;margin:0}
+/* ---------- FANEHJELP slutt ---------- */
 </style>
 <style id="ovbegrep-css">
 .ovkort{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f6f8fa;
@@ -280,6 +292,22 @@ betyr. Fane 4 svarer på hvorfor det står <i>n</i> − 1 i nevneren.</b></div>
 </div>
 
 <div id="fane-utvalg" class="hide">
+<!-- FANEHJELP utvalg -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Hver gang du trekker et nytt utvalg, får du et litt annet gjennomsnitt. Fanen viser hvordan de gjennomsnittene fordeler seg — det er utvalgsfordelingen, og spredningen i den er standardfeilen.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «Trekk 1 utvalg» tre–fire ganger og se at gjennomsnittet flytter seg hver gang.</li>
+<li>Trykk «Trekk 5 000» — nå ser du formen.</li>
+<li>Trykk «<i>n</i> = 5», så «<i>n</i> = 300», og se på bredden.</li>
+<li>Huk av «Vis normalkurve», og bytt variabel til en høyreskjev en.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Fordelingen blir smalere når <i>n</i> vokser — ikke flyttet, bare smalere. Og den blir klokkeformet selv når populasjonen er skjev, bare <i>n</i> er stor nok. Det siste er sentralgrenseteoremet.</p>
+</div>
+<!-- /FANEHJELP utvalg -->
+
 
 <div class="card" style="background:#fbfcff">
 <h2 data-t="a54">1. Tre slags tall — og tre farger</h2>
@@ -386,6 +414,22 @@ ser det tydeligst p&aring; inntekt og reaksjonstid.</div></div></div>
 </div><!-- /fane-utvalg -->
 
 <div id="fane-ki" class="hide">
+<!-- FANEHJELP ki -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Hver vannrette linje er én studie med sitt konfidensintervall. Den røde loddrette streken er sannheten, som forskeren aldri får se.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «Trekk 100 nye studier».</li>
+<li>Tell hvor mange linjer som ikke når den røde streken.</li>
+<li>Trykk «+1 000» og se telleren legge seg.</li>
+<li>Sett konfidensnivået til 80 %, og så til 99 %. Dra deretter <i>n</i>-skyveren.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Omtrent 95 av 100 intervaller treffer, uansett hvor mange ganger du trekker. «95 % konfidens» er en egenskap ved prosedyren, ikke ved det ene intervallet du har foran deg — ditt intervall treffer eller bommer.</p>
+</div>
+<!-- /FANEHJELP ki -->
+
 <div class="card">
 <h2 data-t="a102">Oppsett</h2>
 <div style="margin:4px 0 8px"><label style="font-weight:600;color:var(--navy);font-size:16px">Variabel: <select id="vsel3"><option data-t="a103" value="dep" selected>Depresjon (pre) · Terapi-RCT</option><option data-t="a104" value="undf">Undertrykkende forsvar (pre) · Terapi-RCT</option><option data-t="a105" value="agg">Aggresjonsundertrykking (pre) · Terapi-RCT</option><option data-t="a106" value="selvt">Statistikk-selvtillit (pre) · arbeidskravet</option><option data-t="a107" value="selvk">Selvkritisk perfeksjonisme · arbeidskravet</option><option data-t="a108" value="angst">Angstsensitivitet · arbeidskravet</option></select></label></div>
@@ -423,6 +467,22 @@ ser det tydeligst p&aring; inntekt og reaksjonstid.</div></div></div>
 </div><!-- /fane-ki -->
 
 <div id="fane-bootstrap" class="hide">
+<!-- FANEHJELP bootstrap -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Formelen for konfidensintervallet antar at utvalgsfordelingen er normal. Er utvalget lite og dataene skjeve, vet du ikke formen. Bootstrapen later som ditt utvalg er populasjonen og bygger fordelingen fra dataene du faktisk har.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Velg en høyreskjev populasjon og en liten <i>n</i>.</li>
+<li>Trykk «Trekk nytt utvalg».</li>
+<li>Trykk «Bootstrap 1 000 ganger» og sammenlign med den sanne fordelingen bak.</li>
+<li>Trykk «Kjør dekningstesten».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Bootstrapfordelingen ligner den sanne utvalgsfordelingen, selv om ingen formel er brukt. Dekningstesten sier hvor ofte intervallet faktisk treffer — det er den ærlige prøven på om metoden holder det den lover.</p>
+</div>
+<!-- /FANEHJELP bootstrap -->
+
 
 <div class="card">
 <h2 data-t="b1">Konfidensintervallet i fane 2 hvilte p&aring; en antakelse</h2>
@@ -533,6 +593,22 @@ Efron, B. &amp; Tibshirani, R. (1994). <i>An Introduction to the Bootstrap</i>.
 </div><!-- /fane-bootstrap -->
 
 <div id="fane-estimat" class="hide">
+<!-- FANEHJELP estimat -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Her trekkes ikke mange utvalg — her vokser étt utvalg én person om gangen, og både gjennomsnittet og standardavviket regnes på nytt hele veien.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «Voks til 100» og se de to kurvene sprette i starten.</li>
+<li>Trykk «Voks til 10 000».</li>
+<li>Trykk «Start på nytt» et par ganger — veien er ny hver gang.</li>
+<li>Trykk «Kjør 10 000 utvalg per <i>n</i>» i panelet under.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Begge anslagene lander etter hvert, men båndet i det nederste panelet viser prisen: ved lav <i>n</i> er området der 95 % av parallelle studier havner, ubehagelig bredt — og det krymper bare med kvadratroten av <i>n</i>.</p>
+</div>
+<!-- /FANEHJELP estimat -->
+
 <div class="card">
 <h2 data-t="a121">1. Hvor godt estimerer vi parametrene i populasjonen?</h2>
 <p data-t="a122" class="muted">Her vokser &eacute;tt utvalg &eacute;<i>n</i> person om gangen, og begge anslagene regnes p&aring; nytt hele veien. Med f&aring; personer spretter de; med mange lander de. Merk forskjellen fra fanen foran: der trakk vi <i>mange sm&aring; utvalg</i> for &aring; se hvor mye gjennomsnittet spriker mellom studier. Her lar vi <i>&eacute;tt utvalg vokse</i> for &aring; se anslagene bli sikrere.</p>
@@ -580,6 +656,22 @@ fra et lite utvalg enn p&aring; et gjennomsnitt fra det samme utvalget.</div></d
 </div><!-- /fane-estimat -->
 
 <div id="fane-frihet" class="hide">
+<!-- FANEHJELP frihet -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Gjennomsnittet av dine egne tall ligger per definisjon nærmest dem. Måler du avstandene fra det, får du derfor alltid en litt for liten kvadratsum — og å dele på <i>n</i> − 1 er nøyaktig den kompensasjonen som trengs.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les de to kvadratsummene for utvalget du sist trakk i fane 1.</li>
+<li>Trykk «Kjør 2000 utvalg og se».</li>
+<li>Gå ned til variansepanelet og trykk «Trekk 20 000 utvalg».</li>
+<li>Dra <i>n</i>-skyveren fra 2 til 30 og følg forskjellen mellom de to.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Kvadratsummen rundt utvalgets eget gjennomsnitt er mindre enn den rundt den sanne <i>μ</i> — ikke av og til, men alltid. Og med <i>n</i> − 1 treffer <i>s</i>² populasjonsvariansen, mens <i>s</i> likevel ligger litt under <i>σ</i>.</p>
+</div>
+<!-- /FANEHJELP frihet -->
+
 <div class="card">
 <h2 data-t="a137">1. Frihetsgrader p&aring; ett minutt</h2>
 <div class="nullboks">

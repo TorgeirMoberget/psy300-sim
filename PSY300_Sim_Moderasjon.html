@@ -72,6 +72,18 @@ a{color:var(--blue)}
 .hvnaar td{border-bottom:1px solid #d9dee8;padding:6px 8px;vertical-align:top}
 .hvnaar tr.na{background:#eef3fb;font-weight:500}
 @media(max-width:760px){.hvgrid{grid-template-columns:1fr}}
+/* ---------- FANEHJELP ---------- */
+.fhboks{background:var(--card,#fff);border:1px solid var(--line,#d9dee8);
+  border-left:5px solid var(--blue,#2E5496);border-radius:12px;padding:16px;
+  margin:0 0 14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.fhlbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--navy,#1F3864);font-weight:700;margin:0 0 4px}
+.fhlbl.sek{margin-top:12px}
+.fhkort{font-size:16px;margin:0}
+.fhsteg{font-size:16px;margin:0;padding-left:22px}
+.fhsteg li{margin:0 0 3px}
+.fhsee{font-size:16px;margin:0}
+/* ---------- FANEHJELP slutt ---------- */
 </style>
 </head><body>
 <header>
@@ -191,6 +203,21 @@ hellinger. Modellen under er den samme.</div>
 </div>
 
 <div id="fane-produkt" class="hide">
+<!-- FANEHJELP produkt -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">En moderasjon er et produktledd i en regresjon: X ganger M. Det er hele den tekniske forskjellen fra en vanlig modell med to prediktorer.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les modellen med og uten produktleddet.</li>
+<li>Se hva koeffisienten for produktleddet faktisk betyr.</li>
+<li>Merk deg at de to hovedleddene skifter betydning når produktet kommer inn.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Uten produktleddet er effekten av X den samme for alle. Med produktleddet avhenger den av M — og da er koeffisienten for X ikke lenger «effekten av X», men effekten når M er null.</p>
+</div>
+<!-- /FANEHJELP produkt -->
+
 <div class="card">
 <h2>Interaksjonen <i>er</i> en forskjell i hellinger</h2>
 <p class="muted">Modellen er en vanlig multippel regresjon med ett ledd ekstra:</p>
@@ -230,6 +257,21 @@ linjene &mdash; og da er det hellingene, ikke hovedeffektene, du skal snakke om.
 </div>
 
 <div id="fane-sentrer" class="hide">
+<!-- FANEHJELP sentrer -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Sentrering trekker gjennomsnittet fra prediktorene før produktet lages. Det endrer hva hovedleddene betyr, men ikke selve interaksjonen.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Sammenlign modellen med og uten sentrering.</li>
+<li>Se hva som skjer med koeffisienten for produktleddet.</li>
+<li>Se hva som skjer med de to hovedleddene.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Produktleddets koeffisient står helt stille. Hovedleddene flytter seg, fordi «når M er null» nå betyr «ved gjennomsnittlig M» i stedet for en verdi som kanskje ikke finnes i dataene.</p>
+</div>
+<!-- /FANEHJELP sentrer -->
+
 <div class="card">
 <h2>Hvorfor arbeidskravet ber deg sentrere</h2>
 <p class="muted">Å <b>sentrere</b> vil si å trekke gjennomsnittet fra: Z<sub>sentrert</sub> = Z &minus; <i>M</i><sub>Z</sub>.
@@ -329,6 +371,21 @@ som faktisk finnes.</b></div></div>
 </div>
 
 <div id="fane-hellinger" class="hide">
+<!-- FANEHJELP hellinger -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Enkle hellinger er oppfølgingen etter en signifikant interaksjon: hvor bratt er sammenhengen ved lav, middels og høy moderator?</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les de tre hellingene og hva de står for.</li>
+<li>Merk deg hvilke verdier av moderatoren som er valgt.</li>
+<li>Se om noen av de tre er nær null.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Interaksjonen sier bare at hellingen varierer. De tre enkle hellingene sier hvor mye og i hvilken retning — og det er dem du faktisk rapporterer og tolker.</p>
+</div>
+<!-- /FANEHJELP hellinger -->
+
 <div class="card">
 <h2>Et signifikant produktledd er ikke et svar &mdash; det er et spørsmål</h2>
 <p class="muted">b<sub>3</sub> sier bare <i>at</i> effekten varierer med moderatoren. Det du
@@ -370,6 +427,21 @@ stor effekten er for hvem. Et moderasjonsfunn som bare rapporterer b<sub>3</sub>
 </div>
 
 <div id="fane-ekte" class="hide">
+<!-- FANEHJELP ekte -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Den samme analysen på arbeidskravdatasettet, med ekte tall.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les modellen og koeffisientene.</li>
+<li>Finn produktleddet og vurder om det er til å stole på.</li>
+<li>Sammenlign med din egen analyse hvis du har kjørt den.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Interaksjoner krever langt større utvalg enn hovedeffekter for å kunne påvises. Et ikke-signifikant produktledd er derfor ofte et spørsmål om styrke, ikke et bevis for at moderasjonen ikke finnes.</p>
+</div>
+<!-- /FANEHJELP ekte -->
+
 <div class="card">
 <h2>H2 og H3 på de ekte arbeidskravdataene</h2>
 <p class="muted">Dette er datasettet dere faktisk skal analysere: <i>N</i> = 391 studenter,
@@ -411,6 +483,21 @@ bare om den virket <i>ulikt</i> for ulike studenter.</div>
 </div>
 
 <div id="fane-dikotomi" class="hide">
+<!-- FANEHJELP dikotomi -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Fristelsen er å dele moderatoren i to og kjøre to analyser. Det er nesten alltid en dårlig idé.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Se hva som skjer med informasjonen når skalaen deles i to.</li>
+<li>Sammenlign styrken i de to framgangsmåtene.</li>
+<li>Les hvorfor to separate analyser ikke tester interaksjonen.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Et mediansplitt kaster bort variasjon og dermed styrke. Og to separate analyser svarer ikke på spørsmålet: «signifikant i den ene gruppa og ikke i den andre» er ikke en test av om de to skiller seg.</p>
+</div>
+<!-- /FANEHJELP dikotomi -->
+
 <div class="card">
 <h2>Mediansplitt: det som ser enklere ut, koster deg funnet</h2>
 <p class="muted">Det er fristende å dele moderatoren i «høy» og «lav» og kjøre en faktoriell
@@ -454,6 +541,21 @@ tilfeldigvis falt.</b></div></div>
 </div>
 
 <div id="fane-rapport" class="hide">
+<!-- FANEHJELP rapport -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Moderasjon rapporteres i tre ledd: modellen samlet, produktleddet, og de enkle hellingene.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les malen og se hvor hvert tall kommer fra.</li>
+<li>Merk deg at sentreringen skal nevnes.</li>
+<li>Skriv din egen setning etter malen.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Produktleddet er funnet; de enkle hellingene er forklaringen. Og du må si om prediktorene ble sentrert — uten det kan leseren ikke tolke hovedleddene.</p>
+</div>
+<!-- /FANEHJELP rapport -->
+
 <div class="card">
 <h2>Rekkefølgen i en moderasjonsrapport</h2>
 <div class="note"><b>1 &middot; Si hva modellen er, før tallene.</b> «Vi regresserte selvtillit

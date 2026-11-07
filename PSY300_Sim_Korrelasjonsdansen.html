@@ -254,6 +254,18 @@ details.ordbok[open]>summary::before{content:"▾ "}
 .apabox{border-left:4px solid #1F3864;background:#f4f6fa;padding:11px 14px;border-radius:0 9px 9px 0;
         font-size:17px;line-height:1.6}
 .k-uenig{color:#B3392B;font-weight:700}
+/* ---------- FANEHJELP ---------- */
+.fhboks{background:var(--card,#fff);border:1px solid var(--line,#d9dee8);
+  border-left:5px solid var(--blue,#2E5496);border-radius:12px;padding:16px;
+  margin:0 0 14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.fhlbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--navy,#1F3864);font-weight:700;margin:0 0 4px}
+.fhlbl.sek{margin-top:12px}
+.fhkort{font-size:16px;margin:0}
+.fhsteg{font-size:16px;margin:0;padding-left:22px}
+.fhsteg li{margin:0 0 3px}
+.fhsee{font-size:16px;margin:0}
+/* ---------- FANEHJELP slutt ---------- */
 </style>
 <style id="ovbegrep-css">
 .ovkort{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f6f8fa;
@@ -441,6 +453,22 @@ Det er residualen, og det er den vi kvadrerer og summerer n&aring;r vi regner ut
 </div><!-- /fane-hvorfor -->
 
 <div id="fane-styrke" class="hide">
+<!-- FANEHJELP styrke -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort"><i>r</i> er ett tall mellom −1 og 1 for hvor godt punktene følger en rett linje. Her ser du hvordan hver verdi faktisk ser ut.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Dra «Korrelasjon r» sakte fra 0 til 1 og se på punktskyen.</li>
+<li>Trykk «Trekk 100 nye personer» ved samme verdi.</li>
+<li>Trykk «Sett til den ekte verdien (0.60)».</li>
+<li>Trykk de to knappene med gjennomsnitt fra publiserte og preregistrerte studier.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Punktskyen ved <i>r</i> = 0.30 ser mye mer ustrukturert ut enn tallet antyder. De to referanseknappene viser hvor de fleste ekte funn i psykologien faktisk ligger — langt under det man gjetter.</p>
+</div>
+<!-- /FANEHJELP styrke -->
+
 <div class="card">
 <h2>Hvordan ser <i>r</i> ut?</h2>
 <p class="muted">100 personer. For hver av dem kjenner vi <b style="color:#0B6E4F">grunnskolepoengene</b>
@@ -526,6 +554,22 @@ tallene gir svært ulikt inntrykk, og det er verdt å vite hvilket av dem noen h
 </div><!-- /fane-styrke -->
 
 <div id="fane-kov" class="hide">
+<!-- FANEHJELP kov -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Hver person stemmer på én av to ting: at de to variablene følges ad, eller at de går hver sin vei. <i>r</i> er resultatet av den avstemningen.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «positiv sammenheng», «negativ sammenheng» og «ingen sammenheng».</li>
+<li>Klikk «Neste steg ›» nedover gjennom regnestykket.</li>
+<li>Huk av «vis alle variansbidragene som kvadrater».</li>
+<li>Dra «Sann sammenheng» og trykk «Trekk nye punkter».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">De to variablenes avvik fra sitt eget gjennomsnitt ganges sammen. Står begge over, eller begge under, blir produktet positivt — og nevneren er bare der for å gjøre tallet enhetsløst.</p>
+</div>
+<!-- /FANEHJELP kov -->
+
 
 <div class="card">
 <h2>F&oslash;rst: hva <i>r</i> egentlig m&aring;ler</h2>
@@ -785,6 +829,22 @@ Enhetene forsvinner av samme grunn: b&aring;de teller og nevner har enheten &laq
 </div><!-- /fane-kov -->
 
 <div id="fane-dans" class="hide">
+<!-- FANEHJELP dans -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort"><i>r</i> fra ett utvalg er en gjetning. Her trekker du mange utvalg fra en populasjon der du kjenner sannheten, og ser hvor mye gjetningen hopper.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Velg populasjon under «Trekk utvalg fra» og sett «Utvalgsstørrelse n».</li>
+<li>Trykk «Nytt utvalg» noen ganger, så «100 utvalg».</li>
+<li>Huk av «Vis standardfeilen» og «Vis nullfordelingen».</li>
+<li>Dobl <i>n</i>, trykk «Frys denne fordelingen» og kjør igjen.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Ved <i>n</i> = 20 spriker <i>r</i> så mye at én studie nesten ikke kan skille .20 fra .60. Fordelingen smalner når <i>n</i> vokser, men den flytter seg ikke — sannheten står stille.</p>
+</div>
+<!-- /FANEHJELP dans -->
+
 <div id="modeA">
 <div class="card">
 <h2>Sannheten i populasjonen</h2>
@@ -850,6 +910,21 @@ bevegelse.</div>
 </div><!-- /fane-dans -->
 
 <div id="fane-ki" class="hide">
+<!-- FANEHJELP ki -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Konfidensintervallet for <i>r</i> er alle de sanne sammenhengene som er forenlige med tallet du fikk. Fordi <i>r</i> ikke kan passere 1, må skalaen strekkes først — det er Fishers <i>z</i>.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Sett «Korrelasjonen du fant, r» og «Antall personer, n».</li>
+<li>Klikk «Neste steg ›» gjennom hele utregningen.</li>
+<li>Sett <i>r</i> nær 0.90 og se hvor skjevt intervallet blir.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Intervallet er ikke symmetrisk rundt <i>r</i> når <i>r</i> er stor. Det er ikke en feil: nær kanten har fordelingen ikke plass til å være symmetrisk, og det er nettopp derfor man ikke kan skrive <i>r</i> ± 1.96 · SE.</p>
+</div>
+<!-- /FANEHJELP ki -->
+
 <div class="card">
 <h2>F&oslash;rst: hva et konfidensintervall for <i>r</i> er</h2>
 <p style="font-size:16.5px;line-height:1.5">Forrige fane viste at <i>r</i> hopper. Da er det
@@ -927,6 +1002,21 @@ og en stor <i>r</i> med liten <i>n</i> &mdash; og se hvor ulike de to intervalle
 </div><!-- /fane-ki -->
 
 <div id="fane-anscombe" class="hide">
+<!-- FANEHJELP anscombe -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Fire datasett med identisk gjennomsnitt, standardavvik, korrelasjon og regresjonslinje — og fire helt ulike bilder.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Se på de fire figurene før du leser tallene.</li>
+<li>Trykk «Vis / skjul tallene» og bekreft at de er like.</li>
+<li>Les tabellen under: hva hvert sett faktisk er.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee"><i>r</i> følger av bildet, men bildet følger ikke av <i>r</i>. Et program som bare rapporterer tall, kan ikke skille de fire — det er derfor spredningsplottet er et minstekrav og ikke pynt.</p>
+</div>
+<!-- /FANEHJELP anscombe -->
+
 
 <div class="card">
 <h2>Fire datasett. Én korrelasjon.</h2>
@@ -1010,6 +1100,21 @@ poenget p&aring; tjue sekunder.</div></details>
 </div><!-- /fane-anscombe -->
 
 <div id="fane-forut" class="hide">
+<!-- FANEHJELP forut -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Fem krav samlet på én liste, med det viktigste skillet først: to av dem må være på plass for at <i>r</i> i det hele tatt skal bety noe, mens ett bare gjelder <i>p</i>-verdien og intervallet.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les kolonnen «Hva som skjer hvis den brytes» først.</li>
+<li>Merk deg hvilket punkt som bare rammer <i>p</i>, ikke <i>r</i>.</li>
+<li>Gå gjennom lista på din egen analyse før du rapporterer.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Linearitet og målenivå avgjør om tallet betyr noe i det hele tatt. Normalitet avgjør bare om <i>p</i>-verdien og konfidensintervallet er til å stole på — den forskjellen forvirrer mange.</p>
+</div>
+<!-- /FANEHJELP forut -->
+
 
 <div class="card">
 <h2>Fem ting som må stemme &mdash; og hva som skjer når de ikke gjør det</h2>
@@ -1112,6 +1217,21 @@ begge deler.
 </div><!-- /fane-forut -->
 
 <div id="fane-dikotom" class="hide">
+<!-- FANEHJELP dikotom -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Kod gruppa som 0 og 1, og regn ut Pearsons <i>r</i> som vanlig. Tallet heter punktbiseriell korrelasjon, men det er ingen ny formel.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Dra «Forskjell mellom gruppene» og se de tre tallene bevege seg i takt.</li>
+<li>Huk av «vis regresjonslinja gjennom de to gruppesnittene».</li>
+<li>Trykk «Gjør gruppene ulikt store (45 mot 15)».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee"><i>r</i>, <i>t</i> og <i>d</i> endrer seg sammen — de er tre måter å si det samme på. Men ulikt store grupper trykker <i>r</i> ned uten at forskjellen mellom gruppene er mindre.</p>
+</div>
+<!-- /FANEHJELP dikotom -->
+
 
 <div class="card">
 <h2>Når den ene variabelen bare har to verdier</h2>
@@ -1213,6 +1333,22 @@ informasjon og taper statistisk styrke.
 </div><!-- /fane-dikotom -->
 
 <div id="fane-matrise" class="hide">
+<!-- FANEHJELP matrise -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">En korrelasjonsmatrise er ikke én analyse. Ti variabler gir 45 tester, og noen av dem lyser rødt uansett hva dataene inneholder.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Sett «Antall variabler» til 10 og «Utvalgsstørrelse n» til 30.</li>
+<li>Trykk «Nytt datasett» fem–seks ganger og se etter «funn».</li>
+<li>Huk av «korriger for antall tester (Bonferroni)».</li>
+<li>Trykk «Kjør 200 datasett og tell».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Alle variablene er rent tilfeldige tall, så hver eneste celle burde vist null. Likevel dukker det opp signifikante funn nesten hver gang — og med korreksjon forsvinner de.</p>
+</div>
+<!-- /FANEHJELP matrise -->
+
 
 <div class="card">
 <h2>Ti variabler gir ikke ti korrelasjoner</h2>
@@ -1327,6 +1463,21 @@ snublet over som noe du forutsa.
 </div><!-- /fane-matrise -->
 
 <div id="fane-rapport" class="hide">
+<!-- FANEHJELP rapport -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Samme korrelasjon tre ganger: slik JASP viser den, slik den skrives i APA-form, og som tabell. Fargene binder tallene sammen.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Finn hvert tall i APA-setningen igjen i JASP-outputen.</li>
+<li>Merk deg hvilke tall som skal med, og hvilke som er dubletter.</li>
+<li>Skriv din egen setning etter malen.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Matrisen viser hvert tall to ganger fordi den er symmetrisk — du rapporterer det én gang. Og konfidensintervallet hører med i setningen, ikke bare <i>r</i> og <i>p</i>.</p>
+</div>
+<!-- /FANEHJELP rapport -->
+
 
 <div class="card">
 <h2>Fra JASP-output til &eacute;<i>n</i> setning</h2>
@@ -1471,6 +1622,21 @@ sikkerhet enn du har.
 </div><!-- /fane-rapport -->
 
 <div id="fane-gjett" class="hide">
+<!-- FANEHJELP gjett -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Et lite spill: gjett <i>r</i> på øyemål før du får fasiten. De fleste undervurderer sterke sammenhenger og overvurderer svake.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Skriv inn gjetningen din og trykk «Avslør».</li>
+<li>Trykk «Neste diagram» og gjenta ti ganger.</li>
+<li>Legg merke til om du bommer systematisk én vei.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Øyet er dårligere enn du tror. Det er en god grunn til å regne ut <i>r</i> — og en like god grunn til å se på plottet før du tolker tallet.</p>
+</div>
+<!-- /FANEHJELP gjett -->
+
 <div class="card">
 <h2>Gjett korrelasjonen</h2>
 <p class="muted">Hvert spredningsdiagram er et utvalg på <i>n</i> = 75 (som studien). Gjett <i>r</i> på øyemål, så avslører vi fasit.</p>
@@ -1493,6 +1659,22 @@ undervurderer sterke sammenhenger og overvurderer svake. Det er en god grunn til
 </div><!-- /fane-gjett -->
 
 <div id="fane-null" class="hide">
+<!-- FANEHJELP null -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Den kritiske grensen er ikke en regel noen har funnet på. Den er persentilen i fordelingen av <i>r</i>-verdier tilfeldigheter alene lager.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Sett «Utvalgsstørrelse n» og trykk «Kjør simuleringen».</li>
+<li>Trykk «Sammenlign n = 10, 30, 100 og 400».</li>
+<li>Huk av «samme høyde på alle kurvene» og se bredden.</li>
+<li>Bytt «Signifikansnivå» og se grensen flytte seg.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Med <i>n</i> = 10 må <i>r</i> være over .60 for å bli signifikant; med <i>n</i> = 400 holder det med .10. Samme tall betyr altså helt ulike ting i to studier — og med stor <i>n</i> kan en ubetydelig sammenheng bli signifikant.</p>
+</div>
+<!-- /FANEHJELP null -->
+
 <div class="card">
 <h2>Hvor stor må <i>r</i> være for å bety noe?</h2>
 <p class="muted">Vi lager en verden der sammenhengen <b>er null</b> — to variabler uten noe som helst med hverandre å gjøre — og trekker 10 000 utvalg på <i>n</i> personer fra den. Hver gang regner vi ut <i>r</i>. Fordelingen du får, er <b>nullfordelingen</b>: alt tilfeldighetene klarer å produsere helt på egen hånd. Den kritiske grensen er ikke en regel noen har funnet på; den er 97.5-prosentilen i akkurat denne fordelingen.</p>
@@ -1566,6 +1748,21 @@ smal topp rundt null. Det er derfor et «<i>r</i> = .45» fra tolv personer ikke
 </div><!-- /fane-null -->
 
 <div id="fane-test" class="hide">
+<!-- FANEHJELP test -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Testen av en korrelasjon er samme oppskrift som alle de andre: estimatet delt på sin egen standardfeil, lest mot <i>t</i>-fordelingen.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Sett «Korrelasjonen du fant, r» og «Antall personer, n».</li>
+<li>Klikk «Neste steg ›» gjennom de sju stegene.</li>
+<li>Trykk «Vis alle stegene» til slutt.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Frihetsgradene er <i>n</i> − 2, ikke <i>n</i> − 1: to parametre er anslått fra dataene. Og testen svarer bare på om sammenhengen er større enn null — ikke på om den er stor nok til å bety noe.</p>
+</div>
+<!-- /FANEHJELP test -->
+
 <div class="card">
 <h2>Slik testes en korrelasjon, steg for steg</h2>
 <p class="muted">Forrige fane viste <i>hvor</i> grensen kommer fra. Her går vi gjennom selve
@@ -1628,6 +1825,22 @@ I praksis er tosidig standard, og det er det JASP gir deg med mindre du ber om n
 </div><!-- /fane-test -->
 
 <div id="fane-ikkelinear" class="hide">
+<!-- FANEHJELP ikkelinear -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort"><i>r</i> måler bare den rette delen av et mønster. Er sammenhengen sterk, men krum, kan <i>r</i> bli liten — og er den ikke monoton, kan <i>r</i> bli null.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Klikk deg gjennom «rett linje», «monoton, men krum» og «omvendt U».</li>
+<li>Sammenlign de to tallene under figurene for hver form.</li>
+<li>Trykk «rett, med utliggere» og se hva som skjer.</li>
+<li>Les hvilken rad i botemiddeltabellen som lyser opp.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Spearman redder den krumme, men monotone — ikke den omvendte U-en. Der er det ingen rangkorrelasjon som hjelper: figuren er entydig, og begge tallene er likevel nær null.</p>
+</div>
+<!-- /FANEHJELP ikkelinear -->
+
 <div class="card">
 <h2>Pearson m&aring;ler bare den <i>rette</i> delen</h2>
 <p style="font-size:16.5px;line-height:1.5"><i>r</i> svarer p&aring; ett bestemt sp&oslash;rsm&aring;l:
@@ -1772,6 +1985,22 @@ Begge deler h&oslash;rer hjemme i regresjonskapittelet, og begge krever at du si
 </div><!-- /fane-ikkelinear -->
 
 <div id="fane-utvalg" class="hide">
+<!-- FANEHJELP utvalg -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">To helt ulike trusler i samme fane: ett enkelt punkt som drar linja, og et utvalg som bare dekker en del av skalaen.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Dra det røde punktet rundt og se <i>r</i> endre seg.</li>
+<li>Legg det ytterst til høyre og sammenlign med midt i bildet.</li>
+<li>Huk av «vis linjen uten utliggeren».</li>
+<li>Dra vinduet i områdebegrensningsfiguren nedover til bare de beste er igjen.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Et punkt langt ute til siden har mye mer makt enn et like stort avvik på midten. Og når du bare ser de beste, krymper <i>r</i> selv om sammenhengen i hele populasjonen er uendret.</p>
+</div>
+<!-- /FANEHJELP utvalg -->
+
 <div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>Én observasjon kan snu en hel konklusjon. Derfor er et spredningsplott ikke pynt, men et minstekrav. Du må se dataene før du stoler på <i>r</i> eller på stigningstallet.</b></div></div>
 
 <div class="card">
@@ -1930,6 +2159,22 @@ fra kortet over.</div></details>
 </div><!-- /fane-utvalg -->
 
 <div id="fane-maalefeil" class="hide">
+<!-- FANEHJELP maalefeil -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Måler du to ting med støy, kan den observerte korrelasjonen aldri bli så stor som den sanne. Det er attenuering, og den gjelder alle korrelasjoner i psykologien.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Dra «Reliabilitet» og trykk «Mål de samme personene på nytt».</li>
+<li>Sett «Sann korrelasjon ρ» til 0.60.</li>
+<li>Dra «Reliabilitet, mål X» og «Reliabilitet, mål Y» ned til 0.70 hver.</li>
+<li>Trykk «Trekk nytt utvalg».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Med reliabilitet .70 på begge faller en sann sammenheng på .60 til rundt .42. Halvparten av det du «ikke fant», kan altså være målefeil og ikke fravær av sammenheng.</p>
+</div>
+<!-- /FANEHJELP maalefeil -->
+
 <div class="card">
 <h2>1. Hva reliabilitet <i>er</i></h2>
 <p class="muted">Enhver måling er den sanne skåren pluss en feil som varierer fra gang til gang:
@@ -1998,6 +2243,22 @@ spørreskjema &mdash; og se hva som skjer med korrelasjonen du faktisk måler.</
 </div><!-- /fane-maalefeil -->
 
 <div id="fane-simpson" class="hide">
+<!-- FANEHJELP simpson -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Sammenhengen i hele utvalget og sammenhengen i hver undergruppe kan peke i motsatt retning — uten at noen av dem er en regnefeil.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Sett «Sammenheng innad i gruppene» negativ.</li>
+<li>Dra «Separasjon mellom gruppene» oppover.</li>
+<li>Huk av «farg gruppene» og «vis gruppelinjene».</li>
+<li>Trykk «Vis det tydeligste tilfellet».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Den samlede linja kan helle oppover mens alle tre gruppelinjene heller nedover. Hvilket av tallene som er det relevante, avgjøres av teorien din — ikke av tallene.</p>
+</div>
+<!-- /FANEHJELP simpson -->
+
 <div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>Sammenhengen i hele utvalget og sammenhengen i hver undergruppe kan peke i <i>motsatt</i> retning, uten at noen av dem er regnefeil. Hvilken som er den relevante, avgjøres av teorien din, ikke av tallene.</b></div></div>
 
 <div class="card">

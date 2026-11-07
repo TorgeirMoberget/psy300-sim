@@ -77,6 +77,18 @@ a{color:var(--blue)}
 .hvnaar td{border-bottom:1px solid var(--line);padding:6px 8px;vertical-align:top}
 .hvnaar tr.na{background:#eef3fb;font-weight:500}
 @media(max-width:760px){.hvgrid{grid-template-columns:1fr}}
+/* ---------- FANEHJELP ---------- */
+.fhboks{background:var(--card,#fff);border:1px solid var(--line,#d9dee8);
+  border-left:5px solid var(--blue,#2E5496);border-radius:12px;padding:16px;
+  margin:0 0 14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.fhlbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--navy,#1F3864);font-weight:700;margin:0 0 4px}
+.fhlbl.sek{margin-top:12px}
+.fhkort{font-size:16px;margin:0}
+.fhsteg{font-size:16px;margin:0;padding-left:22px}
+.fhsteg li{margin:0 0 3px}
+.fhsee{font-size:16px;margin:0}
+/* ---------- FANEHJELP slutt ---------- */
 </style>
 </head><body>
 <header>
@@ -184,6 +196,21 @@ Fane 6 er øving &mdash; det er den som fester det.</b></div>
 </div>
 
 <div id="fane-stigen" class="hide">
+<!-- FANEHJELP stigen -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Teori, hypotese og prediksjon er tre nivåer, ikke tre ord for det samme. Teorien er generell, prediksjonen er det du faktisk kan observere.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les de tre nivåene og eksemplene under hvert.</li>
+<li>Plasser din egen problemstilling på stigen.</li>
+<li>Sjekk at prediksjonen din kan vise seg å være feil.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">En prediksjon som ikke kan vise seg å være feil, er ikke en prediksjon. Det er den eneste testen som skiller de tre nivåene fra hverandre i praksis.</p>
+</div>
+<!-- /FANEHJELP stigen -->
+
 <div class="card">
 <h2>Tre ord som ofte brukes om hverandre &mdash; og ikke bør det</h2>
 <p class="muted">Dette er den eneste appen i samlingen uten en simulering, og grunnen er at
@@ -236,6 +263,21 @@ ikke redde en hypotese som ikke følger av teorien, eller mål som ikke måler d
 </div>
 
 <div id="fane-variabler" class="hide">
+<!-- FANEHJELP variabler -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Hvilken rolle en variabel har — uavhengig, avhengig, konfunderende — følger av designet og spørsmålet, ikke av variabelen selv.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les de fire rollene og eksemplene.</li>
+<li>Sett navn på rollene i din egen problemstilling.</li>
+<li>Prøv å bytte om på spørsmålet og se rollene endre seg.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Den samme variabelen kan være utfall i én studie og prediktor i en annen. Rollen ligger i spørsmålet du stiller, og det er derfor du må formulere spørsmålet før du velger analyse.</p>
+</div>
+<!-- /FANEHJELP variabler -->
+
 <div class="card">
 <h2>Fire roller, ikke fire variabeltyper</h2>
 <p class="muted">En variabel er ikke «en moderator» på samme måte som den er «ordinal».
@@ -287,6 +329,21 @@ eller bare målt.</b></div></div>
 </div>
 
 <div id="fane-operasjon" class="hide">
+<!-- FANEHJELP operasjon -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Operasjonalisering er broen fra begrep til tall: hvordan måler du noe du bare kan beskrive med ord?</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les eksemplene på begrep og måling side om side.</li>
+<li>Operasjonaliser ett begrep fra din egen problemstilling.</li>
+<li>Spør om målingen fanger hele begrepet — eller bare en del.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Avstanden mellom begrepet og målingen er der validitetsproblemene bor. To studier kan «måle det samme» og likevel ikke være sammenlignbare.</p>
+</div>
+<!-- /FANEHJELP operasjon -->
+
 <div class="card">
 <h2>Fra begrep til kolonne i datasettet</h2>
 <p class="muted">Et <b>konstrukt</b> er det du er interessert i: perfeksjonisme, selvtillit,
@@ -329,6 +386,21 @@ sak, beskriver den feil ting med stor presisjon.</b></div></div>
 </div>
 
 <div id="fane-nullhyp" class="hide">
+<!-- FANEHJELP nullhyp -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">H₀ og H₁ er to påstander om populasjonen, ikke om dataene dine. Testen handler alltid om H₀.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les de to hypotesene ved siden av hverandre.</li>
+<li>Skriv H₀ for din egen problemstilling.</li>
+<li>Sjekk at H₀ handler om populasjonen, ikke om utvalget.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">H₀ er alltid en påstand om at det ikke er noen forskjell eller sammenheng i populasjonen. Du forkaster den eller lar være — du beviser den aldri.</p>
+</div>
+<!-- /FANEHJELP nullhyp -->
+
 <div class="card">
 <h2>Hva som faktisk testes</h2>
 <p class="muted">Den statistiske testen arbeider ikke på hypotesen din. Den arbeider på et par
@@ -371,6 +443,21 @@ ikke er noen effekt?» — og det er et mye smalere spørsmål enn det hypotesen
 </div>
 
 <div id="fane-rekkefolge" class="hide">
+<!-- FANEHJELP rekkefolge -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Rekkefølgen binder: hypotesen skal stå før dataene er sett. Snur du på rekkefølgen, endrer du hva <i>p</i>-verdien betyr.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les hva som skjer når hypotesen formuleres etterpå.</li>
+<li>Sammenlign med en forhåndsregistrert hypotese.</li>
+<li>Tenk gjennom hvor i din egen prosess hypotesen ble låst.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">En hypotese formulert etter at dataene er sett, er en beskrivelse — ikke en test. <i>p</i>-verdien forutsetter at spørsmålet ble stilt først.</p>
+</div>
+<!-- /FANEHJELP rekkefolge -->
+
 <div class="card">
 <h2>Hypotese &rarr; design &rarr; analyse. Aldri motsatt vei.</h2>
 <p class="muted">Rekkefølgen er ikke en formalitet i en mal. Hvert steg låser det neste, og
@@ -413,6 +500,21 @@ snudd.</b></div></div>
 </div>
 
 <div id="fane-ov" class="hide">
+<!-- FANEHJELP ov -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Øving på de fire tingene: teori, hypotese, variabelroller og H₀ — på konkrete problemstillinger.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les problemstillingen og svar før du sjekker.</li>
+<li>Se på hvilket av de fire leddene du bommet på.</li>
+<li>Gå videre til neste og gjenta.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Variabelrollene er det folk oftest bommer på, og det får følger hele veien: feil rolle gir feil analyse, uansett hvor riktig testen er regnet ut.</p>
+</div>
+<!-- /FANEHJELP ov -->
+
 <div class="card">
 <h2>1. Teori, hypotese eller prediksjon?</h2>
 <p class="muted">Avgjør hva hvert utsagn er. Fasiten kommer med en begrunnelse.</p>

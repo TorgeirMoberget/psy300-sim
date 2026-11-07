@@ -670,6 +670,18 @@ body.fmodus #modusBtn{left:14px;right:auto;bottom:11px;
 .ovlbl{font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5A6B7B}
 .ovhint{font-size:13.5px;color:#8b949e}
 .ovlenke{color:#2E5496;font-weight:600;cursor:pointer;text-decoration:underline}
+/* ---------- FANEHJELP ---------- */
+.fhboks{background:var(--card,#fff);border:1px solid var(--line,#d9dee8);
+  border-left:5px solid var(--blue,#2E5496);border-radius:12px;padding:16px;
+  margin:0 0 14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.fhlbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--navy,#1F3864);font-weight:700;margin:0 0 4px}
+.fhlbl.sek{margin-top:12px}
+.fhkort{font-size:16px;margin:0}
+.fhsteg{font-size:16px;margin:0;padding-left:22px}
+.fhsteg li{margin:0 0 3px}
+.fhsee{font-size:16px;margin:0}
+/* ---------- FANEHJELP slutt ---------- */
 </style><script>
 function PSY_T(s){ return (window.PSY300_T ? window.PSY300_T(s) : s); }
 </script>
@@ -824,6 +836,22 @@ Det er residualen, og det er den vi kvadrerer og summerer n&aring;r vi regner ut
 </div><!-- /fane-hvorfor -->
 
 <div id="fane-data" class="hide">
+<!-- FANEHJELP data -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Én prediktor, ett utfall — hele regresjonen i sin enkleste form. Appen regner det JASP regner, på de samme radene, og skriver setningen du ville satt i artikkelen.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Velg «Datasett», «Utfall (Y)» og «Prediktor (X)».</li>
+<li>Huk av «vis 95 % konfidensintervall for linja» og prediksjonsintervallet.</li>
+<li>Skriv en X-verdi og trykk «Regn ut».</li>
+<li>Trykk «Prøv en x-verdi utenfor dataene».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">De to båndene er ulikt brede, og forskjellen er hele poenget: det smale gjelder linja, det brede gjelder én person. Og utenfor dataområdet gjetter modellen om en verden den aldri har sett.</p>
+</div>
+<!-- /FANEHJELP data -->
+
 <div class="card">
 <h2 data-t="b2">Enkel regresjon: fra datasettet til setningen</h2>
 <p class="muted">Én prediktor, ett utfall — hele regresjonen i sin enkleste form. Appen regner
@@ -944,6 +972,22 @@ ut for én person i punkt 3 — sier hvor lite du likevel vet om det neste menne
 </div><!-- /fane-data -->
 
 <div id="fane-kvadrat" class="hide">
+<!-- FANEHJELP kvadrat -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Regresjonslinja er den som gjør summen av kvadrerte avvik minst mulig — ikke den som ser penest ut.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «Trekk 75 nye fra populasjonen».</li>
+<li>Dra de to håndtakene og se stolpen under endre seg.</li>
+<li>Gjør stolpen så kort du klarer.</li>
+<li>Trykk «Vis minste-kvadraters-linjen» og sammenlign.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Kvadreringen straffer store bom hardt, så ett stort avvik teller mer enn mange små. Det er derfor linja flytter seg mye når du drar ett punkt langt ut.</p>
+</div>
+<!-- /FANEHJELP kvadrat -->
+
 <div id="modeB">
 <div class="card">
 <h2 data-t="b14">Prediker IQ ved 19 år fra grunnskolepoeng (75 elever trukket fra de 500)</h2>
@@ -1028,6 +1072,22 @@ og derfor kurven i figuren over har nøyaktig ett bunnpunkt — ikke flere.</p>
 </div><!-- /fane-kvadrat -->
 
 <div id="fane-r2" class="hide">
+<!-- FANEHJELP r2 -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Uten modellen er beste gjett alltid gjennomsnittet. Med modellen gjetter du på linja. <i>R</i>² er hvor stor del av bommen som forsvant.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Klikk deg gjennom de tre valgene i «Vis»-listen.</li>
+<li>Dra «Sammenheng» og se de tre kvadratsummene endre seg.</li>
+<li>Trykk «Trekk nye data» noen ganger.</li>
+<li>Les del 3: hvor mye bommer du fortsatt, i ekte enheter?</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Regnskapet går opp: SST = SSR + SSE. Og legg merke til standardfeilen til estimatet — en <i>R</i>² som høres imponerende ut, kan fortsatt bety at du bommer med mange poeng på hver person.</p>
+</div>
+<!-- /FANEHJELP r2 -->
+
 <div class="card">
 <h2>1. Tre kvadratsummer, ett regnskap</h2>
 <p class="muted" data-t="b21">Uten modellen er ditt beste gjett p&aring; y alltid <b>&#375;</b>. Med modellen gjetter du p&aring; linja. R&sup2; er hvor stor del av bommen som forsvant.</p>
@@ -1159,6 +1219,21 @@ Skriver du selv, bruk ordene.</div>
 </div><!-- /fane-r2 -->
 
 <div id="fane-test" class="hide">
+<!-- FANEHJELP test -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Testen av et stigningstall er samme oppskrift som alle de andre: estimatet delt på sin egen standardfeil, lest mot <i>t</i>-fordelingen.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Klikk «Neste steg ›» gjennom de sju stegene.</li>
+<li>Trykk «Vis alle stegene» og se hele kjeden samlet.</li>
+<li>Bytt datasett i fanen foran og kom tilbake hit.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Med én prediktor gir testen av stigningstallet og testen av korrelasjonen identisk <i>t</i> og identisk <i>p</i> — de tester den samme sammenhengen. Det som skiller dem, er hva du kan si etterpå.</p>
+</div>
+<!-- /FANEHJELP test -->
+
 <div class="card">
 <h2 data-t="b24">Slik testes et stigningstall, steg for steg</h2>
 <p class="muted">Du har bygd modellen i fane 1. Her ser du hva JASP gjør når den setter en <i>p</i>-verdi
@@ -1222,6 +1297,22 @@ sammenhengen har endret seg det minste. Det er derfor du alltid må lese <i>b</i
 </div><!-- /fane-test -->
 
 <div id="fane-residual" class="hide">
+<!-- FANEHJELP residual -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Forutsetningene gjelder residualene, ikke råskårene. Derfor er residualplottet stedet du oppdager at modellen ikke holder.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «Trekk ETT utvalg (diagnostikk)» med alt på normalt.</li>
+<li>Dra «Heteroskedastisitet» opp til 3 og se trakten.</li>
+<li>Trykk «Kjør 5 000 studier under H0» og les feilraten.</li>
+<li>Trykk «Sett opp den farlige kombinasjonen».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Målet er 5 %. Heteroskedastisitet alene koster lite når x er jevnt fordelt — men kombinert med en skjev x-fordeling spretter feilraten langt over, og da er <i>p</i>-verdien ikke til å stole på.</p>
+</div>
+<!-- /FANEHJELP residual -->
+
 <div class="card">
 <h2 data-t="b28">Bygg din regresjonsverden (sann effekt = 0; H0 er sann)</h2>
 <div class="sl"><label><i>n</i></label><input type="range" id="nRA" min="10" max="200" step="5" value="40"><output id="nOut">40</output></div>
@@ -1260,6 +1351,22 @@ sammenhengen har endret seg det minste. Det er derfor du alltid må lese <i>b</i
 </div><!-- /fane-residual -->
 
 <div id="fane-multippel" class="hide">
+<!-- FANEHJELP multippel -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Med to prediktorer er modellen ikke en linje lenger, men en flate. Det eneste nye er at koeffisienten for den ene nå leses som «kontrollert for» den andre.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Velg en «Prediktor X₂» og se koeffisienttabellen endre seg.</li>
+<li>Klikk «1 · gulvet», «2 · flaten» og «3 · residualene».</li>
+<li>Trykk «Bytt X₁ og X₂».</li>
+<li>Sett inn to verdier og trykk «Regn ut».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Koeffisienten for X₁ endrer seg når X₂ kommer inn — og jo mer de to prediktorene overlapper, desto mer. Det er ikke ustabilitet: de to tallene svarer på to ulike spørsmål.</p>
+</div>
+<!-- /FANEHJELP multippel -->
+
 <div class="card" data-t="b34">
 <h2>Å legge til en prediktor til</h2>
 <p class="muted">Nå som du har sett hva den enkle modellen gjør — og hva den ikke klarer — kan vi
@@ -1412,6 +1519,21 @@ direkte: sett &beta;-ene med motsatt fortegn og skru opp overlappet.</div></deta
 </div>
 
 <div id="fane-kontroll" class="hide">
+<!-- FANEHJELP kontroll -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Å kontrollere for noe er å spørre: gjelder sammenhengen fortsatt blant folk som er like på akkurat det?</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les hva multippel regresjon forteller deg — og hva den ikke gjør.</li>
+<li>Merk deg hva som skjer med koeffisienten når konfunderen legges inn.</li>
+<li>Tenk gjennom hvilke tredjevariabler du ikke har målt i din egen analyse.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Kontroll virker bare på det du faktisk har målt. Krymper koeffisienten til null, forklarte den tredje variabelen sammenhengen — men en umålt konfunder er fortsatt helt fri til å gjøre det samme.</p>
+</div>
+<!-- /FANEHJELP kontroll -->
+
 <div class="card">
 <h2>Spørsmålet multippel regresjon svarer på</h2>
 <p class="hvbig">«Henger disse to fortsatt sammen når jeg holder en tredje ting konstant?»</p>
@@ -1499,6 +1621,22 @@ Det heter <b>suppresjon</b>, det er ikke en feil, og det er grunnen til at en pr
 <!-- /fane-kontroll · fra Sim 15 -->
 
 <div id="fane-kontrollsim" class="hide">
+<!-- FANEHJELP kontrollsim -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Du bestemmer sannheten: hvor sterkt hver prediktor virker, og hvor mye de to overlapper. Så ser du hva regresjonen klarer å finne tilbake.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Sett «Sann effekt av X₁» lavt og «Sann effekt av X₂» høyt.</li>
+<li>Dra «Korrelasjon mellom prediktorene» opp mot 0.60.</li>
+<li>Trykk «Trekk 20 utvalg (se vinglingen)».</li>
+<li>Trykk «Ekte eksempel: Terapi-RCT-studien».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Den enkle regresjonen bommer systematisk på sannheten når prediktorene henger sammen, mens den multiple treffer. Og jo sterkere overlapp, desto bredere blir konfidensintervallene — du betaler for kontrollen i presisjon.</p>
+</div>
+<!-- /FANEHJELP kontrollsim -->
+
 
 
 <div class="card">
@@ -1548,6 +1686,22 @@ Det heter <b>suppresjon</b>, det er ikke en feil, og det er grunnen til at en pr
 <!-- /fane-kontrollsim · fra Sim 15 -->
 
 <div id="fane-rand" class="hide">
+<!-- FANEHJELP rand -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">To måter å håndtere en tredjevariabel på: måle den og legge den inn i modellen, eller la loddtrekning bestemme hvem som får tiltaket. Bare den ene virker på det du ikke har målt.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «Kjør 500 studier» med utgangsinnstillingene.</li>
+<li>Dra «Hvor sterkt den umålte U påvirker Y» oppover og kjør igjen.</li>
+<li>Dra «Reliabiliteten til målingen av C» ned til 0.70.</li>
+<li>Trykk «Tilbake til utgangspunktet».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Kontroll for en umålt variabel hjelper ikke, og kontroll for en dårlig målt variabel hjelper bare delvis. Randomiseringen bryr seg ikke om noen av delene — den fjerner konfunderingen uten å kjenne den.</p>
+</div>
+<!-- /FANEHJELP rand -->
+
 
 <div class="card">
 <h2>To måter å håndtere en tredjevariabel på</h2>
@@ -1627,6 +1781,21 @@ de to gruppene. Det er derfor Sim 7 fane 4 og forutsetningsfanene fortsatt gjeld
 </div>
 <!-- /fane-rand · fra Sim 15 -->
 <div id="fane-rapport" class="hide">
+<!-- FANEHJELP rapport -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Seks punkter i fast rekkefølge: hva modellen er, modellen samlet, hver prediktor, tolkningen i enheter, forutsetningene, og språket om årsak.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les de seks punktene i rekkefølgen de står.</li>
+<li>Merk deg hva som skal med for hver prediktor.</li>
+<li>Sjekk din egen resultatdel mot lista.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Punkt 4 er det som oftest mangler: <i>b</i> skal tolkes i enheter leseren kjenner. «<i>b</i> = 0.08, <i>p</i> &lt; .001» sier mindre enn «hver ekstra lesetime var knyttet til 0.08 karakterpoeng høyere».</p>
+</div>
+<!-- /FANEHJELP rapport -->
+
 <div class="card">
 <h2>Rekkefølgen i en regresjonsrapport</h2>
 <div class="note"><b>1 &middot; Si hva modellen er, før tallene.</b> «Vi regresserte eksamenskarakter

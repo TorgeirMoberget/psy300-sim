@@ -651,6 +651,18 @@ details.mer>summary::-webkit-details-marker{display:none}
 details.mer>summary::before{content:"\25B8 ";font-size:12px}
 details.mer[open]>summary::before{content:"\25BE "}
 details.mer>*:not(summary){margin-top:8px;font-size:15.5px;line-height:1.5}
+/* ---------- FANEHJELP ---------- */
+.fhboks{background:var(--card,#fff);border:1px solid var(--line,#d9dee8);
+  border-left:5px solid var(--blue,#2E5496);border-radius:12px;padding:16px;
+  margin:0 0 14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.fhlbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--navy,#1F3864);font-weight:700;margin:0 0 4px}
+.fhlbl.sek{margin-top:12px}
+.fhkort{font-size:16px;margin:0}
+.fhsteg{font-size:16px;margin:0;padding-left:22px}
+.fhsteg li{margin:0 0 3px}
+.fhsee{font-size:16px;margin:0}
+/* ---------- FANEHJELP slutt ---------- */
 </style><style>
 /* ---- innlemmet: dans ---- */
 #fane-dans .k-sig{color:var(--sig);font-weight:600}
@@ -894,6 +906,22 @@ Det er residualen, og det er den vi kvadrerer og summerer n&aring;r vi regner ut
 <details class="mer" style="margin:14px 0"><summary>Mer om dette: hvorfor ikke bare mange <i>t</i>-tester?</summary><div>Med tre grupper er det tre parvise sammenligninger. Hver av dem har 5 % risiko for falsk alarm, så sjansen for <i>minst &eacute;n</i> falsk alarm er ikke 5 %, men omtrent 14 %. Med fem grupper er det ti sammenligninger og rundt 40 %. ANOVA stiller i stedet &eacute;<i>tt</i> spørsmål &mdash; «er det forskjell noe sted?» &mdash; og holder dermed feilraten på 5 %. Det er hele grunnen til at omnibustesten finnes. Sim 7, fane 3 viser oppblåsingen med simulering.</div></details>
 </div><!-- /fane-hvorfor -->
 <div id="fane-sim" class="hide">
+<!-- FANEHJELP sim -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">ANOVA deler all variasjonen i to: hvor mye gruppene skiller seg fra hverandre, og hvor mye personene inne i hver gruppe skiller seg. <i>F</i> er den første delt på den andre.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Dra de tre blå strekene fra hverandre: det er signalet.</li>
+<li>Dra «Spredning innen gruppene» opp og ned: det er støyen.</li>
+<li>Trykk «Nye pasienter (samme gjennomsnitt)» noen ganger uten å endre noe.</li>
+<li>Trykk «Sett til de ekte tallene».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Dobbelt så stor spredning firedeler <i>F</i>, fordi spredningen står i nevneren og kvadreres. Og med nye pasienter hopper <i>F</i> uten at noe i populasjonen har endret seg — det er hvor mye slump alene lager.</p>
+</div>
+<!-- /FANEHJELP sim -->
+
 
 
 <div class="card">
@@ -993,6 +1021,20 @@ en egenskap ved forskjellen, men en grense tre helt forskjellige ting kan skyve 
 </div><!-- /fane-sim -->
 
 <div id="fane-null" class="hide">
+<!-- FANEHJELP null -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Nullfordelingen er alle <i>F</i>-verdiene tilfeldigheter alene lager når gruppene egentlig er like. <i>p</i> er andelen av den som ligger til høyre for din <i>F</i>.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «Kjør 2 000 studier under H₀» og se hvor verdiene lander.</li>
+<li>Dra «Observert F» og følg <i>p</i> i alle fire fordelingene.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Samme <i>F</i> gir ulik <i>p</i> i de fire fordelingene: veien fra <i>F</i> til <i>p</i> går gjennom frihetsgradene. Og <i>F</i> har bare én hale, fordi <i>F</i> ikke kan bli negativ.</p>
+</div>
+<!-- /FANEHJELP null -->
+
 <div class="card">
 <h2>Nullverdenen: hvor store <i>F</i>-verdier gir tilfeldigheter alene?</h2>
 <p class="muted">Her settes alle tre gjennomsnittene like (H₀ er sann) og vi kjører mange studier. Fordelingen du får, er <b><i>F</i>-fordelingen</b>, og den kritiske verdien er der de øverste 5 % begynner.</p>
@@ -1039,6 +1081,21 @@ det er stedet der de øverste 5 prosentene av nullfordelingen begynner.</b></div
 </div><!-- /fane-null -->
 
 <div id="fane-eta" class="hide">
+<!-- FANEHJELP eta -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">η² er andelen av all variasjonen som henger sammen med hvilken gruppe du er i. <i>F</i> deler grønt på rødt; η² deler det samme grønne på grønt pluss rødt.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les de tre tallene i regnestykket øverst.</li>
+<li>Finn igjen SS-tallene i JASP-tabellen i fanen om ekte data.</li>
+<li>Les Cohens merkelapper nederst, og hva de betyr i praksis.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Nevneren er hele forskjellen mellom de to. <i>F</i> spør om signalet er stort i forhold til støyen; η² spør hvor stor del av alt sammen signalet er. JASP oppgir ikke SS total som egen rad — du legger sammen selv.</p>
+</div>
+<!-- /FANEHJELP eta -->
+
 <div class="card">
 <h2>η² — hvor mye av variasjonen gruppene forklarer</h2>
 <p style="font-size:16.5px;line-height:1.55"><i>F</i> og <i>p</i> sier om forskjellen er til å
@@ -1158,6 +1215,21 @@ studier &mdash; η² om utvalget du målte, ω² om populasjonen du uttaler deg 
 </div><!-- /fane-eta -->
 
 <div id="fane-posthoc" class="hide">
+<!-- FANEHJELP posthoc -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Omnibustesten sier at noen skiller seg, ikke hvem. Post hoc sammenligner gruppene parvis — og korrigerer for at du nå gjør flere tester på de samme dataene.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Se på gruppegjennomsnittene og feilfeltene først.</li>
+<li>Klikk deg gjennom «Ukorrigert», «Tukey», «Bonferroni» og «Scheffé».</li>
+<li>Følg hvilke par som faller ut av signifikans underveis.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Korreksjonene er ulikt strenge, og de samme dataene kan gi ulik konklusjon. Og regelen som er lett å bryte: post hoc kjøres bare hvis omnibustesten var signifikant.</p>
+</div>
+<!-- /FANEHJELP posthoc -->
+
 <div class="card">
 <h2>Omnibustesten sier at noen skiller seg. Den sier ikke hvem.</h2>
 <p class="hvbig">H₀: alle gruppegjennomsnittene er like. Alternativet er <b>ikke</b> at alle er
@@ -1360,6 +1432,21 @@ utfallet like mye av <i>n</i> som av forskjellen.</b></div>
 </div><!-- /fane-posthoc -->
 
 <div id="fane-forut" class="hide">
+<!-- FANEHJELP forut -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">De samme tre forutsetningene som for <i>t</i>-testen, av samme grunn: ANOVA er den samme modellen med flere grupper. Rekkefølgen er etter hvor mye skade et brudd gjør.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les de tre i rekkefølgen de står.</li>
+<li>Merk deg hvilken av dem som ikke har noen redningsplanke.</li>
+<li>Noter navnet på testen og løsningen for nummer to.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Bare den første er uten kur. Ulike varianser har en gratis løsning (Welch, og Games-Howell til post hoc), og normalitet betyr lite når gruppene er store.</p>
+</div>
+<!-- /FANEHJELP forut -->
+
 <div class="card">
 <h2>Forutsetningene — i rekkefølgen de faktisk betyr noe</h2>
 <p style="font-size:16.5px;line-height:1.55">De samme tre som for <i>t</i>-testen, av samme
@@ -1500,6 +1587,21 @@ skade bruddet gjør.</b></div>
 </div><!-- /fane-forut -->
 
 <div id="fane-ekte" class="hide">
+<!-- FANEHJELP ekte -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Tre analyser på terapistudien, med klikksti og ferdig JASP-tabell. Kjør dem selv og sammenlign — får du noe annet, har du gjort noe annet.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Følg klikkstien: utfallet i Dependent Variable, gruppa i Fixed Factors.</li>
+<li>Huk av η², Homogeneity tests og Tukey.</li>
+<li>Sammenlign dine egne tall med tabellene her.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Faktoren Tidligere_behandling er ikke randomisert. Det endrer ikke tallene, men det endrer hva du kan si om årsak — og det er nettopp det tolkningsavsnittet handler om.</p>
+</div>
+<!-- /FANEHJELP ekte -->
+
 <div class="card">
 <h2>Tre analyser du kan kjøre selv</h2>
 <p style="font-size:16.5px;line-height:1.55">Alle tall er kjørt på
@@ -1610,6 +1712,21 @@ designet, og her er faktoren ikke randomisert.</b></div>
 </div><!-- /fane-ekte -->
 
 <div id="fane-rapport" class="hide">
+<!-- FANEHJELP rapport -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">En enveis ANOVA blir tre setninger i en bestemt rekkefølge: hvem gruppene er, om de skiller seg, hvor mye det betyr — og først da hvem som skiller seg.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les de fire punktene i rekkefølgen de står.</li>
+<li>Bytt mellom «Signifikant», «Nullfunn» og «Welch».</li>
+<li>Skriv din egen setning etter malen.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Effektstørrelsen står i samme parentes som <i>F</i> og <i>p</i>, ikke som en egen setning til slutt. Og i nullfunnsvarianten stopper rapporten før post hoc.</p>
+</div>
+<!-- /FANEHJELP rapport -->
+
 
 <div class="card">
 <h2>Rekkefølgen som gjør en resultatdel lesbar</h2>
@@ -2084,6 +2201,22 @@ frihetsgrader.<br>
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="D4">D4 Å lese en resultatdel (APA) &rarr;</a> <a class="ovlenke" data-begrep="D2">D2 Å lese JASP-output &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div>
 <div id="fane-dans" class="hide">
+<!-- FANEHJELP dans -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Fordypning. Samme sanne effekt, 2 000 studier: <i>t</i> og <i>F</i> vokser når du måler flere personer, mens effektstørrelsen gjør det ikke.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Sett «Sann effektstørrelse» og trykk «Trekk 2 000 utvalg».</li>
+<li>Dra «n per gruppe» oppover og kjør på nytt.</li>
+<li>Trykk «Sett effekten til null» og se hva som står igjen.</li>
+<li>Trykk «Terapi-RCT-studien» for emnets egne tall.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Fordelingene av <i>t</i> og <i>F</i> flytter seg utover når <i>n</i> vokser, mens fordelingen av effektstørrelsen står omtrent stille. Det er hele grunnen til at <i>p</i> alene ikke sier hvor stor en forskjell er.</p>
+</div>
+<!-- /FANEHJELP dans -->
+
 <div class="card innlemmet"><div class="muted" style="font-size:14px">Fordypning · tidligere egen app (Sim 23 · Teststatistikkdansen). Samme sanne effekt, 2 000 studier: <i>t</i> og <i>F</i> vokser med <i>n</i>, effektstørrelsen gjør det ikke.</div></div>
 
 

@@ -1,0 +1,1669 @@
+{
+ "fil": "PSY300_Sim_Ttesten.html",
+ "kildelengde": 249568,
+ "slides": [
+  {
+   "nr": 1,
+   "t": "Tittel",
+   "html": "<h1>Sammenligning av to<br>gjennomsnitt</h1><div class=\"under\">Forelesning 4 · Kapittel 9</div><div class=\"merke\">PSY300 · to timer</div>",
+   "en": null,
+   "notat": "Ikke si «t-test» ennå. Første ti minutter handler om spørsmålet, ikke om metoden.",
+   "notat_en": null,
+   "del": "Time 1 · Fra spørsmål til p-verdi"
+  },
+  {
+   "nr": 2,
+   "t": "Forskningsspørsmålet",
+   "html": "<div class=\"ord\">Virker psykoterapi?</div><div class=\"kilde avslor\">Alt vi skal gjøre de neste to timene, er å gjøre det spørsmålet skarpt nok til at tall kan svare på det.</div>",
+   "en": null,
+   "notat": "Her begynner forelesningen — tittelsliden er bare et skilt. Spør salen hva de ville gjort for å finne ut av det, før du sier noe om metode. De foreslår som regel «måle før og etter», og da har du ventelistegruppen gratis.",
+   "notat_en": null
+  },
+  {
+   "nr": 3,
+   "t": "Dagens to tall",
+   "html": "<h1 style=\"text-align:center\">Depresjon etter behandling</h1><div class=\"talldu\"><div><div class=\"tall\">21.8</div><div class=\"navn\">Terapigruppen<br><i>n</i> = 36</div></div><div><div class=\"tall mut\">29.3</div><div class=\"navn\">Ventelisten<br><i>n</i> = 39</div></div></div><p class=\"liten\" style=\"max-width:820px\">Ekte tall fra emnets terapistudie (<i>N</i> = 75).</p>",
+   "en": null,
+   "notat": "La tallene stå i stillhet i noen sekunder. Ikke forklar dem. Det eneste de trenger å vite er at høyere skår betyr mer depresjon — så ser de selv hvilken vei dette peker.",
+   "notat_en": null
+  },
+  {
+   "nr": 4,
+   "t": "Åpningsspørsmålet",
+   "html": "<div class=\"ord\">Spørsmålet er ikke om 22 er lavere enn 29.<br>Det er hvor ofte en forskjell på sju og et halvt dukker opp <i>av seg selv</i>.</div><div class=\"kilde avslor\" style=\"max-width:900px;line-height:1.5\">Presist sagt: hvor sannsynlig det er å få en forskjell minst så stor som vår i et utvalg på 75, dersom det i virkeligheten (populasjonen) IKKE er noen effekt av psykoterapi på depresjon.</div>",
+   "en": null,
+   "notat": "Den øverste setningen er hele forelesningen. Klikk fram den nederste bare hvis du har tid — den er den formelle versjonen av det samme, og den kommer igjen på slide 30.",
+   "notat_en": null
+  },
+  {
+   "nr": 5,
+   "t": "Tolv lapper",
+   "html": "<h1>Tolv pasienter, tolv lapper</h1><p>Seks fikk terapi, seks sto på venteliste. Her er depresjonsskårene deres etter behandling — tolv ekte pasienter fra studien:</p><div class=\"todelt\"><div class=\"boks bla\"><h3>Terapi</h3><div style=\"font-size:30px;font-variant-numeric:tabular-nums\">15 &nbsp; 18 &nbsp; 20 &nbsp; 22 &nbsp; 25 &nbsp; 26</div><div class=\"lappsnitt\">gjennomsnitt <b>21</b></div></div><div class=\"boks gul\"><h3>Venteliste</h3><div style=\"font-size:30px;font-variant-numeric:tabular-nums\">20 &nbsp; 26 &nbsp; 29 &nbsp; 31 &nbsp; 33 &nbsp; 35</div><div class=\"lappsnitt\">gjennomsnitt <b>29</b></div></div></div><p class=\"lappalle\">Alle tolv under ett: <b>gjennomsnitt 25</b> &nbsp;·&nbsp; forskjellen mellom gruppene: <b>8</b></p><p style=\"margin-top:14px\"><b>Nå later vi som gruppene ikke spilte noen rolle.</b> Hvis behandlingen ikke gjorde noe, er «15» like gjerne en ventelistepasient — og «20» står allerede på begge sider. Så jeg stokker lappene, deler i to bunker på seks, og regner forskjellen.</p>",
+   "en": null,
+   "notat": "Ta fram ekte lapper. Be en student stokke og regne én av rundene — det tar 40 sekunder og gjør poenget fysisk. Les de tre gjennomsnittene høyt før du stokker: 21, 29 og 25 for alle tolv. Det er 25-tallet som går igjen når maskinen tar over om to slides, så det er verdt å plante nå. Pek også på at 20 står i BEGGE bunkene — det er hele begrunnelsen for at det gir mening å stokke.",
+   "notat_en": null
+  },
+  {
+   "nr": 6,
+   "t": "Tre omstokkinger",
+   "html": "<h1>Forskjeller jeg lager av ingenting</h1><table style=\"margin-top:14px\"><tr><th>Omstokking</th><th class=\"r\">Forskjell mellom bunkene</th></tr><tr><td>1</td><td class=\"r\" style=\"font-size:27px\">&nbsp;</td></tr><tr><td>2</td><td class=\"r\" style=\"font-size:27px\">&nbsp;</td></tr><tr><td>3</td><td class=\"r\" style=\"font-size:27px\">&nbsp;</td></tr><tr class=\"uthev\"><td>Forskjellen i disse tolv</td><td class=\"r\" style=\"font-size:27px\">8</td></tr></table><p class=\"liten\" style=\"margin-top:20px\">Skriv inn tallene fra omstokkingen på tavla mens du regner.</p>",
+   "en": null,
+   "notat": "Poenget: ingen av omstokkingene kommer i nærheten av 8. Merk at raden sier «i disse tolv» — 7,5 er forskjellen i hele studien på 75, og de to tallene skal ikke forveksles.",
+   "notat_en": null
+  },
+  {
+   "nr": 7,
+   "t": "Det er dette en test gjør",
+   "html": "<div class=\"ord\">Maskinen orker å stokke ti tusen ganger.<br>Jeg orker tre.</div><div class=\"kilde\" style=\"max-width:900px;line-height:1.5\">(Nesten) alt annet er det samme. Gjennomsnittet er fortsatt 25, og det er fortsatt seks i hver gruppe — men i stedet for å stokke de samme tolv lappene, trekker maskinen nye deltakere fra en populasjon på 10 000.</div>",
+   "en": null,
+   "notat": "«Nesten» er ordet som gjør setningen sann, og det er verdt fem sekunder. Håndsimuleringen stokker de SAMME tolv lappene om igjen — det er en permutasjonstest. Maskinen trekker nye mennesker hver gang, fra en populasjon der de to gruppene er identiske. Begge svarer på det samme spørsmålet: hvor store forskjeller lager tilfeldigheter alene? Populasjonen på 10 000 er den samme simulerte populasjonen som i de andre appene.",
+   "notat_en": null
+  },
+  {
+   "nr": 8,
+   "t": "SIM · forskjeller av ingenting",
+   "html": "<h1>Ti tusen omstokkinger, på et sekund</h1><p class=\"lead\">Begge gruppene har nå <b>nøyaktig samme sanne snitt</b>. Alt du ser i den nedre figuren er forskjeller tilfeldighetene lager helt alene.</p>",
+   "en": null,
+   "notat": "Trykk «Trekk 200 utvalg» én gang til hvis fjellet er tynt. Pek på at ingenting ligger nær 7.",
+   "notat_en": null
+  },
+  {
+   "nr": 9,
+   "t": "AVSTEMNING S1 · p-verdien",
+   "html": "<h1>Hva er <i>p</i>-verdien her?</h1><p class=\"lead\">Vi stokker om gruppelappene 10 000 ganger. <b>30</b> av omstokkingene ga en forskjell minst like stor som den vi observerte.</p><div class=\"avstsvar\"><div><b>A</b> <i>p</i> = .003 — sannsynligheten for at behandlingen ikke virker</div><div><b>B</b> <i>p</i> = .003 — hvor ofte tilfeldig gruppering alene lager en forskjell så stor</div><div><b>C</b> <i>p</i> = .997 — sannsynligheten for at behandlingen virker</div><div><b>D</b> <i>p</i> = .003 — sannsynligheten for at vi har gjort en feil</div></div>",
+   "en": null,
+   "notat": "Kjør som peer instruction: svar alene → vis fordelingen → to minutter i par → stem på nytt. Ikke røp noe mellom rundene.",
+   "notat_en": null
+  },
+  {
+   "nr": 10,
+   "t": "Fasit S1",
+   "html": "<div class=\"fasitmerke\">B</div><h1><i>p</i> er en andel, ikke en påstand</h1><div class=\"avstsvar\"><div class=\"feil\"><b>A</b> <i>p</i> = .003 — sannsynligheten for at behandlingen ikke virker</div><div class=\"rett\"><b>B</b> <i>p</i> = .003 — hvor ofte tilfeldig gruppering alene lager en forskjell så stor</div><div class=\"feil\"><b>C</b> <i>p</i> = .997 — sannsynligheten for at behandlingen virker</div><div class=\"feil\"><b>D</b> <i>p</i> = .003 — sannsynligheten for at vi har gjort en feil</div></div><div class=\"todelt\"><div class=\"boks gronn\"><h3>Derfor B</h3>Tretti av ti tusen bunkedelinger. Det er ikke en påstand om hypotesen — <b>det er en telling</b>.</div><div class=\"boks rod\"><h3>A og C er speilvendinger</h3><i>p</i> er regnet ut <i>under forutsetning av</i> at nullhypotesen er sann. Da kan den ikke samtidig si hvor sannsynlig den forutsetningen er.</div></div><p class=\"liten\"><b>D</b> er en tredje variant: sjansen for at du tar feil avhenger også av hvor sannsynlig effekten var på forhånd — noe <i>p</i> ikke vet noe om.</p>",
+   "en": null
+  },
+  {
+   "nr": 11,
+   "t": "Slik beskriver du dataene",
+   "html": "<h1>Tilbake til den ekte terapistudien: hvordan beskriver vi funnene?</h1><p class=\"lead\">Før noen test. Dette er første avsnitt i enhver resultatdel — og det er alt du kan si uten å anta noe som helst.</p><table class=\"deskr\"><tr><th>Depresjon etter behandling</th><th class=\"r\"><i>n</i></th><th class=\"r\"><i>M</i></th><th class=\"r\"><i>SD</i></th><th class=\"r\">Median</th><th class=\"r\">Laveste–høyeste</th></tr><tr><td><b>Terapi</b></td><td class=\"r\">36</td><td class=\"r\">21.8</td><td class=\"r\">5.2</td><td class=\"r\">21</td><td class=\"r\">10–34</td></tr><tr><td><b>Venteliste</b></td><td class=\"r\">39</td><td class=\"r\">29.3</td><td class=\"r\">3.7</td><td class=\"r\">30</td><td class=\"r\">20–35</td></tr><tr class=\"sum\"><td>Alle</td><td class=\"r\">75</td><td class=\"r\">25.7</td><td class=\"r\">5.8</td><td class=\"r\">26</td><td class=\"r\">10–35</td></tr></table><div class=\"todelt\" style=\"margin-top:16px\"><div class=\"boks bla avslor\" data-trinn=\"1\"><h3><i>M</i> og <i>SD</i> er minstekravet</h3>Gjennomsnittet alene skjuler at ventelistegruppa er langt mer <b>samlet</b> (<i>SD</i> 3.7) enn terapigruppa (<i>SD</i> 5.2). APA krever begge — og du trenger <i>SD</i> igjen om litt, både til <i>t</i> og til Cohens <i>d</i>.</div><div class=\"boks gul avslor\" data-trinn=\"2\"><h3>Spennet sier hvor tallene bor</h3>10–34 mot 20–35. Terapigruppa strekker seg mye lenger ned — men de to gruppene <b>overlapper fra 20 til 34</b>. Det er nettopp derfor øyemål ikke holder, og vi trenger en test.</div></div><p class=\"liten avslor\" data-trinn=\"3\" style=\"margin-top:14px\"><b>Alt dette beskriver de 75 vi målte.</b> Ingenting av det sier noe om hva vi sannsynligvis ville sett i et <b>nytt</b> utvalg på 75 pasienter.</p>",
+   "en": null,
+   "notat": "En kort, men nødvendig slide: dekket hoppet rett fra lappene til parameter og estimat uten å ha sagt hvordan man faktisk beskriver et datasett. Les tabellen radvis, ikke kolonnevis. Spør hva de legger merke til — noen ser gjennomsnittene, og da peker du på SD-kolonnen: den ene gruppa er mer samlet enn den andre, og det tallet kommer tilbake både i standardfeilen og i Cohens d. Medianen er tatt med fordi terapigruppa har en hale nedover (laveste er 10); ligger median og gjennomsnitt nær hverandre, er skjevheten liten nok til at vi kan bruke gjennomsnittet. Vil du ha noe mer her, er det en figur — et boksplott eller to histogrammer side om side sier overlappet raskere enn tabellen. Siste linje er broen til neste slide: si den, og bla videre.",
+   "notat_en": null
+  },
+  {
+   "nr": 12,
+   "t": "To verdener",
+   "html": "<h1>Men det du virkelig vil vite, finnes ikke i dataene dine …</h1><div class=\"todelt\" style=\"margin-top:10px\"><div class=\"boks gul\"><h3>POPULASJONEN — det du vil vite</h3>Alle pasienter som kunne fått denne behandlingen. Her finnes <b>ett sant tall</b>: den virkelige forskjellen. Det kalles <b>parameteren</b> — og du får aldri se det.</div><div class=\"boks bla\"><h3>UTVALGET — det du har</h3>De 75 pasientene som faktisk ble med. Her regner du ut en forskjell. Det kalles <b>estimatet</b>, og det er din beste gjetning — men det treffer nesten aldri helt.</div></div><p style=\"margin-top:22px\"><b>Hele statistikken handler om den avstanden.</b></p>",
+   "en": null,
+   "notat": "Dette er forelesningens viktigste slide. Bruk to minutter, ikke ett.",
+   "notat_en": null
+  },
+  {
+   "nr": 13,
+   "t": "Tankeeksperimentet",
+   "html": "<h1>Men tenk om vi kunne jukse</h1><p class=\"lead\">Anta to ting som aldri er sanne når du sitter med ekte data:</p><div class=\"todelt\"><div class=\"boks gul\"><h3>1 · Vi kjenner sannheten</h3>Vi vet den sanne forskjellen i populasjonen — <b>parameteren</b>, det du nettopp fikk vite at du aldri får se.</div><div class=\"boks gul\"><h3>2 · Vi kan gjenta studien</h3>Ikke én gang, men <b>mange, mange ganger</b>. Nye pasienter hver gang, nøyaktig samme design.</div></div><p class=\"stor\" style=\"margin:18px 0 0;text-align:center\"><b>Da ville vi se at:</b></p><div class=\"tredelt\"><div class=\"boks rod avslor\" data-trinn=\"1\"><h3>Ingen studie treffer helt</h3>Hver gjentakelse gir et litt annet svar. <b>Estimatet spriker</b> — selv om sannheten står bom stille hele tiden.</div><div class=\"boks gronn avslor\" data-trinn=\"2\"><h3>Men de bommer ikke systematisk</h3>Legger du alle svarene i én haug, samler de seg <b>rundt sannheten</b>. Det er dette som gjør gjennomsnittet til et brukbart estimat i det hele tatt.</div><div class=\"boks bla avslor\" data-trinn=\"3\"><h3>Og sprikingen har et navn</h3>Hvor bred haugen er, <b>er standardfeilen</b>. Resten av timen handler om å anslå den — fra ett eneste utvalg.</div></div><p class=\"liten avslor\" data-trinn=\"4\" style=\"margin-top:14px\">Vi kan ikke gjøre dette med ekte pasienter. Men vi kan gjøre det på et sekund i en simulering — og det er nøyaktig det de neste slidene gjør.</p>",
+   "en": null,
+   "notat": "Den korte sliden som gjør resten av timen lovlig. Si de to antakelsene sakte og innrøm at begge er juks: i virkeligheten kjenner du verken sannheten eller får kjørt studien mer enn én gang. Klikk så fram de tre boksene — de er innholdsfortegnelsen for time 1. Boks 2 er den de undervurderer: at estimatet bommer er lett å godta, at det ikke bommer SYSTEMATISK er det som gjør statistikk mulig. Siste linje sier hvorfor vi simulerer i det hele tatt: simuleringen er den eneste verdenen der vi får lov til å jukse på begge punkter samtidig.",
+   "notat_en": null
+  },
+  {
+   "nr": 14,
+   "t": "Formen paa utvalgsfordelingen",
+   "html": "<h1>Estimatet er rimelig normalfordelt rundt det sanne gjennomsnittet</h1><div class=\"figurark\"><svg viewBox=\"0 0 900 272\" style=\"width:100%;height:auto\"><path d=\"M 365.0 200 L 365.0 103.0 L 369.0 98.9 L 373.0 94.8 L 377.0 90.8 L 381.0 86.8 L 385.0 82.8 L 389.0 79.0 L 393.0 75.2 L 397.0 71.6 L 401.0 68.1 L 405.0 64.7 L 409.0 61.5 L 413.0 58.4 L 417.0 55.6 L 421.0 52.9 L 425.0 50.5 L 429.0 48.3 L 433.0 46.3 L 437.0 44.6 L 441.0 43.2 L 445.0 42.0 L 449.0 41.1 L 453.0 40.4 L 457.0 40.1 L 461.0 40.0 L 465.0 40.2 L 469.0 40.7 L 473.0 41.5 L 477.0 42.5 L 481.0 43.9 L 485.0 45.4 L 489.0 47.3 L 493.0 49.4 L 497.0 51.7 L 501.0 54.2 L 505.0 57.0 L 509.0 59.9 L 513.0 63.1 L 517.0 66.4 L 521.0 69.8 L 525.0 73.4 L 529.0 77.1 L 533.0 80.9 L 537.0 84.8 L 541.0 88.8 L 545.0 92.8 L 549.0 96.8 L 553.0 100.9 L 555.0 200 Z\" fill=\"rgba(46,84,150,.16)\"/><path d=\"M 68.0 200.0 L 71.0 200.0 L 74.0 200.0 L 77.0 200.0 L 80.0 199.9 L 83.0 199.9 L 86.0 199.9 L 89.0 199.9 L 92.0 199.9 L 95.0 199.9 L 98.0 199.9 L 101.0 199.9 L 104.0 199.9 L 107.0 199.8 L 110.0 199.8 L 113.0 199.8 L 116.0 199.8 L 119.0 199.7 L 122.0 199.7 L 125.0 199.7 L 128.0 199.6 L 131.0 199.6 L 134.0 199.6 L 137.0 199.5 L 140.0 199.5 L 143.0 199.4 L 146.0 199.3 L 149.0 199.2 L 152.0 199.2 L 155.0 199.1 L 158.0 199.0 L 161.0 198.9 L 164.0 198.8 L 167.0 198.6 L 170.0 198.5 L 173.0 198.3 L 176.0 198.2 L 179.0 198.0 L 182.0 197.8 L 185.0 197.6 L 188.0 197.3 L 191.0 197.1 L 194.0 196.8 L 197.0 196.5 L 200.0 196.2 L 203.0 195.9 L 206.0 195.5 L 209.0 195.1 L 212.0 194.7 L 215.0 194.2 L 218.0 193.8 L 221.0 193.2 L 224.0 192.7 L 227.0 192.1 L 230.0 191.5 L 233.0 190.8 L 236.0 190.1 L 239.0 189.3 L 242.0 188.5 L 245.0 187.6 L 248.0 186.7 L 251.0 185.8 L 254.0 184.8 L 257.0 183.7 L 260.0 182.6 L 263.0 181.4 L 266.0 180.1 L 269.0 178.8 L 272.0 177.4 L 275.0 176.0 L 278.0 174.5 L 281.0 172.9 L 284.0 171.2 L 287.0 169.5 L 290.0 167.7 L 293.0 165.9 L 296.0 163.9 L 299.0 161.9 L 302.0 159.9 L 305.0 157.7 L 308.0 155.5 L 311.0 153.2 L 314.0 150.9 L 317.0 148.5 L 320.0 146.0 L 323.0 143.4 L 326.0 140.8 L 329.0 138.2 L 332.0 135.4 L 335.0 132.7 L 338.0 129.9 L 341.0 127.0 L 344.0 124.1 L 347.0 121.1 L 350.0 118.2 L 353.0 115.2 L 356.0 112.1 L 359.0 109.1 L 362.0 106.0 L 365.0 103.0 L 368.0 99.9 L 371.0 96.8 L 374.0 93.8 L 377.0 90.8 L 380.0 87.8 L 383.0 84.8 L 386.0 81.9 L 389.0 79.0 L 392.0 76.2 L 395.0 73.4 L 398.0 70.7 L 401.0 68.1 L 404.0 65.5 L 407.0 63.1 L 410.0 60.7 L 413.0 58.4 L 416.0 56.3 L 419.0 54.2 L 422.0 52.3 L 425.0 50.5 L 428.0 48.8 L 431.0 47.3 L 434.0 45.9 L 437.0 44.6 L 440.0 43.5 L 443.0 42.5 L 446.0 41.7 L 449.0 41.1 L 452.0 40.6 L 455.0 40.2 L 458.0 40.0 L 461.0 40.0 L 464.0 40.1 L 467.0 40.4 L 470.0 40.9 L 473.0 41.5 L 476.0 42.3 L 479.0 43.2 L 482.0 44.2 L 485.0 45.4 L 488.0 46.8 L 491.0 48.3 L 494.0 49.9 L 497.0 51.7 L 500.0 53.6 L 503.0 55.6 L 506.0 57.7 L 509.0 59.9 L 512.0 62.3 L 515.0 64.7 L 518.0 67.2 L 521.0 69.8 L 524.0 72.5 L 527.0 75.2 L 530.0 78.0 L 533.0 80.9 L 536.0 83.8 L 539.0 86.8 L 542.0 89.8 L 545.0 92.8 L 548.0 95.8 L 551.0 98.9 L 554.0 101.9 L 557.0 105.0 L 560.0 108.1 L 563.0 111.1 L 566.0 114.1 L 569.0 117.2 L 572.0 120.1 L 575.0 123.1 L 578.0 126.0 L 581.0 128.9 L 584.0 131.7 L 587.0 134.5 L 590.0 137.3 L 593.0 140.0 L 596.0 142.6 L 599.0 145.1 L 602.0 147.6 L 605.0 150.1 L 608.0 152.5 L 611.0 154.8 L 614.0 157.0 L 617.0 159.2 L 620.0 161.3 L 623.0 163.3 L 626.0 165.2 L 629.0 167.1 L 632.0 168.9 L 635.0 170.7 L 638.0 172.3 L 641.0 173.9 L 644.0 175.5 L 647.0 176.9 L 650.0 178.3 L 653.0 179.7 L 656.0 181.0 L 659.0 182.2 L 662.0 183.3 L 665.0 184.4 L 668.0 185.4 L 671.0 186.4 L 674.0 187.3 L 677.0 188.2 L 680.0 189.0 L 683.0 189.8 L 686.0 190.6 L 689.0 191.2 L 692.0 191.9 L 695.0 192.5 L 698.0 193.1 L 701.0 193.6 L 704.0 194.1 L 707.0 194.6 L 710.0 195.0 L 713.0 195.4 L 716.0 195.8 L 719.0 196.1 L 722.0 196.4 L 725.0 196.7 L 728.0 197.0 L 731.0 197.3 L 734.0 197.5 L 737.0 197.7 L 740.0 197.9 L 743.0 198.1 L 746.0 198.3 L 749.0 198.4 L 752.0 198.6 L 755.0 198.7 L 758.0 198.8 L 761.0 198.9 L 764.0 199.0 L 767.0 199.1 L 770.0 199.2 L 773.0 199.3 L 776.0 199.4 L 779.0 199.4 L 782.0 199.5 L 785.0 199.5 L 788.0 199.6 L 791.0 199.6 L 794.0 199.7 L 797.0 199.7 L 800.0 199.7 L 803.0 199.8 L 806.0 199.8 L 809.0 199.8 L 812.0 199.8 L 815.0 199.9 L 818.0 199.9 L 821.0 199.9 L 824.0 199.9 L 827.0 199.9 L 830.0 199.9 L 833.0 199.9 L 836.0 199.9 L 839.0 199.9 L 842.0 200.0 L 845.0 200.0 L 848.0 200.0 L 851.0 200.0\" fill=\"none\" stroke=\"#2E5496\" stroke-width=\"3\"/><line x1=\"60\" y1=\"200\" x2=\"860\" y2=\"200\" stroke=\"#9aa4b8\" stroke-width=\"1.6\"/><line x1=\"270.0\" y1=\"200\" x2=\"270.0\" y2=\"205\" stroke=\"#9aa4b8\" stroke-width=\"1.4\"/><text x=\"270.0\" y=\"223\" font-size=\"15\" fill=\"#5C6A80\" text-anchor=\"middle\">−2 SE</text><line x1=\"365.0\" y1=\"200\" x2=\"365.0\" y2=\"205\" stroke=\"#9aa4b8\" stroke-width=\"1.4\"/><text x=\"365.0\" y=\"223\" font-size=\"15\" fill=\"#5C6A80\" text-anchor=\"middle\">−1 SE</text><line x1=\"555.0\" y1=\"200\" x2=\"555.0\" y2=\"205\" stroke=\"#9aa4b8\" stroke-width=\"1.4\"/><text x=\"555.0\" y=\"223\" font-size=\"15\" fill=\"#5C6A80\" text-anchor=\"middle\">+1 SE</text><line x1=\"650.0\" y1=\"200\" x2=\"650.0\" y2=\"205\" stroke=\"#9aa4b8\" stroke-width=\"1.4\"/><text x=\"650.0\" y=\"223\" font-size=\"15\" fill=\"#5C6A80\" text-anchor=\"middle\">+2 SE</text><circle cx=\"343.7\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"495.9\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"554.5\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"411.2\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"333.7\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"453.8\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"505.4\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"564.3\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"344.5\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"337.2\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"527.1\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"505.0\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"605.7\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"553.3\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"450.3\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"433.9\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"704.2\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"432.6\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"385.4\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"351.9\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"469.1\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"473.8\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"427.2\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"454.1\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"485.9\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"525.8\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"564.2\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"479.9\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"290.0\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"526.7\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"325.1\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"443.7\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"320.0\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"460.2\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"386.0\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"480.3\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"773.5\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"455.4\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"540.0\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"334.3\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"432.6\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"522.9\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"451.2\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"495.2\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"469.8\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"364.4\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"513.6\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"382.9\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"637.8\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"412.0\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"525.2\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"460.2\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"550.5\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"402.8\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"554.9\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"448.2\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"580.0\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"519.3\" cy=\"193.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"473.4\" cy=\"186.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><circle cx=\"385.9\" cy=\"179.0\" r=\"3.4\" fill=\"#2E5496\" opacity=\".45\"/><line x1=\"460\" y1=\"200\" x2=\"460\" y2=\"36\" stroke=\"#C0392B\" stroke-width=\"2.6\" stroke-dasharray=\"6,4\"/><text x=\"460\" y=\"26\" font-size=\"17\" font-weight=\"700\" fill=\"#C0392B\" text-anchor=\"middle\">sannheten</text><text x=\"460\" y=\"247\" font-size=\"16\" font-weight=\"600\" fill=\"#2E5496\" text-anchor=\"middle\">omtrent to av tre studier lander her</text><text x=\"64\" y=\"154\" font-size=\"15\" fill=\"#5C6A80\">hver prikk er én studie</text></svg></div><div class=\"tredelt\"><div class=\"boks gronn avslor\" data-trinn=\"1\"><h3>Rundt det sanne</h3>Toppen av klokka ligger på sannheten. Estimatene bommer, men de bommer <b>like ofte for høyt som for lavt</b> — og derfor treffer gjennomsnittet av mange studier.</div><div class=\"boks bla avslor\" data-trinn=\"2\"><h3>Normalfordelt</h3>Samme klokkeform som IQ og kroppshøyde: de fleste nær midten, stadig færre jo lenger ut. <b>To av tre</b> lander innenfor ± én standardfeil rundt gjennomsnittet.</div><div class=\"boks gul avslor\" data-trinn=\"3\"><h3>«Rimelig» gjør en jobb</h3>Rådataene trenger <b>ikke</b> være normalfordelte. Det er <i>estimatene</i> som blir det — nesten uansett, når <i>n</i> er stor nok. Det heter <b>sentralgrenseteoremet</b>.</div></div>",
+   "en": null,
+   "notat": "Dette er påstanden; simuleringen to slides fram er beviset. Pek først på prikkene: hver av dem er én studie, ett tall fra ett utvalg. Så på formen de lager til sammen. Den siste boksen er den viktigste og den mest oversette: studentene tror ofte at «dataene må være normalfordelte». Det er ikke det påstanden sier. Det er fordelingen av ESTIMATER over gjentatte studier som blir normal, og den blir det selv når rådataene er skjeve. Ikke bruk mer enn ett minutt her — de får se det skje selv.",
+   "notat_en": null
+  },
+  {
+   "nr": 15,
+   "t": "Hva n gjor med fordelingen",
+   "html": "<h1>Estimatet bommer mindre når utvalgsstørrelsen øker</h1><div class=\"figurark\"><svg viewBox=\"0 0 900 280\" style=\"width:100%;height:auto\"><path d=\"M 68 248 L 68.0 247.8 L 72.0 247.8 L 76.0 247.8 L 80.0 247.8 L 84.0 247.7 L 88.0 247.7 L 92.0 247.6 L 96.0 247.6 L 100.0 247.6 L 104.0 247.5 L 108.0 247.4 L 112.0 247.4 L 116.0 247.3 L 120.0 247.2 L 124.0 247.1 L 128.0 247.0 L 132.0 246.9 L 136.0 246.8 L 140.0 246.6 L 144.0 246.5 L 148.0 246.3 L 152.0 246.1 L 156.0 245.9 L 160.0 245.7 L 164.0 245.5 L 168.0 245.2 L 172.0 244.9 L 176.0 244.6 L 180.0 244.3 L 184.0 243.9 L 188.0 243.5 L 192.0 243.1 L 196.0 242.7 L 200.0 242.2 L 204.0 241.7 L 208.0 241.1 L 212.0 240.5 L 216.0 239.9 L 220.0 239.2 L 224.0 238.5 L 228.0 237.7 L 232.0 236.9 L 236.0 236.1 L 240.0 235.1 L 244.0 234.2 L 248.0 233.2 L 252.0 232.1 L 256.0 231.0 L 260.0 229.8 L 264.0 228.6 L 268.0 227.3 L 272.0 225.9 L 276.0 224.6 L 280.0 223.1 L 284.0 221.6 L 288.0 220.0 L 292.0 218.4 L 296.0 216.7 L 300.0 215.0 L 304.0 213.2 L 308.0 211.4 L 312.0 209.6 L 316.0 207.7 L 320.0 205.7 L 324.0 203.8 L 328.0 201.8 L 332.0 199.7 L 336.0 197.7 L 340.0 195.6 L 344.0 193.5 L 348.0 191.4 L 352.0 189.3 L 356.0 187.2 L 360.0 185.2 L 364.0 183.1 L 368.0 181.0 L 372.0 179.0 L 376.0 177.0 L 380.0 175.1 L 384.0 173.2 L 388.0 171.3 L 392.0 169.5 L 396.0 167.8 L 400.0 166.1 L 404.0 164.5 L 408.0 163.0 L 412.0 161.6 L 416.0 160.3 L 420.0 159.1 L 424.0 158.0 L 428.0 156.9 L 432.0 156.0 L 436.0 155.2 L 440.0 154.6 L 444.0 154.0 L 448.0 153.6 L 452.0 153.3 L 456.0 153.1 L 460.0 153.0 L 464.0 153.1 L 468.0 153.3 L 472.0 153.6 L 476.0 154.0 L 480.0 154.6 L 484.0 155.2 L 488.0 156.0 L 492.0 156.9 L 496.0 158.0 L 500.0 159.1 L 504.0 160.3 L 508.0 161.6 L 512.0 163.0 L 516.0 164.5 L 520.0 166.1 L 524.0 167.8 L 528.0 169.5 L 532.0 171.3 L 536.0 173.2 L 540.0 175.1 L 544.0 177.0 L 548.0 179.0 L 552.0 181.0 L 556.0 183.1 L 560.0 185.2 L 564.0 187.2 L 568.0 189.3 L 572.0 191.4 L 576.0 193.5 L 580.0 195.6 L 584.0 197.7 L 588.0 199.7 L 592.0 201.8 L 596.0 203.8 L 600.0 205.7 L 604.0 207.7 L 608.0 209.6 L 612.0 211.4 L 616.0 213.2 L 620.0 215.0 L 624.0 216.7 L 628.0 218.4 L 632.0 220.0 L 636.0 221.6 L 640.0 223.1 L 644.0 224.6 L 648.0 225.9 L 652.0 227.3 L 656.0 228.6 L 660.0 229.8 L 664.0 231.0 L 668.0 232.1 L 672.0 233.2 L 676.0 234.2 L 680.0 235.1 L 684.0 236.1 L 688.0 236.9 L 692.0 237.7 L 696.0 238.5 L 700.0 239.2 L 704.0 239.9 L 708.0 240.5 L 712.0 241.1 L 716.0 241.7 L 720.0 242.2 L 724.0 242.7 L 728.0 243.1 L 732.0 243.5 L 736.0 243.9 L 740.0 244.3 L 744.0 244.6 L 748.0 244.9 L 752.0 245.2 L 756.0 245.5 L 760.0 245.7 L 764.0 245.9 L 768.0 246.1 L 772.0 246.3 L 776.0 246.5 L 780.0 246.6 L 784.0 246.8 L 788.0 246.9 L 792.0 247.0 L 796.0 247.1 L 800.0 247.2 L 804.0 247.3 L 808.0 247.4 L 812.0 247.4 L 816.0 247.5 L 820.0 247.6 L 824.0 247.6 L 828.0 247.6 L 832.0 247.7 L 836.0 247.7 L 840.0 247.8 L 844.0 247.8 L 848.0 247.8 L 852.0 247.8 L 852 248 Z\" fill=\"rgba(143,155,176,.16)\"/><path d=\"M 68 248 L 68.0 248.0 L 72.0 248.0 L 76.0 248.0 L 80.0 248.0 L 84.0 248.0 L 88.0 248.0 L 92.0 248.0 L 96.0 248.0 L 100.0 248.0 L 104.0 248.0 L 108.0 248.0 L 112.0 248.0 L 116.0 248.0 L 120.0 248.0 L 124.0 248.0 L 128.0 248.0 L 132.0 248.0 L 136.0 248.0 L 140.0 248.0 L 144.0 248.0 L 148.0 248.0 L 152.0 248.0 L 156.0 248.0 L 160.0 248.0 L 164.0 248.0 L 168.0 248.0 L 172.0 248.0 L 176.0 248.0 L 180.0 248.0 L 184.0 248.0 L 188.0 248.0 L 192.0 248.0 L 196.0 248.0 L 200.0 248.0 L 204.0 248.0 L 208.0 248.0 L 212.0 248.0 L 216.0 248.0 L 220.0 248.0 L 224.0 248.0 L 228.0 248.0 L 232.0 248.0 L 236.0 248.0 L 240.0 247.9 L 244.0 247.9 L 248.0 247.9 L 252.0 247.9 L 256.0 247.8 L 260.0 247.7 L 264.0 247.7 L 268.0 247.6 L 272.0 247.4 L 276.0 247.3 L 280.0 247.1 L 284.0 246.9 L 288.0 246.6 L 292.0 246.2 L 296.0 245.8 L 300.0 245.2 L 304.0 244.6 L 308.0 243.8 L 312.0 242.9 L 316.0 241.8 L 320.0 240.6 L 324.0 239.1 L 328.0 237.3 L 332.0 235.3 L 336.0 233.0 L 340.0 230.4 L 344.0 227.4 L 348.0 224.1 L 352.0 220.4 L 356.0 216.2 L 360.0 211.6 L 364.0 206.6 L 368.0 201.1 L 372.0 195.2 L 376.0 188.8 L 380.0 182.0 L 384.0 174.9 L 388.0 167.3 L 392.0 159.5 L 396.0 151.5 L 400.0 143.2 L 404.0 134.9 L 408.0 126.5 L 412.0 118.2 L 416.0 110.0 L 420.0 102.2 L 424.0 94.6 L 428.0 87.6 L 432.0 81.1 L 436.0 75.3 L 440.0 70.2 L 444.0 65.9 L 448.0 62.5 L 452.0 60.0 L 456.0 58.5 L 460.0 58.0 L 464.0 58.5 L 468.0 60.0 L 472.0 62.5 L 476.0 65.9 L 480.0 70.2 L 484.0 75.3 L 488.0 81.1 L 492.0 87.6 L 496.0 94.6 L 500.0 102.2 L 504.0 110.0 L 508.0 118.2 L 512.0 126.5 L 516.0 134.9 L 520.0 143.2 L 524.0 151.5 L 528.0 159.5 L 532.0 167.3 L 536.0 174.9 L 540.0 182.0 L 544.0 188.8 L 548.0 195.2 L 552.0 201.1 L 556.0 206.6 L 560.0 211.6 L 564.0 216.2 L 568.0 220.4 L 572.0 224.1 L 576.0 227.4 L 580.0 230.4 L 584.0 233.0 L 588.0 235.3 L 592.0 237.3 L 596.0 239.1 L 600.0 240.6 L 604.0 241.8 L 608.0 242.9 L 612.0 243.8 L 616.0 244.6 L 620.0 245.2 L 624.0 245.8 L 628.0 246.2 L 632.0 246.6 L 636.0 246.9 L 640.0 247.1 L 644.0 247.3 L 648.0 247.4 L 652.0 247.6 L 656.0 247.7 L 660.0 247.7 L 664.0 247.8 L 668.0 247.9 L 672.0 247.9 L 676.0 247.9 L 680.0 247.9 L 684.0 248.0 L 688.0 248.0 L 692.0 248.0 L 696.0 248.0 L 700.0 248.0 L 704.0 248.0 L 708.0 248.0 L 712.0 248.0 L 716.0 248.0 L 720.0 248.0 L 724.0 248.0 L 728.0 248.0 L 732.0 248.0 L 736.0 248.0 L 740.0 248.0 L 744.0 248.0 L 748.0 248.0 L 752.0 248.0 L 756.0 248.0 L 760.0 248.0 L 764.0 248.0 L 768.0 248.0 L 772.0 248.0 L 776.0 248.0 L 780.0 248.0 L 784.0 248.0 L 788.0 248.0 L 792.0 248.0 L 796.0 248.0 L 800.0 248.0 L 804.0 248.0 L 808.0 248.0 L 812.0 248.0 L 816.0 248.0 L 820.0 248.0 L 824.0 248.0 L 828.0 248.0 L 832.0 248.0 L 836.0 248.0 L 840.0 248.0 L 844.0 248.0 L 848.0 248.0 L 852.0 248.0 L 852 248 Z\" fill=\"rgba(46,84,150,.16)\"/><path d=\"M 68.0 247.8 L 71.0 247.8 L 74.0 247.8 L 77.0 247.8 L 80.0 247.8 L 83.0 247.7 L 86.0 247.7 L 89.0 247.7 L 92.0 247.6 L 95.0 247.6 L 98.0 247.6 L 101.0 247.5 L 104.0 247.5 L 107.0 247.4 L 110.0 247.4 L 113.0 247.3 L 116.0 247.3 L 119.0 247.2 L 122.0 247.2 L 125.0 247.1 L 128.0 247.0 L 131.0 246.9 L 134.0 246.8 L 137.0 246.7 L 140.0 246.6 L 143.0 246.5 L 146.0 246.4 L 149.0 246.3 L 152.0 246.1 L 155.0 246.0 L 158.0 245.8 L 161.0 245.6 L 164.0 245.5 L 167.0 245.3 L 170.0 245.1 L 173.0 244.8 L 176.0 244.6 L 179.0 244.4 L 182.0 244.1 L 185.0 243.8 L 188.0 243.5 L 191.0 243.2 L 194.0 242.9 L 197.0 242.5 L 200.0 242.2 L 203.0 241.8 L 206.0 241.4 L 209.0 241.0 L 212.0 240.5 L 215.0 240.0 L 218.0 239.6 L 221.0 239.0 L 224.0 238.5 L 227.0 237.9 L 230.0 237.3 L 233.0 236.7 L 236.0 236.1 L 239.0 235.4 L 242.0 234.7 L 245.0 233.9 L 248.0 233.2 L 251.0 232.4 L 254.0 231.6 L 257.0 230.7 L 260.0 229.8 L 263.0 228.9 L 266.0 227.9 L 269.0 227.0 L 272.0 225.9 L 275.0 224.9 L 278.0 223.8 L 281.0 222.7 L 284.0 221.6 L 287.0 220.4 L 290.0 219.2 L 293.0 218.0 L 296.0 216.7 L 299.0 215.5 L 302.0 214.1 L 305.0 212.8 L 308.0 211.4 L 311.0 210.0 L 314.0 208.6 L 317.0 207.2 L 320.0 205.7 L 323.0 204.3 L 326.0 202.8 L 329.0 201.3 L 332.0 199.7 L 335.0 198.2 L 338.0 196.6 L 341.0 195.1 L 344.0 193.5 L 347.0 192.0 L 350.0 190.4 L 353.0 188.8 L 356.0 187.2 L 359.0 185.7 L 362.0 184.1 L 365.0 182.6 L 368.0 181.0 L 371.0 179.5 L 374.0 178.0 L 377.0 176.5 L 380.0 175.1 L 383.0 173.6 L 386.0 172.2 L 389.0 170.9 L 392.0 169.5 L 395.0 168.2 L 398.0 167.0 L 401.0 165.7 L 404.0 164.5 L 407.0 163.4 L 410.0 162.3 L 413.0 161.3 L 416.0 160.3 L 419.0 159.4 L 422.0 158.5 L 425.0 157.7 L 428.0 156.9 L 431.0 156.2 L 434.0 155.6 L 437.0 155.1 L 440.0 154.6 L 443.0 154.1 L 446.0 153.8 L 449.0 153.5 L 452.0 153.3 L 455.0 153.1 L 458.0 153.0 L 461.0 153.0 L 464.0 153.1 L 467.0 153.2 L 470.0 153.4 L 473.0 153.7 L 476.0 154.0 L 479.0 154.4 L 482.0 154.9 L 485.0 155.4 L 488.0 156.0 L 491.0 156.7 L 494.0 157.4 L 497.0 158.2 L 500.0 159.1 L 503.0 160.0 L 506.0 161.0 L 509.0 162.0 L 512.0 163.0 L 515.0 164.2 L 518.0 165.3 L 521.0 166.5 L 524.0 167.8 L 527.0 169.1 L 530.0 170.4 L 533.0 171.8 L 536.0 173.2 L 539.0 174.6 L 542.0 176.0 L 545.0 177.5 L 548.0 179.0 L 551.0 180.5 L 554.0 182.1 L 557.0 183.6 L 560.0 185.2 L 563.0 186.7 L 566.0 188.3 L 569.0 189.9 L 572.0 191.4 L 575.0 193.0 L 578.0 194.6 L 581.0 196.1 L 584.0 197.7 L 587.0 199.2 L 590.0 200.7 L 593.0 202.3 L 596.0 203.8 L 599.0 205.2 L 602.0 206.7 L 605.0 208.2 L 608.0 209.6 L 611.0 211.0 L 614.0 212.3 L 617.0 213.7 L 620.0 215.0 L 623.0 216.3 L 626.0 217.6 L 629.0 218.8 L 632.0 220.0 L 635.0 221.2 L 638.0 222.3 L 641.0 223.5 L 644.0 224.6 L 647.0 225.6 L 650.0 226.6 L 653.0 227.6 L 656.0 228.6 L 659.0 229.5 L 662.0 230.4 L 665.0 231.3 L 668.0 232.1 L 671.0 232.9 L 674.0 233.7 L 677.0 234.4 L 680.0 235.1 L 683.0 235.8 L 686.0 236.5 L 689.0 237.1 L 692.0 237.7 L 695.0 238.3 L 698.0 238.9 L 701.0 239.4 L 704.0 239.9 L 707.0 240.4 L 710.0 240.8 L 713.0 241.3 L 716.0 241.7 L 719.0 242.1 L 722.0 242.4 L 725.0 242.8 L 728.0 243.1 L 731.0 243.4 L 734.0 243.7 L 737.0 244.0 L 740.0 244.3 L 743.0 244.5 L 746.0 244.8 L 749.0 245.0 L 752.0 245.2 L 755.0 245.4 L 758.0 245.6 L 761.0 245.8 L 764.0 245.9 L 767.0 246.1 L 770.0 246.2 L 773.0 246.3 L 776.0 246.5 L 779.0 246.6 L 782.0 246.7 L 785.0 246.8 L 788.0 246.9 L 791.0 247.0 L 794.0 247.1 L 797.0 247.1 L 800.0 247.2 L 803.0 247.3 L 806.0 247.3 L 809.0 247.4 L 812.0 247.4 L 815.0 247.5 L 818.0 247.5 L 821.0 247.6 L 824.0 247.6 L 827.0 247.6 L 830.0 247.7 L 833.0 247.7 L 836.0 247.7 L 839.0 247.7 L 842.0 247.8 L 845.0 247.8 L 848.0 247.8 L 851.0 247.8\" fill=\"none\" stroke=\"#8F9BB0\" stroke-width=\"2.6\"/><path d=\"M 68.0 248.0 L 71.0 248.0 L 74.0 248.0 L 77.0 248.0 L 80.0 248.0 L 83.0 248.0 L 86.0 248.0 L 89.0 248.0 L 92.0 248.0 L 95.0 248.0 L 98.0 248.0 L 101.0 248.0 L 104.0 248.0 L 107.0 248.0 L 110.0 248.0 L 113.0 248.0 L 116.0 248.0 L 119.0 248.0 L 122.0 248.0 L 125.0 248.0 L 128.0 248.0 L 131.0 248.0 L 134.0 248.0 L 137.0 248.0 L 140.0 248.0 L 143.0 248.0 L 146.0 248.0 L 149.0 248.0 L 152.0 248.0 L 155.0 248.0 L 158.0 248.0 L 161.0 248.0 L 164.0 248.0 L 167.0 248.0 L 170.0 248.0 L 173.0 248.0 L 176.0 248.0 L 179.0 248.0 L 182.0 248.0 L 185.0 248.0 L 188.0 248.0 L 191.0 248.0 L 194.0 248.0 L 197.0 248.0 L 200.0 248.0 L 203.0 248.0 L 206.0 248.0 L 209.0 248.0 L 212.0 248.0 L 215.0 248.0 L 218.0 248.0 L 221.0 248.0 L 224.0 248.0 L 227.0 248.0 L 230.0 248.0 L 233.0 248.0 L 236.0 248.0 L 239.0 247.9 L 242.0 247.9 L 245.0 247.9 L 248.0 247.9 L 251.0 247.9 L 254.0 247.8 L 257.0 247.8 L 260.0 247.7 L 263.0 247.7 L 266.0 247.6 L 269.0 247.5 L 272.0 247.4 L 275.0 247.3 L 278.0 247.2 L 281.0 247.0 L 284.0 246.9 L 287.0 246.7 L 290.0 246.4 L 293.0 246.1 L 296.0 245.8 L 299.0 245.4 L 302.0 244.9 L 305.0 244.4 L 308.0 243.8 L 311.0 243.2 L 314.0 242.4 L 317.0 241.5 L 320.0 240.6 L 323.0 239.5 L 326.0 238.2 L 329.0 236.9 L 332.0 235.3 L 335.0 233.6 L 338.0 231.8 L 341.0 229.7 L 344.0 227.4 L 347.0 225.0 L 350.0 222.3 L 353.0 219.4 L 356.0 216.2 L 359.0 212.8 L 362.0 209.2 L 365.0 205.3 L 368.0 201.1 L 371.0 196.7 L 374.0 192.0 L 377.0 187.2 L 380.0 182.0 L 383.0 176.7 L 386.0 171.1 L 389.0 165.4 L 392.0 159.5 L 395.0 153.5 L 398.0 147.3 L 401.0 141.1 L 404.0 134.9 L 407.0 128.6 L 410.0 122.3 L 413.0 116.1 L 416.0 110.0 L 419.0 104.1 L 422.0 98.3 L 425.0 92.8 L 428.0 87.6 L 431.0 82.7 L 434.0 78.1 L 437.0 73.9 L 440.0 70.2 L 443.0 66.9 L 446.0 64.1 L 449.0 61.8 L 452.0 60.0 L 455.0 58.8 L 458.0 58.1 L 461.0 58.0 L 464.0 58.5 L 467.0 59.5 L 470.0 61.1 L 473.0 63.2 L 476.0 65.9 L 479.0 69.0 L 482.0 72.6 L 485.0 76.6 L 488.0 81.1 L 491.0 85.9 L 494.0 91.0 L 497.0 96.5 L 500.0 102.2 L 503.0 108.0 L 506.0 114.1 L 509.0 120.2 L 512.0 126.5 L 515.0 132.8 L 518.0 139.0 L 521.0 145.3 L 524.0 151.5 L 527.0 157.5 L 530.0 163.5 L 533.0 169.3 L 536.0 174.9 L 539.0 180.3 L 542.0 185.5 L 545.0 190.4 L 548.0 195.2 L 551.0 199.7 L 554.0 203.9 L 557.0 207.9 L 560.0 211.6 L 563.0 215.1 L 566.0 218.3 L 569.0 221.3 L 572.0 224.1 L 575.0 226.6 L 578.0 229.0 L 581.0 231.1 L 584.0 233.0 L 587.0 234.8 L 590.0 236.4 L 593.0 237.8 L 596.0 239.1 L 599.0 240.2 L 602.0 241.2 L 605.0 242.1 L 608.0 242.9 L 611.0 243.6 L 614.0 244.2 L 617.0 244.8 L 620.0 245.2 L 623.0 245.6 L 626.0 246.0 L 629.0 246.3 L 632.0 246.6 L 635.0 246.8 L 638.0 247.0 L 641.0 247.2 L 644.0 247.3 L 647.0 247.4 L 650.0 247.5 L 653.0 247.6 L 656.0 247.7 L 659.0 247.7 L 662.0 247.8 L 665.0 247.8 L 668.0 247.9 L 671.0 247.9 L 674.0 247.9 L 677.0 247.9 L 680.0 247.9 L 683.0 247.9 L 686.0 248.0 L 689.0 248.0 L 692.0 248.0 L 695.0 248.0 L 698.0 248.0 L 701.0 248.0 L 704.0 248.0 L 707.0 248.0 L 710.0 248.0 L 713.0 248.0 L 716.0 248.0 L 719.0 248.0 L 722.0 248.0 L 725.0 248.0 L 728.0 248.0 L 731.0 248.0 L 734.0 248.0 L 737.0 248.0 L 740.0 248.0 L 743.0 248.0 L 746.0 248.0 L 749.0 248.0 L 752.0 248.0 L 755.0 248.0 L 758.0 248.0 L 761.0 248.0 L 764.0 248.0 L 767.0 248.0 L 770.0 248.0 L 773.0 248.0 L 776.0 248.0 L 779.0 248.0 L 782.0 248.0 L 785.0 248.0 L 788.0 248.0 L 791.0 248.0 L 794.0 248.0 L 797.0 248.0 L 800.0 248.0 L 803.0 248.0 L 806.0 248.0 L 809.0 248.0 L 812.0 248.0 L 815.0 248.0 L 818.0 248.0 L 821.0 248.0 L 824.0 248.0 L 827.0 248.0 L 830.0 248.0 L 833.0 248.0 L 836.0 248.0 L 839.0 248.0 L 842.0 248.0 L 845.0 248.0 L 848.0 248.0 L 851.0 248.0\" fill=\"none\" stroke=\"#2E5496\" stroke-width=\"3.2\"/><line x1=\"60\" y1=\"248\" x2=\"860\" y2=\"248\" stroke=\"#9aa4b8\" stroke-width=\"1.6\"/><line x1=\"460\" y1=\"248\" x2=\"460\" y2=\"40\" stroke=\"#C0392B\" stroke-width=\"2.6\" stroke-dasharray=\"6,4\"/><text x=\"460\" y=\"30\" font-size=\"17\" font-weight=\"700\" fill=\"#C0392B\" text-anchor=\"middle\">sannheten står stille</text><line x1=\"405.0\" y1=\"202\" x2=\"515.0\" y2=\"202\" stroke=\"#2E5496\" stroke-width=\"2.6\"/><line x1=\"405.0\" y1=\"196\" x2=\"405.0\" y2=\"208\" stroke=\"#2E5496\" stroke-width=\"2.6\"/><line x1=\"515.0\" y1=\"196\" x2=\"515.0\" y2=\"208\" stroke=\"#2E5496\" stroke-width=\"2.6\"/><text x=\"527.0\" y=\"207\" font-size=\"16\" font-weight=\"700\" fill=\"#2E5496\">± 1 SE</text><line x1=\"350.0\" y1=\"234\" x2=\"570.0\" y2=\"234\" stroke=\"#8F9BB0\" stroke-width=\"2.6\"/><line x1=\"350.0\" y1=\"228\" x2=\"350.0\" y2=\"240\" stroke=\"#8F9BB0\" stroke-width=\"2.6\"/><line x1=\"570.0\" y1=\"228\" x2=\"570.0\" y2=\"240\" stroke=\"#8F9BB0\" stroke-width=\"2.6\"/><text x=\"350.0\" y=\"264\" font-size=\"16\" font-weight=\"700\" fill=\"#8F9BB0\" text-anchor=\"end\">± 1 SE</text><text x=\"389\" y=\"72\" font-size=\"17\" font-weight=\"700\" fill=\"#2E5496\" text-anchor=\"end\">n = 80  ·  SE = 1.3</text><text x=\"610\" y=\"150\" font-size=\"17\" font-weight=\"700\" fill=\"#5C6A80\">n = 20  ·  SE = 2.5</text><text x=\"460\" y=\"278\" font-size=\"15\" fill=\"#5C6A80\" text-anchor=\"middle\">estimert forskjell — ett tall fra hver studie</text></svg></div><div class=\"tredelt\"><div class=\"boks bla avslor\" data-trinn=\"1\"><h3>Fire ganger så mange …</h3>Fire ganger så mange pasienter — og klokka blir bare <b>halvparten</b> så bred. Kvadratroten gjør det.</div><div class=\"boks rod avslor\" data-trinn=\"2\"><h3>Toppen flytter seg ikke</h3>Et større utvalg gjør deg ikke nærmere <b>et annet svar</b>. Det gjør deg sikrere på <b>det samme</b>.</div><div class=\"boks gronn avslor\" data-trinn=\"3\"><h3>Bredden har et navn</h3>Den er <b>standardfeilen</b> — det eneste som endrer seg i dette bildet. Resten av timen handler om å regne den ut fra ett utvalg.</div></div>",
+   "en": null,
+   "notat": "Samme figur som forrige slide, med en kurve til. La dem se på bildet før du sier noe, og spør hva som IKKE endret seg. Svaret er toppen — og det er verdt et øyeblikk, for mange tror i stillhet at flere deltakere gir et «riktigere» svar. Det gjør det ikke; det gir et sikrere. Tallene stemmer med simuleringen senere i timen: SE går fra 2.5 ved n = 20 til 1.3 ved n = 80. Merk at den smale klokka også er dobbelt så HØY — arealet er det samme, fordi det fortsatt er alle studiene. Det er den detaljen som gjør at halveringen ser så dramatisk ut.",
+   "notat_en": null
+  },
+  {
+   "nr": 16,
+   "t": "Greske og latinske bokstaver",
+   "html": "<div class=\"ord\">Greske bokstaver er sannheten du ikke ser.<br>Latinske er tallene du har.</div><div class=\"kilde\">μ₁ − μ₂ er parameteren &nbsp;·&nbsp; x̄₁ − x̄₂ er estimatet</div>",
+   "en": null
+  },
+  {
+   "nr": 17,
+   "t": "SIM · gjetningen bommer",
+   "html": "<h1>Gjetningen bommer — men ikke systematisk</h1><p class=\"lead\">Nå er den sanne forskjellen <b>−6</b>. Trekk utvalg etter utvalg og se hvor mye enkeltgjetningene spriker — og hvor snittet av dem legger seg.</p>",
+   "en": null,
+   "notat": "Trykk «Trekk ett nytt utvalg» fem-seks ganger manuelt først, så «200 utvalg». Effekten er større når de ser enkeltgjetningene sprike.",
+   "notat_en": null
+  },
+  {
+   "nr": 18,
+   "t": "Tre t-tester",
+   "html": "<h1>Hvilken <i>t</i>-test er din?</h1><table><tr><th>Situasjonen</th><th>Testen</th><th>Parameteren</th></tr><tr><td>To ulike grupper mennesker</td><td><b>Uavhengig</b></td><td>μ₁ − μ₂</td></tr><tr><td>De samme personene, målt to ganger</td><td><b>Paret</b></td><td>μ<sub>diff</sub></td></tr><tr><td>Én gruppe mot en fast verdi</td><td><b>Én-utvalgs</b></td><td>μ</td></tr></table><p style=\"margin-top:26px\" class=\"stor\"><b>Ett spørsmål avgjør:</b> er det de samme personene på begge sider av sammenligningen?</p>",
+   "en": null
+  },
+  {
+   "nr": 19,
+   "t": "Vignettdrill",
+   "html": "<h1>Rop ut testen</h1><ul class=\"stor\"><li>Tjue studenter tar samme prøve før og etter et kurs.</li><li>Menn og kvinner sammenlignes på perfeksjonisme.</li><li>Er gjennomsnitts-IQ i utvalget vårt forskjellig fra 100?</li><li>Hver pasient vurderes av <i>to uavhengige terapeuter</i>.</li></ul>",
+   "en": null,
+   "notat": "Fasit: paret · uavhengig · én-utvalgs · paret. Den siste er fella — «uavhengige» gjelder terapeutene, ikke målingene. Ingen avstemning, bare tempo.",
+   "notat_en": null
+  },
+  {
+   "nr": 20,
+   "t": "Regelen",
+   "html": "<div class=\"ord\">Samme personer på begge sider → paret.<br>Ulike personer → uavhengig.</div><div class=\"kilde\">Skriv den setningen ned.</div>",
+   "en": null
+  },
+  {
+   "nr": 21,
+   "t": "Samme maskin, tre innganger",
+   "html": "<h1>Hva skiller dem — og hva er likt</h1><p class=\"lead\">Alle tre regner <b>estimat delt på standardfeil</b> og leser svaret mot en <i>t</i>-fordeling. Det som varierer er hva estimatet er.</p><table style=\"margin-top:6px\"><tr><th>&nbsp;</th><th>Uavhengig</th><th>Paret</th><th>Én-utvalgs</th></tr><tr><td>Data i JASP</td><td>én kolonne skår<br>+ én gruppekolonne</td><td>to kolonner:<br>før og etter</td><td>én kolonne</td></tr><tr><td>Nullhypotesen</td><td>μ₁ = μ₂</td><td>μ<sub>diff</sub> = 0</td><td>μ = testverdien</td></tr><tr><td><i>df</i></td><td><i>n</i>₁ + <i>n</i>₂ − 2</td><td><i>n</i> − 1</td><td><i>n</i> − 1</td></tr><tr><td>Cohens <i>d</i></td><td>(x̄₁ − x̄₂) / s<sub>p</sub></td><td>d̄ / s<sub>diff</sub></td><td>(x̄ − μ₀) / s</td></tr></table><div class=\"todelt\" style=\"margin-top:16px\"><div class=\"boks gronn\"><h3>Den ene forenklingen</h3>Den <b>parete</b> testen <i>er</i> en én-utvalgstest på differansene: regn ut «etter minus før» for hver person, og spør om snittet av de tallene er null. Derfor er <i>df</i> = <i>n</i> − 1 i begge.</div><div class=\"boks bla\"><h3>I dag: den uavhengige</h3>Den brukes i JASP-demoene, i arbeidskravet og i de fleste eksamensoppgavene. Den <b>parete</b> møter dere igjen på seminar 3; én-utvalgstesten er mest et mellomsteg på veien.</div></div>",
+   "en": null,
+   "notat": "Slide 14 svarte på hvilken test. Denne viser at de tre er samme maskin. Les toppsetningen høyt: estimat delt på standardfeil, lest mot en t-fordeling — det er alt sammen tre av dem gjør. Bruk så et halvt minutt på den grønne boksen, for den sparer dem for en formel: den parete testen ER en én-utvalgstest, bare på differansene. Be dem se på df-raden etterpå og forklare hvorfor de to siste kolonnene er like. Si til slutt eksplisitt at resten av timen følger den uavhengige — ellers vet de ikke hva de skal legge vekt på.",
+   "notat_en": null,
+   "harJasp": true
+  },
+  {
+   "nr": 22,
+   "t": "Neste spørsmål",
+   "html": "<h1 style=\"text-align:center\">Vi har gjetningen.<br>Hvor sikker er den?</h1><p class=\"stor\" style=\"max-width:900px;text-align:center;margin-top:24px\">Forskeren gjør studien <b>én gang</b>. Men tenk deg at hun kunne gjort den om igjen, med nye pasienter, tusen ganger.</p>",
+   "en": null
+  },
+  {
+   "nr": 23,
+   "t": "SIM · standardfeilen",
+   "html": "<h1>Standardfeilen er hvor mye svarene ville sprikt</h1><p class=\"lead\">2 000 gjentakelser av den samme studien. Bredden på fjellet <i>er</i> standardfeilen.</p>",
+   "en": null,
+   "notat": "Pek på at «SE fra formelen» er regnet ut på ETT utvalg og likevel treffer sprikingen fra 2 000. Det er hele grunnen til at teori er nyttig.",
+   "notat_en": null
+  },
+  {
+   "nr": 24,
+   "t": "SD eller SE?",
+   "html": "<h1>To tall som forveksles hele tiden</h1><div class=\"todelt\" style=\"margin-top:10px\"><div class=\"boks bla\"><h3>Standardavvik (<i>SD</i>)</h3>Beskriver <b>personene</b>. Hvor spredt er pasientene rundt sitt eget gjennomsnitt?<br><br>Endrer seg <b>ikke</b> når du måler flere — folk er like forskjellige uansett.</div><div class=\"boks gronn\"><h3>Standardfeil (<i>SE</i>)</h3>Beskriver <b>estimatet</b>. Hvor spredt ville gjennomsnittet vært over gjentatte studier?<br><br><b>Krymper</b> når <i>n</i> vokser.</div></div><p class=\"stor\" style=\"margin-top:24px\"><b><i>SD</i> er hvor ulike folk er. <i>SE</i> er hvor lite du vet.</b></p>",
+   "en": null
+  },
+  {
+   "nr": 25,
+   "t": "PREDIKSJON P1 · dobbel spredning",
+   "html": "<h1>Bind deg til ett svar først</h1><p class=\"lead\">Gjennomsnittsforskjellen holdes fast, men <b>innengruppe-SD dobles</b>. Hva skjer med <i>p</i>-verdien?</p><div class=\"avstsvar\"><div><b>A</b> Uendret — forskjellen er jo den samme</div><div><b>B</b> Den blir større (mindre signifikant)</div><div><b>C</b> Den blir mindre</div><div><b>D</b> Vet ikke</div></div>",
+   "en": null,
+   "notat": "Ingen ny avstemning etterpå — her avslører simuleringen fasiten. Fasit B.",
+   "notat_en": null
+  },
+  {
+   "nr": 26,
+   "t": "SIM · dobbel spredning",
+   "html": "<h1>Samme forskjell, dobbelt så mye rot</h1><p class=\"lead\">Dra <b>σ</b> fra 8 til 16 og kjør på nytt. Forskjellen er den samme — fjellet er dobbelt så bredt.</p>",
+   "en": null,
+   "notat": "Dra glideren mens de ser på, og kjør på nytt. Fasit B: p stiger.",
+   "notat_en": null
+  },
+  {
+   "nr": 27,
+   "t": "Men vi har jo bare ett utvalg",
+   "html": "<h1>Vi har ett utvalg. Ikke to tusen.</h1><p class=\"lead\">Alt du nettopp så, forutsatte at vi kunne gjenta studien 2 000 ganger og se hvor mye svarene sprikte. <b>Det kan vi ikke.</b> Vi har 75 pasienter, målt én gang.</p><div class=\"tredelt\"><div class=\"boks bla avslor\" data-trinn=\"1\"><h3>Det vi vil vite</h3>Hvor mye ville estimatet vårt sprikt <b>hvis</b> vi gjentok studien? Det er standardfeilen. Den handler om <b>alle studiene vi aldri kjørte</b>.</div><div class=\"boks rod avslor\" data-trinn=\"2\"><h3>Det vi har</h3>Ett utvalg. 36 pasienter i terapi, 39 på venteliste, ett tall for hver. <b>Ingen populasjon å trekke fra på nytt, ingen gjentakelser.</b></div><div class=\"boks gronn avslor\" data-trinn=\"3\"><h3>Broen</h3>Spredningen <b>inne i</b> utvalget forteller hvor mye støy det er i populasjonen. Og teorien sier nøyaktig hvordan den støyen blir til spriking <b>mellom</b> utvalg.</div></div><div class=\"boks gul avslor\" data-trinn=\"4\" style=\"margin-top:14px\"><b>Og du har allerede sett at det stemmer.</b> I figuren rett foran sto to tall ved siden av hverandre: <i>SE</i> målt fra 2 000 studier, og <i>SE</i> regnet fra formelen på <b>ett</b> utvalg. De var praktisk talt like. <span style=\"color:#3F4E63\">Prisen er to antakelser — at utvalget er trukket tilfeldig, og at spredningen er den samme i begge grupper. Vi kommer tilbake til dem etter pausen.</span></div>",
+   "en": null,
+   "notat": "Denne sliden finnes fordi neste slide svarer på et spørsmål ingen har stilt. Still det: «alt vi har gjort til nå har vært å kjøre studien to tusen ganger — hvor mange ganger fikk dere kjøre deres?» Klikk så fram de tre boksene. Den midterste er den de skal kjenne igjen fra arbeidskravet: ett datasett, én gang. Broen i boks 3 er hele poenget med teori, og den er verdt å si sakte: vi kan ikke observere sprikingen mellom utvalg, men vi kan observere spredningen inne i vårt eget, og matematikken oversetter mellom dem. Siste boks peker tilbake på tallene de så i figuren rett foran — bla gjerne tilbake og vis dem igjen hvis de ikke husker. Da er formelen på neste slide ikke en påstand, men noe de har sett virke.",
+   "notat_en": null
+  },
+  {
+   "nr": 28,
+   "t": "Formelen for SE",
+   "html": "<h1>Hvordan <i>SE</i> regnes ut uten å gjenta studien</h1><div class=\"formel\" style=\"font-size:26px;margin:22px 0\">s²<sub>p</sub> = <span class=\"brok\"><span class=\"over\">(n₁ − 1)·s₁² + (n₂ − 1)·s₂²</span><span class=\"under\">n₁ + n₂ − 2</span></span></div><div class=\"formel\" style=\"font-size:26px\"><i>SE</i> = <span style=\"font-size:32px\">√</span><span style=\"border-top:2px solid #1F3864;padding:3px 8px 0\">s²<sub>p</sub> · (1/n₁ + 1/n₂)</span></div><p style=\"margin-top:22px\">Legg merke til <b>1/n</b>-leddene: det er de som gjør at <i>SE</i> krymper når utvalget vokser. Og legg merke til at <i>n</i> står under en <b>kvadratrot</b>.</p>",
+   "en": null,
+   "notat": "Firedoble n for å halvere usikkerheten. Presisjon er dyrt.",
+   "notat_en": null
+  },
+  {
+   "nr": 29,
+   "t": "SIM · n = 80",
+   "html": "<h1>Fire ganger så mange for halvparten av usikkerheten</h1><p class=\"lead\">Samme sannhet, <i>n</i> = 80 i stedet for 20. Fjellet blir smalere — men det flytter seg ikke.</p>",
+   "en": null,
+   "notat": "Sammenlign med slide 16: SE gikk fra 2.53 til 1.26. Firedobbel n, halv usikkerhet.",
+   "notat_en": null
+  },
+  {
+   "nr": 30,
+   "t": "Signal over støy",
+   "html": "<h1><i>t</i> er forskjellen målt i standardfeil</h1><p class=\"lead\">Er forskjellen <i>stor</i>? Spørsmålet gir ikke mening alene — stor sammenliknet med hva? Svaret er: sammenliknet med hvor mye den ville sprikt om vi gjorde studien om igjen.</p><div class=\"formel\" style=\"font-size:25px;margin:14px 0 4px\"><i>t</i> = <span class=\"brok\"><span class=\"over\">forskjellen mellom gruppene</span><span class=\"under\">standardfeilen</span></span></div><div class=\"tredelt\"><div class=\"boks bla avslor\" data-trinn=\"1\"><h3>Hvisk høyere</h3>Større forskjell mellom gruppene gir større <i>t</i>. Dette er den <b>eneste</b> av de tre som handler om effekten selv.</div><div class=\"boks gronn avslor\" data-trinn=\"2\"><h3>Demp bråket</h3>Mindre spredning mellom personer gir mindre standardfeil — og større <i>t</i>. Bedre måleinstrument, mer ensartet utvalg.</div><div class=\"boks gul avslor\" data-trinn=\"3\"><h3>Lytt lenger</h3>Flere deltakere gir mindre standardfeil — og større <i>t</i>. Effekten er nøyaktig den samme; du ser den bare bedre.</div></div><p class=\"liten avslor\" data-trinn=\"4\" style=\"margin-top:14px\"><b>Bare den første handler om hvor stor effekten er.</b> De to andre handler om hvor godt du ser den — og det er derfor <i>t</i> alene aldri er nok.</p>",
+   "en": null,
+   "notat": "Hviskingen er bildet å bruke: om du hører den, avhenger både av hvor høyt det hviskes og av hvor mye bråk det er rundt. Klikk fram de tre skruene og be dem si hvilken av dem en forsker faktisk kontrollerer — svaret er at hun kontrollerer de to siste, og håper på den første. Siste linje er den som binder timen sammen: den forklarer hvorfor effektstørrelse må stå ved siden av p, og den kommer igjen etter pausen. Ikke bruk mer enn to minutter; neste slide lar dem se det skje.",
+   "notat_en": null
+  },
+  {
+   "nr": 31,
+   "t": "SIM · signal over støy",
+   "html": "<h1>Hvor mange standardfeil får plass i forskjellen?</h1><p class=\"lead\">Den <b>blå</b> bjelken er forskjellen, den <b>grå</b> er én standardfeil — på samme skala. Antallet grå som får plass, er <i>t</i>.</p><div class=\"ordbaand\"><div class=\"boks gronn avslor\" data-trinn=\"1\" data-gjor=\"sett:tvSD:16\"><h3>1 · Dobbelt så mye støy</h3>Spredningen går fra 8 til 16. Forskjellen er den samme, men standardfeilen dobles — og <i>t</i> faller fra <b>2.37</b> til <b>1.19</b>.</div><div class=\"boks bla avslor\" data-trinn=\"2\" data-gjor=\"sett:tvSD:8;sett:tvN:80\"><h3>2 · Fire ganger så mange</h3>Tilbake til samme støy, men <i>n</i> fra 20 til 80. Standardfeilen halveres, og <i>t</i> dobles til <b>4.74</b>. Firedobling for en halvering.</div><div class=\"boks rod avslor\" data-trinn=\"3\" data-gjor=\"sett:tvD:3\"><h3>3 · Halve effekten — samme <i>t</i></h3>Forskjellen kuttes fra 6 til 3, med <i>n</i> = 80. <i>t</i> er tilbake på <b>2.37</b> — <b>nøyaktig som da vi startet</b>, med halve effekten.</div></div>",
+   "en": null,
+   "notat": "Tre klikk, og hvert av dem skrur på én ting. Les t-verdien høyt for hvert steg og pek på bjelkene: antall grå som får plass i den blå ER t-verdien. Det tredje klikket er poenget, og det er verdt å stoppe ved: vi er tilbake på nøyaktig 2.37, men med halve effekten. Samme t, halvparten så stor effekt — bare fordi studien ble større. Spør hva det betyr for hvordan man leser en p-verdi i en stor studie. Da har du plantet effektstørrelse før pausen, og Cohens d har et sted å lande i time 2.",
+   "notat_en": null
+  },
+  {
+   "nr": 32,
+   "t": "Konfidensintervallet",
+   "html": "<div class=\"ord\">«Så vidt vi kan se, ligger den sanne forskjellen<br>et sted mellom X og Y.»</div><div class=\"kilde\">estimat &nbsp;±&nbsp; omtrent to standardfeil</div>",
+   "en": null,
+   "notat": "Et enkelt tall er en dårlig måte å svare på. Intervallet er den ærlige versjonen.",
+   "notat_en": null
+  },
+  {
+   "nr": 33,
+   "t": "SIM · hvor «to standardfeil» kommer fra",
+   "html": "<h1>Hvorfor akkurat to standardfeil?</h1><p class=\"lead\">Ti tusen studier fra den samme populasjonen. Hvert estimat er én søyle i haugen — det er <b>utvalgsfordelingen</b>.</p>",
+   "en": null,
+   "notat": "Denne sliden er leddet mellom «pluss/minus omtrent to standardfeil» og de hundre intervallene på neste slide. Klikk deg gjennom de tre knappene. Trinn 1: haugen av ti tusen estimater — si høyt at hver søyle er én forsker som gjorde den samme studien. Trinn 2: ± 2 SE, regnet fra haugens eget standardavvik. Trinn 3: de faktiske persentilene — der 2,5 % av estimatene ligger under og 2,5 % over. Poenget er at de to strekene nesten faller sammen. Da er tommelfingerregelen ikke noe de må tro på, den er noe de har sett. VIKTIG å si eksplisitt: dette er fordelingen av ESTIMATER, ikke ett intervall. Neste slide viser intervallene, og det er nettopp den forvekslingen som gjør konfidensintervaller vanskelige. Nevn gjerne at den kritiske t-verdien ved n = 20 er 2.02 og ikke 2 — derfor «omtrent».",
+   "notat_en": null
+  },
+  {
+   "nr": 34,
+   "t": "SIM · 100 intervaller",
+   "html": "<h1>Hundre studier, hundre intervaller</h1><p class=\"lead\">De grønne traff sannheten. De røde bommet. Tell dem.</p>",
+   "en": null,
+   "notat": "Kjør knappen tre-fire ganger. Antallet røde varierer rundt fem — det er selve poenget.",
+   "notat_en": null
+  },
+  {
+   "nr": 35,
+   "t": "AVSTEMNING S2 · hva «95 %» betyr",
+   "html": "<h1>Hva betyr «95 %»?</h1><p class=\"lead\">En studie rapporterer 95 %-konfidensintervallet <b>[2.1, 8.7]</b> for forskjellen mellom to behandlinger.</p><div class=\"avstsvar\"><div><b>A</b> Det er 95 % sannsynlig at den sanne forskjellen ligger mellom 2.1 og 8.7</div><div><b>B</b> 95 % av pasientene forbedret seg med mellom 2.1 og 8.7 poeng</div><div><b>C</b> Metoden treffer den sanne forskjellen i 95 av 100 slike studier</div><div><b>D</b> Vi kan være 95 % sikre på at behandlingen virker</div></div>",
+   "en": null,
+   "notat": "A er svaret de fleste gir, og det er den lærerike feilen. Ikke rett den før paret har diskutert.",
+   "notat_en": null
+  },
+  {
+   "nr": 36,
+   "t": "Fasit S2",
+   "html": "<div class=\"fasitmerke\">C</div><h1>Det er intervallet som er tilfeldig — ikke sannheten</h1><div class=\"avstsvar\"><div class=\"feil\"><b>A</b> Det er 95 % sannsynlig at den sanne forskjellen ligger mellom 2.1 og 8.7</div><div class=\"feil\"><b>B</b> 95 % av pasientene forbedret seg med mellom 2.1 og 8.7 poeng</div><div class=\"rett\"><b>C</b> Metoden treffer den sanne forskjellen i 95 av 100 slike studier</div><div class=\"feil\"><b>D</b> Vi kan være 95 % sikre på at behandlingen virker</div></div><div class=\"todelt\"><div class=\"boks gronn\"><h3>Derfor C</h3>Den sanne forskjellen er et fast tall der ute i verden. Se på figuren igjen: sannheten sto helt stille hele tiden. <b>Det var strekene som flyttet seg.</b></div><div class=\"boks rod\"><h3>A er den lærerike feilen</h3>Den gjør sannheten tilfeldig og intervallet fast. <b>B</b> forveksler intervallet for <i>snittet</i> med spredningen mellom pasienter, og <b>D</b> gjør et tall om til en dom.</div></div><p class=\"liten\"><b>Bonus:</b> inneholder intervallet <i>ikke</i> null, er <i>p</i> &lt; .05; inneholder det null, er <i>p</i> &gt; .05. Alltid — to måter å si det samme på.</p>",
+   "en": null
+  },
+  {
+   "nr": 37,
+   "t": "Pause",
+   "html": "<h1>Pause</h1><div class=\"under\">Ti minutter</div><div class=\"merke\">Etter pausen: <i>p</i>-verdien, effektstørrelse og forutsetningene</div>",
+   "en": null
+  },
+  {
+   "nr": 38,
+   "t": "Tittel time 2",
+   "html": "<h1>Fra usikkerhet til<br>konklusjon</h1><div class=\"under\">Nullhypotesetesting · effektstørrelse · forutsetninger</div><div class=\"merke\">Time 2</div>",
+   "en": null,
+   "del": "Time 2 · p, d og forutsetningene"
+  },
+  {
+   "nr": 39,
+   "t": "Nullhypotesetesting i fire steg",
+   "html": "<h1>Hele ideen, uten et eneste symbol</h1><ul><li><b>Vi later som ingenting virker.</b> En tenkt verden der de to behandlingene er like gode.</li><li><b>Vi kjører studien i den verdenen, mange ganger.</b> Selv der blir gjennomsnittene aldri helt like.</li><li><b>Vi ser hvor din forskjell havner.</b> Midt i haugen, eller langt ute i halen?</li><li><b><i>p</i> er andelen som er minst like ekstrem som din.</b></li></ul><p class=\"stor\" style=\"margin-top:14px\">Det er alt <i>p</i> er: <b>hvor ofte tilfeldigheter alene klarer det du klarte.</b></p>",
+   "en": null,
+   "notat": "Dette er slide 4–7 gjentatt i mer presis form. Si det eksplisitt: «dette er lappene igjen».",
+   "notat_en": null
+  },
+  {
+   "nr": 40,
+   "t": "SIM · nullverdenen",
+   "html": "<h1>Din studie, plassert i nullverdenen</h1><p class=\"lead\">4 000 studier der det <b>ikke</b> finnes noen forskjell. Trykk «Trekk ett utvalg og test det», og se hvor din <i>t</i> havner.</p>",
+   "en": null,
+   "notat": "Trykk knappen flere ganger. La dem se at t hopper — samme sannhet, ulike studier.",
+   "notat_en": null
+  },
+  {
+   "nr": 41,
+   "t": "SIM · regnestykket, steg for steg",
+   "html": "<h1>Fra to gjennomsnitt til én setning</h1><p class=\"lead\">Samme bilde som nettopp. Nå tar vi regnestykket ett steg om gangen, og figuren viser hvilken del hvert steg handler om.</p><span class=\"avslor\" data-trinn=\"1\" data-gjor=\"klikk:nhS2\"></span><span class=\"avslor\" data-trinn=\"2\" data-gjor=\"klikk:nhS3\"></span><span class=\"avslor\" data-trinn=\"3\" data-gjor=\"klikk:nhS4\"></span><span class=\"avslor\" data-trinn=\"4\" data-gjor=\"klikk:nhS5\"></span>",
+   "en": null,
+   "notat": "Fem klikk. For hvert steg lyser den delen av figuren steget handler om: steg 1 de to gjennomsnittene til venstre, steg 2 standardfeilen under dem, steg 3 pila som deler forskjellen på SE og lander på t-aksen, steg 4 halene og de kritiske verdiene, steg 5 setningen. Poenget med å ha figuren over teksten er at t-verdien ikke skal framstå som et tall som dukker opp av ingenting — venstre panel viser de to snittene den er laget av. Bruk gjerne litt tid på steg 3: si at divisjonen på SE er det som gjør «6 poeng» sammenlignbart på tvers av studier. Har du dårlig tid, hopp til steg 3 og 5.",
+   "notat_en": null
+  },
+  {
+   "nr": 42,
+   "t": "SIM · en verden uten effekt",
+   "html": "<h1>Sett sannheten til null og trekk igjen</h1><p class=\"lead\">Her finnes det ingenting å finne. Likevel dukker det opp «funn» omtrent hver tjuende gang.</p>",
+   "en": null,
+   "notat": "Trykk knappen ti-tolv ganger. Før liste på tavla. Det er ikke en feil i metoden — det er prisen, og den heter α = 5 %.",
+   "notat_en": null
+  },
+  {
+   "nr": 43,
+   "t": "Fire ting p ikke er",
+   "html": "<h1>Fire feiltolkninger, i synkende rekkefølge etter hyppighet</h1><ul><li>«<i>p</i> er sannsynligheten for at nullhypotesen er sann.»</li><li>«<i>p</i> = .04 betyr 4 % sjanse for at jeg tar feil.»</li><li>«<i>p</i> &gt; .05 betyr at det ikke er noen forskjell.»</li><li>«<i>p</i> = .001 betyr at effekten er stor.»</li></ul><p class=\"stor\" style=\"margin-top:18px\">Den siste er grunnen til at resten av timen finnes.</p>",
+   "en": null,
+   "notat": "Nummer 3 er den som koster dem poeng i arbeidskravet: p > .05 betyr «vi klarte ikke å skille det fra null».",
+   "notat_en": null
+  },
+  {
+   "nr": 44,
+   "t": "To studier",
+   "html": "<h1>Hvilken ville du anbefalt en pasient?</h1><table style=\"margin-top:16px\"><tr><th>&nbsp;</th><th class=\"r\">Forskjell</th><th class=\"r\"><i>n</i> per gruppe</th><th class=\"r\"><i>t</i></th><th class=\"r\"><i>p</i></th></tr><tr><td><b>Studie A</b></td><td class=\"r\">0.2 poeng</td><td class=\"r\">2 000</td><td class=\"r\">3.16</td><td class=\"r\">,002</td></tr><tr><td><b>Studie B</b></td><td class=\"r\">4.0 poeng</td><td class=\"r\">8</td><td class=\"r\">2.00</td><td class=\"r\">,065</td></tr></table><p class=\"stor\" style=\"margin-top:26px\">Studie A er <b>signifikant og betydningsløs</b>. Studie B er <b>ikke signifikant og kanskje viktig</b>.</p><p><i>p</i>-verdien kan ikke skille dem, fordi <i>p</i> også avhenger av <i>n</i>.</p>",
+   "en": null
+  },
+  {
+   "nr": 45,
+   "t": "SIM · overlappet",
+   "html": "<h1>Cohens <i>d</i>: hvor mange standardavvik skiller gruppene?</h1><p class=\"lead\">Dra glideren og les de to tallene under figuren: <b>overlappet</b>, og hvor ofte en tilfeldig fra den ene gruppa slår en tilfeldig fra den andre.</p><div class=\"ordbaand\"><div class=\"boks bla\"><h3>Liten · <i>d</i> = 0.30</h3><b>Antidepressiva mot placebo.</b> 522 studier, 116 477 pasienter (Cipriani m.fl., 2018). Fordelingene overlapper <b>88 %</b>; den behandlede har det best <b>58 %</b> av gangene, mot 50 % om medisinen ikke gjorde noe.</div><div class=\"boks gronn\"><h3>Middels · <i>d</i> = 0.50</h3><b>Å teste seg selv i stedet for å lese om igjen.</b> 159 sammenlikninger (Rowland, 2014). Overlapp <b>80 %</b> — den som testet seg husker mest <b>64 %</b> av gangene.</div><div class=\"boks rod\"><h3>Stor · <i>d</i> = 0.93</h3><b>Kjønnsforskjell i interesse for ting kontra mennesker.</b> 503 188 svar (Su m.fl., 2009) — blant de største robuste effektene i psykologien. Likevel overlapper fordelingene <b>64 %</b>, og treffet er <b>74 %</b>.</div></div>",
+   "en": null,
+   "notat": "Dra glideren til 0.30, 0.50 og 0.93 etter tur og les de to tallene under figuren høyt sammen med boksen som hører til. Poenget er at selv den STORE effekten — 0.93, målt på en halv million mennesker — lar de to fordelingene overlappe 64 %. Ved d = 0.80 vinner personen fra gruppe 2 bare 71 % av gangene. Gruppeforskjeller sier lite om enkeltpersoner. Verdt å si eksplisitt: «overlapp» er andelen av de to fordelingene som ligger oppå hverandre, og «treffet» er sjansen for at en tilfeldig trukket fra den ene gruppa skårer høyest — 50 % er ren myntkast. Bonus hvis noen spør etter noe enda mindre: effekten av growth mindset-intervensjoner på karakterer er d = 0.08 (Sisk m.fl., 2018) — 97 % overlapp, treff 52 %.",
+   "notat_en": null
+  },
+  {
+   "nr": 46,
+   "t": "AVSTEMNING S3 · t og d",
+   "html": "<h1>En studie dobler utvalget, alt annet likt</h1><p class=\"lead\">Hva skjer med <b><i>t</i></b> og med <b>Cohens <i>d</i></b>?</p><div class=\"avstsvar\"><div><b>A</b> Begge vokser</div><div><b>B</b> <i>t</i> vokser, <i>d</i> er omtrent uendret</div><div><b>C</b> <i>d</i> vokser, <i>t</i> er omtrent uendret</div><div><b>D</b> Begge er uendret</div></div>",
+   "en": null
+  },
+  {
+   "nr": 47,
+   "t": "SIM · fasit S3",
+   "html": "<div class=\"fasitmerke\">B</div><h1><i>t</i> vokser med <i>n</i>. <i>d</i> står stille.</h1><p class=\"lead\">Samme sanne effekt (<i>d</i> = 0.50), fem ulike utvalgsstørrelser. Les kolonnene nedover.</p>",
+   "en": null,
+   "notat": "Sannheten i populasjonen endret seg aldri — bare hvor godt vi klarte å se den.",
+   "notat_en": null
+  },
+  {
+   "nr": 48,
+   "t": "SIM · presisjonen, ikke effekten",
+   "html": "<h1>Det er presisjonen som vokser, ikke effekten</h1><p class=\"lead\">Samme tabell som nettopp, tegnet opp. Fem utvalgsstørrelser, samme sannhet i populasjonen.</p>",
+   "en": null,
+   "notat": "Denne sliden finnes fordi tabellen på forrige slide er litt for pen. «d står stille» er sant i forventning, men en student kan lese det som at d er upåvirket av n — og det er feil på en måte som betyr noe. Pek på at prikkene ligger loddrett under hverandre: estimatet er det samme. Pek så på lengdene: ved den minste n-en er intervallet så bredt at estimatet knapt sier noe, og det krysser null. Samme sannhet, samme estimat — men den studien kan ikke skille effekten fra ingenting. Det er dette som er forskjellen mellom «vi fant ingen effekt» og «vi klarte ikke å se den». Si den setningen høyt; den kommer igjen på eksamen.",
+   "notat_en": null
+  },
+  {
+   "nr": 49,
+   "t": "Derfor begge tallene",
+   "html": "<div class=\"ord\"><i>p</i> sier om funnet er til å stole på.<br><i>d</i> sier om det betyr noe.</div><div class=\"kilde\">Derfor krever APA begge.</div>",
+   "en": null
+  },
+  {
+   "nr": 50,
+   "t": "Forutsetningene",
+   "html": "<h1>Tre forutsetninger — rangert etter skade</h1><div class=\"boks rod\" style=\"margin-bottom:12px\"><h3>1 · Uavhengige observasjoner — den alvorlige</h3>Brytes den, finnes det <b>ingen korreksjon</b>. Du må bruke en annen metode.</div><div class=\"boks gul\" style=\"margin-bottom:12px\"><h3>2 · Like varianser — den enkle</h3>Brytes den, kan feilraten sprette langt over 5 %. Men det finnes en gratis løsning: <b>Welch</b>.</div><div class=\"boks gronn\"><h3>3 · Normalfordelte data — den overvurderte</h3>Betyr mye ved liten <i>n</i>, nesten ingenting ved stor. Det er <b>gjennomsnittene</b>, ikke rådataene, som må være normale.</div>",
+   "en": null
+  },
+  {
+   "nr": 51,
+   "t": "PREDIKSJON P2 · hva bruddet koster",
+   "html": "<h1>Bind deg til ett svar</h1><p class=\"lead\">To grupper, <b>ingen sann forskjell</b>. Den lille gruppen (<i>n</i> = 10) har stor spredning, den store (<i>n</i> = 50) har liten. Hvor ofte roper Student-testen «signifikant funn»?</p><div class=\"avstsvar\"><div><b>A</b> 5 % — det er jo det alfa er</div><div><b>B</b> Ca. 10 %</div><div><b>C</b> Ca. 30 %</div><div><b>D</b> Nesten aldri</div></div>",
+   "en": null,
+   "notat": "La dem gjette før du kjører. Fasit C — omtrent 33 %.",
+   "notat_en": null
+  },
+  {
+   "nr": 52,
+   "t": "SIM · Student mot Welch",
+   "html": "<h1>Ingen sann effekt. Hvor ofte roper testen likevel «funn»?</h1><p class=\"lead\">3 000 studier, ingen forskjell i populasjonen. Alt som havner over den grønne 5 %-linja, er falske funn. Trykk på knappen.</p><p class=\"liten avslor\" data-trinn=\"1\" style=\"order:3;margin-top:10px\"><b>Fasit:</b> omtrent <b>hver tredje</b> studie ga <i>p</i> &lt; .05 — seks ganger så mange falske funn som testen lover. Welch lander på 5 %.</p>",
+   "en": null,
+   "notat": "La dem gjette først — figuren står tom med vilje. Trykk så «Kjør 3 000 studier» og la søylene komme opp mens de ser på. Først da klikker du fram fasitlinja. Bytt gjerne om etterpå: gi den STORE gruppen den store spredningen. Da blir Student for konservativ i stedet. Welch lander på 5 % uansett.",
+   "notat_en": null
+  },
+  {
+   "nr": 53,
+   "t": "Welch-regelen",
+   "html": "<h1>Regelen i dette emnet</h1><p class=\"stor\"><b>Kryss av for Levene og Welch hver gang. Rapporter Levene. Bruk Welch når den er signifikant, og si at du gjorde det.</b></p><div class=\"todelt\" style=\"margin-top:22px\"><div class=\"boks bla\"><h3>Hvorfor «hver gang»?</h3>Welch taper nesten ingen styrke når variansene faktisk er like — og redder feilraten når de ikke er det.</div><div class=\"boks gul\"><h3>Kjennetegnet</h3>Welch gir <b>desimaler i frihetsgradene</b>. I vår analyse: <i>t</i>(63.0) i stedet for <i>t</i>(73). Det er signaturen, og det spørres om på eksamen.</div></div>",
+   "en": null,
+   "harJasp": true
+  },
+  {
+   "nr": 54,
+   "t": "To variabler, samme studie",
+   "html": "<h1>Én oppfyller antakelsen. Én gjør det ikke.</h1><p class=\"lead\">Begge kommer fra terapistudien vår. Ingen av dem er konstruert.</p><div class=\"todelt\" style=\"margin-top:6px\"><div><p class=\"tabellnavn\">Depresjon etter behandling — vårt eksempel</p><table><tr><th>&nbsp;</th><th class=\"r\"><i>M</i></th><th class=\"r\"><i>SD</i></th></tr><tr><td>Terapi</td><td class=\"r\">21.81</td><td class=\"r\"><b>5.18</b></td></tr><tr><td>Venteliste</td><td class=\"r\">29.33</td><td class=\"r\"><b>3.72</b></td></tr></table><div class=\"boks gronn\" style=\"margin-top:12px\"><b>Variansforhold knapt 2 til 1</b> · Levene <i>p</i> = .22<br>Student <i>t</i>(73) = −7.27 · Welch <i>t</i>(63.0) = −7.18<br><span style=\"font-size:17px\">Antakelsen holder. De to svarene er nesten like.</span></div></div><div><p class=\"tabellnavn\">Endringen fra før til etter — samme pasienter</p><table><tr><th>&nbsp;</th><th class=\"r\"><i>M</i></th><th class=\"r\"><i>SD</i></th></tr><tr><td>Terapi</td><td class=\"r\">−8.47</td><td class=\"r\"><b>4.99</b></td></tr><tr><td>Venteliste</td><td class=\"r\">−1.13</td><td class=\"r\"><b>1.85</b></td></tr></table><div class=\"boks rod\" style=\"margin-top:12px\"><b>Variansforhold 7 til 1</b> · Levene <i>p</i> &lt; .001<br>Student <i>t</i>(73) = −8.58 · Welch <i>t</i>(43.8) = −8.32<br><span style=\"font-size:17px\">Antakelsen ryker. <i>df</i> faller fra 73 til 43.8.</span></div></div></div>",
+   "en": null,
+   "notat": "Dette er hele forutsetningspoenget på ett bilde, og det er verdt tre minutter. Venstre side er eksempelet vi har fulgt hele dagen: variansene er nesten like, Levene sier ingenting, og Student og Welch gir praktisk talt samme svar. Høyre side er de SAMME pasientene, bare målt som endring — og der er spredningen sju ganger større i terapigruppen. Spør hvorfor: fordi noen responderte kraftig og andre ikke i det hele tatt, mens ventelisten bare sto stille. Ulik varians er her et funn i seg selv. Konklusjonen endret seg ikke noen av stedene — effekten er for stor — men df falt fra 73 til 43.8. Det er prisen, og den redder deg når effekten er mindre.",
+   "notat_en": null,
+   "harJasp": true
+  },
+  {
+   "nr": 55,
+   "t": "AVSTEMNING S4 · Levene",
+   "html": "<h1>Levene på vårt eksempel er ikke signifikant (<i>p</i> = .22)</h1><p class=\"lead\">Bør du bruke Student eller Welch?</p><div class=\"avstsvar\"><div><b>A</b> Student — antakelsen om like varianser holder</div><div><b>B</b> Welch — den koster nesten ingenting når variansene er like</div><div><b>C</b> Spiller ingen rolle, de gir alltid samme svar</div><div><b>D</b> Mann–Whitney, siden vi ikke vet</div></div>",
+   "en": null,
+   "notat": "A er svaret de fleste gir. Argumentet mot: Levene har dårlig styrke ved små n, så «ikke signifikant» er svakt belegg.",
+   "notat_en": null,
+   "harJasp": true
+  },
+  {
+   "nr": 56,
+   "t": "Fasit S4",
+   "html": "<div class=\"fasitmerke\">B</div><h1>Ikke la Levene bestemme</h1><div class=\"avstsvar\"><div class=\"feil\"><b>A</b> Student — antakelsen om like varianser holder</div><div class=\"rett\"><b>B</b> Welch — den koster nesten ingenting når variansene er like</div><div class=\"feil\"><b>C</b> Spiller ingen rolle, de gir alltid samme svar</div><div class=\"feil\"><b>D</b> Mann–Whitney, siden vi ikke vet</div></div><div class=\"todelt\"><div class=\"boks gronn\"><h3>Derfor B</h3>Welch koster nesten ingenting når variansene faktisk er like, og redder feilraten når de ikke er det. Da er det ingen grunn til å la en test med dårlig styrke avgjøre saken.</div><div class=\"boks rod\"><h3>A er svaret de fleste gir</h3>«Ikke signifikant» er ikke det samme som «like». Levene har <b>lav styrke ved små utvalg</b> — nettopp der ulike varianser gjør mest skade.</div></div><p class=\"liten\"><b>C</b> er nesten sant — ved balanserte grupper med like varianser gir de to praktisk talt samme svar, men «alltid» holder ikke. <b>D</b> bytter problem: Mann–Whitney svarer på ulik <i>form</i>, ikke ulik spredning. Regelen for dette emnet: <b>kryss av for Welch hver gang, og rapporter Levene som informasjon.</b></p>",
+   "en": null,
+   "notat": "A er svaret de fleste gir, og det er verdt et halvt minutt: «ikke signifikant» betyr ikke «like». Spør hvorfor lav styrke er et problem akkurat her, og la dem koble det til at små n er nettopp der ulik varians gjør mest skade. Ved veldig store utvalg går det motsatt vei — da blir Levene signifikant av bagateller. Begge veier peker samme sted: ikke la den avgjøre.",
+   "notat_en": null,
+   "harJasp": true
+  },
+  {
+   "nr": 57,
+   "t": "JASP · randomiseringssjekken",
+   "html": "<h1>JASP, demo 1 · randomiseringssjekken</h1><p class=\"lead\">Depresjon ved oppstart, terapi mot venteliste.</p><table><tr><th>&nbsp;</th><th class=\"r\"><i>M</i></th><th class=\"r\"><i>SD</i></th><th class=\"r\"><i>n</i></th></tr><tr><td>ISTDP</td><td class=\"r\">30.28</td><td class=\"r\">4.72</td><td class=\"r\">36</td></tr><tr><td>Venteliste</td><td class=\"r\">30.46</td><td class=\"r\">3.84</td><td class=\"r\">39</td></tr></table><p class=\"stor\" style=\"margin-top:20px\"><i>t</i>(73) = −0,19, &nbsp; <i>p</i> = ,853, &nbsp; <i>d</i> = −0,04</p><p style=\"margin-top:10px\"><b>Vi feirer nullfunnet.</b> Dette er det eneste stedet i hele emnet der «ingen forskjell» er den gode nyheten.</p>",
+   "en": null,
+   "notat": "Kjør live i JASP. Pek på tallene i rekkefølge: gjennomsnittene → differansen → standardfeilen → t → p → d.",
+   "notat_en": null,
+   "harJasp": true
+  },
+  {
+   "nr": 58,
+   "t": "JASP · hovedanalysen",
+   "html": "<h1>JASP, demo 2 · depresjon etter behandling</h1><p class=\"lead\">Variabelen ligger ferdig i fila: <code>Depression_post</code>, gruppert på <code>Gruppe</code>. Ingenting å regne ut først.</p><p class=\"stor\">Student <i>t</i>(73) = −7.27, <i>p</i> &lt; .001, <b><i>d</i> = −1.68</b><br>Welch <i>t</i>(63.0) = −7.18 &nbsp;·&nbsp; Levene <i>p</i> = .22</p><div class=\"boks bla\" style=\"margin-top:18px\"><b>95 % KI for differansen: [−9,59, −5,46]</b><br>Les det høyt som en setning: «etter behandling lå terapigruppen mellom fem og ti depresjonspoeng lavere enn ventelisten».</div>",
+   "en": null,
+   "notat": "d = 1.68. De fleste behandlingsstudier ligger på 0.3–0.8. Si at de bør være litt skeptiske til tall som er så pene. Vil du vise Compute-funksjonen likevel, er endringsskåren fra forrige slide en fin anledning: Depresjon_endring = Depression_post − Depression.",
+   "notat_en": null,
+   "harJasp": true
+  },
+  {
+   "nr": 59,
+   "t": "JASP · oppfølging",
+   "html": "<h1>JASP, demo 3 · tre måneder etter</h1><p class=\"stor\" style=\"margin-top:20px\"><i>t</i>(73) = −10,80, &nbsp; <i>p</i> &lt; ,001, &nbsp; <i>d</i> = −2,50</p><p style=\"margin-top:20px\">Effekten er ikke borte etter tre måneder. <b>Den er større.</b></p><p class=\"liten\" style=\"margin-top:14px\">Det er et substansielt funn, ikke et statistisk — og det er den typen setning som hører hjemme i diskusjonsdelen, ikke i resultatdelen.</p>",
+   "en": null,
+   "harJasp": true
+  },
+  {
+   "nr": 60,
+   "t": "t-testen er en regresjon",
+   "html": "<div class=\"ord\"><i>t</i>-testen er ikke en egen ting.<br>Den er den enkleste lineære modellen som finnes.</div><div class=\"kilde\">Én prediktor, to verdier. Resten av semesteret er samme modell med flere prediktorer.</div>",
+   "en": null,
+   "notat": "Sitatet er poenget; de to neste slidene er beviset, og de er merket BONUS. Har du tid, ta dem — det er her emnet henger sammen. Har du det ikke, si setningen og gå videre; de står i dekket studentene får.",
+   "notat_en": null
+  },
+  {
+   "nr": 61,
+   "t": "BONUS · samme data, to analyser",
+   "html": "<div class=\"bonusmerke\">BONUS</div><h1>Samme data, to analyser, identiske tall</h1><p class=\"lead\">Til venstre <i>t</i>-testen fra demo 2. Til høyre en <b>lineær regresjon</b> på de samme dataene, med <code>Gruppe</code> som eneste prediktor. Følg de grønne tallene.</p><div class=\"todelt\"><div><p class=\"tabellnavn\"><i>Independent Samples T-Test</i></p><table class=\"minitab\"><tr><th></th><th><i>t</i></th><th>df</th><th><i>p</i></th><th>Mean Difference</th><th>SE Difference</th></tr><tr><td>Depression_post</td><td class=\"kb1\">−7.272</td><td class=\"kb1\">73</td><td>&lt; .001</td><td class=\"kb1\">−7.528</td><td class=\"kb1\">1.035</td></tr></table><p class=\"jaspnote\"><i>Note.</i> Student's <i>t</i>-test · ISTDP − Waitlist</p></div><div><p class=\"tabellnavn\"><i>Coefficients</i></p><table class=\"minitab\"><tr><th>Model</th><th></th><th>Unstandardized</th><th>SE</th><th><i>t</i></th><th><i>p</i></th></tr><tr><td>H₁</td><td>(Intercept)</td><td>21.806</td><td>0.746</td><td>29.21</td><td>&lt; .001</td></tr><tr class=\"valgt\"><td></td><td>Gruppe (Waitlist − ISTDP)</td><td class=\"kb1\">7.528</td><td class=\"kb1\">1.035</td><td class=\"kb1\">7.272</td><td>&lt; .001</td></tr></table><p class=\"jaspnote\"><i>Note.</i> Depression_post ← Gruppe · <i>df</i> = 73</p></div></div><div class=\"todelt\" style=\"margin-top:14px\"><div class=\"boks gronn avslor\" data-trinn=\"1\"><h3>Fire tall, to tabeller</h3>Differansen <b>7.528</b>, standardfeilen <b>1.035</b>, <i>t</i> = <b>7.272</b> og <i>p</i> er de samme. <b>Bare fortegnet skiller:</b> <i>t</i>-testen regnet ISTDP − Waitlist, regresjonen regnet den andre veien.</div><div class=\"boks bla avslor\" data-trinn=\"2\"><h3>Og ANOVA-tabellen under</h3><i>F</i>(1, 73) = <b>52.885</b>. Regn 7.272² på kalkulatoren: <b>52.885</b>. Med én prediktor er <i>F</i> = <i>t</i>² — ikke omtrent, men på desimalen.</div></div>",
+   "en": null,
+   "notat": "Legg de to tabellene ved siden av hverandre og la dem lete selv i ti sekunder før du klikker fram boksene. Spørsmålet å stille: hvilke tall går igjen? Fortegnet er verdt et ord — JASP setter opp differansen etter hvilken gruppe som kommer først alfabetisk i t-testen, og etter hvilken som er referansekategori i regresjonen. Det er en bokføringsdetalj, ikke et annet resultat. Konstantleddets t = 29.21 er ikke interessant: det tester bare om terapigruppas snitt er forskjellig fra null.",
+   "notat_en": null,
+   "harJasp": true
+  },
+  {
+   "nr": 62,
+   "t": "BONUS · slik er de samme",
+   "html": "<div class=\"bonusmerke\">BONUS</div><h1>Én prediktor som bare har to verdier</h1><p class=\"lead\">Gi gruppene hvert sitt tall — <b>0</b> og <b>1</b> — og skriv den vanlige regresjonsligningen. Da kommer <i>t</i>-testen ut av seg selv.</p><div class=\"formel\">ŷ = <i>b</i>₀ + <i>b</i>₁ · <i>D</i><span style=\"font-size:.62em;color:#3F4E63\">&nbsp;&nbsp;der <i>D</i> = 0 for terapi og <i>D</i> = 1 for venteliste</span></div><div class=\"tredelt\"><div class=\"boks bla avslor\" data-trinn=\"1\"><h3><i>b</i>₀ er den ene gruppas snitt</h3>Sett <i>D</i> = 0: ŷ = <i>b</i>₀ = <b>21.81</b>. Det er gjennomsnittet i terapigruppa. Derfor heter gruppa med <i>D</i> = 0 <b>referansegruppa</b> — alt annet leses i forhold til den.</div><div class=\"boks gronn avslor\" data-trinn=\"2\"><h3><i>b</i>₁ <b>er</b> gruppeforskjellen</h3>Sett <i>D</i> = 1: ŷ = 21.81 + 7.53 = <b>29.33</b>, ventelistas snitt. Å gå ett skritt langs <i>D</i> <b>er</b> å bytte gruppe — så stigningstallet er differansen mellom snittene.</div><div class=\"boks rod avslor\" data-trinn=\"3\"><h3>Derfor er testene like</h3>Å teste <i>b</i>₁ = 0 <b>er</b> å teste at de to snittene er like. Samme estimat, samme standardfeil, samme <i>t</i>, samme <i>p</i> — og <i>F</i> = <i>t</i>².</div></div><div class=\"boks gul avslor\" data-trinn=\"4\" style=\"margin-top:14px\"><b>Og det er derfor dette er verdt fem minutter:</b> resten av semesteret er den samme maskinen med flere knapper. Flere kontinuerlige prediktorer → <b>multippel regresjon</b>. Én kategorisk prediktor med flere enn to nivåer → <b>ANOVA</b>. Begge deler samtidig → <b>ANCOVA</b>. Du lærer ikke ti tester, du lærer én modell.</div>",
+   "en": null,
+   "notat": "Dette er den slide-en som gjør resten av semesteret lettere, hvis du har tid til den. Skriv gjerne D-kolonnen på tavla ved siden av: to kolonner, gruppe og D, med nuller og ettall. Regn så ŷ for D = 0 og D = 1 høyt. Den vanligste aha-en er boks 2: at «ett skritt langs x» og «bytte gruppe» er samme ting når x bare har to verdier. Siste boks er kartet videre — si den rolig, og la dem ta med seg at de ikke skal pugge ti tester.",
+   "notat_en": null,
+   "harJasp": true
+  },
+  {
+   "nr": 63,
+   "t": "Avslutning",
+   "html": "<h1>Fire setninger</h1><ul class=\"stor\"><li>En test sammenligner forskjellen din med forskjellene tilfeldigheter lager.</li><li><i>t</i> er den forskjellen delt på <b>standardfeilen</b>; <i>d</i> er den delt på <b>standardavviket</b>.</li><li>Samme personer på begge sider → paret. Ulike personer → uavhengig.</li><li>Kryss av for Welch.</li></ul>",
+   "en": null,
+   "notat": "Utgangs-MCQ etterpå: én vignett om paret vs uavhengig, én om å tolke d ved siden av p.",
+   "notat_en": null
+  }
+ ],
+ "blokker": [
+  {
+   "no": "<h1>Sim 16 · <i>t</i>-testen</h1> <p>PSY300 · Forelesning 4 · Sju faner som følger <i>t</i>-testen fra spørsmål til ferdig svar. Hver fane åpner med forklaringen alle trenger; det som står bak «Mer om dette»-knappene, er for dem som vil ha regnestykket. <b>Underviser:</b> legg til <code>?modus=forelesning</code> i adressen for hele F4 som et 16:9-dekk du klikker deg gjennom.</p>",
+   "en": null,
+   "fra": 21837,
+   "tagslutt": 21844
+  },
+  {
+   "no": "<div class=\"card\"> <h2>Spørsmålet <i>t</i>-testen svarer på</h2> <p class=\"hvbig\">«Er disse to gjennomsnittene virkelig forskjellige — eller kunne tilfeldigheter alene laget en så stor forskjell?»</p> <p style=\"font-size:16.5px;line-height:1.55\">Du har målt <b>det samme hos to sett med mennesker</b> &mdash; for eksempel depresjonsskår hos pasienter som fikk terapi, og hos pasienter som sto på venteliste. Gjennomsnittene er ikke like. Det er de <b>aldri</b>. To tilfeldige grupper mennesker har alltid litt ulike gjennomsnitt, selv når ingenting skiller dem.</p> <p style=\"font-size:16.5px;line-height:1.55\">Så spørsmålet er ikke «er de forskjellige?» &mdash; det er <b>«er de mer forskjellige enn tilfeldigheter pleier å lage dem?»</b></p> <div class=\"keybox\"><span class=\"lbl\">Sagt på &eacute;<i>n</i> linje</span> <b>En <i>t</i>-test sammenligner forskjellen du fant med forskjellene tilfeldigheter alene lager. Er din mye større, konkluderer vi med at det er noe der.</b></div> </div> <div class=\"card\"> <h2>Det du vil vite, finnes ikke i dataene dine</h2> <p style=\"font-size:16.5px;line-height:1.55\">Dette er det viktigste avsnittet i hele appen, og det er verdt å lese to ganger.</p> <p style=\"font-size:16.5px;line-height:1.55\">Du bryr deg egentlig ikke om <b>de 40 pasientene du faktisk målte</b>. Du bryr deg om <b>terapien</b> &mdash; altså om alle framtidige pasienter, og alle de du kunne ha målt i stedet. Det tallet finnes ikke i regnearket ditt. Det finnes bare i verden.</p> <div class=\"grid\" style=\"margin-top:10px\"> <div class=\"note\" style=\"background:#fff8ec;border-color:#f0d9a8\"> <b style=\"color:#8a6d20\">POPULASJONEN — det du vil vite</b><br> Alle pasienter som kunne fått denne behandlingen. Her finnes det <b>ett sant tall</b>: den virkelige forskjellen mellom terapi og venteliste. Det tallet kalles <b>parameteren</b>, og <b>du får aldri se det.</b> </div> <div class=\"note\" style=\"background:#eef3fb;border-color:#c7d6ec\"> <b style=\"color:#1F3864\">UTVALGET — det du har</b><br> De 40 pasientene som faktisk ble med. Her regner du ut en forskjell mellom gjennomsnittene. Det tallet kalles <b>estimatet</b>, og det er din <b>beste gjetning</b> på parameteren &mdash; men det treffer nesten aldri helt. </div> </div> <p style=\"font-size:16.5px;line-height:1.55;margin-top:12px\">Hele statistikken handler om den avstanden: <b>du har et estimat, du vil vite et parameter, og du må si noe ærlig om hvor langt unna du kan være.</b> <i>t</i>-testen gjør tre ting med det:</p> <ul style=\"font-size:16.5px;line-height:1.55\"> <li>gir deg <b>gjetningen</b> (fane 2)</li> <li>gir deg <b>hvor mye gjetningen kunne bommet</b> (fane 3), og bygger et <b>konfidensintervall</b> av det (fane 4)</li> <li>gir deg <b>hvor overraskende gjetningen er</b> hvis det egentlig ikke finnes noen forskjell (fane 5)</li> </ul> <details class=\"mer\"><summary>Mer om dette: hva parameteren heter</summary><div> Det sanne gjennomsnittet i en populasjon skrives med den greske bokstaven <b>μ</b> (my). Har du to populasjoner, har du to slike: μ₁ og μ₂. Parameteren <i>t</i>-testen er ute etter, er <b>differansen μ₁ &minus; μ₂</b>.<br><br> Estimatet ditt skrives med latinske bokstaver: <b>x̄₁ &minus; x̄₂</b> (uttales «eks strek»). Regelen er grei å huske: <b>greske bokstaver er sannheten du ikke ser, latinske bokstaver er tallene du har.</b> Nullhypotesen i en vanlig <i>t</i>-test er at parameteren er null &mdash; altså at μ₁ = μ₂. </div></details> </div> <div class=\"card\"> <h2>Tre <i>t</i>-tester — hvilken er din?</h2> <p style=\"font-size:16.5px;line-height:1.55\">Ett spørsmål avgjør: <b>er det de samme personene på begge sider av sammenligningen?</b></p> <table class=\"hvnaar\"> <tr><th>Situasjonen din</th><th>Testen</th><th>Parameteren</th></tr> <tr><td><b>To ulike grupper mennesker</b> — terapi mot venteliste, menn mot kvinner</td> <td><b>Uavhengig</b> <i>t</i>-test</td><td>μ₁ − μ₂ — forskjellen mellom to populasjonsgjennomsnitt</td></tr> <tr><td><b>De samme personene, målt to ganger</b> — før mot etter</td> <td><b>Paret</b> <i>t</i>-test</td><td>μ<sub>diff</sub> — gjennomsnittlig endring i populasjonen</td></tr> <tr><td><b>Én gruppe mot en fast verdi</b> — er snittet forskjellig fra 0? fra 100?</td> <td><b>Én-utvalgs</b> <i>t</i>-test</td><td>μ — populasjonsgjennomsnittet</td></tr> </table> <div class=\"note\"><b>Resten av denne appen bruker den uavhengige <i>t</i>-testen som eksempel</b>, fordi den er den vanligste. Alt du lærer her — estimat, standardfeil, konfidensintervall, <i>p</i>-verdi, effektstørrelse — fungerer likt for de to andre. Det eneste som endrer seg, er hva du setter inn i telleren og nevneren.</div> </div> <div class=\"card\"> <h2>Hva <i>t</i>-testen ikke gjør</h2> <div class=\"hvgrid\"> <div class=\"hvkort hver\"><h3>✓ Den forteller deg</h3><ul> <li><b>Hvor stor forskjellen er</b> i utvalget ditt, i variabelens egne enheter.</li> <li><b>Hvor usikker</b> den forskjellen er — som et intervall.</li> <li><b>Hvor overraskende</b> den ville vært hvis det ikke fantes noen forskjell i det hele tatt.</li> <li><b>Hvor stor</b> forskjellen er i standardavvik — effektstørrelsen.</li> </ul></div> <div class=\"hvkort hvikke\"><h3>✗ Den forteller deg ikke</h3><ul> <li><b>Om forskjellen er viktig.</b> Med nok deltakere blir en helt betydningsløs forskjell signifikant. <span class=\"eks\">Derfor rapporterer vi alltid effektstørrelsen ved siden av <i>p</i>.</span></li> <li><b>Hva som forårsaket forskjellen</b> — med mindre du randomiserte hvem som havnet i hvilken gruppe. <span class=\"eks\">Kjønnsforskjeller er aldri årsaksforskjeller.</span></li> <li><b>Om nullhypotesen er sann.</b> <i>p</i> = .42 betyr «vi klarte ikke å skille dette fra null», ikke «det er null».</li> <li><b>Noe om enkeltpersoner.</b> To grupper kan ha ulike gjennomsnitt og likevel overlappe nesten helt. <span class=\"eks\">Se overlappsbildet i fane 6.</span></li> </ul></div> </div> </div> <div class=\"card\"> <h2>Prøv selv: er dette en <i>t</i>-test — og i så fall hvilken?</h2> <p class=\"muted\">Seks situasjoner. Svar først, så får du begrunnelsen.</p> {{hvQuiz}}</div> {{hvSum}}</div> </div> <div class=\"keybox\"><span class=\"lbl\">Klar for fane 2?</span> <b>Ta med deg dette: du vil vite en forskjell i populasjonen som du aldri får se, og alt du har er en forskjell i utvalget. De neste fanene handler om hvor mye du kan stole på den.</b></div>",
+   "en": null,
+   "fra": 22994,
+   "tagslutt": 23016
+  },
+  {
+   "no": "Det vi vil vite, og gjetningen vår",
+   "en": null,
+   "fra": 29590,
+   "tagslutt": 29593
+  },
+  {
+   "no": "I virkeligheten har du ett datasett, og du vet aldri om tallene dine er nær sannheten. <b>Her er det motsatt.</b> Dette er en oppdiktet verden der vi bestemmer fasiten selv &mdash; og så kan se hvor godt en forsker ville truffet den.",
+   "en": null,
+   "fra": 29634,
+   "tagslutt": 29678
+  },
+  {
+   "no": "<b>Slik virker den:</b> med gliderne under setter du det sanne snittet i hver gruppe, hvor mye folk spriker, og hvor mange du måler. Det er sannheten i populasjonen &mdash; alle som kunne fått behandlingen. Så trykker du «Trekk ett nytt utvalg», og maskinen plukker tilfeldige personer derfra og regner ut forskjellen, akkurat slik en forsker ville gjort.",
+   "en": null,
+   "fra": 29917,
+   "tagslutt": 29974
+  },
+  {
+   "no": "Forskjellen er at <b>du kan gjøre det om igjen</b>. Og om igjen. Hver gang blir det nye mennesker og et litt nytt svar, mens sannheten står helt stille. <b>Det er hele poenget:</b> en ekte forsker får ett av disse svarene og vet ikke hvilket. Du får se alle sammen.",
+   "en": null,
+   "fra": 30335,
+   "tagslutt": 30392
+  },
+  {
+   "no": "<span class=\"lbl\">Hovedpoenget i denne fanen</span> <b>Estimatet bommer nesten alltid — men det bommer <i>ikke systematisk</i>. Trekker du mange nok utvalg, samler gjetningene seg rundt den sanne forskjellen. Det er den egenskapen som gjør gjennomsnittet til et brukbart estimat i det hele tatt.</b> <details class=\"mer\"><summary>Mer om dette: hvorfor er gjennomsnittet en god gjetning?</summary><div> Fordi det er <b>forventningsrett</b> (engelsk: <i>unbiased</i>). Det betyr ikke at det treffer &mdash; det gjør det nesten aldri &mdash; men at det <b>ikke har noen tendens til å bomme i én bestemt retning</b>. Over uendelig mange gjentakelser er gjennomsnittet av alle estimatene nøyaktig lik parameteren. Se på det løpende snittet i figuren: det legger seg på den stiplede linja.<br><br> Legg også merke til hva som <b>ikke</b> endrer seg når du drar i <i>n</i>: sprikingen blir mindre, men midtpunktet flytter seg ikke. Større utvalg gjør deg <b>mer presis</b>, ikke <b>mindre skjev</b>. Er studien din skjev &mdash; for eksempel fordi bare de mest motiverte pasientene ble med &mdash; hjelper det <b>ikke</b> å samle inn mer data. </div></details> <details class=\"mer\"><summary>Mer om dette: regnestykket, i symboler</summary><div> Parameteren er <b>μ₁ &minus; μ₂</b>. Estimatet er <b>x̄₁ &minus; x̄₂</b>, der x̄ = (sum av alle verdiene) ÷ (antall verdier) i hver gruppe.<br><br> Det er hele estimeringen. Alt det kompliserte i en <i>t</i>-test ligger ikke i <i>gjetningen</i> &mdash; den er triviell &mdash; men i å si noe ærlig om <b>hvor mye den kunne ha bommet</b>. Det er fane 3. </div></details>",
+   "en": null,
+   "fra": 31855,
+   "tagslutt": 31898
+  },
+  {
+   "no": "Hvor usikker er gjetningen? — standardfeilen",
+   "en": null,
+   "fra": 33670,
+   "tagslutt": 33673
+  },
+  {
+   "no": "Forskeren gjør studien <b>&eacute;<i>n</i> gang</b>. Men tenk deg at hun kunne gjort den om igjen, med nye pasienter, tusen ganger. Hun ville fått tusen litt ulike svar.",
+   "en": null,
+   "fra": 33724,
+   "tagslutt": 33768
+  },
+  {
+   "no": "Standardfeilen er hvor mye de svarene ville sprikt.",
+   "en": null,
+   "fra": 33943,
+   "tagslutt": 33959
+  },
+  {
+   "no": "Det er alt den er: <b>et mål på hvor mye estimatet ditt hopper fra studie til studie</b>. Liten standardfeil = svaret ditt ville vært omtrent det samme uansett hvem som ble med. Stor standardfeil = du kunne like gjerne fått noe helt annet.",
+   "en": null,
+   "fra": 34016,
+   "tagslutt": 34060
+  },
+  {
+   "no": "<b>Prøv dette:</b> dra <i>n</i> fra 20 til 80 og kjør på nytt. Fjellet blir mye smalere &mdash; men det flytter seg ikke. Dobler du <i>n</i>, krymper standardfeilen med omtrent 30 %; firedobler du <i>n</i>, halveres den. <b>Presisjon er dyrt.</b>",
+   "en": null,
+   "fra": 35200,
+   "tagslutt": 35241
+  },
+  {
+   "no": "<span class=\"lbl\">Hovedpoenget i denne fanen</span> <b>Standardfeilen er standardavviket til estimatet over tenkte gjentakelser av studien. Den er ikke det samme som standardavviket i dataene: det første handler om <i>gjennomsnitt</i>, det andre om <i>personer</i>.</b> <details class=\"mer\"><summary>Mer om dette: standardavvik eller standardfeil?</summary><div> Dette forveksles hele tiden, så her er skillet:<br><br> <b>Standardavviket (<i>SD</i>)</b> beskriver <b>personene</b>. Hvor spredt er pasientene rundt sitt eget gjennomsnitt? Det tallet endrer seg <b>ikke</b> når du samler inn mer data &mdash; folk er like forskjellige uansett hvor mange du måler.<br><br> <b>Standardfeilen (<i>SE</i>)</b> beskriver <b>estimatet</b>. Hvor spredt ville gjennomsnittet vært over gjentatte studier? Det tallet <b>krymper</b> når <i>n</i> vokser, fordi et gjennomsnitt av mange personer er mer stabilt enn et gjennomsnitt av få.<br><br> Kort: <b><i>SD</i> er hvor ulike folk er. <i>SE</i> er hvor lite du vet.</b> </div></details> <details class=\"mer\"><summary>Mer om dette: hvordan <i>SE</i> regnes ut uten å gjenta studien</summary><div> Poenget med formelen er at forskeren <b>ikke</b> kan kjøre studien 2 000 ganger. Hun har ett utvalg. Likevel kan hun regne ut hvor mye estimatet ville sprikt &mdash; og treffe nesten perfekt.<br><br> Først slås de to gruppenes spredning sammen til &eacute;<i>t</i> felles anslag, <b>den pulte variansen</b>: <div class=\"formel\">s²<sub>p</sub> = <span class=\"brok\"><span class=\"over\">(n₁ &minus; 1)·s₁² + (n₂ &minus; 1)·s₂²</span> <span class=\"under\">n₁ + n₂ &minus; 2</span></span></div> Så settes den inn her: <div class=\"formel\"><i>SE</i> = <span style=\"font-size:22px\">√</span><span style=\"border-top:2px solid #1F3864;padding:2px 6px 0\"> s²<sub>p</sub> · (1/n₁ + 1/n₂)</span></div> Legg merke til <b>1/n</b>-leddene: det er de som gjør at <i>SE</i> krymper når utvalget vokser. Og legg merke til at <i>n</i> står under en kvadratrot &mdash; det er derfor du må firedoble utvalget for å halvere usikkerheten.<br><br> <b>Sammenlign selv:</b> tallet «<i>SE</i> fra formelen» i figuren over er regnet ut på ett eneste utvalg. «<i>SE</i> målt fra 2 000 studier» er sprikingen vi faktisk observerte. At de er nesten like, er hele grunnen til at statistisk teori er nyttig. </div></details>",
+   "en": null,
+   "fra": 35496,
+   "tagslutt": 35539
+  },
+  {
+   "no": "<h2>Konfidensintervallet</h2> <p style=\"font-size:16.5px;line-height:1.55\">Et enkelt tall er en dårlig måte å svare på. «Terapien ga 6.2 poeng bedre resultat» høres presist ut, men forskeren vet at hun kunne fått 4 eller 9 med andre pasienter. <b>Konfidensintervallet er den ærlige versjonen av svaret.</b></p> <p class=\"hvbig\">«Så vidt vi kan se, ligger den sanne forskjellen et sted mellom X og Y.»</p> <p style=\"font-size:16.5px;line-height:1.55\">Det bygges av de to tallene du allerede har: <b>gjetningen fra fane 2</b>, pluss/minus <b>omtrent to standardfeil fra fane 3</b>.</p> <div class=\"formel\">konfidensintervall = estimat &nbsp;±&nbsp; (kritisk verdi × <i>SE</i>)</div>",
+   "en": null,
+   "fra": 38001,
+   "tagslutt": 38018
+  },
+  {
+   "no": "Hvor kommer «to standardfeil» fra?",
+   "en": null,
+   "fra": 38773,
+   "tagslutt": 38776
+  },
+  {
+   "no": "Ti tusen studier fra den samme populasjonen. Alle estimatene i ett histogram — det er utvalgsfordelingen. Så legger vi ± 2 <i>SE</i> og de faktiske persentilene oppå hverandre.",
+   "en": null,
+   "fra": 38817,
+   "tagslutt": 38833
+  },
+  {
+   "no": "{{kiKjor}}Kjør 100 studier og tegn 100 intervaller</button>",
+   "en": null,
+   "fra": 39842,
+   "tagslutt": 39889
+  },
+  {
+   "no": "<b>Se hva som skjer:</b> noen få intervaller bommer på den stiplede linja &mdash; omtrent 5 av 100. Det er ikke en feil. <b>Det er akkurat det «95 %» lover.</b>",
+   "en": null,
+   "fra": 40118,
+   "tagslutt": 40159
+  },
+  {
+   "no": "<span class=\"lbl\">Hovedpoenget i denne fanen</span> <b>«95 % konfidens» beskriver <i>metoden</i> over mange studier, ikke det ene intervallet du har. Metoden treffer 95 ganger av 100. Om <i>ditt</i> intervall er blant de 95 eller de 5, får du aldri vite.</b> <details class=\"mer\"><summary>Mer om dette: den vanligste feiltolkningen</summary><div> Det er <b>fristende</b> å si: «det er 95 % sannsynlig at den sanne forskjellen ligger mellom 4 og 9». Det er den tolkningen nesten alle bruker i hverdagen, og den er <b>feil</b> i denne sammenhengen.<br><br> Grunnen er at den sanne forskjellen ikke er tilfeldig &mdash; den er et fast tall der ute i verden. Enten ligger den innenfor intervallet ditt, eller så gjør den ikke det. Det er <b>intervallet</b> som er tilfeldig, fordi det er bygget av dataene dine, og dataene kunne vært andre.<br><br> Se på figuren igjen: hvert grønne intervall traff, hvert rødt bommet. Sannheten sto helt stille hele tiden. Det var strekene som flyttet seg. </div></details> <details class=\"mer\"><summary>Mer om dette: hvorfor «omtrent to», og ikke nøyaktig to</summary><div> Den kritiske verdien kommer fra <b><i>t</i>-fordelingen</b>, og den avhenger av frihetsgradene (<i>df</i> = n₁ + n₂ &minus; 2). Med små utvalg vet du lite om hvor mye det roter, og da krever metoden et bredere intervall for fortsatt å treffe 95 % av tiden: <table class=\"tt\" style=\"margin-top:8px\"> <tr><th><i>n</i> per gruppe</th><th><i>df</i></th><th>kritisk verdi</th></tr> <tr><td>5</td><td>8</td><td>2.31</td></tr> <tr><td>10</td><td>18</td><td>2.10</td></tr> <tr><td>20</td><td>38</td><td>2.02</td></tr> <tr><td>60</td><td>118</td><td>1.98</td></tr> <tr><td>∞</td><td>∞</td><td>1.96</td></tr> </table> Det er derfor «pluss/minus to standardfeil» er en god tommelfingerregel for vanlige utvalg, og en dårlig en for veldig små. </div></details> <details class=\"mer\"><summary>Mer om dette: intervallet og <i>p</i>-verdien er samme sak</summary><div> Hvis 95 %-intervallet <b>ikke inneholder null</b>, er <i>p</i> mindre enn .05. Hvis det <b>inneholder null</b>, er <i>p</i> større enn .05. Alltid. De to er to måter å si det samme på.<br><br> Forskjellen ligger i hva de <i>viser fram</i>. <i>p</i>-verdien gir deg &eacute;<i>t</i> tall som skjuler størrelsen. Intervallet viser deg hvilke verdier som er forenlige med dataene dine &mdash; og dermed om et ikke-signifikant funn skyldes at effekten er liten, eller at studien var for liten til å se noe som helst. <b>Et bredt intervall rundt null betyr «vi vet ikke», ikke «ingen effekt».</b> </div></details>",
+   "en": null,
+   "fra": 40328,
+   "tagslutt": 40371
+  },
+  {
+   "no": "<h2><i>t</i>-verdien — signal over støy</h2> <p style=\"font-size:16.5px;line-height:1.55\">Du har en forskjell mellom to grupper. Men er den <i>stor</i>? Det spørsmålet gir ikke mening alene &mdash; stor sammenliknet med hva?</p> <p class=\"hvbig\"><i>t</i> er forskjellen målt i antall standardfeil.</p> <p style=\"font-size:16.5px;line-height:1.55\">Tenk på en hvisking i et rom. Om du hører den, avhenger ikke bare av hvor høyt det hviskes &mdash; <b>signalet</b> &mdash; men av hvor mye bråk det er rundt: <b>støyen</b>. Den samme hviskingen er krystallklar i et stille rom og helt borte på en fest. Du kan gjøre tre ting for å høre den bedre: hviske høyere, dempe bråket, eller lytte lenger.</p> <p style=\"font-size:16.5px;line-height:1.55\">I en studie er <b>signalet</b> forskjellen mellom gruppesnittene, og <b>støyen</b> er standardfeilen fra forrige fane &mdash; hvor mye den forskjellen ville sprikt om vi gjorde studien om igjen. <i>t</i> = 2 betyr rett og slett: <b>forskjellen er dobbelt så stor som usikkerheten i den.</b></p>",
+   "en": null,
+   "fra": 43083,
+   "tagslutt": 43100
+  },
+  {
+   "no": "Prøv selv: hva gjør <i>t</i> større?",
+   "en": null,
+   "fra": 44165,
+   "tagslutt": 44168
+  },
+  {
+   "no": "De tre skruene er de samme tre tingene du kan gjøre med hviskingen. Se på den øverste figuren mens du drar: hvor mange <b>grå</b> standardfeil får plass i den <b>blå</b> forskjellen? Det tallet er <i>t</i>.",
+   "en": null,
+   "fra": 44211,
+   "tagslutt": 44227
+  },
+  {
+   "no": "<label>Spredning i begge grupper <span class=\"muted\">(støy, σ)</span></label> {{tvSD}}{{tvSDO}}8.0</output>",
+   "en": null,
+   "fra": 44678,
+   "tagslutt": 44693
+  },
+  {
+   "no": "<div class=\"keybox\"><span class=\"lbl\">Hovedpoenget i denne fanen</span> <b><i>t</i> er ikke et mål på hvor stor effekten er. Det er et mål på hvor godt vi ser den.</b> Den samme effekten gir større <i>t</i> i en større studie &mdash; og det er nettopp derfor du må rapportere en effektstørrelse ved siden av <i>p</i>. <details class=\"mer\"><summary>Mer om dette: formelen, ledd for ledd</summary><div> Telleren er forskjellen du målte. Nevneren er standardfeilen fra forrige fane: <div class=\"formel\" style=\"font-size:22px;margin:10px 0\"><i>t</i> = <span class=\"brok\"><span class=\"over\">x̄₁ &minus; x̄₂</span><span class=\"under\"><i>SE</i></span></span></div> og <i>SE</i> bygges av spredningen i de to gruppene, slått sammen til ett felles anslag: <div class=\"formel\" style=\"font-size:20px;margin:10px 0\">s²<sub>p</sub> = <span class=\"brok\"><span class=\"over\">(n₁ &minus; 1)·s₁² + (n₂ &minus; 1)·s₂²</span> <span class=\"under\">n₁ + n₂ &minus; 2</span></span> &nbsp;&nbsp;·&nbsp;&nbsp; <i>SE</i> = √(s²<sub>p</sub> · (1/n₁ + 1/n₂))</div> Merk at <b>begge deler er tall fra utvalget ditt</b>. Du trenger ikke vite noe om populasjonen for å regne ut <i>t</i> &mdash; det er hele poenget med den. </div></details> <details class=\"mer\"><summary>Mer om dette: hvorfor <i>n</i> står under en kvadratrot</summary><div> <i>SE</i> krymper med <b>√n</b>, ikke med <i>n</i>. Firedobler du utvalget, halveres standardfeilen &mdash; og <i>t</i> dobles. Vil du halvere den én gang til, må du firedoble igjen.<br><br> Det er derfor presisjon er dyrt, og derfor en studie med <i>n</i> = 1 000 ikke er femti ganger bedre enn en med <i>n</i> = 20, men omtrent sju ganger. Prøv det i figuren: dra <i>n</i> fra 20 til 80 og se at antallet grå bjelker akkurat dobler seg. </div></details> <details class=\"mer\"><summary>Mer om dette: hvorfor <i>t</i> og ikke <i>z</i></summary><div> Hadde vi visst den sanne spredningen i populasjonen, kunne vi delt på den og fått en <i>z</i>-verdi fra normalfordelingen. Men vi vet den ikke &mdash; vi <b>anslår</b> den fra de samme dataene, og det anslaget har sin egen usikkerhet.<br><br> <i>t</i>-fordelingen tar høyde for det med <b>tyngre haler</b>: den krever en litt større verdi før den lar seg imponere. Hvor mye større, avhenger av frihetsgradene (<i>df</i> = n₁ + n₂ &minus; 2). Ved <i>df</i> = 8 er den kritiske verdien 2.31; ved <i>df</i> = 120 er den 1.98, altså nesten normalfordelingens 1.96. <b>Med store utvalg er forskjellen borte.</b> </div></details> </div>",
+   "en": null,
+   "fra": 45191,
+   "tagslutt": 45208
+  },
+  {
+   "no": "Nullhypotesetesting — intuisjonen først",
+   "en": null,
+   "fra": 47861,
+   "tagslutt": 47864
+  },
+  {
+   "no": "Her er hele ideen, uten et eneste symbol:",
+   "en": null,
+   "fra": 47910,
+   "tagslutt": 47954
+  },
+  {
+   "no": "<div class=\"tit\">1 · Vi later som ingenting virker</div> Vi bygger en tenkt verden der terapi og venteliste er nøyaktig like gode. Den kalles <b>nullhypotesen</b>.",
+   "en": null,
+   "fra": 48001,
+   "tagslutt": 48018
+  },
+  {
+   "no": "<div class=\"tit\">2 · Vi kjører studien i den verdenen, mange ganger</div> Selv der ingenting virker, blir gjennomsnittene aldri helt like. Vi ser hvor store forskjeller tilfeldigheter alene lager.",
+   "en": null,
+   "fra": 48189,
+   "tagslutt": 48206
+  },
+  {
+   "no": "<div class=\"tit\">3 · Vi ser hvor din forskjell havner</div> Ligger den midt i haugen av tilfeldige forskjeller, har du ikke sett noe spesielt. Ligger den langt ute i halen, er den vanskelig å forklare med flaks.",
+   "en": null,
+   "fra": 48410,
+   "tagslutt": 48427
+  },
+  {
+   "no": "<div class=\"tit\">4 · <i>p</i>-verdien er andelen som er minst like ekstrem som din</div> Det er alt <i>p</i> er: <b>hvor ofte tilfeldigheter alene klarer det du klarte.</b> Ikke sannsynligheten for at du tok feil. Ikke sannsynligheten for at hypotesen er sann. En andel.",
+   "en": null,
+   "fra": 48646,
+   "tagslutt": 48663
+  },
+  {
+   "no": "{{nhTrekk}}Trekk ett utvalg og test det</button> {{nhNull}}Bygg nullverdenen på nytt</button>",
+   "en": null,
+   "fra": 49308,
+   "tagslutt": 49355
+  },
+  {
+   "no": "<b>Prøv dette:</b> sett sann forskjell til <b>0</b> og trekk utvalg etter utvalg. Du vil finne «signifikante» funn omtrent hver tjuende gang &mdash; i en verden der det ikke finnes noe å finne. <b>Det er ikke en feil i metoden. Det er prisen metoden koster, og den heter α = 5 %.</b>",
+   "en": null,
+   "fra": 49643,
+   "tagslutt": 49684
+  },
+  {
+   "no": "For dere som vil se regnestykket gå opp. Tallene under oppdateres av knappen «Trekk ett utvalg og test det» over.",
+   "en": null,
+   "fra": 50034,
+   "tagslutt": 50050
+  },
+  {
+   "no": "Effektstørrelse — hvor stor er forskjellen egentlig?",
+   "en": null,
+   "fra": 53179,
+   "tagslutt": 53182
+  },
+  {
+   "no": "<i>p</i>-verdien svarer på «kunne dette vært flaks?». Den svarer <b>ikke</b> på «betyr dette noe?». For det er problemet med <i>p</i>: den blir mindre bare av at du måler flere personer, uansett hvor liten forskjellen er.",
+   "en": null,
+   "fra": 53241,
+   "tagslutt": 53285
+  },
+  {
+   "no": "Cohens <i>d</i>: hvor mange standardavvik skiller de to gruppene?",
+   "en": null,
+   "fra": 53512,
+   "tagslutt": 53528
+  },
+  {
+   "no": "Samme teller som <i>t</i> &mdash; forskjellen mellom gjennomsnittene &mdash; men delt på <b>standardavviket</b> i stedet for standardfeilen. Og siden standardavviket ikke krymper når du samler mer data, <b>vokser ikke <i>d</i> med utvalgsstørrelsen</b>.",
+   "en": null,
+   "fra": 53599,
+   "tagslutt": 53643
+  },
+  {
+   "no": "<b>Se på overlappet.</b> Ved <i>d</i> = 0.80 &mdash; som lærebøkene kaller en «stor» effekt &mdash; overlapper de to fordelingene fortsatt kraftig. Trekker du &eacute;<i>n</i> tilfeldig person fra hver gruppe, er det bare i omtrent {{efAndel}}71</span> % av tilfellene at personen fra gruppe 2 skårer høyest. <b>Gruppeforskjeller sier lite om enkeltpersoner.</b>",
+   "en": null,
+   "fra": 54235,
+   "tagslutt": 54275
+  },
+  {
+   "no": "<i>t</i> vokser med <i>n</i>. <i>d</i> gjør det ikke.",
+   "en": null,
+   "fra": 54680,
+   "tagslutt": 54683
+  },
+  {
+   "no": "Samme sanne effekt, ulikt antall deltakere. Se hva som skjer med de to tallene.",
+   "en": null,
+   "fra": 54743,
+   "tagslutt": 54759
+  },
+  {
+   "no": "{{e2Kjor}}Kjør 400 studier ved hver <i>n</i></button>",
+   "en": null,
+   "fra": 55049,
+   "tagslutt": 55081
+  },
+  {
+   "no": "Hvert intervall er den typiske studien ved den <i>n</i>-en. Punktene står på samme sted; intervallene krymper.",
+   "en": null,
+   "fra": 55290,
+   "tagslutt": 55306
+  },
+  {
+   "no": "<span class=\"lbl\">Hovedpoenget i denne fanen</span> <b>To studier med samme effektstørrelse kan ha vidt forskjellige <i>p</i>-verdier, bare fordi den ene har flere deltakere. Derfor krever APA at du rapporterer begge: <i>p</i> sier om funnet er til å stole på, <i>d</i> sier om det betyr noe.</b> <details class=\"mer\"><summary>Mer om dette: regnestykket</summary><div> <div class=\"formel\"><i>d</i> = <span class=\"brok\"><span class=\"over\">x̄₁ &minus; x̄₂</span><span class=\"under\">s<sub>p</sub></span></span></div> der s<sub>p</sub> er det samme pulte standardavviket som i fane 3 &mdash; altså kvadratroten av den pulte variansen.<br><br> Det finnes en snarvei som er verdt å kunne: <div class=\"formel\"><i>d</i> ≈ <i>t</i> · √(1/n₁ + 1/n₂)</div> Den lar deg regne ut effektstørrelsen fra en <b>publisert artikkel</b> som bare oppgir <i>t</i> og gruppestørrelsene. Det er nyttigere enn det høres ut &mdash; mange eldre artikler oppgir aldri <i>d</i>. </div></details> <details class=\"mer\"><summary>Mer om dette: hva er «stor»?</summary><div> Cohens egne tommelfingerregler er <b>0.2 liten · 0.5 middels · 0.8 stor</b>. De er nyttige som grovsortering, men de er ikke naturlover &mdash; Cohen fant dem på, og skrev selv at de burde erstattes av felt-spesifikke referanser.<br><br> To referansepunkter fra psykologien selv: den typiske <b>publiserte</b> effekten tilsvarer omtrent <i>d</i> = 0.8, mens den typiske <b>preregistrerte</b> ligger nærmere <i>d</i> = 0.3. Forskjellen mellom de to tallene er ikke et funn om verden &mdash; det er et funn om hvilke studier som kommer på trykk.<br><br> Og motsatt vei: en manipulasjonssjekk <i>skal</i> ha en enorm <i>d</i>. Er den liten, har eksperimentet ditt feilet. </div></details>",
+   "en": null,
+   "fra": 55584,
+   "tagslutt": 55627
+  },
+  {
+   "no": "Hva koster det å bryte forutsetning 2?",
+   "en": null,
+   "fra": 59113,
+   "tagslutt": 59116
+  },
+  {
+   "no": "Her er det <b>ingen sann forskjell</b> mellom gruppene. Alt som dukker opp under 5 %-linja, er falske funn. Sett opp ulike varianser og ulike gruppestørrelser, og se hva som skjer.",
+   "en": null,
+   "fra": 59161,
+   "tagslutt": 59177
+  },
+  {
+   "no": "{{fKjor}}Kjør 3 000 studier uten sann effekt</button> {{fLik}}Sett variansene like</button>",
+   "en": null,
+   "fra": 60028,
+   "tagslutt": 60075
+  },
+  {
+   "no": "<b>Legg merke til to ting.</b> For det første: feilraten går galt av sted når <b>den lille gruppen har den store spredningen</b>. For det andre: Welch lander på 5 % uansett hva du gjør &mdash; også når variansene faktisk er like. <b>Det er derfor regelen i dette emnet er å krysse av for Welch hver gang.</b>",
+   "en": null,
+   "fra": 60359,
+   "tagslutt": 60400
+  }
+ ],
+ "biter": [
+  {
+   "no": "2 · Det vi vil vite, og gjetningen vår",
+   "en": null
+  },
+  {
+   "no": "3 · Hvor usikker er gjetningen?",
+   "en": null
+  },
+  {
+   "no": "4 · Konfidensintervallet",
+   "en": null
+  },
+  {
+   "no": "6 · Nullhypotesetesting",
+   "en": null
+  },
+  {
+   "no": "7 · Effektstørrelse",
+   "en": null
+  },
+  {
+   "no": "8 · Forutsetninger",
+   "en": null
+  },
+  {
+   "no": "Sant snitt, terapi",
+   "en": null
+  },
+  {
+   "no": "Sant snitt, venteliste",
+   "en": null
+  },
+  {
+   "no": "Spredning i begge (σ)",
+   "en": null
+  },
+  {
+   "no": "Trekk ett nytt utvalg",
+   "en": null
+  },
+  {
+   "no": "Trekk 200 utvalg etter hverandre",
+   "en": null
+  },
+  {
+   "no": "Nullstill",
+   "en": null
+  },
+  {
+   "no": "Frys denne kurven",
+   "en": null
+  },
+  {
+   "no": "Tøm frosne",
+   "en": null
+  },
+  {
+   "no": "Sann forskjell (μ₁ − μ₂)",
+   "en": null
+  },
+  {
+   "no": "Kjør studien 2 000 ganger",
+   "en": null
+  },
+  {
+   "no": "1 · fordelingen",
+   "en": null
+  },
+  {
+   "no": "2 · ± 2 SE",
+   "en": null
+  },
+  {
+   "no": "3 · persentilene",
+   "en": null
+  },
+  {
+   "no": "Hundre studier, hundre intervaller",
+   "en": null
+  },
+  {
+   "no": "Det samme, med tallene",
+   "en": null
+  },
+  {
+   "no": "alle",
+   "en": null
+  },
+  {
+   "no": "Det samme som figur",
+   "en": null
+  },
+  {
+   "no": "Start forelesning",
+   "en": null
+  },
+  {
+   "no": "Presentasjonsmodus",
+   "en": null
+  },
+  {
+   "no": "andel signifikante",
+   "en": null
+  },
+  {
+   "no": "Depresjon etter behandling",
+   "en": null
+  },
+  {
+   "no": "Tolv pasienter, tolv lapper",
+   "en": null
+  },
+  {
+   "no": "Terapi",
+   "en": null
+  },
+  {
+   "no": "Venteliste",
+   "en": null
+  },
+  {
+   "no": "Forskjeller jeg lager av ingenting",
+   "en": null
+  },
+  {
+   "no": "Omstokking",
+   "en": null
+  },
+  {
+   "no": "Forskjell mellom bunkene",
+   "en": null
+  },
+  {
+   "no": "Ti tusen omstokkinger, på et sekund",
+   "en": null
+  },
+  {
+   "no": "Derfor B",
+   "en": null
+  },
+  {
+   "no": "A og C er speilvendinger",
+   "en": null
+  },
+  {
+   "no": "Tilbake til den ekte terapistudien: hvordan beskriver vi funnene?",
+   "en": null
+  },
+  {
+   "no": "Median",
+   "en": null
+  },
+  {
+   "no": "Laveste–høyeste",
+   "en": null
+  },
+  {
+   "no": "Spennet sier hvor tallene bor",
+   "en": null
+  },
+  {
+   "no": "Men det du virkelig vil vite, finnes ikke i dataene dine …",
+   "en": null
+  },
+  {
+   "no": "POPULASJONEN — det du vil vite",
+   "en": null
+  },
+  {
+   "no": "UTVALGET — det du har",
+   "en": null
+  },
+  {
+   "no": "Men tenk om vi kunne jukse",
+   "en": null
+  },
+  {
+   "no": "1 · Vi kjenner sannheten",
+   "en": null
+  },
+  {
+   "no": "2 · Vi kan gjenta studien",
+   "en": null
+  },
+  {
+   "no": "Ingen studie treffer helt",
+   "en": null
+  },
+  {
+   "no": "Men de bommer ikke systematisk",
+   "en": null
+  },
+  {
+   "no": "Og sprikingen har et navn",
+   "en": null
+  },
+  {
+   "no": "Estimatet er rimelig normalfordelt rundt det sanne gjennomsnittet",
+   "en": null
+  },
+  {
+   "no": "Rundt det sanne",
+   "en": null
+  },
+  {
+   "no": "Normalfordelt",
+   "en": null
+  },
+  {
+   "no": "«Rimelig» gjør en jobb",
+   "en": null
+  },
+  {
+   "no": "Estimatet bommer mindre når utvalgsstørrelsen øker",
+   "en": null
+  },
+  {
+   "no": "Fire ganger så mange …",
+   "en": null
+  },
+  {
+   "no": "Toppen flytter seg ikke",
+   "en": null
+  },
+  {
+   "no": "Bredden har et navn",
+   "en": null
+  },
+  {
+   "no": "Gjetningen bommer — men ikke systematisk",
+   "en": null
+  },
+  {
+   "no": "Situasjonen",
+   "en": null
+  },
+  {
+   "no": "Testen",
+   "en": null
+  },
+  {
+   "no": "Parameteren",
+   "en": null
+  },
+  {
+   "no": "Rop ut testen",
+   "en": null
+  },
+  {
+   "no": "Hva skiller dem — og hva er likt",
+   "en": null
+  },
+  {
+   "no": "Uavhengig",
+   "en": null
+  },
+  {
+   "no": "Paret",
+   "en": null
+  },
+  {
+   "no": "Én-utvalgs",
+   "en": null
+  },
+  {
+   "no": "Den ene forenklingen",
+   "en": null
+  },
+  {
+   "no": "I dag: den uavhengige",
+   "en": null
+  },
+  {
+   "no": "Standardfeilen er hvor mye svarene ville sprikt",
+   "en": null
+  },
+  {
+   "no": "To tall som forveksles hele tiden",
+   "en": null
+  },
+  {
+   "no": "Bind deg til ett svar først",
+   "en": null
+  },
+  {
+   "no": "Samme forskjell, dobbelt så mye rot",
+   "en": null
+  },
+  {
+   "no": "Vi har ett utvalg. Ikke to tusen.",
+   "en": null
+  },
+  {
+   "no": "Det vi vil vite",
+   "en": null
+  },
+  {
+   "no": "Det vi har",
+   "en": null
+  },
+  {
+   "no": "Broen",
+   "en": null
+  },
+  {
+   "no": "Fire ganger så mange for halvparten av usikkerheten",
+   "en": null
+  },
+  {
+   "no": "Hvisk høyere",
+   "en": null
+  },
+  {
+   "no": "Demp bråket",
+   "en": null
+  },
+  {
+   "no": "Lytt lenger",
+   "en": null
+  },
+  {
+   "no": "Hvor mange standardfeil får plass i forskjellen?",
+   "en": null
+  },
+  {
+   "no": "1 · Dobbelt så mye støy",
+   "en": null
+  },
+  {
+   "no": "2 · Fire ganger så mange",
+   "en": null
+  },
+  {
+   "no": "Hvorfor akkurat to standardfeil?",
+   "en": null
+  },
+  {
+   "no": "Hva betyr «95 %»?",
+   "en": null
+  },
+  {
+   "no": "Det er intervallet som er tilfeldig — ikke sannheten",
+   "en": null
+  },
+  {
+   "no": "Derfor C",
+   "en": null
+  },
+  {
+   "no": "A er den lærerike feilen",
+   "en": null
+  },
+  {
+   "no": "Pause",
+   "en": null
+  },
+  {
+   "no": "Hele ideen, uten et eneste symbol",
+   "en": null
+  },
+  {
+   "no": "Din studie, plassert i nullverdenen",
+   "en": null
+  },
+  {
+   "no": "Fra to gjennomsnitt til én setning",
+   "en": null
+  },
+  {
+   "no": "Sett sannheten til null og trekk igjen",
+   "en": null
+  },
+  {
+   "no": "Fire feiltolkninger, i synkende rekkefølge etter hyppighet",
+   "en": null
+  },
+  {
+   "no": "Hvilken ville du anbefalt en pasient?",
+   "en": null
+  },
+  {
+   "no": "Forskjell",
+   "en": null
+  },
+  {
+   "no": "En studie dobler utvalget, alt annet likt",
+   "en": null
+  },
+  {
+   "no": "Det er presisjonen som vokser, ikke effekten",
+   "en": null
+  },
+  {
+   "no": "Tre forutsetninger — rangert etter skade",
+   "en": null
+  },
+  {
+   "no": "1 · Uavhengige observasjoner — den alvorlige",
+   "en": null
+  },
+  {
+   "no": "2 · Like varianser — den enkle",
+   "en": null
+  },
+  {
+   "no": "3 · Normalfordelte data — den overvurderte",
+   "en": null
+  },
+  {
+   "no": "Bind deg til ett svar",
+   "en": null
+  },
+  {
+   "no": "Ingen sann effekt. Hvor ofte roper testen likevel «funn»?",
+   "en": null
+  },
+  {
+   "no": "Regelen i dette emnet",
+   "en": null
+  },
+  {
+   "no": "Hvorfor «hver gang»?",
+   "en": null
+  },
+  {
+   "no": "Kjennetegnet",
+   "en": null
+  },
+  {
+   "no": "Én oppfyller antakelsen. Én gjør det ikke.",
+   "en": null
+  },
+  {
+   "no": "A er svaret de fleste gir",
+   "en": null
+  },
+  {
+   "no": "Samme data, to analyser, identiske tall",
+   "en": null
+  },
+  {
+   "no": "df",
+   "en": null
+  },
+  {
+   "no": "Mean Difference",
+   "en": null
+  },
+  {
+   "no": "SE Difference",
+   "en": null
+  },
+  {
+   "no": "Model",
+   "en": null
+  },
+  {
+   "no": "SE",
+   "en": null
+  },
+  {
+   "no": "Fire tall, to tabeller",
+   "en": null
+  },
+  {
+   "no": "Én prediktor som bare har to verdier",
+   "en": null
+  },
+  {
+   "no": "Derfor er testene like",
+   "en": null
+  },
+  {
+   "no": "Fire setninger",
+   "en": null
+  },
+  {
+   "no": "1 · Hvorfor <i>t</i>-test?",
+   "en": null
+  },
+  {
+   "no": "5 · <i>t</i>-verdien: signal over støy",
+   "en": null
+  }
+ ],
+ "literaler": [
+  {
+   "no": "«Skårer pasienter som fikk terapi lavere på depresjon enn pasienter på venteliste?»",
+   "en": null
+  },
+  {
+   "no": "<b>Uavhengig <i>t</i>-test.</b> To ulike sett med mennesker, én måling hver. Parameteren er forskjellen mellom de to populasjonsgjennomsnittene.",
+   "en": null
+  },
+  {
+   "no": "«Falt selvtilliten hos de samme studentene fra før til etter prøven?»",
+   "en": null
+  },
+  {
+   "no": "<b>Paret <i>t</i>-test.</b> Samme personer målt to ganger. Parameteren er den gjennomsnittlige <i>endringen</i> — ikke en forskjell mellom to grupper.",
+   "en": null
+  },
+  {
+   "no": "«Ligger gjennomsnittsskåren i utvalget vårt over den kliniske grenseverdien på 20?»",
+   "en": null
+  },
+  {
+   "no": "<b>Én-utvalgs <i>t</i>-test.</b> Én gruppe sammenlignet med et fast tall du bestemte på forhånd.",
+   "en": null
+  },
+  {
+   "no": "«Henger antall timer lest sammen med karakteren studentene fikk?»",
+   "en": null
+  },
+  {
+   "no": "<b>Ikke en <i>t</i>-test.</b> Begge variablene er tall som kan være store eller små, og spørsmålet er om de <i>henger sammen</i>. Det er korrelasjon (Sim 11).",
+   "en": null
+  },
+  {
+   "no": "«Er det forskjell på de tre fagfeltene i statistikkangst?»",
+   "en": null
+  },
+  {
+   "no": "«Hver pasient ble vurdert av to uavhengige terapeuter. Er de to vurderingene forskjellige?»",
+   "en": null
+  },
+  {
+   "no": "<b>Paret <i>t</i>-test.</b> Fella her er ordet «uavhengige», som gjelder <i>terapeutene</i>. Målingene hører sammen to og to fordi de gjelder <b>samme pasient</b>.",
+   "en": null
+  },
+  {
+   "no": "Ikke t-test",
+   "en": null
+  },
+  {
+   "no": "<b>Du traff ",
+   "en": null
+  },
+  {
+   "no": " av ",
+   "en": null
+  },
+  {
+   "no": ".</b> Det du skal ta med deg, er ikke ",
+   "en": null
+  },
+  {
+   "no": "tallet, men <b>&eacute;<i>n</i> vane</b>: før du velger test, spør du alltid <i>hvem</i> som står ",
+   "en": null
+  },
+  {
+   "no": "på hver side. Samme personer → paret. Ulike personer → uavhengig. Én gruppe mot et fast ",
+   "en": null
+  },
+  {
+   "no": "tall → én-utvalgs. Tre grupper eller to tallvariabler som henger sammen → noe helt annet.",
+   "en": null
+  },
+  {
+   "no": "Ett utvalg: hver prikk er én person · trekanten er gruppas gjennomsnitt",
+   "en": null
+  },
+  {
+   "no": "Tomt til du trekker. Trykk «Trekk ett nytt utvalg» for å begynne",
+   "en": null
+  },
+  {
+   "no": "depresjonsskår",
+   "en": null
+  },
+  {
+   "no": "Alle gjetningene så langt (",
+   "en": null
+  },
+  {
+   "no": "Her samler gjetningene seg opp etter hvert som du trekker",
+   "en": null
+  },
+  {
+   "no": "nå: ",
+   "en": null
+  },
+  {
+   "no": "<div class=\"note\" style=\"margin-top:8px\">Snittet av de ",
+   "en": null
+  },
+  {
+   "no": " gjetningene er <b>",
+   "en": null
+  },
+  {
+   "no": "</b>. Enkeltgjetninger bommer &mdash; gjennomsnittet av dem gjør det ikke.</div>",
+   "en": null
+  },
+  {
+   "no": "2 000 gjentakelser av den samme studien",
+   "en": null
+  },
+  {
+   "no": "Trykk på knappen for å kjøre studien 2 000 ganger",
+   "en": null
+  },
+  {
+   "no": "<span class=\"stat\"><i>SE</i> målt fra 2 000 studier: ",
+   "en": null
+  },
+  {
+   "no": "<span class=\"stat green\"><i>SE</i> fra formelen, på ett utvalg: ",
+   "en": null
+  },
+  {
+   "no": "<div class=\"note\" style=\"margin-top:8px\">Legg merke til at <b><i>SD</i></b> er omtrent ",
+   "en": null
+  },
+  {
+   "no": " uansett hvor mange du måler, mens <b><i>SE</i></b> er ",
+   "en": null
+  },
+  {
+   "no": " og krymper når <i>n</i> vokser. Det er to helt ulike tall.</div>",
+   "en": null
+  },
+  {
+   "no": "Trykk på knappen",
+   "en": null
+  },
+  {
+   "no": "<span class=\"stat\">kritisk verdi ved <i>df</i> = ",
+   "en": null
+  },
+  {
+   "no": "<div class=\"note\" style=\"margin-top:8px\">De røde bommet. Med 95 %-intervaller forventer vi ",
+   "en": null
+  },
+  {
+   "no": "omtrent <b>5 av 100</b> &mdash; denne gangen ble det <b>",
+   "en": null
+  },
+  {
+   "no": "</b>. Kjør på nytt, så blir ",
+   "en": null
+  },
+  {
+   "no": "tallet et annet. Det er selve poenget: <b>95 % er en egenskap ved metoden over mange studier.</b></div>",
+   "en": null
+  },
+  {
+   "no": "10 000 studier fra den samme populasjonen — ett estimat hver",
+   "en": null
+  },
+  {
+   "no": "95 % av estimatene",
+   "en": null
+  },
+  {
+   "no": "<div class=\"note\" style=\"margin-top:8px\">De to nesten faller sammen. <b>Det er hele begrunnelsen for tommelfingerregelen:</b> to standardfeil hver vei er omtrent der 95 % av estimatene lander. Med <i>n</i> = 20 er den kritiske t-verdien 2.02, ikke 2 — derfor «omtrent».</div>",
+   "en": null
+  },
+  {
+   "no": "Nullverdenen: 4 000 studier der det IKKE finnes noen forskjell",
+   "en": null
+  },
+  {
+   "no": "<div class=\"note\">Trykk <b>«Trekk ett utvalg og test det»</b> for å ",
+   "en": null
+  },
+  {
+   "no": "<div class=\"note\">Regnestykket dukker opp her når du har trukket et utvalg.</div>",
+   "en": null
+  },
+  {
+   "no": "<div class=\"note\" style=\"margin-top:8px\">Av de 4 000 nullstudiene hadde <b>",
+   "en": null
+  },
+  {
+   "no": " %</b> en <i>t</i> minst like ekstrem som din. Formelen sier <b>",
+   "en": null
+  },
+  {
+   "no": "</b>. De to tallene er samme sak, regnet ut på to måter &mdash; ved å telle, og ved å bruke ",
+   "en": null
+  },
+  {
+   "no": " og x̄₂ = ",
+   "en": null
+  },
+  {
+   "no": ", altså en forskjell på <b>",
+   "en": null
+  },
+  {
+   "no": "<div class=\"n\">Dette er gjetningen fra fane 2.</div></div>",
+   "en": null
+  },
+  {
+   "no": " og s₂ = ",
+   "en": null
+  },
+  {
+   "no": ", og standardfeil <b><i>SE</i> = ",
+   "en": null
+  },
+  {
+   "no": "<div class=\"n\">Dette er tallet fra fane 3.</div></div>",
+   "en": null
+  },
+  {
+   "no": "</b>, med <i>df</i> = ",
+   "en": null
+  },
+  {
+   "no": "<div class=\"n\">Forskjellen din er ",
+   "en": null
+  },
+  {
+   "no": "<div class=\"steg\"><div class=\"tit\">Steg 4 · Sammenligning med nullfordelingen</div>",
+   "en": null
+  },
+  {
+   "no": "Kritisk verdi ved df = ",
+   "en": null
+  },
+  {
+   "no": " er ±",
+   "en": null
+  },
+  {
+   "no": ". Din t er ",
+   "en": null
+  },
+  {
+   "no": " det.",
+   "en": null
+  },
+  {
+   "no": "vi forkaster nullhypotesen.",
+   "en": null
+  },
+  {
+   "no": "vi klarer ikke å skille dette fra null.",
+   "en": null
+  },
+  {
+   "no": "<div class=\"steg\"><div class=\"tit\">Steg 5 · Konklusjonen, slik den skrives</div>",
+   "en": null
+  },
+  {
+   "no": ") skåret ",
+   "en": null
+  },
+  {
+   "no": "høyere",
+   "en": null
+  },
+  {
+   "no": "<div class=\"n\">Legg merke til at effektstørrelsen står der. Uten den er setningen ufullstendig.</div></div>",
+   "en": null
+  },
+  {
+   "no": "under Cohens grense for «liten»",
+   "en": null
+  },
+  {
+   "no": "det Cohen kalte «liten»",
+   "en": null
+  },
+  {
+   "no": "det Cohen kalte «middels»",
+   "en": null
+  },
+  {
+   "no": "det Cohen kalte «stor»",
+   "en": null
+  },
+  {
+   "no": "<span class=\"stat\">sjansen for at en tilfeldig fra gruppe 2 skårer høyest: ",
+   "en": null
+  },
+  {
+   "no": "<div class=\"note\" style=\"margin-top:8px\">Dette er <b>",
+   "en": null
+  },
+  {
+   "no": "</b>. Ved <i>d</i> = 0 ville de to ",
+   "en": null
+  },
+  {
+   "no": "sjansene vært 100 % overlapp og 50 % &mdash; altså ren myntkast.</div>",
+   "en": null
+  },
+  {
+   "no": "<div class=\"note\">Trykk på knappen for å kjøre simuleringen.</div>",
+   "en": null
+  },
+  {
+   "no": "<th>95 % KI for <i>d</i></th>",
+   "en": null
+  },
+  {
+   "no": "<div class=\"note\" style=\"margin-top:8px\"><b>Les kolonnene nedover.</b> <i>t</i> vokser jevnt med <i>n</i>, ",
+   "en": null
+  },
+  {
+   "no": "og andelen signifikante studier går fra nesten ingen til nesten alle. <b><i>d</i> står stille.</b> ",
+   "en": null
+  },
+  {
+   "no": "Sannheten i populasjonen endret seg aldri &mdash; bare hvor godt vi klarte å se den. ",
+   "en": null
+  },
+  {
+   "no": "Men se på KI-kolonnen: <b><i>d</i> står stille i forventning, ikke i presisjon.</b> ",
+   "en": null
+  },
+  {
+   "no": "Ved den minste <i>n</i>-en er intervallet så bredt at estimatet knapt sier noe.</div>",
+   "en": null
+  },
+  {
+   "no": "(kjør simuleringen på forrige slide)",
+   "en": null
+  },
+  {
+   "no": "Typisk studie ved hver utvalgsstørrelse, med 95 % KI for d",
+   "en": null
+  },
+  {
+   "no": "<span class=\"stat\">bredden ved n = ",
+   "en": null
+  },
+  {
+   "no": "<span class=\"stat green\">bredden ved n = ",
+   "en": null
+  },
+  {
+   "no": "<div class=\"note\" style=\"margin-top:8px\">Punktene står på omtrent samme sted — ",
+   "en": null
+  },
+  {
+   "no": "<b>d er den samme sannheten hele veien</b>. Det som endrer seg er bredden. ",
+   "en": null
+  },
+  {
+   "no": "Krysser intervallet null, kan studien ikke skille effekten fra ingenting, ",
+   "en": null
+  },
+  {
+   "no": "selv om estimatet er det samme.</div>",
+   "en": null
+  },
+  {
+   "no": "Her holder Student-testen seg fint. Prøv å gi <b>den minste gruppen den største spredningen</b> og kjør på nytt.",
+   "en": null
+  },
+  {
+   "no": "Den <b>lille</b> gruppen har den <b>store</b> spredningen, og da blir Student-testen <b>for liberal</b> — den roper «funn» altfor ofte.",
+   "en": null
+  },
+  {
+   "no": "Den <b>lille</b> gruppen har den <b>lille</b> spredningen, og da blir Student-testen <b>for konservativ</b> — den overser effekter som finnes.",
+   "en": null
+  },
+  {
+   "no": " Welch lander på 5 % uansett.</div>",
+   "en": null
+  },
+  {
+   "no": "<div class=\"note\" style=\"margin-top:8px\">Trykk på knappen for å kjøre 3 000 studier der det ",
+   "en": null
+  },
+  {
+   "no": "<b>ikke</b> finnes noen sann forskjell.</div>",
+   "en": null
+  },
+  {
+   "no": "målet: 5 %",
+   "en": null
+  }
+ ],
+ "jasp": [
+  "<span class=\"lbl\">Hovedpoenget i denne fanen</span> <b><i>t</i> er forskjellen din delt på standardfeilen — altså «hvor mange standardfeil unna null er jeg?». <i>p</i> er hvor sjelden en så stor <i>t</i> dukker opp når nullhypotesen er sann.</b> <details class=\"mer\"><summary>Mer om dette: hvorfor deler vi på standardfeilen?</summary><div> Fordi «6 poeng» ikke betyr noe i seg selv. Seks poeng er enormt hvis studier som denne pleier å sprike med &eacute;<i>n</i>, og ingenting hvis de pleier å sprike med tjue.<br><br> Ved å dele på standardfeilen gjør vi forskjellen <b>sammenlignbar på tvers av studier og variabler</b>. Resultatet er et tall uten enhet, som betyr «så mange standardfeil fra null». Og fordi vi vet hvordan det tallet oppfører seg i nullverdenen, kan vi regne ut hvor uvanlig det er. </div></details> <details class=\"mer\"><summary>Mer om dette: hva <i>p</i> <i>ikke</i> er</summary><div> Fire feiltolkninger, i synkende rekkefølge etter hvor ofte de dukker opp på eksamen:<br><br> <b>1. «<i>p</i> er sannsynligheten for at nullhypotesen er sann.»</b> Nei. <i>p</i> er regnet ut <i>under forutsetning av</i> at nullhypotesen er sann. Du kan ikke bruke den til å vurdere forutsetningen sin egen sannsynlighet.<br><br> <b>2. «<i>p</i> = .04 betyr at det er 4 % sjanse for at jeg tar feil.»</b> Nei. Sjansen for at du tar feil avhenger også av hvor sannsynlig effekten var på forhånd &mdash; noe <i>p</i> ikke vet noe om.<br><br> <b>3. «<i>p</i> &gt; .05 betyr at det ikke er noen forskjell.»</b> Nei. Det betyr at du ikke klarte å skille forskjellen fra null. Med 12 deltakere klarer du nesten ingenting.<br><br> <b>4. «<i>p</i> = .001 betyr at effekten er stor.»</b> Nei. Med 5 000 deltakere gir en betydningsløs forskjell en imponerende <i>p</i>-verdi. Det er derfor fane 6 finnes. </div></details> <details class=\"mer\"><summary>Mer om dette: én-sidig eller to-sidig?</summary><div> Figuren over skraverer <b>begge</b> haler, og det er standard: du spurte om gruppene er <i>forskjellige</i>, ikke om gruppe 1 er bedre. Skulle du bare telle den ene halen, måtte du bestemt retningen <b>før</b> du så dataene &mdash; og kunne ikke rapportert noe som helst hvis effekten gikk motsatt vei.<br><br> I praksis: bruk to-sidig. JASP gjør det som standard, og en énsidig test som dukker opp <i>etter</i> at dataene er sett, er en av de vanligste formene for p-hacking. </div></details>",
+  "<h2>Forutsetningene — i rekkefølgen de faktisk betyr noe</h2> <p style=\"font-size:16.5px;line-height:1.55\">Lærebøker lister ofte tre forutsetninger som om de var like viktige. Det er de ikke. Her er de sortert etter hvor mye skade det gjør å bryte dem:</p> <div class=\"steg\" style=\"border-left-color:#C0392B\"> <div class=\"tit\">1 · Uavhengige observasjoner — den alvorlige</div> Hver person bidrar med <b>&eacute;<i>n</i></b> måling, og ingen påvirker hverandre. Brytes denne, finnes det <b>ingen korreksjon</b> som redder analysen &mdash; du må bruke en annen metode. <div class=\"n\">Typisk brudd: pasienter behandlet i samme gruppeterapi, elever i samme klasse, eller samme person målt to ganger (da skal du bruke <b>paret</b> <i>t</i>-test).</div></div> <div class=\"steg\" style=\"border-left-color:#E08A2E\"> <div class=\"tit\">2 · Like varianser i de to gruppene — den enkle</div> Brytes denne, kan den reelle feilraten sprette langt over 5 %. Men det finnes en <b>gratis løsning</b>: Welchs korreksjon. <div class=\"n\">Sjekkes med <b>Levenes test</b>. Løsningen er å krysse av for <b>Welch</b> i JASP.</div></div> <div class=\"steg\" style=\"border-left-color:#2E7D32\"> <div class=\"tit\">3 · Normalfordelte data — den overvurderte</div> Betyr mye når <i>n</i> er liten, og nesten ingenting når <i>n</i> er stor. Grunnen er at det er <b>gjennomsnittene</b>, ikke rådataene, som må være tilnærmet normalfordelte &mdash; og de blir det av seg selv når utvalget vokser. <div class=\"n\">Sjekkes med Q–Q-plott og Shapiro–Wilk. Reserveløsning: <b>Mann–Whitney</b>.</div></div>",
+  "<span class=\"lbl\">Hovedpoenget i denne fanen</span> <b>Uavhengighet må du sikre i designet. Ulike varianser fikser Welch. Ikke-normalitet ordner seg stort sett selv når <i>n</i> er stor. Rapporter Levene, bruk Welch, og si hva du gjorde.</b> <details class=\"mer\"><summary>Mer om dette: hvordan Welch virker</summary><div> Student-t slår de to gruppenes spredning sammen til &eacute;<i>n</i> felles varians. Det er en god idé hvis de faktisk er like &mdash; og en dårlig idé hvis de ikke er det, for da representerer det pulte tallet <b>ingen av gruppene</b>.<br><br> Welch dropper sammenslåingen og bruker hver gruppes egen varians. Prisen er at frihetsgradene ikke lenger er et pent heltall &mdash; de regnes ut med en formel som gir desimaler, for eksempel <i>t</i>(63.0). <b>Desimaler i <i>df</i> er signaturen til Welch</b>, og det er en av de tingene som er lett å spørre om på eksamen.<br><br> Kostnaden er liten: når variansene faktisk er like, taper Welch nesten ingen styrke. Gevinsten er stor: når de ikke er det, holder den feilraten på 5 % i stedet for 25 %. </div></details> <details class=\"mer\"><summary>Mer om dette: Levene er en svak test</summary><div> Levenes test har <b>lav styrke ved små utvalg</b> &mdash; nettopp der ulike varianser gjør mest skade. «Levene var ikke signifikant» er derfor et svakt argument for at variansene er like; det kan like gjerne bety at du ikke hadde nok data til å oppdage forskjellen.<br><br> Motsatt vei: ved veldig store utvalg blir Levene signifikant av bagatellmessige forskjeller som ikke ville påvirket <i>t</i>-testen i det hele tatt.<br><br> Konklusjonen er den samme begge veier: <b>ikke la Levene bestemme. Bruk Welch, og rapporter Levene som informasjon.</b> </div></details> <details class=\"mer\"><summary>Mer om dette: når er ikke-normalitet et problem?</summary><div> Tre situasjoner der du bør bry deg:<br><br> <b>Små utvalg.</b> Under ca. 20 per gruppe hjelper ikke sentralgrenseteoremet deg nok.<br><br> <b>Kraftige utliggere.</b> Én ekstrem verdi kan dra gjennomsnittet og blåse opp variansen. Gjennomsnittet er ikke robust; medianen er.<br><br> <b>Gulv- og takeffekter.</b> Hvis mange skårer 0 eller maksimum, er skalaen din i praksis avkortet. Da er ikke problemet fordelingsformen, men at målingen ikke skiller mellom folk i den enden.<br><br> Reserveløsningen er <b>Mann–Whitney</b>, som sammenligner rangeringer i stedet for gjennomsnitt. Merk at den da svarer på et litt annet spørsmål: ikke «er gjennomsnittene ulike?», men «pleier den ene gruppen å ligge over den andre?». </div></details>",
+  "<summary>Ordforklaringer</summary> <div style=\"font-size:15.5px;line-height:1.6;margin-top:8px\"> <b>Populasjon</b> — alle du egentlig vil si noe om. Du måler dem aldri.<br> <b>Utvalg</b> — de du faktisk målte.<br> <b>Parameter</b> — det sanne tallet i populasjonen. Skrives med greske bokstaver (μ, σ). Ukjent.<br> <b>Estimat</b> — gjetningen din på parameteren, regnet ut av utvalget. Skrives med latinske bokstaver (x̄, s).<br> <b>μ</b> (my) — populasjonsgjennomsnittet. <b>x̄</b> — utvalgsgjennomsnittet.<br> <b>σ</b> (sigma) — standardavviket i populasjonen. <b>s</b> — standardavviket i utvalget.<br> <b><i>SD</i>, standardavvik</b> — hvor spredt <i>personene</i> er om gjennomsnittet.<br> <b><i>SE</i>, standardfeil</b> — hvor spredt <i>estimatet</i> ville vært over gjentatte studier.<br> <b>Pult varians (s²<sub>p</sub>)</b> — de to gruppenes spredning slått sammen til ett anslag.<br> <b><i>df</i>, frihetsgrader</b> — antall verdier som fritt kan variere gitt det du allerede har estimert. For uavhengig <i>t</i>: n₁ + n₂ − 2.<br> <b><i>t</i></b> — forskjellen delt på standardfeilen. «Så mange standardfeil fra null.»<br> <b><i>p</i>-verdi</b> — hvor ofte tilfeldigheter alene gir et resultat minst så ekstremt som ditt, <i>gitt</i> at nullhypotesen er sann.<br> <b>α</b> (alfa) — grensen vi bestemte på forhånd, vanligvis .05.<br> <b>Cohens <i>d</i></b> — forskjellen målt i standardavvik.<br> <b>KI, konfidensintervall</b> — estimat ± kritisk verdi × <i>SE</i>.<br> <b>Levenes test</b> — tester om variansene er like.<br> <b>Welchs korreksjon</b> — <i>t</i>-test som ikke slår sammen variansene. Gir <i>df</i> med desimaler.<br> <b>Mann–Whitney</b> — rangbasert reserve når fordelingene er svært skjeve. </div>",
+  "Ikke la Levene bestemme",
+  "JASP, demo 1 · randomiseringssjekken",
+  "JASP, demo 2 · depresjon etter behandling",
+  "JASP, demo 3 · tre måneder etter",
+  "Unstandardized",
+  "Og ANOVA-tabellen under",
+  "<b>Ikke en <i>t</i>-test.</b> Tre grupper, ikke to. Kjører du tre <i>t</i>-tester, blåser du opp sjansen for falske funn — bruk enveis-ANOVA (Sim 22)."
+ ]
+}

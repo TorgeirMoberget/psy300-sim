@@ -1,8 +1,82 @@
 <!DOCTYPE html>
 <html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PSY300 · Sim 7 — P-verdien og det som truer den</title>
+<title>PSY300 · Sim 7 — <i>P</i>-verdien og det som truer den</title>
 <style>
 :root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+/* =====================================================================
+   PSY300 FARGEKODE — én betydning per farge, den samme i alle appene.
+   Poenget er at en student som har sett grønt over rødt i figuren, skal
+   kjenne igjen de samme fargene i JASP-tabellen og i den ferdige
+   setningen — og dermed se hvor hvert tall kommer fra.
+     grønn   variasjon MELLOM grupper · signal · det vi leter etter
+     rød     variasjon INNEN grupper · støy · residual
+     marine  teststatistikken (F, t, χ²) og frihetsgradene
+     lilla   p-verdien
+     rav     effektstørrelsen (η², ω², d, R²)
+     turkis  konfidensintervallet
+   ===================================================================== */
+:root{
+  --sig:#1E7A3C;    --sig-bg:#E7F4EA;    --sig-kant:#A9D6B6;
+  --stoy:#C0392B;   --stoy-bg:#FBEDEB;   --stoy-kant:#EEC3BD;
+  --tstat:#1F3864;  --tstat-bg:#E7ECF6;  --tstat-kant:#B9C8E2;
+  --pverdi:#7B3FA0; --pverdi-bg:#F3EAF8; --pverdi-kant:#D3BCE4;
+  --eff:#B26A00;    --eff-bg:#FDF2E2;    --eff-kant:#EBD0A6;
+  --ki:#0F6E7B;     --ki-bg:#E4F1F3;     --ki-kant:#AAD3D9;
+}
+.k-sig{color:var(--sig);font-weight:600}
+.k-stoy{color:var(--stoy);font-weight:600}
+.k-tstat{color:var(--tstat);font-weight:700}
+.k-p{color:var(--pverdi);font-weight:600}
+.k-eff{color:var(--eff);font-weight:600}
+.k-ki{color:var(--ki);font-weight:600}
+/* markert variant — brukes der et tall skal kunne spores fra tabell til setning */
+.m-sig,.m-stoy,.m-tstat,.m-p,.m-eff,.m-ki{border-radius:5px;padding:1px 5px;font-weight:600}
+.m-sig{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+.m-stoy{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+.m-tstat{background:var(--tstat-bg);color:var(--tstat);box-shadow:inset 0 0 0 1px var(--tstat-kant)}
+.m-p{background:var(--pverdi-bg);color:var(--pverdi);box-shadow:inset 0 0 0 1px var(--pverdi-kant)}
+.m-eff{background:var(--eff-bg);color:var(--eff);box-shadow:inset 0 0 0 1px var(--eff-kant)}
+.m-ki{background:var(--ki-bg);color:var(--ki);box-shadow:inset 0 0 0 1px var(--ki-kant)}
+
+/* ---- brøkfiguren: teller over streken, nevner under ---- */
+.brokfig{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 18px;
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 14px;margin:12px 0}
+.brokfig .brk{text-align:center;min-width:250px;flex:0 1 auto}
+.brokfig .tell,.brokfig .nevn{border-radius:8px;padding:8px 13px;font-size:15.5px;line-height:1.28}
+.brokfig .tell{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+.brokfig .nevn{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+.brokfig .strek{height:3px;background:#16203A;border-radius:2px;margin:6px 0}
+.brokfig .tall{display:block;font-size:23px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+.brokfig .lik{font-size:27px;color:#16203A;font-weight:600}
+.brokfig .res{font-size:17px;color:var(--tstat);text-align:center;line-height:1.3}
+.brokfig .res b{display:block;font-size:31px;font-weight:700;font-variant-numeric:tabular-nums}
+.brokfig .res .n{display:block;font-size:13.5px;color:#5C6A80;font-weight:400;margin-top:3px}
+.brokfig.smal .brk{min-width:210px}
+.brokfig.smal .tall{font-size:19px}
+.brokfig.smal .res b{font-size:25px}
+
+.stat.s-sig{background:var(--sig-bg);color:var(--sig)}
+.stat.s-stoy{background:var(--stoy-bg);color:var(--stoy)}
+.stat.s-tstat{background:var(--tstat-bg);color:var(--tstat)}
+.stat.s-p{background:var(--pverdi-bg);color:var(--pverdi)}
+.stat.s-eff{background:var(--eff-bg);color:var(--eff)}
+table.anova td.c-sig,table.tt td.c-sig{color:var(--sig);font-weight:700}
+table.anova td.c-stoy,table.tt td.c-stoy{color:var(--stoy);font-weight:700}
+table.anova td.c-tstat,table.tt td.c-tstat{color:var(--tstat);font-weight:700}
+table.anova td.c-p,table.tt td.c-p{color:var(--pverdi);font-weight:700}
+table.anova td.c-eff,table.tt td.c-eff{color:var(--eff);font-weight:700}
+/* ---- fargeforklaring ---- */
+.fargeliste{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:8px;margin-top:8px}
+.fargeliste div{border-radius:8px;padding:7px 11px;font-size:15px;line-height:1.35}
+.fargeliste b{display:block;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+
+/* ---- ANOVA-tabellen med fargede rader ---- */
+table.anova tr.r-sig td,table.tt tr.r-sig td{background:var(--sig-bg)}
+table.anova tr.r-stoy td,table.tt tr.r-stoy td{background:var(--stoy-bg)}
+table.anova tr.r-total td,table.tt tr.r-total td{color:#5F6A7E}
+table.anova tr.r-total td:first-child{font-weight:700}
+table.anova tr.r-sig td:first-child{color:var(--sig);font-weight:700}
+table.anova tr.r-stoy td:first-child{color:var(--stoy);font-weight:700}
 *{box-sizing:border-box}
 body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
 .wrap{max-width:1000px;margin:0 auto;padding:16px}
@@ -71,18 +145,171 @@ details.ordbok[open]>summary::before{content:"▾ "}
   font-family:inherit;cursor:pointer;color:#1F3864}
 .fane.on{background:#1F3864;color:#fff;border-color:#1F3864;font-weight:700}
 .hide{display:none}
-</style></head><body>
-<header><h1>Sim 7 · P-verdien og det som truer den</h1>
-<p>PSY300 · Forelesning 2 og 4 · Fire faner: hva p-verdien faktisk måler, hva den ikke fanger, og de to tingene som gjør den upålitelig i praksis — mange tester og selektiv publisering.</p></header>
+
+.hvbig{font-size:20px;line-height:1.45;color:#1F3864;font-weight:600;margin:2px 0 10px}
+.hvgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.hvkort{border-radius:10px;padding:11px 13px;font-size:16px;line-height:1.5}
+.hvkort h3{margin:0 0 6px;font-size:16.5px}
+.hvkort ul{margin:0;padding-left:18px}
+.hvkort li{margin-bottom:7px}
+.hver{background:#eaf6ea;border:1px solid #bcdcbc;border-left:5px solid #2E7D32}
+.hver h3{color:#1E5C22}
+.hvikke{background:#fbeceb;border:1px solid #edc9c5;border-left:5px solid #C0392B}
+.hvikke h3{color:#9B2D20}
+.eks{display:block;color:#5A6B7B;font-size:14.5px;margin-top:2px}
+.hvnaar{width:100%;border-collapse:collapse;font-size:15.5px;margin-top:8px}
+.hvnaar th{text-align:left;background:#eef2f8;border-bottom:2px solid #c7d6ec;padding:6px 8px;font-size:14.5px}
+.hvnaar td{border-bottom:1px solid #d9dee8;padding:6px 8px;vertical-align:top}
+.hvnaar tr.na{background:#eef3fb;font-weight:500}
+@media(max-width:760px){.hvgrid{grid-template-columns:1fr}}
+.ovkort{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ovlbl{font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5A6B7B}
+.ovhint{font-size:13.5px;color:#8b949e}
+.ovlenke{color:#2E5496;font-weight:600;cursor:pointer;text-decoration:underline}
+/* ---------- FANEHJELP ---------- */
+.fhboks{background:var(--card,#fff);border:1px solid var(--line,#d9dee8);
+  border-left:5px solid var(--blue,#2E5496);border-radius:12px;padding:16px;
+  margin:0 0 14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.fhlbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--navy,#1F3864);font-weight:700;margin:0 0 4px}
+.fhlbl.sek{margin-top:12px}
+.fhkort{font-size:16px;margin:0}
+.fhsteg{font-size:16px;margin:0;padding-left:22px}
+.fhsteg li{margin:0 0 3px}
+.fhsee{font-size:16px;margin:0}
+/* ---------- FANEHJELP slutt ---------- */
+</style>
+<style id="ovbegrep-css">
+.ovkort{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f6f8fa;
+ border:1px solid #dde3e8;border-left:5px solid #C8102E;border-radius:10px;
+ padding:10px 13px;margin:14px 0;font-size:15px}
+.ovkort .ovlbl{font-weight:700;color:#5B6670;letter-spacing:.02em;
+ text-transform:uppercase;font-size:11.5px}
+.ovkort a.ovlenke{display:inline-block;background:#fff;border:1px solid #c7d6ec;
+ border-radius:999px;padding:3px 11px;color:#174A6B;text-decoration:none;font-size:14.5px}
+.ovkort a.ovlenke:hover{background:#eef3fb;border-color:#8fb0d6}
+.ovkort .ovhint{color:#6B767D;font-size:13px}
+</style>
+</head><body>
+<header><h1>Sim 7 · <i>P</i>-verdien og det som truer den</h1>
+<p>PSY300 · Forelesning 2 og 4 · Fire faner: hva <i>p</i>-verdien faktisk måler, hva den ikke fanger, og de to tingene som gjør den upålitelig i praksis — mange tester og selektiv publisering.</p></header>
 <div class="wrap">
 <div class="rad" style="gap:6px;margin:2px 0 6px">
-<button class="fane on" data-fane="p">1 · Hva er en p-verdi?</button>
+<button class="fane on" data-fane="hvorfor">0 &middot; Hvorfor p-verdien?</button>
+<button class="fane" data-fane="p">1 · Hva er en <i>p</i>-verdi?</button>
 <button class="fane" data-fane="styrke">2 · Styrke og type II-feil</button>
 <button class="fane" data-fane="mange">3 · Mange tester</button>
 <button class="fane" data-fane="bias">4 · Publikasjonsskjevhet</button>
+<button class="fane" data-fane="overlapp">5 &middot; Kan du lese <i>p</i> av to konfidensintervaller?</button>
+<button class="fane" data-fane="bayes">6 &middot; Og hvis vi spurte motsatt? (Bayes)</button>
 </div>
 
-<div id="fane-p">
+<div id="fane-hvorfor">
+
+<div class="card">
+<h2>Spørsmålet denne appen svarer på</h2>
+<p class="hvbig">«Hvor overbevisende er dette funnet egentlig?»</p>
+<p style="font-size:16.5px;line-height:1.55"><i>P</i>-verdien er det mest brukte &mdash; og mest
+misbrukte &mdash; tallet i psykologien. Den er enkel å regne ut og lett å si feil. Denne appen
+bygger den opp fra bunnen ved å kjøre tusen studier om gangen, slik at du ser hva tallet faktisk
+gjør i stedet for å lære definisjonen utenat.</p>
+
+<p style="font-size:16.5px;line-height:1.55">Og den stopper ikke der. En <i>p</i>-verdi kan være
+teknisk korrekt og likevel villedende, fordi tre ting utenfor selve regnestykket avgjør hva den er
+verdt: <b>hvor stor studien var</b>, <b>hvor mange tester som ble kjørt</b>, og <b>hvilke resultater
+som faktisk ble publisert</b>. De tre er fanene 2, 3 og 4.</p>
+
+<div class="keybox"><span class="lbl">Sagt på &eacute;<i>n</i> linje</span>
+<b>En <i>p</i>-verdi sier hvor rare dataene er <i>gitt</i> at nullhypotesen stemmer. Den sier ikke
+hvor sannsynlig nullhypotesen er, og den sier ingenting om hvor stor effekten er.</b></div>
+
+<p style="font-size:16.5px;line-height:1.55">Det er denne ene forvekslingen de fleste feiltolkninger
+kommer fra. «<i>p</i> = .03, så det er 3 % sjanse for at jeg tar feil» er feil &mdash; og det er
+samme feil som å tro at en positiv test på en sjelden sykdom betyr at du har den. Sim 35, fane 4,
+viser den med tall.</p>
+</div>
+
+<div class="card">
+<h2>Hva en p-verdi forteller — og hva den ikke forteller</h2>
+<div class="hvgrid">
+<div class="hvkort hver"><h3>✓ Den forteller deg</h3><ul>
+<li><b>Hvor uvanlig resultatet er under H&#8320;.</b> «Hvor ofte ville slump alene laget noe minst
+så stort?»
+<span class="eks">Fane 1 bygger den opp fra tusen simulerte studier.</span></li>
+<li><b>Om du kan utelukke slump som eneste forklaring</b> &mdash; med den feilraten du selv har valgt
+med &alpha;.</li>
+<li><b>Noe mindre jo større utvalget er.</b> Med nok deltakere blir enhver forskjell signifikant,
+også de som er for små til å bety noe.
+<span class="eks">Prøv forhåndsinnstillingen «triviell effekt, gigantisk N» i fane 1.</span></li>
+</ul></div>
+<div class="hvkort hvikke"><h3>✗ Den forteller deg ikke</h3><ul>
+<li><b>Sannsynligheten for at hypotesen er sann.</b> <i>P</i>(data | H&#8320;) er ikke
+<i>P</i>(H&#8320; | data). Dette er den mest siterte feiltolkningen i faget.</li>
+<li><b>Hvor stor effekten er.</b> Det er effektstørrelsen &mdash; Cohens <i>d</i>, <i>r</i>, η².
+<i>P</i> og <i>d</i> svarer på helt ulike spørsmål.</li>
+<li><b>At det ikke finnes en effekt når <i>p</i> er stor.</b> Fravær av bevis er ikke bevis for
+fravær, og i en liten studie er stor <i>p</i> mest av alt et tegn på at studien var liten.
+<span class="eks">Fane 2.</span></li>
+<li><b>Hvor mange tester som ble kjørt før denne.</b> Tjue tester gir i snitt &eacute;<i>n</i>
+signifikant funn selv når ingenting er på ferde.
+<span class="eks">Fane 3.</span></li>
+<li><b>Om studien i det hele tatt ville blitt publisert med motsatt resultat.</b>
+<span class="eks">Fane 4.</span></li>
+</ul></div>
+</div>
+
+<div class="note" style="margin-top:12px"><b>Den viktigste av dem:</b> en <i>p</i>-verdi uten
+effektstørrelse og konfidensintervall er halvveis rapportering. «Signifikant» svarer bare på om
+slump kan utelukkes &mdash; ikke på om funnet betyr noe. Derfor krever APA begge deler, og derfor
+står effektstørrelse i hver eneste rapporteringsfane i de andre appene.</div>
+</div>
+
+<div class="card">
+<h2>Hvor dette dukker opp igjen</h2>
+<p style="font-size:16.5px;line-height:1.55">Hver test i emnet ender i en <i>p</i>-verdi, så dette
+er maskineriet under dem alle:</p>
+<table class="hvnaar">
+<tr><th>Der du møter det</th><th>Hva det bygger på herfra</th><th>Hvor</th></tr>
+<tr class="na"><td><b><i>P</i>-verdien, styrke, mange tester, publiseringsskjevhet</b></td><td>&nbsp;</td><td>denne appen</td></tr>
+<tr><td>Sannsynlighet og betinging</td><td><i>P</i>(data | H&#8320;) mot <i>P</i>(H&#8320; | data)</td><td>Sim 35, fane 4</td></tr>
+<tr><td>Nullfordelingen, sett med egne øyne</td><td>At <i>p</i> er jevnt fordelt under H&#8320;</td><td>Sim 28, fane 2</td></tr>
+<tr><td>Utvalgsfordeling og standardfeil</td><td>Halen <i>p</i> er regnet fra</td><td>Sim 3</td></tr>
+<tr><td>Signifikanstesting i <i>t</i>-testen</td><td>Samme logikk, konkret test</td><td>Sim 16, fane 6</td></tr>
+<tr><td>Post hoc og korreksjon etter ANOVA</td><td>Familievis feilrate</td><td>Sim 22, fane 5</td></tr>
+<tr><td>Hvorfor interaksjoner trenger store utvalg</td><td>Statistisk styrke</td><td>Sim 36</td></tr>
+<tr><td>Hypotesen må stå før dataene</td><td>Hvorfor HARKing ødelegger <i>p</i></td><td>Sim 37, fane 5</td></tr>
+</table>
+<div class="note" style="margin-top:12px"><b>Kjenn igjen mønsteret:</b> alt som truer
+<i>p</i>-verdien, handler om det samme &mdash; at tallet forutsetter &eacute;<i>n</i> planlagt test
+på &eacute;<i>tt</i> datasett. Kjører du flere, velger etterpå, eller ser bare de som ble publisert,
+er forutsetningen brutt, og tallet betyr ikke lenger det det ser ut til å bety.</div>
+</div>
+
+<div class="keybox"><span class="lbl">Klar for resten av appen?</span>
+<b>Ta med &eacute;<i>n</i> setning herfra: <i><i>P</i> sier hvor rare dataene er gitt H&#8320;
+&mdash; ikke hvor sannsynlig H&#8320; er, og ikke hvor stor effekten er.</i> Fane 1 bygger tallet.
+Fane 2, 3 og 4 viser de tre tingene som gjør det verdiløst.</b></div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B4">B4 p-verdien &rarr;</a><a class="ovlenke" data-begrep="B5">B5 Type I-feil, alfa og multiple tester &rarr;</a><a class="ovlenke" data-begrep="B6">B6 Statistisk styrke &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+<div id="fane-p" class="hide">
+<!-- FANEHJELP p -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Hver «studie» sammenligner to grupper der du selv bestemmer hvor stor den sanne forskjellen er. Appen kjører 1 000 slike studier og viser hva <i>p</i>-verdiene gjør.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «Nullverden (<i>d</i> = 0)» og så «Kjør 1 000 studier».</li>
+<li>Se på venstre figur: <i>p</i>-verdiene er jevnt fordelt, og 5 % er røde.</li>
+<li>Trykk «Moderat effekt (<i>d</i> = 0.5)» og kjør igjen.</li>
+<li>Sammenlign de to figurene: venstre viser <i>p</i>, høyre viser hvor stor forskjellen ble.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Når ingenting er sant, er hver tjuende studie likevel signifikant — det er <i>α</i>. Og de røde studiene i høyre figur ligger ute i halen, ikke i midten: en studie blir signifikant nettopp når den tilfeldigvis traff en stor forskjell.</p>
+</div>
+<!-- /FANEHJELP p -->
+
 <div class="card">
 <button class="tabbtn on" id="tabA">P-verdimaskinen (F2)</button>
 <button class="tabbtn" id="tabB">Råforskjell vs. støy (F4)</button>
@@ -91,36 +318,65 @@ details.ordbok[open]>summary::before{content:"▾ "}
 <div id="modeA">
 <div class="card">
 <h2>Verden vi simulerer</h2>
-<p class="muted">Hver «studie» sammenligner to grupper (terapi vs. venteliste) med en <b>sann</b> effektstørrelse d som du bestemmer. Vi kjører t-tester på 1 000 slike studier og ser hva p-verdiene gjør.</p>
-<div class="sl"><label>Sann effektstørrelse d</label><input type="range" id="d" min="0" max="1.5" step="0.05" value="0"><output id="dOut">d = 0,00</output></div>
-<div class="sl"><label>n per gruppe</label><input type="range" id="n" min="0" max="100" value="35"><output id="nOut">n = 38</output></div>
+<p class="muted">Hver «studie» sammenligner to grupper (terapi vs. venteliste) med en <b>sann</b> effektstørrelse <i>d</i> som du bestemmer. Vi kjører <i>t</i>-tester på 1 000 slike studier og ser hva <i>p</i>-verdiene gjør.</p>
+<div class="sl"><label>Sann effektstørrelse <i>d</i></label><input type="range" id="d" min="0" max="1.5" step="0.05" value="0"><output id="dOut"><i>d</i> = 0.00</output></div>
+<div class="sl"><label><i>n</i> per gruppe</label><input type="range" id="n" min="0" max="100" value="35"><output id="nOut"><i>n</i> = 38</output></div>
 <div class="sl"><label>Signifikansnivå α</label>
-<select id="alpha"><option value="0.05" selected>0,05</option><option value="0.01">0,01</option><option value="0.10">0,10</option></select>
+<select id="alpha"><option value="0.05" selected>0.05</option><option value="0.01">0.01</option><option value="0.10">0.10</option></select>
 <span class="muted">Forhåndsinnstillinger:</span>
-<button class="btn2" id="pNull">Nullverden (d = 0)</button>
-<button class="btn2" id="pTiny">Triviell effekt, gigantisk N</button>
-<button class="btn2" id="pMod">Moderat effekt (d = 0,5)</button>
+<button class="btn2" id="pNull">Nullverden (<i>d</i> = 0)</button>
+<button class="btn2" id="pTiny">Triviell effekt, gigantisk <i>N</i></button>
+<button class="btn2" id="pMod">Moderat effekt (<i>d</i> = 0.5)</button>
 </div>
 <button class="btn" id="run">Kjør 1 000 studier</button>
 <button class="btn2" id="run1">Kjør 1 studie</button>
 </div>
 
-<div class="grid">
 <div class="card">
 <h2>De to populasjonene</h2>
-<p class="muted">Slik ser den sanne forskjellen ut «i virkeligheten». Legg merke til overlappen ved små d.</p>
+<p class="muted">Slik ser den sanne forskjellen ut «i virkeligheten». Legg merke til overlappen ved små <i>d</i>.</p>
 <canvas id="cvPop" height="170"></canvas>
-<div id="oneStudy" class="muted" style="margin-top:6px">Kjør 1 studie for å se én enkelt t-test.</div>
+<div id="oneStudy" class="muted" style="margin-top:6px">Kjør 1 studie for å se én enkelt <i>t</i>-test.</div>
 </div>
+
+<!-- SIM7-EFFEKT: de to fordelingene står side om side, på de samme 1 000
+     studiene og med samme fargekode. Det er sammenligningen som er poenget. -->
+<div class="grid">
 <div class="card">
-<h2>1 000 p-verdier</h2>
-<p class="muted">Røde søyler = p &lt; α («signifikant»).</p>
+<h2>1 000 <i>p</i>-verdier</h2>
+<p class="muted">Røde søyler = <i>p</i> &lt; α («signifikant»).</p>
 <canvas id="cvP" height="170"></canvas>
 <div id="pStats" class="muted">Ikke kjørt ennå.</div>
 </div>
+<div class="card">
+<h2>De samme 1 000 studienes <i>d̂</i></h2>
+<p class="muted">Samme studier, samme farge: rødt er de som ble signifikante.</p>
+<canvas id="cvD" height="170"></canvas>
+<div id="dStats" class="muted">Ikke kjørt ennå.</div>
+</div>
 </div>
 
-<div class="card note" id="verdict"><b>Hva skal du se?</b> Med d = 0 er p-verdiene <b>uniforme</b>: omtrent 5 % havner under 0,05 uansett. Det er type I-feilraten. Alle «funn» i nullverdenen er falske positiver. Skru så opp d eller n og se andelen signifikante stige. Det er <b>statistisk styrke</b>. Prøv til slutt «Triviell effekt, gigantisk N»: nesten alt blir signifikant selv om d = 0,1 er uten praktisk betydning.</div>
+<div class="keybox" id="effektBoks"><span class="lbl">De to figurene svarer på ulike spørsmål</span>
+<b>Venstre figur sier om slump kan utelukkes. Høyre sier hvor stor forskjellen er.
+Kjør studiene, og se at det ene tallet kan være lite mens det andre er det også.</b></div>
+
+<details class="mer"><summary>Mer om dette: hvorfor de røde ligger i halen</summary>
+<div>
+<p>Legg merke til <i>hvor</i> de røde søylene står i høyre figur: ute i halen, ikke i
+midten. Det er ingen tilfeldighet. En studie blir signifikant nettopp når den
+tilfeldigvis traff et stort <i>d̂</i> — så utvalget av studier som passerer
+&alpha;-filteret, er systematisk de som overdriver.</p>
+<p>Det kalles <b>vinnerens forbannelse</b> (<i>winner's curse</i>), og den er verst når
+styrken er lav: med <i>d</i> = 0.3 og <i>n</i> = 38 per gruppe finner du effekten i
+bare rundt en fjerdedel av studiene, og de som finner den, rapporterer i snitt
+omtrent <b>det dobbelte</b> av den sanne effekten. Med god styrke krymper
+overdrivelsen mot null.</p>
+<p>Konsekvensen for lesing av litteratur: den publiserte effektstørrelsen i et felt
+med små studier er et <b>øvre</b> anslag. Fane 2 viser styrkesiden av det samme, og
+fane 4 hva som skjer når bare de signifikante blir publisert.</p>
+</div></details>
+
+<div class="card note" id="verdict"><b>Hva skal du se?</b> Med <i>d</i> = 0 er <i>p</i>-verdiene <b>uniforme</b>: omtrent 5 % havner under 0.05 uansett. Det er type I-feilraten. Alle «funn» i nullverdenen er falske positiver. Skru så opp <i>d</i> eller <i>n</i> og se andelen signifikante stige. Det er <b>statistisk styrke</b>. Prøv til slutt «Triviell effekt, gigantisk <i>N</i>»: nesten alt blir signifikant selv om <i>d</i> = 0.1 er uten praktisk betydning.</div>
 </div>
 
 <!-- ============ FANE B: Råforskjell vs. støy (Forelesning 4) ============ -->
@@ -128,32 +384,50 @@ details.ordbok[open]>summary::before{content:"▾ "}
 <div class="card">
 <h2>Samme råforskjell. Hva er den verdt?</h2>
 <p class="muted">Gjennomsnittsforskjellen mellom terapi og venteliste holdes <b>fast</b>. Det eneste du endrer er <b>innengruppe-SD</b>, altså spredningen blant pasientene innen hver gruppe.</p>
-<div class="sl"><label>Råforskjell mellom gruppene (poeng)</label><input type="range" id="raw" min="0" max="10" step="0.5" value="5"><output id="rawOut">5,0</output></div>
-<div class="sl"><label>Innengruppe-SD</label><input type="range" id="sdw" min="2" max="15" step="0.5" value="6"><output id="sdwOut">6,0</output></div>
-<div class="sl"><label>n per gruppe</label><input type="range" id="nRaw" min="10" max="200" step="1" value="38"><output id="nRawOut">38</output></div>
+<div class="sl"><label>Råforskjell mellom gruppene (poeng)</label><input type="range" id="raw" min="0" max="10" step="0.5" value="5"><output id="rawOut">5.0</output></div>
+<div class="sl"><label>Innengruppe-SD</label><input type="range" id="sdw" min="2" max="15" step="0.5" value="6"><output id="sdwOut">6.0</output></div>
+<div class="sl"><label><i>n</i> per gruppe</label><input type="range" id="nRaw" min="10" max="200" step="1" value="38"><output id="nRawOut">38</output></div>
 <button class="btn" id="oneB">Kjør 1 studie</button>
 <button class="btn" id="powB">Kjør 1 000 studier (styrke)</button>
 </div>
-<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>p-verdien svarer på ett spørsmål: hvor rart er dette resultatet hvis H₀ er sann? Den sier ingenting om hvor stor effekten er, og ingenting om sannsynligheten for at H₀ er sann.</b></div></div>
+<div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b><i>p</i>-verdien svarer på ett spørsmål: hvor rart er dette resultatet hvis H₀ er sann? Den sier ingenting om hvor stor effekten er, og ingenting om sannsynligheten for at H₀ er sann.</b></div></div>
 
 <div class="card">
 <h2>De to gruppene (skravert = overlapp)</h2>
 <canvas id="cvRaw" height="200"></canvas>
 <div id="statsRaw" class="muted"></div>
 </div>
-<div class="card note"><b>Poenget:</b> Råforskjellen står bom stille, men d, t, p og styrken endres når du skrur på innengruppe-SD. Både signifikans og effektstørrelse måles i <b>støyenheter</b>: d = forskjell/SD. Derfor kan du kjøpe styrke ved å <i>redusere støy</i> (reliable mål, homogene utvalg, paret design), ikke bare ved å øke n. Denne nevneren er nøyaktig det som blir «varians innen grupper» i ANOVA (forelesning 5), og t-testens brøk er F-forholdet i miniatyr: F = t².</div>
+<div class="card note"><b>Poenget:</b> Råforskjellen står bom stille, men <i>d</i>, <i>t</i>, <i>p</i> og styrken endres når du skrur på innengruppe-SD. Både signifikans og effektstørrelse måles i <b>støyenheter</b>: <i>d</i> = forskjell/SD. Derfor kan du kjøpe styrke ved å <i>redusere støy</i> (reliable mål, homogene utvalg, paret design), ikke bare ved å øke <i>n</i>. Denne nevneren er nøyaktig det som blir «varians innen grupper» i ANOVA (forelesning 5), og t-testens brøk er F-forholdet i miniatyr: <i>F</i> = <i>t</i>².</div>
 </div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B4">B4 p-verdien &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-p -->
 
 <div id="fane-styrke" class="hide">
+<!-- FANEHJELP styrke -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Styrke er sjansen for å finne en effekt som faktisk finnes. Den avhenger av hvor stor effekten er, hvor mange deltakere du har, og hvilket <i>α</i> du bruker — ingenting annet.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «Typisk liten psykologistudie» og les styrken.</li>
+<li>Dra <i>n</i>-skyveren oppover og se det grå arealet krympe.</li>
+<li>Gå til «B · Styrkekurven» og finn hvor kurven krysser 80 %.</li>
+<li>Gå til «C · Vinnerens forbannelse» og trykk «Kjør 2 000 studier».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Styrken stiger bratt i starten og flater ut — de siste prosentene er dyre. Og i panel C: når styrken er lav, overdriver de signifikante studiene effekten systematisk, fordi bare de heldige slipper gjennom.</p>
+</div>
+<!-- /FANEHJELP styrke -->
+
 <div class="card">
 <h2>Studien din</h2>
-<p class="muted">To grupper (f.eks. terapi mot venteliste) med like mange deltakere i hver. Du setter <b>den sanne effektstørrelsen</b> (Cohens d) og <b>n per gruppe</b>. Alt annet følger av matematikken.</p>
-<div class="sl"><label>Sann effektstørrelse (Cohens d)</label><input type="range" id="dST" min="0.05" max="2" step="0.05" value="0.4"><output id="do">0,40</output></div>
-<div class="sl"><label>n per gruppe</label><input type="range" id="nST" min="5" max="300" step="5" value="30"><output id="no">30</output></div>
-<div class="sl"><label>Signifikansnivå α</label><input type="range" id="al" min="0.001" max="0.10" step="0.001" value="0.05"><output id="alo">0,050</output></div>
-<button class="btn2" id="small">Typisk liten psykologistudie (d = ,40 · n = 20)</button>
-<button class="btn2" id="istdp">Terapi-RCT-studien (d ≈ 1,7 · n = 45)</button>
+<p class="muted">To grupper (f.eks. terapi mot venteliste) med like mange deltakere i hver. Du setter <b>den sanne effektstørrelsen</b> (Cohens <i>d</i>) og <b><i>n</i> per gruppe</b>. Alt annet følger av matematikken.</p>
+<div class="sl"><label>Sann effektstørrelse (Cohens <i>d</i>)</label><input type="range" id="dST" min="0.05" max="2" step="0.05" value="0.4"><output id="do">0.40</output></div>
+<div class="sl"><label><i>n</i> per gruppe</label><input type="range" id="nST" min="5" max="300" step="5" value="30"><output id="no">30</output></div>
+<div class="sl"><label>Signifikansnivå α</label><input type="range" id="al" min="0.001" max="0.10" step="0.001" value="0.05"><output id="alo">0.050</output></div>
+<button class="btn2" id="small">Typisk liten psykologistudie (<i>d</i> = .40 · <i>n</i> = 20)</button>
+<button class="btn2" id="istdp">Terapi-RCT-studien (<i>d</i> ≈ 1.7 · <i>n</i> = 45)</button>
 <div id="statsTop" style="margin-top:8px"></div>
 </div>
 
@@ -166,7 +440,7 @@ details.ordbok[open]>summary::before{content:"▾ "}
 <div id="paneA">
 <div class="card" style="border-top-left-radius:0">
 <h2>Der α og β bor</h2>
-<p class="muted">Begge kurvene viser hva du kan få ut av studien din, den <b>blå</b> hvis nullhypotesen er sann (ingen effekt), den <b>grønne</b> hvis din sanne d gjelder. Den røde streken er beslutningsgrensen: alt til høyre kalles «signifikant». <b>Rødt areal</b> = α, sjansen for å rope ulv når det ikke er noen ulv (type I-feil). <b>Grått areal</b> = β, sjansen for å overse en effekt som faktisk finnes (type II-feil). <b>Styrken</b> er det grønne arealet: 1 − β.</p>
+<p class="muted">Begge kurvene viser hva du kan få ut av studien din, den <b>blå</b> hvis nullhypotesen er sann (ingen effekt), den <b>grønne</b> hvis din sanne <i>d</i> gjelder. Den røde streken er beslutningsgrensen: alt til høyre kalles «signifikant». <b>Rødt areal</b> = α, sjansen for å rope ulv når det ikke er noen ulv (type I-feil). <b>Grått areal</b> = β, sjansen for å overse en effekt som faktisk finnes (type II-feil). <b>Styrken</b> er det grønne arealet: 1 − β.</p>
 <canvas id="cvA" height="270"></canvas>
 <div id="statsA"></div>
 <div class="note" id="verdictA"></div>
@@ -175,8 +449,8 @@ details.ordbok[open]>summary::before{content:"▾ "}
 
 <div id="paneB" style="display:none">
 <div class="card" style="border-top-left-radius:0">
-<h2>Styrke som funksjon av n</h2>
-<p class="muted">Kurven gjelder din sanne d og din α. Den grønne streken er konvensjonen om <b>80 % styrke</b>; den røde prikken er studien din. Legg merke til formen: styrken stiger bratt i starten og flater ut, de siste prosentene er dyre.</p>
+<h2>Styrke som funksjon av <i>n</i></h2>
+<p class="muted">Kurven gjelder din sanne <i>d</i> og din α. Den grønne streken er konvensjonen om <b>80 % styrke</b>; den røde prikken er studien din. Legg merke til formen: styrken stiger bratt i starten og flater ut, de siste prosentene er dyre.</p>
 <canvas id="cvB" height="250"></canvas>
 <div id="statsB"></div>
 <div class="note" id="verdictB"></div>
@@ -186,7 +460,7 @@ details.ordbok[open]>summary::before{content:"▾ "}
 <div id="paneC" style="display:none">
 <div class="card" style="border-top-left-radius:0">
 <h2>Vinnerens forbannelse: hva de signifikante studiene rapporterer</h2>
-<p class="muted">Her kjører vi mange studier i den samme sanne verdenen og ser på <b>observert</b> d i hver. Grå søyler = alle studiene; røde søyler = de som ble signifikante og dermed havner i litteraturen. Den grønne streken er sannheten.</p>
+<p class="muted">Her kjører vi mange studier i den samme sanne verdenen og ser på <b>observert</b> <i>d</i> i hver. Grå søyler = alle studiene; røde søyler = de som ble signifikante og dermed havner i litteraturen. Den grønne streken er sannheten.</p>
 <button class="btn" id="runST">Kjør 2 000 studier</button>
 <canvas id="cvC" height="260"></canvas>
 <div id="statsC"></div>
@@ -199,18 +473,36 @@ details.ordbok[open]>summary::before{content:"▾ "}
 <div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>Styrke er noe du <b>kjøper</b> med deltakere, mens type I-raten er noe du <b>velger</b>. En liten studie som likevel blir signifikant, overdriver nesten alltid effekten. Det er derfor pilotfunn så sjelden lar seg replikere.</b></div></div>
 <div class="card">
 <h2>Slik leser du det</h2>
-<div class="note"><b>Prøv dette:</b> (1) Sett d = 0,40 (en helt vanlig effekt i psykologi) og n = 20 per gruppe: styrken er bare rundt 24 %. Studien har altså tre av fire sjanser til å <b>ikke</b> finne en effekt som faktisk finnes, og pengene er brukt uansett. (2) Se på fane C med de samme innstillingene: de signifikante studiene rapporterer i snitt en d som er to–tre ganger for stor. Ingen har jukset; det er bare de heldigste utvalgene som passerer terskelen. Dette er hovedgrunnen til at små, «signifikante» pilotfunn ofte ikke lar seg replikere. (3) Dra n oppover og se overdrivelsen forsvinne: med god styrke ligner de signifikante studiene på sannheten. (4) Merk at α-arealet ikke endrer seg når du endrer n. Type I-raten er noe du <b>velger</b>, mens styrken er noe du <b>kjøper</b> med deltakere.</div>
-<div class="note"><b>Til artikkelen:</b> en styrkeberegning gjøres <i>før</i> datainnsamling og svarer på «hvor mange deltakere trenger jeg for å ha 80 % sjanse til å oppdage den minste effekten jeg bryr meg om?». Å regne ut styrken <i>etterpå</i>, basert på effekten du faktisk fant («observert styrke»), gir ingen ny informasjon, den er bare en omregning av p-verdien din.</div>
+<div class="note"><b>Prøv dette:</b> (1) Sett <i>d</i> = 0.40 (en helt vanlig effekt i psykologi) og <i>n</i> = 20 per gruppe: styrken er bare rundt 24 %. Studien har altså tre av fire sjanser til å <b>ikke</b> finne en effekt som faktisk finnes, og pengene er brukt uansett. (2) Se på fane C med de samme innstillingene: de signifikante studiene rapporterer i snitt en <i>d</i> som er to–tre ganger for stor. Ingen har jukset; det er bare de heldigste utvalgene som passerer terskelen. Dette er hovedgrunnen til at små, «signifikante» pilotfunn ofte ikke lar seg replikere. (3) Dra <i>n</i> oppover og se overdrivelsen forsvinne: med god styrke ligner de signifikante studiene på sannheten. (4) Merk at α-arealet ikke endrer seg når du endrer <i>n</i>. Type I-raten er noe du <b>velger</b>, mens styrken er noe du <b>kjøper</b> med deltakere.</div>
+<div class="note"><b>Til artikkelen:</b> en styrkeberegning gjøres <i>før</i> datainnsamling og svarer på «hvor mange deltakere trenger jeg for å ha 80 % sjanse til å oppdage den minste effekten jeg bryr meg om?». Å regne ut styrken <i>etterpå</i>, basert på effekten du faktisk fant («observert styrke»), gir ingen ny informasjon, den er bare en omregning av <i>p</i>-verdien din.</div>
 </div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B6">B6 Statistisk styrke og type II-feil &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-styrke -->
 
 <div id="fane-mange" class="hide">
+<!-- FANEHJELP mange -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">En «familie» er én studie som kjører flere tester. Alle nullhypotesene er sanne her, så enhver signifikans er en falsk positiv.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>La <i>k</i> stå på 3 og trykk «Kjør én familie» noen ganger.</li>
+<li>Trykk «Kjør 1 000 familier» og les raten.</li>
+<li>Dra <i>k</i> opp til 10 og kjør igjen.</li>
+<li>Slå på Bonferroni og kjør en tredje gang.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Feilraten gjelder per test, ikke per studie: med tre tester er sjansen for minst én falsk positiv allerede rundt 14 %, med ti rundt 40 %. Bonferroni tar den tilbake til 5 % — og prisen er lavere styrke per test.</p>
+</div>
+<!-- /FANEHJELP mange -->
+
 <div class="card">
 <h2>Oppsett</h2>
 <p class="muted">En «familie» er én studie som kjører k tester (f.eks. alle parvise sammenligninger). <b>Alle nullhypoteser er sanne</b>, enhver «oppdagelse» er en falsk positiv.</p>
 <div class="sl"><label>Antall tester i familien k</label><input type="range" id="k" min="1" max="20" value="3"><output id="kOut">3</output>
 <label style="min-width:auto">Korreksjon:</label>
-<select id="corr"><option value="none" selected>Ingen (α = 0,05 per test)</option><option value="bonf">Bonferroni (α = 0,05/k)</option></select>
+<select id="corr"><option value="none" selected>Ingen (α = 0.05 per test)</option><option value="bonf">Bonferroni (α = 0.05/k)</option></select>
 </div>
 <button class="btn" id="one">Kjør én familie</button>
 <button class="btn" id="many">Kjør 1 000 familier</button>
@@ -218,7 +510,7 @@ details.ordbok[open]>summary::before{content:"▾ "}
 </div>
 
 <div class="card">
-<h2>Én familie: k p-verdier (rød = «signifikant» = falsk positiv)</h2>
+<h2>Én familie: k <i>p</i>-verdier (rød = «signifikant» = falsk positiv)</h2>
 <div class="cells" id="cells"><span class="muted">Trykk «Kjør én familie».</span></div>
 <div id="famOut" class="muted" style="margin-top:6px"></div>
 </div>
@@ -232,10 +524,10 @@ details.ordbok[open]>summary::before{content:"▾ "}
 <div id="simOut" class="muted"></div>
 </div>
 
-<div class="card note"><b>Poenget:</b> Med k = 3 tester er sjansen for minst én falsk positiv allerede ≈ 14 %; med k = 10 er den ≈ 40 %. Det er derfor vi bruker <b>én</b> ANOVA i stedet for mange t-tester, og derfor post hoc-tester korrigerer α. Slå på Bonferroni og se raten falle tilbake til ≈ 5 %. Prisen er lavere styrke per test.</div>
+<div class="card note"><b>Poenget:</b> Med k = 3 tester er sjansen for minst én falsk positiv allerede ≈ 14 %; med k = 10 er den ≈ 40 %. Det er derfor vi bruker <b>én</b> ANOVA i stedet for mange <i>t</i>-tester, og derfor post hoc-tester korrigerer α. Slå på Bonferroni og se raten falle tilbake til ≈ 5 %. Prisen er lavere styrke per test.</div>
 <div class="card">
-<h2>Din studie (n = 50, to grupper, ingen sanne effekter)</h2>
-<p class="muted">Du har samlet inn data og hovedanalysen ble ikke signifikant. Men du har jo … valgmuligheter. Hvert klikk er en beslutning ekte forskere kan ta: hver av dem er en ny loddtrekning med α = ,05.</p>
+<h2>Din studie (<i>n</i> = 50, to grupper, ingen sanne effekter)</h2>
+<p class="muted">Du har samlet inn data og hovedanalysen ble ikke signifikant. Men du har jo … valgmuligheter. Hvert klikk er en beslutning ekte forskere kan ta: hver av dem er en ny loddtrekning med α = .05.</p>
 <button class="btn" id="b0">Test hovedutfallet</button>
 <button class="btn2" id="b1">Prøv de 3 andre utfallsmålene</button>
 <button class="btn2" id="b2">Del opp etter kjønn (2 undergrupper)</button>
@@ -245,7 +537,7 @@ details.ordbok[open]>summary::before{content:"▾ "}
 <button class="btn" id="resetPH" style="background:#62708a">Ny studie (nullstill)</button>
 <div style="margin-top:10px">
 <span class="stat">analyser prøvd: <span class="big" id="ntest">0</span></span>
-<span class="stat" id="expect">forventede falske positiver så langt: 0,0</span>
+<span class="stat" id="expect">forventede falske positiver så langt: 0.0</span>
 </div>
 <div class="pub" id="pub">🎉 «SIGNIFIKANT»! Skriv artikkelen! … eller? Du fant den i en verden der ingenting er sant. Dette er en falsk positiv du selv har produsert.</div>
 </div>
@@ -253,13 +545,30 @@ details.ordbok[open]>summary::before{content:"▾ "}
 <div class="card"><div class="keybox"><span class="lbl">Hovedpoenget</span><b>Med nok valgfrihet i analysen finner du «signifikante» funn i data der ingenting finnes. Det er derfor det teller hva du bestemte <i>før</i> du så dataene. Forhåndsregistrering er ikke byråkrati, det er den eneste kuren.</b></div></div>
 
 <div class="card">
-<h2>Analyselogg (rødt = p &lt; ,05 = falsk positiv)</h2>
+<h2>Analyselogg (rødt = <i>p</i> &lt; .05 = falsk positiv)</h2>
 <div class="log" id="log"><span class="muted">Ingen analyser ennå.</span></div>
-<div class="note"><b>Poenget:</b> α = ,05 gjelder ÉN forhåndsbestemt test. «Forskerens frihetsgrader» (utfall, undergrupper, utliggere, kovariater, valgfri stopping) gjør den reelle feilraten mye høyere, uten at noen bevisst jukser. Etter ~20 forsøk er sjansen for minst én «oppdagelse» ≈ 64 %. Motgift: forhåndsregistrering, skille mellom planlagte og utforskende analyser, og å rapportere ALT man prøvde. (Jf. Sim 19: dette er familievis feil i naturlig habitat.)</div>
+<div class="note"><b>Poenget:</b> α = .05 gjelder ÉN forhåndsbestemt test. «Forskerens frihetsgrader» (utfall, undergrupper, utliggere, kovariater, valgfri stopping) gjør den reelle feilraten mye høyere, uten at noen bevisst jukser. Etter ~20 forsøk er sjansen for minst én «oppdagelse» ≈ 64 %. Motgift: forhåndsregistrering, skille mellom planlagte og utforskende analyser, og å rapportere ALT man prøvde. (Jf. familievis feil i samme fane: dette er den samme mekanismen i naturlig habitat.)</div>
 </div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B5">B5 Type I-feil, alfa og multiple tester &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-mange -->
 
 <div id="fane-bias" class="hide">
+<!-- FANEHJELP bias -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Tre måter et resultat kan bli galt på uten at noe er regnet feil: hvem som melder seg, hvem som faller fra, og hva som blir publisert.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>I «A · Seleksjonsbias»: dra skyveren og trykk «Trekk utvalg» flere ganger.</li>
+<li>Gå til «B · Frafall», dra frafallet opp og trykk «Kjør 1 000 studier».</li>
+<li>Gå til «C · Publikasjonsbias», sett sann effekt til 0 og trykk «Kjør 100 studier».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">I alle tre tilfellene er regnestykket riktig og svaret likevel feil. Og merk at mer data ikke hjelper: du estimerer da bare mer presist feil tall. Dette er designproblemer, ikke statistikkproblemer.</p>
+</div>
+<!-- /FANEHJELP bias -->
+
 <div class="card">
 <button class="tab on" id="tabS">A · Seleksjonsbias</button>
 <button class="tab" id="tabF">B · Frafall i en RCT</button>
@@ -272,7 +581,7 @@ details.ordbok[open]>summary::before{content:"▾ "}
 <p class="muted">Populasjonen (grå) har sann gjennomsnittlig statistikkangst = <b>50</b>. Men sannsynligheten for å delta i studien din kan avhenge av angstnivået, de mest engstelige unngår kanskje en «statistikkstudie» (eller oppsøker den!).</p>
 <div class="sl"><label>Deltakelse avhenger av angst</label><input type="range" id="sel" min="-100" max="100" value="0"><output id="selOut">0</output></div>
 <p class="muted">← engstelige unngår studien · 0 = tilfeldig utvalg · engstelige oppsøker studien →</p>
-<button class="btn" id="runS">Trekk utvalg (n = 100)</button>
+<button class="btn" id="runS">Trekk utvalg (<i>n</i> = 100)</button>
 <canvas id="cvS" height="220"></canvas>
 <div id="outS"></div>
 <div class="note"><b>Poenget:</b> utvalgsgjennomsnittet er en <i>forventningsskjev</i> estimator når deltakelsen henger sammen med det du måler, og mer data hjelper ikke: du estimerer presist feil tall. Tilfeldig utvalg er en <i>design</i>-egenskap, ikke noe statistikken kan reparere i etterkant.</div>
@@ -287,7 +596,7 @@ details.ordbok[open]>summary::before{content:"▾ "}
 <button class="btn" id="runF">Kjør 1 000 studier</button>
 <canvas id="cvF" height="200"></canvas>
 <div id="outF"></div>
-<div class="note"><b>Poenget:</b> med differensielt frafall ser kompletterer-analysen en «effekt» som ikke finnes, de som ble igjen i tiltaksgruppen, er de som tilfeldigvis bedret seg. Derfor er intention-to-treat-prinsippet og frafallsrapportering (CONSORT) obligatorisk i ekte RCT-er. <b>I terapistudien vår:</b> 7 av 43 falt fra i ISTDP-gruppen mot 4 av 43 på venteliste (χ² = 0,94, p = ,333), og de som falt fra lignet fullførerne ved baseline. Det er dét man må vise, ikke bare anta.</div>
+<div class="note"><b>Poenget:</b> med differensielt frafall ser kompletterer-analysen en «effekt» som ikke finnes, de som ble igjen i tiltaksgruppen, er de som tilfeldigvis bedret seg. Derfor er intention-to-treat-prinsippet og frafallsrapportering (CONSORT) obligatorisk i ekte RCT-er. <b>I terapistudien vår:</b> 7 av 43 falt fra i ISTDP-gruppen mot 4 av 43 på venteliste (χ² = 0.94, <i>p</i> = .333), og de som falt fra lignet fullførerne ved baseline. Det er dét man må vise, ikke bare anta.</div>
 </div>
 </div>
 
@@ -296,40 +605,245 @@ details.ordbok[open]>summary::before{content:"▾ "}
 
 <div class="card">
 <h2>Bare «signifikante» funn publiseres</h2>
-<p class="muted">100 laboratorier studerer nøyaktig samme effekt (velg sann d under, gjerne 0) med n = 40 per gruppe. Tidsskriftene trykker bare p &lt; ,05.</p>
-<div class="sl"><label>Sann effekt (Cohens d)</label><input type="range" id="trued" min="0" max="0.8" step="0.1" value="0"><output id="dOutBI">0,0</output></div>
+<p class="muted">100 laboratorier studerer nøyaktig samme effekt (velg sann <i>d</i> under, gjerne 0) med <i>n</i> = 40 per gruppe. Tidsskriftene trykker bare <i>p</i> &lt; .05.</p>
+<div class="sl"><label>Sann effekt (Cohens <i>d</i>)</label><input type="range" id="trued" min="0" max="0.8" step="0.1" value="0"><output id="dOutBI">0.0</output></div>
 <button class="btn" id="runP">Kjør 100 studier</button>
 <canvas id="cvPBI" height="240"></canvas>
 <div id="outP"></div>
-<div class="note"><b>Poenget:</b> gjennomsnittet av <i>publiserte</i> effekter overdriver alltid sannheten, dramatisk når sann d er liten. Litteraturen du leser er et selektert utvalg av alle studier som ble kjørt. (Dette er også hvorfor replikasjoner «skuffer».)</div>
+<div class="note"><b>Poenget:</b> gjennomsnittet av <i>publiserte</i> effekter overdriver alltid sannheten, dramatisk når sann <i>d</i> er liten. Litteraturen du leser er et selektert utvalg av alle studier som ble kjørt. (Dette er også hvorfor replikasjoner «skuffer».)</div>
 </div>
 </div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B5">B5 Type I-feil, alfa og multiple tester &rarr;</a> <a class="ovlenke" data-begrep="B6">B6 Statistisk styrke og type II-feil &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-bias -->
+
+<div id="fane-overlapp" class="hide">
+<!-- FANEHJELP overlapp -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">To gjennomsnitt med hvert sitt 95 %-intervall, og intervallene overlapper litt. Er forskjellen signifikant? De fleste svarer nei — og de fleste tar feil.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Gjett først, før du drar i noe.</li>
+<li>Dra «Gjennomsnitt i gruppe B» nedover til <i>p</i> akkurat passerer .05.</li>
+<li>Se hvor mye intervallene fortsatt overlapper i det øyeblikket.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">To 95 %-intervaller kan overlappe med omtrent halve armen og likevel gi <i>p</i> ≈ .05. Overlapper de mindre enn det, er <i>p</i> allerede under .05 — og regelen gjelder bare for uavhengige grupper.</p>
+</div>
+<!-- /FANEHJELP overlapp -->
+
+
+<div class="card">
+<h2>Den vanligste feillesingen av en figur med feilfelt</h2>
+<p>To gjennomsnitt med hvert sitt 95&nbsp;% konfidensintervall. Intervallene overlapper
+litt. Er forskjellen signifikant?</p>
+<p>De fleste svarer nei. Belia, Fidler, Williams og Cumming (2005) spurte 473 forskere i
+psykologi, medisin og atferdsbiologi &mdash; publiserte forfattere, ikke studenter. De aller
+fleste plasserte intervallene feil, og nesten alle i <b>samme retning</b>: de trodde det
+skulle mye mindre overlapp til enn det faktisk gj&oslash;r.</p>
+<div class="keybox"><span class="lbl">Sagt p&aring; &eacute;n linje</span>
+<b>To 95&nbsp;%-intervaller kan overlappe en god del og likevel gi <i>p</i> &lt; .05.</b></div>
+</div>
+
+<div class="card">
+<h2>Pr&oslash;v selv f&oslash;r du leser videre</h2>
+<p>To uavhengige grupper, <i>n</i> = 30 i hver, <i>SD</i> = 10. Dra gruppe B og se hvor
+mye intervallene kan overlappe f&oslash;r <i>p</i> passerer .05.</p>
+<canvas id="ovCv" height="230"></canvas>
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0 2px">
+<label style="font-size:15.5px;color:#1F3864;font-weight:600">Gjennomsnitt i gruppe B</label>
+<input type="range" id="ovSlider" min="40" max="64" step="0.2" value="56" style="flex:1;min-width:220px">
+<span class="stat" id="ovMb">56.0</span>
+</div>
+<div style="margin-top:6px">
+<span class="stat" id="ovOv">&nbsp;</span>
+<span class="stat" id="ovT">&nbsp;</span>
+<span class="stat" id="ovP">&nbsp;</span>
+</div>
+<div class="note" id="ovTekst"></div>
+<p class="muted" style="font-size:14.5px;margin-top:8px">
+Gruppe A st&aring;r fast p&aring; <i>M</i> = 50. <i>p</i> regnes ut i koden fra en vanlig
+uavhengig <i>t</i>-test med <i>df</i> = 58, ikke sl&aring;tt opp i en tabell.</p>
+</div>
+
+<div class="card">
+<h2>Regelen &mdash; og den gjelder bare for uavhengige grupper</h2>
+<p>Med to <b>uavhengige</b> grupper av omtrent samme st&oslash;rrelse og spredning:</p>
+<table class="hvnaar">
+<tr><th>Det du ser</th><th>Hva <i>p</i> omtrent er</th></tr>
+<tr><td>Intervallene overlapper med omtrent <b>halve armen</b> til det ene</td>
+    <td><i>p</i> &asymp; .05 &mdash; akkurat p&aring; grensen</td></tr>
+<tr class="na"><td>Intervallene overlapper <b>mindre</b> enn det</td>
+    <td><i>p</i> &lt; .05</td></tr>
+<tr><td>Intervallene <b>s&aring; vidt ber&oslash;rer</b> hverandre</td>
+    <td><i>p</i> er allerede nede rundt .005</td></tr>
+<tr><td>Intervallene overlapper <b>mye</b></td>
+    <td><i>p</i> &gt; .05</td></tr>
+</table>
+<p class="muted" style="font-size:14.5px;margin-top:8px">
+«Armen» er halve intervallet &mdash; avstanden fra gjennomsnittet ut til &eacute;n av endene.
+Tallene er regnet ut for <i>n</i> mellom 10 og 100; overlappet ved <i>p</i> = .05 ligger p&aring;
+0.59&ndash;0.69 ganger armen, alts&aring; omtrent to tredjedeler.</p>
+<div class="note">Merk hvor streng den midterste raden er: n&aring;r intervallene bare s&aring;
+vidt m&oslash;tes, er du ikke i n&aelig;rheten av .05 &mdash; du er ti ganger lenger ned. Det
+er derfor &laquo;de overlapper ikke&raquo; er et unyttig kriterium: det er altfor
+konservativt.</div>
+</div>
+
+<div class="card">
+<h2>Og n&aring; den som velter hele regelen</h2>
+<p>Samme personer m&aring;lt to ganger. <i>Consideration of others</i> i ISTDP-gruppa,
+f&oslash;r og etter behandling, <i>n</i> = 36:</p>
+<table class="hvnaar">
+<tr><th>M&aring;ling</th><th><i>M</i></th><th><i>SD</i></th><th>95&nbsp;% KI</th></tr>
+<tr><td>F&oslash;r</td><td>22.31</td><td>5.92</td><td>[20.30, 24.31]</td></tr>
+<tr><td>Etter</td><td>20.89</td><td>5.69</td><td>[18.97, 22.81]</td></tr>
+</table>
+<p style="margin-top:10px">Intervallene overlapper <b>kraftig</b> &mdash; over hele
+armlengden. Etter regelen over skulle dette v&aelig;rt langt fra signifikant.</p>
+<div class="keybox" style="border-left-color:#C0392B;background:#fbeceb">
+<span class="lbl" style="color:#C0392B">Men</span>
+<b><i>t</i>(35) = 8.08, <i>p</i> &lt; .001. Differansen er 1.42 poeng med 95&nbsp;% KI
+[1.06, 1.77] &mdash; et intervall som ikke er i n&aelig;rheten av null.</b></div>
+<p style="margin-top:10px">Grunnen st&aring;r i korrelasjonen: <i>r</i> = .98 mellom de to
+m&aring;lingene. Nesten alle gikk ned, og de gikk ned omtrent like mye. De to separate
+intervallene vet ingenting om det &mdash; de beskriver hvor usikkert <b>hvert
+gjennomsnitt</b> er, ikke hvor usikker <b>endringen</b> er.</p>
+<div class="hvgrid" style="margin-top:14px">
+<div class="hvkort hver"><h3>&#10003; Gj&oslash;r dette</h3><ul>
+<li><b>Tegn intervallet for differansen</b> n&aring;r du har par eller gjentatte
+m&aring;linger.
+<span class="eks">Her: 1.42, KI [1.06, 1.77]. Det svarer p&aring; sp&oslash;rsm&aring;let.</span></li>
+<li><b>Bruk overlappsregelen bare p&aring; uavhengige grupper</b> &mdash; og bare som et
+grovt &oslash;yem&aring;l.</li>
+<li><b>Les <i>p</i> fra testen</b>, ikke fra figuren.</li>
+</ul></div>
+<div class="hvkort hvikke"><h3>&#10007; Aldri</h3><ul>
+<li><b>&laquo;Intervallene overlapper, alts&aring; ingen forskjell.&raquo;</b> Det er feil for
+uavhengige grupper og helt feil for parede data.</li>
+<li><b>Sammenligne feilfelt uten &aring; vite hva de er.</b> <i>SD</i>, <i>SE</i> og 95&nbsp;%
+KI er tre ulike lengder.</li>
+</ul></div>
+</div>
+<p class="muted" style="font-size:14.5px;margin-top:10px">
+Belia, S., Fidler, F., Williams, J. &amp; Cumming, G. (2005). Researchers misunderstand
+confidence intervals and standard error bars. <i>Psychological Methods</i>, 10, 389&ndash;396.
+&middot; Cumming, G. &amp; Finch, S. (2005). Inference by eye. <i>American Psychologist</i>,
+60, 170&ndash;180. &middot; Tallene fra terapi-RCT-en er regnet ut fra r&aring;fila.</p>
+</div>
+
+</div><!-- /fane-overlapp -->
+
+<div id="fane-bayes" class="hide">
+<!-- FANEHJELP bayes -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Hele appen har handlet om P(data | H₀). Det du egentlig ville vite, er den motsatte: P(H₀ | data). En bayesfaktor svarer på noe nærmere det andre.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les de fire radene i BF-tabellen og legg merke til at verdier UNDER 1 også er et funn.</li>
+<li>Sammenlign den siste raden med en stor <i>p</i>-verdi.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">En stor <i>p</i>-verdi betyr «vi fant ikke noe». En BF₁₀ på 0.1 betyr «vi fant at det ikke er noe» — to helt ulike konklusjoner, og bare den andre er et funn. Du skal kjenne igjen en bayesfaktor, ikke regne den ut.</p>
+</div>
+<!-- /FANEHJELP bayes -->
+
+
+<div class="card">
+<h2>Sp&oslash;rsm&aring;let <i>p</i> ikke svarer p&aring;</h2>
+<p>Hele denne appen har handlet om &eacute;n st&oslash;rrelse:
+<i>P</i>(data minst s&aring; ekstreme <b>|</b> H<sub>0</sub> sann).</p>
+<p>Det du egentlig ville vite er den motsatte:
+<i>P</i>(H<sub>0</sub> sann <b>|</b> data). De to er ikke det samme, og
+<i>p</i>-verdien gir deg ikke den andre &mdash; uansett hvor liten den er.</p>
+<div class="keybox"><span class="lbl">Hvorfor dette st&aring;r her</span>
+<b>Du skal ikke regne bayesiansk i PSY300. Men du skal kjenne igjen en bayesfaktor
+n&aring;r du ser den i en artikkel &mdash; og vite hvorfor den finnes.</b></div>
+</div>
+
+<div class="card">
+<h2>Bayesfaktoren p&aring; &eacute;n side</h2>
+<p>En <b>bayesfaktor</b> (BF) sammenligner to hypoteser direkte: hvor mye mer sannsynlige er
+dataene under den ene enn under den andre?</p>
+<div class="note" style="font-size:17px;text-align:center">
+BF<sub>10</sub> = <span class="m-sig">hvor sannsynlige dataene er under H<sub>1</sub></span>
+&nbsp;&divide;&nbsp;
+<span class="m-stoy">hvor sannsynlige dataene er under H<sub>0</sub></span></div>
+<table class="hvnaar" style="margin-top:12px">
+<tr><th>BF<sub>10</sub></th><th>Leses som</th></tr>
+<tr><td>10</td><td>Dataene er ti ganger mer sannsynlige under H<sub>1</sub> enn under
+H<sub>0</sub>. Sterkt for en effekt.</td></tr>
+<tr><td>3</td><td>Tre ganger. Moderat for en effekt.</td></tr>
+<tr class="na"><td>1</td><td>Like sannsynlige begge veier. Dataene skiller ikke.</td></tr>
+<tr><td>0.33</td><td>Tre ganger mer sannsynlige under H<sub>0</sub>.
+<b>St&oslash;tte for nullhypotesen.</b></td></tr>
+</table>
+<div class="keybox kb" style="margin-top:12px"><span class="lbl">Den ene tingen som er verdt
+&aring; huske</span>
+<b>En stor <i>p</i>-verdi betyr &laquo;vi fant ikke noe&raquo;. En BF<sub>10</sub> p&aring;
+0.1 betyr &laquo;vi fant at det ikke er noe&raquo;. Det er to helt ulike konklusjoner, og
+bare den andre er et funn.</b></div>
+<p style="margin-top:10px">Det er den praktiske forskjellen. Med <i>p</i> kan du aldri
+konkludere at en effekt mangler &mdash; bare at du ikke klarte &aring; vise den. Et
+registrert replikasjonsfors&oslash;k som ender p&aring; <i>p</i> = .62 har, strengt tatt,
+ikke sagt noe. Ender det p&aring; BF<sub>10</sub> = 0.08, har det sagt noe tydelig.</p>
+</div>
+
+<div class="card">
+<h2>Hvor du m&oslash;ter det</h2>
+<div class="hvgrid">
+<div class="hvkort hver"><h3>I JASP</h3><ul>
+<li>Hver test har en bayesiansk tvilling i menyen: <b>Bayesian Independent Samples
+T-Test</b>, <b>Bayesian ANOVA</b>, og s&aring; videre.
+<span class="eks">Samme data inn, BF ut i stedet for <i>p</i>.</span></li>
+<li>Det er ikke pensum i PSY300, og du blir ikke pr&oslash;vd i det.
+Men det er &eacute;n klikk unna hvis du blir nysgjerrig.</li>
+</ul></div>
+<div class="hvkort hvikke"><h3>Fallgruver</h3><ul>
+<li><b>BF<sub>10</sub> mot BF<sub>01</sub>.</b> De er hverandres omvendte.
+BF<sub>10</sub> = 0.2 er det samme som BF<sub>01</sub> = 5. Sjekk alltid hvilken vei.</li>
+<li><b>BF er ikke en sannsynlighet for at hypotesen er sann.</b> Den er et
+styrkeforhold mellom to hypoteser.</li>
+<li><b>Resultatet avhenger av hvilken H<sub>1</sub> du spesifiserte.</b> En vag H<sub>1</sub>
+straffes, og det er med vilje.</li>
+</ul></div>
+</div>
+<p class="muted" style="font-size:14.5px;margin-top:10px">
+Field, van Doorn &amp; Wagenmakers, kapittel 3. Wagenmakers er medforfatter b&aring;de av
+l&aelig;reboka og av JASP, og det er grunnen til at JASP har bayesianske analyser
+side om side med de vanlige.</p>
+</div>
+
+</div><!-- /fane-bayes -->
+
+
 
 <details class="ordbok" id="ordforklaringer"><summary>Ordforklaringer</summary>
 <div class="gloss">
 <p><b>ANOVA</b> — variansanalyse (analysis of variance): tester om flere gruppegjennomsnitt er like.<br>
-<b>Bias</b> — systematisk skjevhet som ikke forsvinner med større n: <b>seleksjonsbias</b> (hvem som blir med), <b>frafallsbias</b> (hvem som forsvinner) og <b>publikasjonsbias</b> (hvilke resultater som blir publisert).<br>
+<b>Bias</b> — systematisk skjevhet som ikke forsvinner med større <i>n</i>: <b>seleksjonsbias</b> (hvem som blir med), <b>frafallsbias</b> (hvem som forsvinner) og <b>publikasjonsbias</b> (hvilke resultater som blir publisert).<br>
 <b>CONSORT</b> — den internasjonale malen for hvordan en randomisert studie skal rapporteres, blant annet med et flytskjema over hvem som falt fra og når.<br>
-<b>Effektstørrelse</b> — hvor stor forskjellen eller sammenhengen er, uavhengig av n. <b>Cohens d</b> = forskjell mellom to gjennomsnitt målt i standardavvik.<br>
-<b>F</b> — testobservator i variansanalyse: MS mellom grupper delt på MS innen grupper. Forventes ≈ 1 når H₀ er sann.<br>
+<b>Effektstørrelse</b> — hvor stor forskjellen eller sammenhengen er, uavhengig av <i>n</i>. <b>Cohens <i>d</i></b> = forskjell mellom to gjennomsnitt målt i standardavvik.<br>
+<b><i>F</i></b> — teststatistikk i variansanalyse: MS mellom grupper delt på MS innen grupper. Forventes ≈ 1 når H₀ er sann.<br>
 <b>Familievis feilrate</b> — sjansen for minst én falsk positiv når man kjører flere tester. <b>Bonferroni</b>-korreksjonen deler α på antall tester.<br>
 <b>H₀</b> — nullhypotesen: «ingen effekt / ingen sammenheng». <b>H₁</b> er alternativhypotesen.<br>
-<b>M</b> — gjennomsnittet i et utvalg (skrives også x̄). <b>Median</b> = midtverdien når verdiene sorteres. <b>Modus</b> = den hyppigste verdien.<br>
-<b>RCT</b> — randomisert kontrollert studie. Emnets <b>Terapi-RCT-studie</b> sammenligner <b>ISTDP</b> (intensiv dynamisk korttidsterapi) med venteliste, N = 86.<br>
-<b>SD</b> — standardavvik: typisk avstand fra gjennomsnittet, i variabelens egen enhet. Kvadratet er variansen.<br>
-<b>Statistisk styrke</b> — sannsynligheten for å oppdage en effekt som faktisk finnes (1 − type II-risikoen). Se Sim 20.<br>
+<b><i>M</i></b> — gjennomsnittet i et utvalg (skrives også x̄). <b>Median</b> = midtverdien når verdiene sorteres. <b>Modus</b> = den hyppigste verdien.<br>
+<b>RCT</b> — randomisert kontrollert studie. Emnets <b>Terapi-RCT-studie</b> sammenligner <b>ISTDP</b> (intensiv dynamisk korttidsterapi) med venteliste, <i>N</i> = 86.<br>
+<b><i>SD</i></b> — standardavvik: typisk avstand fra gjennomsnittet, i variabelens egen enhet. Kvadratet er variansen.<br>
+<b>Statistisk styrke</b> — sannsynligheten for å oppdage en effekt som faktisk finnes (1 − type II-risikoen). Se fane 2.<br>
 <b>Type I-feil</b> — å finne en effekt som ikke finnes (falsk positiv). <b>Type II-feil</b> — å overse en effekt som finnes (falsk negativ).<br>
 <b>Utligger</b> — en observasjon som ligger langt fra resten. <b>Trimmet gjennomsnitt</b> = regn ut etter å ha kuttet de mest ekstreme prosentene; <b>winsorisering</b> = erstatt dem med grenseverdien i stedet for å kutte.<br>
-<b>b</b> — regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren. <b>β</b> er den standardiserte varianten (i standardavvik).<br>
-<b>df</b> — frihetsgrader (degrees of freedom): antall verdier som fritt kan variere gitt det du allerede har estimert.<br>
-<b>p-verdi</b> — sannsynligheten for et resultat minst så ekstremt som ditt, <i>gitt at H₀ er sann</i>. Ikke sannsynligheten for at H₀ er sann.<br>
-<b>r</b> — Pearsons korrelasjon: styrken på den <i>lineære</i> sammenhengen mellom to variabler (−1 til +1). <b>Spearmans rho</b> gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.<br>
-<b>t</b> — testobservator for gjennomsnitt: forskjell delt på standardfeil. <b>t-fordelingen</b> er litt tyngre i halene enn normalfordelingen ved lav df.<br>
-<b>α (alfa)</b> — signifikansnivået du velger på forhånd, altså den aksepterte risikoen for type I-feil (vanligvis ,05).<br>
+<b><i>b</i></b> — regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren. <b>β</b> er den standardiserte varianten (i standardavvik).<br>
+<b><i>df</i></b> — frihetsgrader (degrees of freedom): antall verdier som fritt kan variere gitt det du allerede har estimert.<br>
+<b><i>p</i>-verdi</b> — sannsynligheten for et resultat minst så ekstremt som ditt, <i>gitt at H₀ er sann</i>. Ikke sannsynligheten for at H₀ er sann.<br>
+<b><i>r</i></b> — Pearsons korrelasjon: styrken på den <i>lineære</i> sammenhengen mellom to variabler (−1 til +1). <b>Spearmans rho</b> gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.<br>
+<b><i>t</i></b> — teststatistikk for gjennomsnitt: forskjell delt på standardfeil. <b><i>t</i>-fordelingen</b> er litt tyngre i halene enn normalfordelingen ved lav <i>df</i>.<br>
+<b>α (alfa)</b> — signifikansnivået du velger på forhånd, altså den aksepterte risikoen for type I-feil (vanligvis .05).<br>
 <b>χ² (kjikvadrat)</b> — test for frekvensdata: sammenligner observerte og forventede antall i en krysstabell.<br>
 <b>Overdrivelsesfaktor (type M-feil)</b> — hvor mange ganger for stor den gjennomsnittlige signifikante effekten er.<br>
-<b>SE</b> — standardfeil: usikkerheten i et estimat. Her er SE for forskjellen ≈ √(2/n) i d-enheter.<br>
+<b><i>SE</i></b> — standardfeil: usikkerheten i et estimat. Her er <i>SE</i> for forskjellen ≈ √(2/n) i d-enheter.<br>
 <b>Statistisk styrke (power)</b> — sannsynligheten for å få et signifikant resultat gitt at effekten faktisk finnes. Styrke = 1 − β.<br>
 <b>Vinnerens forbannelse</b> — at de effektene som passerer signifikansterskelen i studier med lav styrke, systematisk er større enn sannheten.<br>
 <b>β (beta)</b> — sannsynligheten for type II-feil. (Ikke å forveksle med regresjonens β, som er en koeffisient.)</p>
@@ -338,9 +852,9 @@ details.ordbok[open]>summary::before{content:"▾ "}
 <script>
 
 /* ---------- faner ---------- */
-const FANER=['p','styrke','mange','bias'];
+const FANER=['hvorfor','p','styrke','mange','bias','overlapp','bayes'];
 function visFane(f){
-  if(FANER.indexOf(f)<0) f='p';
+  if(FANER.indexOf(f)<0) f='hvorfor';
   FANER.forEach(x=>{const e=document.getElementById('fane-'+x); if(e) e.classList.toggle('hide', x!==f);});
   document.querySelectorAll('.fane').forEach(b=>b.classList.toggle('on', b.dataset.fane===f));
   /* lerret som var skjult har bredde 0 og må tegnes på nytt når fanen åpnes */
@@ -351,14 +865,14 @@ function visFane(f){
 window.__tegn={};
 document.querySelectorAll('.fane').forEach(b=>b.addEventListener('click',()=>visFane(b.dataset.fane)));
 (function(){ const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,''));
-  const f=q.get('fane'); if(f && FANER.indexOf(f)>=0) visFane(f); })();
+  const f=q.get('fane'); visFane(f && FANER.indexOf(f)>=0 ? f : 'hvorfor'); })();
 
 /* ===== Fane «p» — hentet fra Pverdimaskinen. Egen lukking fordi appene
    deler navn som $, fmt, kick, lgamma og rnorm. */
 (function(){
 "use strict";
 const $=id=>document.getElementById(id);
-const fmt=(x,d=2)=>x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fmt=(x,d=2)=>x.toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:false});
 
 // ---- statistics: t distribution ----
 function lgamma(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];let y=x,tmp=x+5.5;tmp-=(x+0.5)*Math.log(tmp);let ser=1.000000000190015;for(let j=0;j<6;j++)ser+=c[j]/++y;return -tmp+Math.log(2.5066282746310005*ser/x);}
@@ -446,32 +960,132 @@ function drawP(ps,alpha){
   for(let i=0;i<=4;i++)c.fillText(fmt(i/4,2),x0+pw*i/4,y0+13);
 }
 
+/* ================= SIM7-EFFEKT ================= */
+let lastDs=null;
+
+function drawD(ds,ps,alpha){
+  const cv=$('cvD'),r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
+  cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';
+  const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);
+  c.clearRect(0,0,w,h);
+  if(!ds){c.fillStyle='#9aa5bb';c.font='bold 18px sans-serif';c.textAlign='center';c.fillText('(kjør studiene)',w/2,h/2);return;}
+  /* Aksen må romme ALLE studiene, ellers klippes halen der de signifikante
+     ligger — og det er nettopp halen figuren handler om. */
+  let lo=Math.min(...ds),hi=Math.max(...ds);
+  const pad=(hi-lo)*0.04||0.1;lo-=pad;hi+=pad;
+  const nb=24,y0=h-22,ph=y0-10,x0=6,pw=w-12;
+  const binsA=new Array(nb).fill(0),binsS=new Array(nb).fill(0);
+  for(let i=0;i<ds.length;i++){
+    let b=Math.min(nb-1,Math.max(0,Math.floor((ds[i]-lo)/(hi-lo)*nb)));
+    binsA[b]++; if(ps[i]<alpha)binsS[b]++;
+  }
+  const maxB=Math.max(...binsA,1);
+  for(let b=0;b<nb;b++){
+    const bx=x0+b/nb*pw,bw=pw/nb-2;
+    c.fillStyle='#8fb0dd';c.fillRect(bx,y0-binsA[b]/maxB*ph,bw,binsA[b]/maxB*ph);
+    c.fillStyle='#d96a5e';c.fillRect(bx,y0-binsS[b]/maxB*ph,bw,binsS[b]/maxB*ph);
+  }
+  /* Den sanne effekten som loddrett strek — uten den kan man ikke se at de
+     røde ligger systematisk til høyre for den. */
+  const dTrue=+$('d').value;
+  if(dTrue>=lo&&dTrue<=hi){
+    const tx=x0+(dTrue-lo)/(hi-lo)*pw;
+    c.strokeStyle='#1F3864';c.lineWidth=2;c.setLineDash([5,4]);
+    c.beginPath();c.moveTo(tx,y0);c.lineTo(tx,10);c.stroke();c.setLineDash([]);
+    c.fillStyle='#1F3864';c.font='bold 14px sans-serif';c.textAlign=tx>w*0.7?'right':'left';
+    c.fillText('sann d = '+fmt(dTrue),tx+(tx>w*0.7?-5:5),20);
+  }
+  /* Foerste og siste merke klippes mot kanten naar begge er sentrert — funnet
+     paa skjermbildet, ikke av en test. De forankres derfor i hver sin ende. */
+  c.fillStyle='#62708a';c.font='bold 16px sans-serif';
+  for(let i=0;i<=4;i++){
+    c.textAlign=i===0?'left':(i===4?'right':'center');
+    c.fillText(fmt(lo+(hi-lo)*i/4),x0+pw*i/4,y0+13);
+  }
+}
+
+function median(a){const b=a.slice().sort((x,y)=>x-y),m=b.length>>1;
+  return b.length%2?b[m]:(b[m-1]+b[m])/2;}
+
+function effektLinje(ds,ps,alpha,dTrue){
+  const sigD=[],alleAbs=[];
+  for(let i=0;i<ds.length;i++){alleAbs.push(Math.abs(ds[i]));if(ps[i]<alpha)sigD.push(Math.abs(ds[i]));}
+  const mAlle=median(alleAbs);
+  if(!sigD.length){
+    $('dStats').innerHTML='<span class="stat">median |d̂| over alle studiene = '+fmt(mAlle)+'</span>'+
+      '<span class="stat">ingen av studiene ble signifikante</span>';
+    return;
+  }
+  const mSig=median(sigD);
+  /* MEDIAN av |d̂|, ikke snitt av d̂: i nullverdenen er halvparten av de
+     signifikante negative, og et fortegnsbærende snitt ville gitt ≈ 0 — altså
+     skjult nøyaktig det figuren viser. */
+  let hale='';
+  if(dTrue>0)hale='<span class="stat '+(mSig/dTrue>1.15?'red':'green')+'">de signifikante overdriver med '+
+      fmt(100*(mSig/dTrue-1),0)+' %</span>';
+  else hale='<span class="stat red">og den sanne effekten er null</span>';
+  $('dStats').innerHTML=
+    '<span class="stat">median |d̂| over alle = '+fmt(mAlle)+'</span>'+
+    '<span class="stat red">median |d̂| blant de signifikante = '+fmt(mSig)+'</span>'+hale;
+
+  const n=nFromSlider(+$('n').value);
+  let tekst;
+  if(dTrue===0)
+    tekst='<b>Det finnes ingen effekt her — og likevel rapporterer hvert eneste «funn» '+
+      'et <i>d̂</i> rundt '+fmt(mSig)+', altså det Cohen kaller en moderat effekt. '+
+      'En liten <i>p</i> gjorde ikke effekten stor; den plukket ut de studiene som '+
+      'tilfeldigvis bommet mest.</b>';
+  else if(dTrue<=0.15&&n>=400)
+    tekst='<b>Nesten alt er rødt til venstre, og høyre figur står stille rundt '+fmt(mAlle)+'. '+
+      'Det er A4-feilen i ett bilde: <i>p</i> ble liten fordi <i>n</i> er stor, ikke fordi '+
+      'effekten er stor. «Signifikant» og «stor» er to ulike spørsmål.</b>';
+  else if(sigD.length/ds.length>0.8)
+    /* Med hoey styrke er nesten ALT roedt, og «de roede ligger i halen» ville
+       vaert en paastand figuren motsier. Da er det motsatte poenget som gjelder,
+       og det er like viktig: overdrivelsen er en konsekvens av LAV styrke. */
+    tekst='<b>Her er nesten alle studiene røde, og de to figurene er enige: de '+
+      'signifikante rapporterer '+fmt(mSig)+' mot en sann effekt på '+fmt(dTrue)+'. '+
+      'Med god styrke forsvinner overdrivelsen. Skru <i>n</i> ned og se den komme tilbake.</b>';
+  else
+    tekst='<b>Venstre figur sier om slump kan utelukkes. Høyre sier hvor stor forskjellen er. '+
+      'Legg merke til at de røde søylene ligger ute i halen: de studiene som ble '+
+      'signifikante, rapporterer i snitt '+fmt(mSig)+' mot en sann effekt på '+fmt(dTrue)+'.</b>';
+  $('effektBoks').innerHTML='<span class="lbl">De to figurene svarer på ulike spørsmål</span>'+tekst;
+}
+
 function updateOutputs(){
   const d=+$('d').value,n=nFromSlider(+$('n').value);
   $('dOut').textContent='d = '+fmt(d);
   $('nOut').textContent='n = '+n.toLocaleString('nb-NO');
   drawPops();
+  drawP(lastPs,+$('alpha').value);   /* tegner plassholderen til studiene er kjørt */
+  drawD(lastDs,lastPs,+$('alpha').value);
 }
 
 function run(k){
   const d=+$('d').value,n=nFromSlider(+$('n').value),alpha=+$('alpha').value;
   if(k===1){
     const s=simulateStudy(d,n);
-    $('oneStudy').innerHTML='<span class="stat">t('+s.df+') = '+fmt(s.t)+'</span>'+
-      '<span class="stat '+(s.p<alpha?'red':'')+'">p = '+(s.p<0.001?'&lt; 0,001':fmt(s.p,3))+'</span>'+
+    $('oneStudy').innerHTML='<span class="stat"><i>t</i>('+s.df+') = '+fmt(s.t)+'</span>'+
+      '<span class="stat '+(s.p<alpha?'red':'')+'">p = '+(s.p<0.001?'&lt; .001':fmt(s.p,3).replace(/^0/,''))+'</span>'+
       '<span class="stat">observert d̂ = '+fmt(s.dhat)+'</span>'+
       (s.p<alpha&&d===0?'<span class="stat red">falsk positiv!</span>':'');
     return;
   }
-  const ps=new Array(k);
-  for(let i=0;i<k;i++)ps[i]=simulateStudy(d,n).p;
-  lastPs=ps;
+  /* SIM7-EFFEKT: d̂ lagres sammen med p, så de to figurene viser de SAMME
+     studiene. Ble de trukket hver for seg, kunne ikke de røde søylene i den
+     ene brukes til å forklare de røde i den andre. */
+  const ps=new Array(k),ds=new Array(k);
+  for(let i=0;i<k;i++){const s=simulateStudy(d,n);ps[i]=s.p;ds[i]=s.dhat;}
+  lastPs=ps;lastDs=ds;
   const sig=ps.filter(p=>p<alpha).length;
   drawP(ps,alpha);
+  drawD(ds,ps,alpha);
+  effektLinje(ds,ps,alpha,d);
   const pct=fmt(100*sig/k,1)+' %';
   $('pStats').innerHTML='<span class="stat '+(d===0?'red':'green')+'">'+pct+' signifikante (p &lt; '+fmt(alpha,2)+')</span>'+
     (d===0?'<span class="stat">= type I-feilraten (forventet ≈ '+fmt(alpha*100,0)+' %)</span>'
-          :'<span class="stat">= statistisk styrke ved d = '+fmt(d)+', n = '+n.toLocaleString('nb-NO')+'</span>');
+          :'<span class="stat">= statistisk styrke ved <i>d</i> = '+fmt(d)+', n = '+n.toLocaleString('nb-NO')+'</span>');
 }
 
 $('d').oninput=updateOutputs;
@@ -511,12 +1125,12 @@ function drawB(){
   for(let v=0;v<=55;v+=10)c.fillText(v,(v-lo)/(hi-lo)*w,y0+13);
   const dv=sd>0?raw/sd:0, ovl=2*Phi(-dv/2);
   $('statsRaw').innerHTML='<span class="stat">råforskjell = '+fmt(raw,1)+' poeng (fast)</span>'+
-    '<span class="stat">d = '+fmt(dv)+'</span><span class="stat">overlapp ≈ '+fmt(100*ovl,0)+' %</span>'+extraB;
+    '<span class="stat"><i>d</i> = '+fmt(dv)+'</span><span class="stat">overlapp ≈ '+fmt(100*ovl,0)+' %</span>'+extraB;
 }
 $('oneB').onclick=()=>{
   const raw=+$('raw').value, sd=+$('sdw').value, n=+$('nRaw').value;
   const s=simulateStudy(sd>0?raw/sd:0,n);
-  extraB='<span class="stat '+(s.p<0.05?'green':'red')+'">én studie: t('+s.df+') = '+fmt(s.t)+', p = '+(s.p<0.001?'&lt; 0,001':fmt(s.p,3))+'</span>';
+  extraB='<span class="stat '+(s.p<0.05?'green':'red')+'">én studie: t('+s.df+') = '+fmt(s.t)+', p = '+(s.p<0.001?'&lt; .001':fmt(s.p,3).replace(/^0/,''))+'</span>';
   drawB();
 };
 $('powB').onclick=()=>{
@@ -530,9 +1144,9 @@ $('sdw').oninput=()=>{extraB='';drawB();};
 $('nRaw').oninput=()=>{extraB='';drawB();};
 
 // faner
-$('tabA').onclick=()=>{$('tabA').classList.add('on');$('tabB').classList.remove('on');$('modeA').classList.remove('hide');$('modeB').classList.add('hide');updateOutputs();if(lastPs)drawP(lastPs,+$('alpha').value);};
+$('tabA').onclick=()=>{$('tabA').classList.add('on');$('tabB').classList.remove('on');$('modeA').classList.remove('hide');$('modeB').classList.add('hide');updateOutputs();drawP(lastPs,+$('alpha').value);};
 $('tabB').onclick=()=>{$('tabB').classList.add('on');$('tabA').classList.remove('on');$('modeB').classList.remove('hide');$('modeA').classList.add('hide');drawB();};
-const __fsRedraw=()=>{if($('modeA').classList.contains('hide')){drawB();}else{updateOutputs();if(lastPs)drawP(lastPs,+$('alpha').value);}};
+const __fsRedraw=()=>{if($('modeA').classList.contains('hide')){drawB();}else{updateOutputs();drawP(lastPs,+$('alpha').value);}};
 (function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
 const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
 window.addEventListener('resize',kick);
@@ -552,7 +1166,7 @@ run(1);
 (function(){
 "use strict";
 const $=id=>document.getElementById(id);
-const fmt=(x,d=2)=>x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fmt=(x,d=2)=>x.toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:false});
 const pct=x=>fmt(100*x,1)+' %';
 function rnorm(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
 function fit(cv){const r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));
@@ -693,7 +1307,7 @@ function drawC(){
     '<span class="stat'+(infl>1.3?' red':'')+'">overdrivelsesfaktor: '+fmt(infl)+'×</span>'+
     (nWrongDir?'<span class="stat red">signifikante i FEIL retning: '+nWrongDir+'</span>':'');
   $('verdictC').innerHTML= infl>1.3
-    ? 'De signifikante studiene rapporterer i snitt en effekt <b>'+fmt(infl)+' ganger større</b> enn sannheten. Ingen har jukset — terskelen slipper bare gjennom de heldigste utvalgene. Blir en slik studie replikert med samme n, vil den «skuffe», og med større n vil effekten se ut til å ha «krympet».'
+    ? 'De signifikante studiene rapporterer i snitt en effekt <b>'+fmt(infl)+' ganger større</b> enn sannheten. Ingen har jukset — terskelen slipper bare gjennom de heldigste utvalgene. Blir en slik studie replikert med samme <i>n</i>, vil den «skuffe», og med større <i>n</i> vil effekten se ut til å ha «krympet».'
     : 'Med denne styrken ligner de signifikante studiene på sannheten (overdrivelse '+fmt(infl)+'×). Godt drevne studier gir ikke bare oftere funn. De gir <b>riktigere</b> tall.';
 }
 function render(){
@@ -704,23 +1318,23 @@ function render(){
     '<span class="stat'+(pw_<0.5?' red':(pw_>=0.8?' green':' orange'))+'">styrke = '+pct(pw_)+'</span>'+
     '<span class="stat">β (type II) = '+pct(1-pw_)+'</span>'+
     '<span class="stat">α (type I) = '+pct(p.a)+'</span>'+
-    '<span class="stat">totalt N = '+(2*p.n)+'</span>'+
-    '<span class="stat">n for 80 % styrke: '+n80+' per gruppe ('+(2*n80)+' totalt)</span>'+
+    '<span class="stat">totalt <i>N</i> = '+(2*p.n)+'</span>'+
+    '<span class="stat"><i>n</i> for 80 % styrke: '+n80+' per gruppe ('+(2*n80)+' totalt)</span>'+
     '<span class="stat">for 95 %: '+n95+' per gruppe</span>';
   drawA();drawB();drawC();
   $('statsA').innerHTML='<span class="stat green">grønt areal (styrke) = '+pct(pw_)+'</span>'+
     '<span class="stat">grått areal (β) = '+pct(1-pw_)+'</span>'+
     '<span class="stat red">rødt areal (α) = '+pct(p.a)+'</span>'+
-    '<span class="stat">SE for forskjellen = '+fmt(Math.sqrt(2/p.n),3)+'</span>';
+    '<span class="stat"><i>SE</i> for forskjellen = '+fmt(Math.sqrt(2/p.n),3)+'</span>';
   $('verdictA').innerHTML = pw_<0.5
     ? '<b>Studien er underdimensjonert.</b> Med styrke '+pct(pw_)+' er sjansen for å overse en ekte effekt på d = '+fmt(p.d)+' hele '+pct(1-pw_)+'. Et ikke-signifikant resultat herfra betyr nesten ingenting: fraværet av bevis er ikke bevis på fravær.'
     : (pw_>=0.8 ? '<b>Godt dimensjonert.</b> Styrke '+pct(pw_)+' oppfyller 80 %-konvensjonen. Merk at det røde α-arealet er uendret — antall deltakere kjøper styrke, ikke beskyttelse mot falske positive.'
       : 'Styrke '+pct(pw_)+', under konvensjonen på 80 %. Du trenger '+n80+' per gruppe for å komme dit.');
-  $('statsB').innerHTML='<span class="stat">din studie: n = '+p.n+' → '+pct(pw_)+'</span>'+
-    '<span class="stat">n for 80 %: '+n80+'</span>'+
-    '<span class="stat">n for 95 %: '+n95+'</span>'+
-    '<span class="stat">dobler du n til '+(2*p.n)+': '+pct(power(p.d,2*p.n,p.a))+'</span>';
-  $('verdictB').innerHTML='Styrken avhenger av produktet d·√(n/2). Det betyr at en <b>halvert effekt krever fire ganger så mange deltakere</b> for samme styrke — derfor er små effekter så dyre å studere. For d = ,20 trengs '+nFor(0.2,p.a,0.8)+' per gruppe for 80 % styrke, mot bare '+nFor(0.8,p.a,0.8)+' for d = ,80.';
+  $('statsB').innerHTML='<span class="stat">din studie: <i>n</i> = '+p.n+' → '+pct(pw_)+'</span>'+
+    '<span class="stat"><i>n</i> for 80 %: '+n80+'</span>'+
+    '<span class="stat"><i>n</i> for 95 %: '+n95+'</span>'+
+    '<span class="stat">dobler du <i>n</i> til '+(2*p.n)+': '+pct(power(p.d,2*p.n,p.a))+'</span>';
+  $('verdictB').innerHTML='Styrken avhenger av produktet d·√(n/2). Det betyr at en <b>halvert effekt krever fire ganger så mange deltakere</b> for samme styrke — derfor er små effekter så dyre å studere. For <i>d</i> = .20 trengs '+nFor(0.2,p.a,0.8)+' per gruppe for 80 % styrke, mot bare '+nFor(0.8,p.a,0.8)+' for d = .80.';
 }
 ['d','n','al'].forEach(id=>$(id).oninput=()=>{sim=null;render();});
 $('runST').onclick=runSim;
@@ -750,7 +1364,7 @@ setInterval(()=>{const r=window.devicePixelRatio||1;let bad=false;
 (function(){
 "use strict";
 const $=id=>document.getElementById(id);
-const fmt=(x,d=1)=>x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fmt=(x,d=1)=>x.toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:false});
 const ALPHA=0.05;
 let results={none:{},bonf:{}}; // k -> proportion
 
@@ -765,7 +1379,7 @@ function oneFamily(){
     const sig=p<a;if(sig)any=true;
     const div=document.createElement('div');
     div.className='cell'+(sig?' sig':'');
-    div.textContent=p<0.001?'<0,001':fmt(p,3).replace('.',',');
+    div.textContent=p<0.001?'<0.001':fmt(p,3).replace('.',',');
     box.appendChild(div);
   }
   $('famOut').innerHTML=any
@@ -848,7 +1462,7 @@ function lgamma(x){const c=[76.18009172947146,-86.50532032941677,24.014098240830
 function betacf(a,b,x){const MAXIT=200,EPS=3e-12,FPMIN=1e-30;const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<FPMIN)d=FPMIN;d=1/d;let h=d;for(let m=1;m<=MAXIT;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;h*=d*c;aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<EPS)break;}return h;}
 function ibeta(a,b,x){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
 function pT(t,df){return ibeta(df/2,0.5,df/(df+t*t));}
-function fmt(x,d=3){return x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function fmt(x,d=3){return x.toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:false});}
 let nTests=0,found=false;
 function oneNullTest(n){ // uavhengig t på nulldata
   n=n||25;
@@ -884,7 +1498,7 @@ $('b2').onclick=()=>logTests(['Bare kvinner','Bare menn'],13);
 $('b3').onclick=()=>logTests(['Uten «utliggere»']);
 $('b4').onclick=()=>logTests(['+ kovariat: alder','+ kovariat: baseline','+ kovariat: begge']);
 $('b5').onclick=()=>logTests(['Med 10 ekstra deltakere'],30);
-$('resetPH').onclick=()=>{nTests=0;found=false;$('log').innerHTML='<span class="muted">Ingen analyser ennå.</span>';$('ntest').textContent='0';$('expect').textContent='forventede falske positiver så langt: 0,0';$('expect').className='stat';$('pub').style.display='none';};
+$('resetPH').onclick=()=>{nTests=0;found=false;$('log').innerHTML='<span class="muted">Ingen analyser ennå.</span>';$('ntest').textContent='0';$('expect').textContent='forventede falske positiver så langt: 0.0';$('expect').className='stat';$('pub').style.display='none';};
 const __fsRedraw=()=>{};
 (function(){let __t;const safe=()=>{try{__fsRedraw();}catch(e){}};
 const kick=()=>{clearTimeout(__t);__t=setTimeout(safe,150);};
@@ -902,7 +1516,7 @@ function lgamma(x){const c=[76.18009172947146,-86.50532032941677,24.014098240830
 function betacf(a,b,x){const MAXIT=200,EPS=3e-12,FPMIN=1e-30;const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<FPMIN)d=FPMIN;d=1/d;let h=d;for(let m=1;m<=MAXIT;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;h*=d*c;aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<EPS)break;}return h;}
 function ibeta(a,b,x){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
 function pT(t,df){return ibeta(df/2,0.5,df/(df+t*t));}
-function fmt(x,d=1){return x.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function fmt(x,d=1){return x.toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:false});}
 function fit(cv){const r=window.devicePixelRatio||1,w=cv.clientWidth,h=+(cv.dataset.h||(cv.dataset.h=cv.getAttribute('height')));cv.width=w*r;cv.height=h*r;cv.style.height=h+'px';const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);c.clearRect(0,0,w,h);return [c,w,h];}
 
 /* ---------- A: seleksjon ---------- */
@@ -1046,7 +1660,7 @@ function drawP(){
   });
   const mAll=lastP.studies.reduce((a,b)=>a+b.d,0)/lastP.studies.length;
   const mPub=pubs.length?pubs.reduce((a,b)=>a+b,0)/pubs.length:NaN;
-  $('outP').innerHTML='<span class="stat">alle 100 studier: gj.sn. d = '+fmt(mAll,2)+'</span>'+
+  $('outP').innerHTML='<span class="stat">alle 100 studier: gj.sn. <i>d</i> = '+fmt(mAll,2)+'</span>'+
    (pubs.length?'<span class="stat red">de '+pubs.length+' publiserte: gj.sn. d = '+fmt(mPub,2)+'</span>':'<span class="stat green">ingenting «publisert» denne gangen</span>')+
    (pubs.length?'<span class="stat red">litteraturen overdriver med '+fmt(mPub-lastP.d0,2)+'</span>':'');
 }
@@ -1156,4 +1770,112 @@ const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA0
   document.body.appendChild(b);
 })();
 </script>
+
+<script id="ovbegrep-js">
+(function(){
+  // Lokalt: appene ligger i PSY300_Sim_Apps/, MCQ-appen i PSY300_online/.
+  // Publisert: alt ligger flatt. Velg prefiks ut fra adressen.
+  var p = location.pathname.indexOf('/PSY300_Sim_Apps/') >= 0
+        ? '../PSY300_online/' : './';
+  var a = document.querySelectorAll('a.ovlenke[data-begrep]');
+  for (var i=0;i<a.length;i++){
+    a[i].href = p + 'PSY300_MCQ_Online.html?begrep=' + a[i].getAttribute('data-begrep');
+    a[i].target = '_blank'; a[i].rel = 'noopener';
+  }
+})();
+</script>
+
+<script>
+/* ===== fane 5: KI-overlapp mot p ========================================== */
+(function(){
+  var $=function(i){ return document.getElementById(i); };
+  if(!$('ovCv')) return;
+  var n=30, SD=10, MA=50, df=2*(n-1), SE=SD/Math.sqrt(n), SEd=Math.sqrt(2)*SE;
+  var TC1=2.0452, TC2=2.0017;          // t.975 ved df = 29 og df = 58
+  var MOE=TC1*SE;
+  function lgam(x){ var c=[76.18009172947146,-86.50532032941677,24.01409824083091,
+    -1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
+    var y=x,t=x+5.5; t-=(x+0.5)*Math.log(t); var s=1.000000000190015,j;
+    for(j=0;j<6;j++) s+=c[j]/++y; return -t+Math.log(2.5066282746310005*s/x); }
+  function betacf(a,b,x){ var FP=1e-300,qab=a+b,qap=a+1,qam=a-1,c=1,d=1-qab*x/qap,m,m2,aa,de,h;
+    if(Math.abs(d)<FP) d=FP; d=1/d; h=d;
+    for(m=1;m<300;m++){ m2=2*m;
+      aa=m*(b-m)*x/((qam+m2)*(a+m2)); d=1+aa*d; if(Math.abs(d)<FP)d=FP;
+      c=1+aa/c; if(Math.abs(c)<FP)c=FP; d=1/d; h*=d*c;
+      aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2)); d=1+aa*d; if(Math.abs(d)<FP)d=FP;
+      c=1+aa/c; if(Math.abs(c)<FP)c=FP; d=1/d; de=d*c; h*=de;
+      if(Math.abs(de-1)<3e-16) break; }
+    return h; }
+  function betai(a,b,x){ if(x<=0) return 0; if(x>=1) return 1;
+    var bt=Math.exp(lgam(a+b)-lgam(a)-lgam(b)+a*Math.log(x)+b*Math.log(1-x));
+    return x<(a+1)/(a+b+2) ? bt*betacf(a,b,x)/a : 1-bt*betacf(b,a,1-x)/b; }
+  function pto(t){ return betai(df/2,0.5,df/(df+t*t)); }
+
+  function tegn(MB){
+    var cv=$('ovCv'), ratio=window.devicePixelRatio||1;
+    var w=cv.clientWidth||820, h=230;
+    cv.width=Math.round(w*ratio); cv.height=Math.round(h*ratio); cv.style.height=h+'px';
+    var c=cv.getContext('2d'); c.setTransform(ratio,0,0,ratio,0,0); c.clearRect(0,0,w,h);
+    var L=52,R=w-16,T=22,B=h-28, lo=36,hi=68;
+    var X=function(v){ return L+(v-lo)/(hi-lo)*(R-L); };
+    c.strokeStyle="#eef1f6"; c.lineWidth=1;
+    c.fillStyle="#62708a"; c.font="11px -apple-system,Segoe UI,Roboto,Arial";
+    c.textAlign="center"; c.textBaseline="top";
+    for(var g=40; g<=65; g+=5){
+      c.beginPath(); c.moveTo(X(g),T); c.lineTo(X(g),B); c.stroke();
+      c.fillText(String(g), X(g), B+5); }
+    c.strokeStyle="#c3ccda"; c.beginPath(); c.moveTo(L,B); c.lineTo(R,B); c.stroke();
+    function ki(y,M,farge,navn){
+      c.strokeStyle=farge; c.lineWidth=3; c.lineCap="round";
+      c.beginPath(); c.moveTo(X(M-MOE),y); c.lineTo(X(M+MOE),y); c.stroke();
+      [M-MOE,M+MOE].forEach(function(v){
+        c.beginPath(); c.moveTo(X(v),y-8); c.lineTo(X(v),y+8); c.stroke(); });
+      c.fillStyle=farge; c.beginPath(); c.arc(X(M),y,6,0,6.2832); c.fill();
+      c.strokeStyle="#fff"; c.lineWidth=2; c.stroke();
+      c.fillStyle=farge; c.textAlign="right"; c.textBaseline="middle";
+      c.font="600 14px -apple-system,Segoe UI,Roboto,Arial";
+      c.fillText(navn, L-8, y);
+    }
+    var ovLo=Math.max(MA-MOE,MB-MOE), ovHi=Math.min(MA+MOE,MB+MOE);
+    if(ovHi>ovLo){
+      c.fillStyle="rgba(176,106,0,.14)";
+      c.fillRect(X(ovLo),T+6,X(ovHi)-X(ovLo),B-T-12);
+      c.strokeStyle="#B26A00"; c.setLineDash([4,3]); c.lineWidth=1;
+      c.beginPath(); c.moveTo(X(ovLo),T+6); c.lineTo(X(ovLo),B-6);
+      c.moveTo(X(ovHi),T+6); c.lineTo(X(ovHi),B-6); c.stroke(); c.setLineDash([]);
+    }
+    ki(T+44, MA, "#2E5496", "A");
+    ki(T+112, MB, "#B26A00", "B");
+    return ovHi-ovLo;
+  }
+  function oppdater(){
+    var MB=parseFloat($('ovSlider').value);
+    var ov=tegn(MB);
+    var t=Math.abs(MB-MA)/SEd, p=pto(t);
+    $('ovMb').textContent=MB.toFixed(1);
+    $('ovOv').textContent = ov>0
+      ? "overlapp: " + (ov/MOE).toFixed(2) + " × armen"
+      : "ingen overlapp";
+    $('ovOv').className = "stat";
+    $('ovT').textContent = "t(58) = " + t.toFixed(2);
+    $('ovP').textContent = "p = " + (p<.001 ? "< .001" : p.toFixed(3));
+    $('ovP').className = "stat " + (p<.05 ? "green" : "red");
+    var txt;
+    if(ov<=0) txt="<b>Intervallene overlapper ikke i det hele tatt.</b> Da er du for lengst "+
+      "under .05 — og det er nettopp poenget: «de overlapper ikke» er et altfor strengt krav.";
+    else if(p<.05) txt="<b>De overlapper — og forskjellen er likevel signifikant.</b> Det er "+
+      "dette de 473 forskerne bommet på. Øyet sier «nei», testen sier «ja».";
+    else if(p<.12) txt="<b>Nå er du like over grensen.</b> Legg merke til hvor stort "+
+      "overlappet må bli før p passerer .05 — omtrent to tredjedeler av armen.";
+    else txt="<b>Her er overlappet så stort at ingen ville kalt det en forskjell</b> — og "+
+      "testen er enig.";
+    $('ovTekst').innerHTML=txt;
+  }
+  $('ovSlider').addEventListener('input',oppdater);
+  window.addEventListener('resize',function(){ setTimeout(oppdater,60); });
+  window.__ovTegn=oppdater;
+  oppdater();
+})();
+</script>
+
 </body></html>

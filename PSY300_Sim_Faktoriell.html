@@ -933,6 +933,18 @@ body.trykk #foversikt,body.trykk #modusBtn{display:none!important}
 body.fmodus #modusBtn{left:14px;right:auto;bottom:11px;
   background:rgba(255,255,255,.10);color:#cfdaeb;
   border:1px solid rgba(255,255,255,.20);box-shadow:none;font-weight:600}
+/* ---------- FANEHJELP ---------- */
+.fhboks{background:var(--card,#fff);border:1px solid var(--line,#d9dee8);
+  border-left:5px solid var(--blue,#2E5496);border-radius:12px;padding:16px;
+  margin:0 0 14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.fhlbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--navy,#1F3864);font-weight:700;margin:0 0 4px}
+.fhlbl.sek{margin-top:12px}
+.fhkort{font-size:16px;margin:0}
+.fhsteg{font-size:16px;margin:0;padding-left:22px}
+.fhsteg li{margin:0 0 3px}
+.fhsee{font-size:16px;margin:0}
+/* ---------- FANEHJELP slutt ---------- */
 </style>
 <style>
 /* Bare det som ikke finnes i den delte stilen fra Anova-appen. */
@@ -1200,6 +1212,21 @@ Det er residualen, og det er den vi kvadrerer og summerer n&aring;r vi regner ut
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C9">C9 Interaksjon og faktorielle design &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div>
 <div id="fane-design" class="hide">
+<!-- FANEHJELP design -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">To faktorer krysset med hverandre gir fire celler — og tre spørsmål: virker den ene, virker den andre, og avhenger den ene av den andre?</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les de tre radene i tabellen over nullhypoteser.</li>
+<li>Les den tredje raden to ganger: hva er det som sammenlignes?</li>
+<li>Sjekk om cellene i ditt eget design er like store.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Interaksjonens nullhypotese handler ikke om gjennomsnitt, men om forskjeller mellom forskjeller. Og ulike celletall er ikke bare en detalj — de avgjør hvordan kvadratsummene må regnes.</p>
+</div>
+<!-- /FANEHJELP design -->
+
 <div class="card">
 <h2>Designet: to faktorer, fire celler, tre spørsmål</h2>
 
@@ -1317,6 +1344,21 @@ på den er ikke lenger ett tall.</p>
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C9">C9 Interaksjon og faktorielle design &rarr;</a> <a class="ovlenke" data-begrep="A3">A3 Design: randomisering og kontroll &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div>
 <div id="fane-estimat" class="hide">
+<!-- FANEHJELP estimat -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Fire cellesnitt gjøres om til fire effekter: et totalgjennomsnitt, to hovedeffekter og et interaksjonsledd. Her er regnestykket ledd for ledd.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Følg de tre stegene nedover: totalgjennomsnitt, hovedeffekter, interaksjonsledd.</li>
+<li>Kontroller at de to hovedeffektene summerer til null.</li>
+<li>Se at de fire interaksjonsleddene er like store med vekslende fortegn.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Totalgjennomsnittet er snittet av de fire cellesnittene, ikke av alle personene. I et ubalansert design er det to ulike tall — og det er grunnen til at Type III kvadratsummer finnes.</p>
+</div>
+<!-- /FANEHJELP estimat -->
+
 <div class="card">
 <h2>Estimering: fra fire cellesnitt til fire effekter</h2>
 
@@ -1397,6 +1439,21 @@ kilde til forvirring når man går mellom ANOVA og regresjon.</p>
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C9">C9 Interaksjon og faktorielle design &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div>
 <div id="fane-se" class="hide">
+<!-- FANEHJELP se -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Alle standardfeilene i hele analysen er bygget av ett eneste tall: MS residual, det felles anslaget på støyen i de fire cellene.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Finn MS residual i regnestykket øverst.</li>
+<li>Se hvordan standardfeilen til én celle avhenger av celletallet.</li>
+<li>Les hvorfor standardfeilen til en forskjell er større enn til ett snitt.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">En liten celle gir et langt feilfelt, og det er derfor feilfeltene i figurene er ulikt lange. Usikkerheten til en forskjell legges sammen — den er ikke gjennomsnittet av de to.</p>
+</div>
+<!-- /FANEHJELP se -->
+
 <div class="card">
 <h2>Hvor usikker er gjetningen? Standardfeilen</h2>
 
@@ -1494,6 +1551,21 @@ celler: √(MS<sub>res</sub>·(1/<i>n</i><sub>1</sub>+1/<i>n</i><sub>2</sub>)/4)
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B2">B2 Utvalgsfordeling og standardfeil &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div>
 <div id="fane-ki" class="hide">
+<!-- FANEHJELP ki -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Konfidensintervallet er spennet av verdier dataene er forenlige med. Samme oppskrift som i <i>t</i>-testen, bare med residualens frihetsgrader.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Se på feilfeltene rundt de fire cellene.</li>
+<li>Les så tabellen med intervaller rundt forskjellene.</li>
+<li>Sammenlign den siste raden — interaksjonskontrasten — med de andre.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">To feilfelt kan overlappe selv om forskjellen mellom dem er signifikant. Vil du vite noe om forskjellen, må du ha et intervall rundt forskjellen — ikke to intervaller ved siden av hverandre.</p>
+</div>
+<!-- /FANEHJELP ki -->
+
 <div class="card">
 <h2>Konfidensintervallet</h2>
 
@@ -1576,6 +1648,21 @@ tilbake til det.</p>
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B3">B3 Konfidensintervaller &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div>
 <div id="fane-nhst" class="hide">
+<!-- FANEHJELP nhst -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Tre effekter gir tre <i>F</i>-er, og alle tre deler på den samme nevneren. Det er bare telleren som skifter.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les de tre brøkene øverst: samme nevner, tre tellere.</li>
+<li>Finn frihetsgradene i tabellen og regn etter selv.</li>
+<li>Se hvor de tre verdiene lander i nullfordelingen.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Alle tre leses mot den samme fordelingen, fordi de har de samme frihetsgradene. Og tre tester på 5 % hver er ikke 5 % til sammen — det er verdt å ha i bakhodet før du jakter på den ene som ble signifikant.</p>
+</div>
+<!-- /FANEHJELP nhst -->
+
 <div class="card">
 <h2>Nullhypotesetesting: tre <i>F</i>-er av samme støy</h2>
 
@@ -1673,6 +1760,22 @@ Rapporter intervallet, ikke bare <i>p</i>.</p>
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B4">B4 p-verdien &rarr;</a> <a class="ovlenke" data-begrep="C9">C9 Interaksjon og faktorielle design &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div>
 <div id="fane-sim" class="hide">
+<!-- FANEHJELP sim -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Dra de fire cellegjennomsnittene og se hva som skjer med de tre <i>F</i>-ene. Avstand er hovedeffekt; forskjell i helning er interaksjon.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «Gjør linjene parallelle» og se interaksjonens <i>F</i> falle.</li>
+<li>Trykk «Lag en kryssende interaksjon».</li>
+<li>Dra «Innengruppe-spredning» opp og ned mens punktene står stille.</li>
+<li>Trykk «Sett de ekte tallene».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Parallelle linjer gir interaksjon lik null uansett hvor langt fra hverandre de ligger. Og dobbelt så stor spredning firedeler alle tre <i>F</i>-ene samtidig — cellesnittene rører seg ikke.</p>
+</div>
+<!-- /FANEHJELP sim -->
+
 <div class="card">
 <h2>Bygg interaksjonen selv</h2>
 
@@ -1764,6 +1867,21 @@ cellen med 7.</p>
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C9">C9 Interaksjon og faktorielle design &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div>
 <div id="fane-lese" class="hide">
+<!-- FANEHJELP lese -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Figuren er raskere enn tabellen, men den lures lett. Det eneste spørsmålet du stiller den, er: er linjene parallelle?</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les de fire mønstrene i tabellen og hva de heter.</li>
+<li>Merk deg forskjellen på ordinal og disordinal interaksjon.</li>
+<li>Les de tre måtene figuren kan lure deg på.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Ved en ordinal interaksjon kan hovedeffekten fortsatt oppsummere noe. Ved en disordinal er den et gjennomsnitt av to motsatte ting og beskriver ingen av gruppene.</p>
+</div>
+<!-- /FANEHJELP lese -->
+
 <div class="card">
 <h2>Å lese et interaksjonsplott</h2>
 
@@ -1839,6 +1957,21 @@ har lov til det.</div>
 <div class="card"><p class="muted" style="margin:0">Her er begge variablene kategoriske. Er den ene <b>kontinuerlig</b> — perfeksjonisme, alder, symptomtrykk — heter det samme fenomenet <b>moderasjon</b>, og testes med et produktledd i regresjon i stedet for en celledeling: <a href="PSY300_Sim_Moderasjon.html">Sim 36 · Moderasjon</a>.</p></div>
 </div>
 <div id="fane-enkle" class="hide">
+<!-- FANEHJELP enkle -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Interaksjonen sier at effekten varierer, ikke hvordan. Enkle effekter er oppfølgingen: effekten av den ene faktoren innenfor ett nivå av den andre.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les parallellen til post hoc i tabellen øverst.</li>
+<li>Gå gjennom de fire enkle effektene.</li>
+<li>Merk deg hvilke frihetsgrader de bruker.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Alle fire bruker det felles feilleddet, ikke bare de to cellene som sammenlignes. Det er derfor du skal be JASP om enkle effekter i stedet for å splitte datasettet og kjøre fire <i>t</i>-tester.</p>
+</div>
+<!-- /FANEHJELP enkle -->
+
 <div class="card">
 <h2>Enkle effekter: å følge opp en signifikant interaksjon</h2>
 
@@ -1934,6 +2067,21 @@ leseren må sammenligne selv.</p>
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C9">C9 Interaksjon og faktorielle design &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div>
 <div id="fane-effekt" class="hide">
+<!-- FANEHJELP effekt -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">To familier effektstørrelser med hver sin nevner. η² deler på alt; η²p tar de andre effektene ut av nevneren.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Sammenlign de to brøkene øverst — se hva som skiller nevnerne.</li>
+<li>Regn etter: hvorfor blir η²p større enn η²?</li>
+<li>Les hvorfor summen av η²p kan passere 1.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">En sterk hovedeffekt gjør interaksjonens η² mindre uten at interaksjonen er blitt svakere. Derfor kan η²p ikke leses som «andel av all variasjon» — og derfor må du alltid skrive hvilket av målene du oppgir.</p>
+</div>
+<!-- /FANEHJELP effekt -->
+
 <div class="card">
 <h2>Effektstørrelse: hvor mye, ikke bare om</h2>
 
@@ -2055,6 +2203,21 @@ ulike sett av faktorer. Den er nyttig i metaanalyser og lite brukt ellers.</p>
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B7">B7 Effektstørrelse og praktisk betydning &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div>
 <div id="fane-forut" class="hide">
+<!-- FANEHJELP forut -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Tre antakelser. To er de samme som i enveis ANOVA; den tredje er ny og handler om at cellene er ulikt store.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les tabellen kolonne for kolonne: hva brudd koster.</li>
+<li>Se på de fire standardavvikene og forholdet mellom største og minste.</li>
+<li>Les hvorfor ulik varians er farligere her enn i enveis ANOVA.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Med balanserte celler er <i>F</i> robust mot ulik varians. Med ubalanserte celler går det begge veier: stor celle med stor varians gjør testen for snill, motsatt kombinasjon gjør den for streng.</p>
+</div>
+<!-- /FANEHJELP forut -->
+
 <div class="card">
 <h2>Forutsetninger — og hva brudd koster</h2>
 
@@ -2174,6 +2337,21 @@ små oppdager den ikke store. Se derfor på standardavvikene selv, ikke bare på
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C13">C13 Forutsetninger og residualer &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div>
 <div id="fane-ekte" class="hide">
+<!-- FANEHJELP ekte -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Hele JASP-outputen fra terapistudien, tabell for tabell, med klikkstien og de tre feilene som går igjen når den skal tolkes.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les den deskriptive tabellen først — de to avstandene.</li>
+<li>Les interaksjonsraden før de to hovedeffektene.</li>
+<li>Gå gjennom de tre vanlige feilene til slutt.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Rekkefølgen er poenget: interaksjonen avgjør hvordan hovedeffektene skal leses. «Ikke påvist» er dessuten ikke det samme som «null» — det er den andre av de tre feilene.</p>
+</div>
+<!-- /FANEHJELP ekte -->
+
 <div class="card">
 <h2>Ekte data og JASP-output</h2>
 
@@ -2233,6 +2411,21 @@ om dem.</div>
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C9">C9 Interaksjon og faktorielle design &rarr;</a> <a class="ovlenke" data-begrep="D2">D2 Å lese JASP-output &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div>
 <div id="fane-rapport" class="hide">
+<!-- FANEHJELP rapport -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Tre former som skal si det samme: teksten, tabellen og figuren. Klikk på et tall i teksten for å se hvor i outputen det kommer fra.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les metodedelen først, så resultatdelen.</li>
+<li>Klikk på tallene i setningen og finn dem igjen i outputen.</li>
+<li>Les de fem tingene setningen gjør riktig.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Interaksjonen kommer først, og en hovedeffekt som ikke er signifikant rapporteres — men ikke som «ingen effekt». Den ikke-randomiserte faktoren må nevnes i tolkningen.</p>
+</div>
+<!-- /FANEHJELP rapport -->
+
 <div class="card">
 <h2>Slik rapporteres det</h2>
 
@@ -2330,6 +2523,21 @@ ser hvor mye som ikke er utelukket.</p>
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="D4">D4 Å lese en resultatdel (APA) &rarr;</a> <a class="ovlenke" data-begrep="D2">D2 Å lese JASP-output &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div>
 <div id="fane-kji" class="hide">
+<!-- FANEHJELP kji -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">En bro, ikke en del av løpet. Er utfallet en kategori i stedet for en tallskala, finnes det en test med nøyaktig samme spørsmålsform: kjikvadrat.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les sammenligningstabellen rad for rad.</li>
+<li>Se hvordan de forventede frekvensene regnes ut.</li>
+<li>Sammenlign formen på χ² med en kvadratsum.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Begge spør om det ene avhenger av det andre. Det som skiller dem, er hva som måles — gjennomsnitt eller andeler — og dermed hvilken effektstørrelse du kan oppgi.</p>
+</div>
+<!-- /FANEHJELP kji -->
+
 <div class="card">
 <h2>Kjikvadrat som interaksjon</h2>
 

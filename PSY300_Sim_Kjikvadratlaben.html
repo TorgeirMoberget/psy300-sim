@@ -231,6 +231,18 @@ table.tt tr.na td:first-child{color:#1F3864}
 .ovlbl{font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5A6B7B}
 .ovhint{font-size:13.5px;color:#8b949e}
 .ovlenke{color:#2E5496;font-weight:600;cursor:pointer;text-decoration:underline}
+/* ---------- FANEHJELP ---------- */
+.fhboks{background:var(--card,#fff);border:1px solid var(--line,#d9dee8);
+  border-left:5px solid var(--blue,#2E5496);border-radius:12px;padding:16px;
+  margin:0 0 14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.fhlbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--navy,#1F3864);font-weight:700;margin:0 0 4px}
+.fhlbl.sek{margin-top:12px}
+.fhkort{font-size:16px;margin:0}
+.fhsteg{font-size:16px;margin:0;padding-left:22px}
+.fhsteg li{margin:0 0 3px}
+.fhsee{font-size:16px;margin:0}
+/* ---------- FANEHJELP slutt ---------- */
 </style>
 <style id="ovbegrep-css">
 .ovkort{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f6f8fa;
@@ -343,6 +355,22 @@ ordet betyr og hvorfor det heter «log».
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C11">C11 Kjikvadrat og kategoriske effektmål &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-hvorfor -->
 <div id="fane-sim" class="hide">
+<!-- FANEHJELP sim -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Kjikvadrat sammenligner det du telte med det du ville ventet hvis det ikke fantes noen sammenheng. χ² er summen av de kvadrerte avvikene, delt på det forventede.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Endre tallene i krysstabellen og se de forventede frekvensene følge etter.</li>
+<li>Sammenlign observert og forventet celle for celle.</li>
+<li>Kjør simuleringen og se hvor din χ² lander i nullfordelingen.</li>
+<li>Gjør tabellen større og se frihetsgradene endre seg.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">De forventede frekvensene kommer fra radsummen ganger kolonnesummen, delt på totalen — ikke fra en antakelse om like store celler. Og χ² har samme form som en kvadratsum: avvik, kvadrert, lagt sammen.</p>
+</div>
+<!-- /FANEHJELP sim -->
+
 
 
 <div class="card">
@@ -547,6 +575,22 @@ I praksis: rapporter Pearsons &chi;&sup2; med mindre du har en grunn til noe ann
 </div>
 
 <div id="fane-odds" class="hide">
+<!-- FANEHJELP odds -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Oddsforholdet er effektstørrelsen som hører til kjikvadrat. Odds er ikke sannsynlighet, og forskjellen er hele grunnen til at tallet forvirrer.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les definisjonen av odds mot sannsynlighet først.</li>
+<li>Regn ut <i>ad</i>/<i>bc</i> på tabellen selv.</li>
+<li>Merk deg hvilken kategori som er referanse.</li>
+<li>Les hvorfor kasus-kontroll-design bare tillater oddsforhold.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Et oddsforhold på 2 betyr ikke dobbelt så stor sannsynlighet. Og bytter du referansekategori, blir tallet den omvendte brøken — så du må alltid si hvilken vei du regnet.</p>
+</div>
+<!-- /FANEHJELP odds -->
+
 
 <div class="card">
 <h2>Hva kjikvadrat ikke kan svare på</h2>
@@ -681,6 +725,21 @@ kommer fra, siden det avgjør om risiko i det hele tatt kan leses ut.</p>
 </div>
 
 <div id="fane-rapport" class="hide">
+<!-- FANEHJELP rapport -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">En kjikvadrattest rapporteres med χ², frihetsgrader, <i>N</i>, <i>p</i> og en effektstørrelse — og med retningen sagt i ord.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les malen og finn hvert tall i outputen over.</li>
+<li>Merk deg hvor <i>N</i> står i parentesen.</li>
+<li>Skriv din egen setning med dine egne tall.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee"><i>N</i> står i samme parentes som frihetsgradene — det er en konvensjon som er lett å glemme. Og en χ²-verdi uten retning sier ikke hvilken celle som bidro.</p>
+</div>
+<!-- /FANEHJELP rapport -->
+
 <div class="card">
 <h2>Rekkefølgen i en kjikvadratrapport</h2>
 <div class="note"><b>1 &middot; Si hvilken test det er.</b> Uavhengighetstest (to kategoriske

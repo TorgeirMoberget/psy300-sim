@@ -1,8 +1,82 @@
 <!DOCTYPE html>
 <html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PSY300 · Sim 28 — Teori mot fasit</title>
+<title>PSY300 · Sim 28 — Holder teorien? Nullfordelinger mot simulering</title>
 <style>
 :root{--navy:#1F3864;--blue:#2E5496;--light:#DCE6F1;--green:#2E7D32;--red:#C0392B;--orange:#B26A00;--bg:#F4F6FB;--card:#fff;--line:#d9dee8;}
+/* =====================================================================
+   PSY300 FARGEKODE — én betydning per farge, den samme i alle appene.
+   Poenget er at en student som har sett grønt over rødt i figuren, skal
+   kjenne igjen de samme fargene i JASP-tabellen og i den ferdige
+   setningen — og dermed se hvor hvert tall kommer fra.
+     grønn   variasjon MELLOM grupper · signal · det vi leter etter
+     rød     variasjon INNEN grupper · støy · residual
+     marine  teststatistikken (F, t, χ²) og frihetsgradene
+     lilla   p-verdien
+     rav     effektstørrelsen (η², ω², d, R²)
+     turkis  konfidensintervallet
+   ===================================================================== */
+:root{
+  --sig:#1E7A3C;    --sig-bg:#E7F4EA;    --sig-kant:#A9D6B6;
+  --stoy:#C0392B;   --stoy-bg:#FBEDEB;   --stoy-kant:#EEC3BD;
+  --tstat:#1F3864;  --tstat-bg:#E7ECF6;  --tstat-kant:#B9C8E2;
+  --pverdi:#7B3FA0; --pverdi-bg:#F3EAF8; --pverdi-kant:#D3BCE4;
+  --eff:#B26A00;    --eff-bg:#FDF2E2;    --eff-kant:#EBD0A6;
+  --ki:#0F6E7B;     --ki-bg:#E4F1F3;     --ki-kant:#AAD3D9;
+}
+.k-sig{color:var(--sig);font-weight:600}
+.k-stoy{color:var(--stoy);font-weight:600}
+.k-tstat{color:var(--tstat);font-weight:700}
+.k-p{color:var(--pverdi);font-weight:600}
+.k-eff{color:var(--eff);font-weight:600}
+.k-ki{color:var(--ki);font-weight:600}
+/* markert variant — brukes der et tall skal kunne spores fra tabell til setning */
+.m-sig,.m-stoy,.m-tstat,.m-p,.m-eff,.m-ki{border-radius:5px;padding:1px 5px;font-weight:600}
+.m-sig{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+.m-stoy{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+.m-tstat{background:var(--tstat-bg);color:var(--tstat);box-shadow:inset 0 0 0 1px var(--tstat-kant)}
+.m-p{background:var(--pverdi-bg);color:var(--pverdi);box-shadow:inset 0 0 0 1px var(--pverdi-kant)}
+.m-eff{background:var(--eff-bg);color:var(--eff);box-shadow:inset 0 0 0 1px var(--eff-kant)}
+.m-ki{background:var(--ki-bg);color:var(--ki);box-shadow:inset 0 0 0 1px var(--ki-kant)}
+
+/* ---- brøkfiguren: teller over streken, nevner under ---- */
+.brokfig{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 18px;
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 14px;margin:12px 0}
+.brokfig .brk{text-align:center;min-width:250px;flex:0 1 auto}
+.brokfig .tell,.brokfig .nevn{border-radius:8px;padding:8px 13px;font-size:15.5px;line-height:1.28}
+.brokfig .tell{background:var(--sig-bg);color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig-kant)}
+.brokfig .nevn{background:var(--stoy-bg);color:var(--stoy);box-shadow:inset 0 0 0 1px var(--stoy-kant)}
+.brokfig .strek{height:3px;background:#16203A;border-radius:2px;margin:6px 0}
+.brokfig .tall{display:block;font-size:23px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+.brokfig .lik{font-size:27px;color:#16203A;font-weight:600}
+.brokfig .res{font-size:17px;color:var(--tstat);text-align:center;line-height:1.3}
+.brokfig .res b{display:block;font-size:31px;font-weight:700;font-variant-numeric:tabular-nums}
+.brokfig .res .n{display:block;font-size:13.5px;color:#5C6A80;font-weight:400;margin-top:3px}
+.brokfig.smal .brk{min-width:210px}
+.brokfig.smal .tall{font-size:19px}
+.brokfig.smal .res b{font-size:25px}
+
+.stat.s-sig{background:var(--sig-bg);color:var(--sig)}
+.stat.s-stoy{background:var(--stoy-bg);color:var(--stoy)}
+.stat.s-tstat{background:var(--tstat-bg);color:var(--tstat)}
+.stat.s-p{background:var(--pverdi-bg);color:var(--pverdi)}
+.stat.s-eff{background:var(--eff-bg);color:var(--eff)}
+table.anova td.c-sig,table.tt td.c-sig{color:var(--sig);font-weight:700}
+table.anova td.c-stoy,table.tt td.c-stoy{color:var(--stoy);font-weight:700}
+table.anova td.c-tstat,table.tt td.c-tstat{color:var(--tstat);font-weight:700}
+table.anova td.c-p,table.tt td.c-p{color:var(--pverdi);font-weight:700}
+table.anova td.c-eff,table.tt td.c-eff{color:var(--eff);font-weight:700}
+/* ---- fargeforklaring ---- */
+.fargeliste{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:8px;margin-top:8px}
+.fargeliste div{border-radius:8px;padding:7px 11px;font-size:15px;line-height:1.35}
+.fargeliste b{display:block;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+
+/* ---- ANOVA-tabellen med fargede rader ---- */
+table.anova tr.r-sig td,table.tt tr.r-sig td{background:var(--sig-bg)}
+table.anova tr.r-stoy td,table.tt tr.r-stoy td{background:var(--stoy-bg)}
+table.anova tr.r-total td,table.tt tr.r-total td{color:#5F6A7E}
+table.anova tr.r-total td:first-child{font-weight:700}
+table.anova tr.r-sig td:first-child{color:var(--sig);font-weight:700}
+table.anova tr.r-stoy td:first-child{color:var(--stoy);font-weight:700}
 *{box-sizing:border-box}
 body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.5}
 .wrap{max-width:1000px;margin:0 auto;padding:16px}
@@ -75,26 +149,170 @@ body.pres .card.docs{display:none}
 body.pres .stat{font-size:16.5px}
 body.pres .note{padding:8px 11px;margin-top:7px}
 body.pres .keybox{font-size:18px}
-</style></head><body>
-<header><h1>Sim 28 · Teori mot fasit</h1>
+
+.hvbig{font-size:20px;line-height:1.45;color:#1F3864;font-weight:600;margin:2px 0 10px}
+.hvgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.hvkort{border-radius:10px;padding:11px 13px;font-size:16px;line-height:1.5}
+.hvkort h3{margin:0 0 6px;font-size:16.5px}
+.hvkort ul{margin:0;padding-left:18px}
+.hvkort li{margin-bottom:7px}
+.hver{background:#eaf6ea;border:1px solid #bcdcbc;border-left:5px solid #2E7D32}
+.hver h3{color:#1E5C22}
+.hvikke{background:#fbeceb;border:1px solid #edc9c5;border-left:5px solid #C0392B}
+.hvikke h3{color:#9B2D20}
+.eks{display:block;color:#5A6B7B;font-size:14.5px;margin-top:2px}
+.hvnaar{width:100%;border-collapse:collapse;font-size:15.5px;margin-top:8px}
+.hvnaar th{text-align:left;background:#eef2f8;border-bottom:2px solid #c7d6ec;padding:6px 8px;font-size:14.5px}
+.hvnaar td{border-bottom:1px solid #d9dee8;padding:6px 8px;vertical-align:top}
+.hvnaar tr.na{background:#eef3fb;font-weight:500}
+@media(max-width:760px){.hvgrid{grid-template-columns:1fr}}
+.ovkort{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ovlbl{font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5A6B7B}
+.ovhint{font-size:13.5px;color:#8b949e}
+.ovlenke{color:#2E5496;font-weight:600;cursor:pointer;text-decoration:underline}
+/* ---------- FANEHJELP ---------- */
+.fhboks{background:var(--card,#fff);border:1px solid var(--line,#d9dee8);
+  border-left:5px solid var(--blue,#2E5496);border-radius:12px;padding:16px;
+  margin:0 0 14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.fhlbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--navy,#1F3864);font-weight:700;margin:0 0 4px}
+.fhlbl.sek{margin-top:12px}
+.fhkort{font-size:16px;margin:0}
+.fhsteg{font-size:16px;margin:0;padding-left:22px}
+.fhsteg li{margin:0 0 3px}
+.fhsee{font-size:16px;margin:0}
+/* ---------- FANEHJELP slutt ---------- */
+</style>
+<style id="ovbegrep-css">
+.ovkort{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f6f8fa;
+ border:1px solid #dde3e8;border-left:5px solid #C8102E;border-radius:10px;
+ padding:10px 13px;margin:14px 0;font-size:15px}
+.ovkort .ovlbl{font-weight:700;color:#5B6670;letter-spacing:.02em;
+ text-transform:uppercase;font-size:11.5px}
+.ovkort a.ovlenke{display:inline-block;background:#fff;border:1px solid #c7d6ec;
+ border-radius:999px;padding:3px 11px;color:#174A6B;text-decoration:none;font-size:14.5px}
+.ovkort a.ovlenke:hover{background:#eef3fb;border-color:#8fb0d6}
+.ovkort .ovhint{color:#6B767D;font-size:13px}
+</style>
+</head><body>
+<header><h1>Sim 28 · Holder teorien? Nullfordelinger mot simulering</h1>
 <p>PSY300 · Vi trekker tusen studier fra en populasjon der vi <b>vet</b> at effekten er null — men der alt annet varierer akkurat som i de ekte dataene. Så sjekker vi om teorien traff</p></header>
 <div class="wrap">
 
 <div class="card" style="padding:10px 12px">
-<button class="fane on" data-fane="se">Standardfeilen</button>
-<button class="fane" data-fane="p">p-verdien</button>
-<button class="fane" data-fane="t">t-verdier</button>
-<button class="fane" data-fane="r">r-verdier</button>
-<button class="fane" data-fane="f">F-verdier</button>
-<button class="fane" data-fane="kji">Kji-kvadrat</button>
+<button class="fane on" data-fane="hvorfor">0 &middot; Hvorfor sjekke teorien?</button>
+<button class="fane" data-fane="se">1 &middot; Standardfeilen</button>
+<button class="fane" data-fane="p">2 &middot; <i>p</i>-verdien</button>
+<button class="fane" data-fane="t">3 &middot; <i>t</i>-verdier</button>
+<button class="fane" data-fane="r">4 &middot; <i>r</i>-verdier</button>
+<button class="fane" data-fane="f">5 &middot; <i>F</i>-verdier</button>
+<button class="fane" data-fane="kji">6 &middot; Kji-kvadrat</button>
 <span class="muted" style="margin-left:10px;font-size:15px">Alle tre stiller samme spørsmål: stemmer formelen med det som faktisk skjer?</span>
 </div>
 
-<div id="fane-se">
+<div id="fane-hvorfor">
+
+<div class="card">
+<h2>Spørsmålet denne appen svarer på</h2>
+<p class="hvbig">«Kan jeg stole på at formelen stemmer?»</p>
+<p style="font-size:16.5px;line-height:1.55">Gjennom hele emnet får du oppgitt fordelinger du skal
+tro på. Standardfeilen er <i>SD</i>/√<i>n</i>. <i>P</i>-verdier er jevnt fordelt når
+nullhypotesen er sann. <i>t</i>-verdier følger <i>t</i>-fordelingen med <i>n</i> &minus; 2
+frihetsgrader. Du har tatt alt dette på tro.</p>
+
+<p style="font-size:16.5px;line-height:1.55">Denne appen gjør noe annet: den <b>trekker tusenvis av
+utvalg</b> og tegner opp hva som faktisk skjer, oppå kurven teorien forutsier. Stemmer de overens,
+har du sett med egne øyne at formelen holder. Og i de tilfellene de <i>ikke</i> stemmer overens, har
+du lært noe viktigere &mdash; nemlig når teorien slutter å gjelde.</p>
+
+<div class="keybox"><span class="lbl">Sagt på &eacute;<i>n</i> linje</span>
+<b>Alle fanene stiller samme spørsmål: holder formelen mot det som faktisk skjer når vi gjentar
+studien tusen ganger? Svaret er stort sett ja &mdash; og unntakene er det verdt å kjenne.</b></div>
+
+<p style="font-size:16.5px;line-height:1.55">Dette er fordypning, ikke pensumkjerne. Men det er den
+fordypningen som gjør resten av emnet til noe annet enn utenatlæring: når du har sett en nullfordeling
+bygge seg opp fra tusen simulerte studier, er ikke <i>p</i>-verdien lenger et tall JASP finner på.</p>
+</div>
+
+<div class="card">
+<h2>Hva appen viser — og hva den ikke er</h2>
+<div class="hvgrid">
+<div class="hvkort hver"><h3>✓ Den viser deg</h3><ul>
+<li><b>At standardfeilen virkelig krymper med √<i>n</i></b>, ikke bare at formelen sier det.
+<span class="eks">Fane 1.</span></li>
+<li><b>At <i>p</i>-verdier er jevnt fordelt under H&#8320;.</b> Dette er den enkeltfiguren som
+gjør mest for forståelsen av hva en <i>p</i>-verdi er.
+<span class="eks">Fane 2.</span></li>
+<li><b>At nullfordelingene faktisk har formen lærebøkene tegner</b> &mdash; og hvor fort de
+nærmer seg den når <i>n</i> vokser.</li>
+<li><b>Hvor ofte en test forkaster når H&#8320; er sann.</b> Det skal være 5 %, og du kan telle
+etter.</li>
+</ul></div>
+<div class="hvkort hvikke"><h3>✗ Den er ikke</h3><ul>
+<li><b>En analyse du skal gjøre selv.</b> Ingen skriver en oppgave ved å simulere ti tusen
+utvalg. Dette er for å forstå, ikke for å rapportere.</li>
+<li><b>Et bevis.</b> Simulering viser at formelen stemmer under <i>disse</i> betingelsene. Et
+matematisk bevis dekker alle.</li>
+<li><b>Eksamensstoff i detalj.</b> Du skal kjenne begrepene &mdash; nullfordeling, standardfeil,
+feilrate &mdash; ikke kunne gjengi simuleringene.</li>
+<li><b>Stedet du lærer testene.</b> Hver test har sin egen app. Her ser du bare om teorien bak
+dem holder.</li>
+</ul></div>
+</div>
+
+<div class="note" style="margin-top:12px"><b>Den viktigste av dem:</b> figuren i fane 2. At
+<i>p</i>-verdier er <b>jevnt fordelt</b> når nullhypotesen er sann, betyr at <i>p</i> = .03 er
+nøyaktig like sannsynlig som <i>p</i> = .83 når ingenting er på ferde. Det er derfor en lav
+<i>p</i>-verdi ikke er bevis for noe i seg selv &mdash; og hvorfor mange tester garantert gir noen
+små <i>p</i>-verdier.</div>
+</div>
+
+<div class="card">
+<h2>Hvilken app fanen hører til</h2>
+<p style="font-size:16.5px;line-height:1.55">Hver fane her er ettersynet av &eacute;<i>n</i> formel
+du har møtt et annet sted:</p>
+<table class="hvnaar">
+<tr><th>Fanen</th><th>Formelen den etterprøver</th><th>Lært i</th></tr>
+<tr><td>Standardfeilen</td><td><i>SE</i> = <i>SD</i>/√<i>n</i></td><td>Sim 3</td></tr>
+<tr><td><i>p</i>-verdien</td><td>Jevn fordeling under H&#8320;</td><td>Sim 7</td></tr>
+<tr><td><i>t</i>-verdier</td><td><i>t</i>-fordelingen med <i>df</i> frihetsgrader</td><td>Sim 16</td></tr>
+<tr><td><i>r</i>-verdier</td><td>Utvalgsfordelingen til <i>r</i></td><td>Sim 11</td></tr>
+<tr><td><i>F</i>-verdier</td><td><i>F</i>-fordelingen med to sett frihetsgrader</td><td>Sim 22</td></tr>
+<tr><td>Kji-kvadrat</td><td>&chi;²-fordelingen og forventede frekvenser</td><td>Sim 29</td></tr>
+</table>
+<div class="note" style="margin-top:12px"><b>Kjenn igjen mønsteret:</b> alle seks er
+<b>nullfordelinger</b> &mdash; hva teststatistikken gjør når ingenting er på ferde. Det er den ene
+ideen hele slutningsstatistikken hviler på, sett fra seks kanter.</div>
+</div>
+
+<div class="keybox"><span class="lbl">Klar for resten av appen?</span>
+<b>Ta med &eacute;<i>n</i> setning herfra: <i>nullfordelingen er hva teststatistikken gjør når
+nullhypotesen er sann &mdash; og den lar seg se, ikke bare tro på.</i> Start med fane 2. Den
+figuren forandrer mest.</b></div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B2">B2 Utvalgsfordeling og standardfeil &rarr;</a><a class="ovlenke" data-begrep="B4">B4 p-verdien &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
+</div>
+
+<div id="fane-se" class="hide">
+<!-- FANEHJELP se -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Teorien sier at standardfeilen er σ/√<i>n</i>. Her settes den påstanden opp mot det simuleringen faktisk gir.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les formelen og det simulerte tallet ved siden av hverandre.</li>
+<li>Endre forutsetningene og se om de fortsatt stemmer overens.</li>
+<li>Merk deg hvor stort avviket må bli før det betyr noe.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Teorien og simuleringen lander på samme tall når antakelsene holder. Det er poenget med hele appen: formelen er ikke en påstand du må tro på, den er noe som kan etterprøves.</p>
+</div>
+<!-- /FANEHJELP se -->
+
 
 <div class="card">
 <h2>Oppsettet</h2>
-<p class="muted" id="forklaring">Forskeren har <i>ett</i> utvalg og regner ut standardfeilen med formelen <b>SE = s/√n</b>. Her har vi hele populasjonen på 10 000, så vi kan gjøre det forskeren aldri kan: trekke studien om igjen tusen ganger og <i>måle</i> hvor mye gjennomsnittet faktisk spriker. Så sammenligner vi de to.</p>
+<p class="muted" id="forklaring">Forskeren har <i>ett</i> utvalg og regner ut standardfeilen med formelen <b><i>SE</i> = s/√n</b>. Her har vi hele populasjonen på 10 000, så vi kan gjøre det forskeren aldri kan: trekke studien om igjen tusen ganger og <i>måle</i> hvor mye gjennomsnittet faktisk spriker. Så sammenligner vi de to.</p>
 
 <div class="nullboks"><span class="lbl">Hva vi tester, og hvorfor det er en rettferdig test</span>Simuleringen trekker fra en <b>populasjon på 10 000</b>, bygget fra det ekte datasettet. At vi har hele populasjonen er det som gjør testen mulig: da kjenner vi <b>fasiten</b> — den sanne standardfeilen — og kan sjekke om formelen treffer den.<div class="par"><span class="mrk">Fasiten:</span><span>σ er kjent, så den sanne standardfeilen kan regnes ut eksakt. En ekte forsker har bare ett utvalg og må gjette.</span><span class="mrk">Beholdt:</span><span>Hele fordelingen til variabelen slik den er i datasettet: spredning, skjevhet, skala og gulv- og takeffekter. Populasjonen er simulert fra de ekte dataene, ikke fra en pen normalfordeling.</span></div>Fordelen ved å ha alle 10 000: vi kjenner σ nøyaktig, og kan derfor regne ut den <i>sanne</i> standardfeilen. Det får ingen ekte forsker gjort.</div>
 <div class="rad">
@@ -104,13 +322,13 @@ body.pres .keybox{font-size:18px}
 <div id="popStats" style="margin:2px 0 8px"></div>
 
 <div class="rad">
-  <label>n fra <input type="number" id="nMin" value="5" min="2" max="2000" step="1"></label>
+  <label><i>n</i> fra <input type="number" id="nMin" value="5" min="2" max="2000" step="1"></label>
   <label>til <input type="number" id="nMaks" value="200" min="2" max="2000" step="1"></label>
   <label>i steg på <input type="number" id="nSteg" value="15" min="1" max="500" step="1"></label>
   <label><input type="checkbox" id="logSteg"> doble i stedet (5, 10, 20, 40 …)</label>
 </div>
 <div class="rad">
-  <label>Antall gjentakelser per n
+  <label>Antall gjentakelser per <i>n</i>
     <select id="rep">
       <option value="200">200</option>
       <option value="1000" selected>1 000</option>
@@ -136,11 +354,11 @@ body.pres .keybox{font-size:18px}
 </div>
 
 <div class="card">
-<h2>Ett n om gangen: hvor mye spriker selve estimatet?</h2>
+<h2>Ett <i>n</i> om gangen: hvor mye spriker selve estimatet?</h2>
 <div class="rad">
-  <label>Vis fordelingen av s/√n for n = <select id="nVelg"></select></label>
+  <label>Vis fordelingen av s/√n for <i>n</i> = <select id="nVelg"></select></label>
   <button class="btn2" id="seFrys" style="font-size:15px;padding:6px 12px">Frys denne fordelingen</button><button class="btn2" id="seUfrys" style="font-size:15px;padding:6px 12px">Fjern frossen</button><span class="muted" id="seFrosset" style="font-size:14.5px"></span>
-  <span class="muted" style="width:100%;font-size:14.5px">Klikk gjerne en rad i tabellen under i stedet. Fryser du en fordeling og velger en annen n, tegnes den gamle som oransje omriss bak den nye.</span>
+  <span class="muted" style="width:100%;font-size:14.5px">Klikk gjerne en rad i tabellen under i stedet. Fryser du en fordeling og velger en annen <i>n</i>, tegnes den gamle som oransje omriss bak den nye.</span>
 </div>
 <canvas id="cvEn" height="260"></canvas>
 <div id="enStats" class="muted">Kjør simuleringen først.</div>
@@ -149,7 +367,7 @@ body.pres .keybox{font-size:18px}
 <div class="card">
 <h2>Tallene</h2>
 <table id="tab"><thead><tr>
-  <th>n</th><th>σ/√n (sant)</th><th>Målt SD(x̄)</th><th>Snitt s/√n</th>
+  <th><i>n</i></th><th>σ/√n (sant)</th><th>Målt SD(x̄)</th><th>Snitt s/√n</th>
   <th>Avvik i snitt</th><th>95 % av enkeltestimatene</th><th>Relativ spredning</th>
 </tr></thead><tbody></tbody></table>
 <p class="muted" style="margin-top:8px">«Avvik i snitt» er hvor mye formelen bommer <i>i gjennomsnitt</i> over alle gjentakelsene, målt mot σ/√n. «Relativ spredning» er standardavviket til enkeltestimatene delt på σ/√n: hvor mye ett enkelt SE-estimat kan sprike fra det neste.</p>
@@ -157,33 +375,50 @@ body.pres .keybox{font-size:18px}
 
 <div class="keybox" id="keybox">
 <span class="lbl">Hovedpoenget</span>
-<b>Formelen har rett i det lange løp, men ett enkelt estimat er ikke til å stole på ved liten n.</b> Vi kan si det med sikkerhet fordi vi kjenner σ i populasjonen og dermed har fasiten.
-Snittet av s/√n over tusen studier lander nesten oppå σ/√n — formelen er altså ikke feil. Men den forskeren som har <i>én</i> studie med n = 5, har et SE-estimat som fint kan være halvparten eller halvannen gang det riktige. Legg dessuten merke til at snittet ligger litt <i>under</i> sannheten ved små n: s undervurderer σ systematisk, og det er nettopp derfor t-fordelingen har tyngre haler enn normalfordelingen. Dra n opp, og begge problemene forsvinner: kurvene faller sammen, og strekene krymper.
+<b>Formelen har rett i det lange løp, men ett enkelt estimat er ikke til å stole på ved liten <i>n</i>.</b> Vi kan si det med sikkerhet fordi vi kjenner σ i populasjonen og dermed har fasiten.
+Snittet av s/√n over tusen studier lander nesten oppå σ/√n — formelen er altså ikke feil. Men den forskeren som har <i>én</i> studie med <i>n</i> = 5, har et SE-estimat som fint kan være halvparten eller halvannen gang det riktige. Legg dessuten merke til at snittet ligger litt <i>under</i> sannheten ved små <i>n</i>: s undervurderer σ systematisk, og det er nettopp derfor <i>t</i>-fordelingen har tyngre haler enn normalfordelingen. Dra <i>n</i> opp, og begge problemene forsvinner: kurvene faller sammen, og strekene krymper.
 </div>
 
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B2">B2 Utvalgsfordeling og standardfeil &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-se -->
 
 <!-- ==================== p-VERDIEN ==================== -->
 <div id="fane-p" class="hide">
+<!-- FANEHJELP p -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Teorien sier at <i>p</i> er jevnt fordelt når nullhypotesen er sann. Her ser du om den påstanden holder.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Kjør simuleringen under nullhypotesen.</li>
+<li>Se på formen på fordelingen av <i>p</i>.</li>
+<li>Tell hvor stor andel som faller under .05.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Fordelingen er flat — alle <i>p</i>-verdier er like sannsynlige når H₀ er sann. Det er nøyaktig derfor 5 % havner under .05, og det er hele begrunnelsen for signifikansnivået.</p>
+</div>
+<!-- /FANEHJELP p -->
+
 <div class="card">
 <h2>Oppsettet</h2>
-<p class="muted">Vi trekker <b>to grupper fra samme populasjon</b>. Da er nullhypotesen sann per konstruksjon: det <i>finnes</i> ingen forskjell. Hver gjentakelse er en komplett studie som regner ut en t-test og får en p-verdi fra formelen. Etterpå kan vi måle hva p-verdien burde vært: andelen av alle nullstudiene som ga en minst like ekstrem t. Stemmer de to, ligger punktene på diagonalen.</p>
+<p class="muted">Vi trekker <b>to grupper fra samme populasjon</b>. Da er nullhypotesen sann per konstruksjon: det <i>finnes</i> ingen forskjell. Hver gjentakelse er en komplett studie som regner ut en <i>t</i>-test og får en <i>p</i>-verdi fra formelen. Etterpå kan vi måle hva <i>p</i>-verdien burde vært: andelen av alle nullstudiene som ga en minst like ekstrem <i>t</i>. Stemmer de to, ligger punktene på diagonalen.</p>
 <div class="nullboks"><span class="lbl">Hva vi tester, og hvorfor det er en rettferdig test</span>Simuleringen trekker fra en <b>nullpopulasjon på 10 000</b>. Den er bygget fra det ekte datasettet, men med den systematiske effekten fjernet — så vi vet fasiten på forhånd.<div class="par"><span class="mrk">Fjernet:</span><span><b>Forskjellen mellom gruppene.</b> Begge gruppene trekkes fra nøyaktig samme populasjon, så det finnes ingen behandlingseffekt, ingen gruppeforskjell, ingenting å finne. Hvert eneste «funn» du ser er falskt.</span><span class="mrk">Beholdt:</span><span>All annen variasjon: personene er like ulike hverandre som i de ekte dataene, med samme spredning og samme skjevhet. Det er bare den systematiske forskjellen som er tatt bort.</span></div>Derfor er dette en rettferdig test: hvis testen likevel roper «signifikant» i mer enn <b>α</b> av tilfellene, er det testen som svikter — ikke dataene som er rare.</div>
 <div class="rad">
   <label>Variabel <select id="pVsel"></select></label>
   <span class="muted" id="pPopInfo"></span>
 </div>
 <div class="rad">
-  <label>n per gruppe fra <input type="number" id="pMin" value="5" min="2" max="1000"></label>
+  <label><i>n</i> per gruppe fra <input type="number" id="pMin" value="5" min="2" max="1000"></label>
   <label>til <input type="number" id="pMaks" value="100" min="2" max="1000"></label>
   <label>i steg på <input type="number" id="pSteg" value="19" min="1" max="500"></label>
   <label><input type="checkbox" id="pLog"> doble i stedet</label>
 </div>
 <div class="rad">
-  <label>Gjentakelser per n <select id="pRep">
+  <label>Gjentakelser per <i>n</i> <select id="pRep">
     <option value="1000" selected>1 000</option><option value="5000">5 000</option><option value="10000">10 000</option></select></label>
   <label>Signifikansnivå α <select id="pAlfa">
-    <option value="0.01">0,01</option><option value="0.05" selected>0,05</option><option value="0.1">0,10</option></select></label>
+    <option value="0.01">0.01</option><option value="0.05" selected>0.05</option><option value="0.1">0.10</option></select></label>
   <button class="btn" id="pKjor">Kjør simuleringen</button>
   <button class="btn2" id="pTom">Nullstill</button>
   <span class="muted" id="pStatus"></span>
@@ -192,19 +427,19 @@ Snittet av s/√n over tusen studier lander nesten oppå σ/√n — formelen er
 </div>
 
 <div class="card">
-<h2>Formelens p mot den målte p-verdien</h2>
+<h2>Formelens <i>p</i> mot den målte <i>p</i>-verdien</h2>
 <div class="rad">
-  <label>n per gruppe = <select id="pNvelg"></select></label>
-  <label><input type="checkbox" id="pZoom" checked> zoom inn på p &lt; 0,10 (der avgjørelsene tas)</label>
+  <label><i>n</i> per gruppe = <select id="pNvelg"></select></label>
+  <label><input type="checkbox" id="pZoom" checked> zoom inn på <i>p</i> &lt; .10 (der avgjørelsene tas)</label>
 </div>
 <div class="teori" id="pTeori"></div>
 <canvas id="pCvQQ" height="340"></canvas>
-<div class="legend"><b style="color:#2E5496">● hver prikk</b> er én av nullstudiene: formelens p vannrett, den målte p loddrett. <b style="color:#1F3864">▬ diagonalen</b> er full enighet.</div>
+<div class="legend"><b style="color:#2E5496">● hver prikk</b> er én av nullstudiene: formelens <i>p</i> vannrett, den målte <i>p</i> loddrett. <b style="color:#1F3864">▬ diagonalen</b> er full enighet.</div>
 <div class="note" id="pNote" style="display:none"></div>
 </div>
 
 <div class="card">
-<h2>Holder 5 %-løftet ved hver n?</h2>
+<h2>Holder 5 %-løftet ved hver <i>n</i>?</h2>
 <canvas id="pCvRate" height="300"></canvas>
 <div class="legend"><b style="color:#B26A00">● målt andel</b> nullstudier som ble «signifikante» &nbsp;·&nbsp; <b style="color:#1F3864">▬ α</b> = det formelen lover &nbsp;·&nbsp; det grå feltet er hvor mye ren tilfeldighet kan flytte den målte andelen (±2 standardfeil).</div>
 </div>
@@ -212,23 +447,40 @@ Snittet av s/√n over tusen studier lander nesten oppå σ/√n — formelen er
 <div class="card">
 <h2>Tallene</h2>
 <table id="pTab"><thead><tr>
-  <th>n per gruppe</th><th>df</th><th>Målt p &lt; 0,01</th><th>Målt p &lt; 0,05</th><th>Målt p &lt; 0,10</th>
-  <th>Største avvik fra formelen</th><th>Snitt p</th></tr></thead><tbody></tbody></table>
-<p class="muted" style="margin-top:8px">Under en sann nullhypotese skal p-verdier være <b>jevnt fordelt</b> mellom 0 og 1. Da blir andelen under 0,05 nøyaktig 5 %, og snittet 0,50. «Største avvik» er den største forskjellen mellom formelens p og den målte p over alle gjentakelsene — altså hvor langt fra diagonalen punktene kommer.</p>
+  <th><i>n</i> per gruppe</th><th><i>df</i></th><th>Målt <i>p</i> &lt; .01</th><th>Målt <i>p</i> &lt; .05</th><th>Målt <i>p</i> &lt; .10</th>
+  <th>Største avvik fra formelen</th><th>Snitt <i>p</i></th></tr></thead><tbody></tbody></table>
+<p class="muted" style="margin-top:8px">Under en sann nullhypotese skal <i>p</i>-verdier være <b>jevnt fordelt</b> mellom 0 og 1. Da blir andelen under 0.05 nøyaktig 5 %, og snittet 0.50. «Største avvik» er den største forskjellen mellom formelens <i>p</i> og den målte <i>p</i> over alle gjentakelsene — altså hvor langt fra diagonalen punktene kommer.</p>
 </div>
 
 <div class="keybox">
 <span class="lbl">Hovedpoenget</span>
-<b>Poenget er ikke at 5 % er «riktig», men at vi kan etterprøve det.</b> Fordi vi fjernet effekten selv, vet vi at hvert eneste signifikante funn her er falskt — og da kan vi telle dem. <b>t-testens p-verdi holder det den lover, også når populasjonen er skjev.</b>
-Punktene legger seg på diagonalen, og andelen falske funn lander på α — ikke fordi dataene er normalfordelte, men fordi <i>gjennomsnittene</i> blir det (sentralgrenseteoremet). Prøv likevel n = 5 med den skjeveste variabelen: da begynner det å skrante i den ytterste halen, og det er nettopp der p = 0,01 og p = 0,001 bor. Det er også verdt å merke seg hva bildet <i>ikke</i> sier: hver eneste av disse tusen studiene er et rent nullfunn, og likevel er 5 % av dem «signifikante». Det er ikke en feil ved testen. Det er prisen.
+<b>Poenget er ikke at 5 % er «riktig», men at vi kan etterprøve det.</b> Fordi vi fjernet effekten selv, vet vi at hvert eneste signifikante funn her er falskt — og da kan vi telle dem. <b>t-testens <i>p</i>-verdi holder det den lover, også når populasjonen er skjev.</b>
+Punktene legger seg på diagonalen, og andelen falske funn lander på α — ikke fordi dataene er normalfordelte, men fordi <i>gjennomsnittene</i> blir det (sentralgrenseteoremet). Prøv likevel <i>n</i> = 5 med den skjeveste variabelen: da begynner det å skrante i den ytterste halen, og det er nettopp der <i>p</i> = .01 og <i>p</i> = .001 bor. Det er også verdt å merke seg hva bildet <i>ikke</i> sier: hver eneste av disse tusen studiene er et rent nullfunn, og likevel er 5 % av dem «signifikante». Det er ikke en feil ved testen. Det er prisen.
 </div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="B4">B4 p-verdien &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-p -->
 
 <div id="fane-t" class="hide">
+<!-- FANEHJELP t -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Teorien sier at teststatistikken følger en <i>t</i>-fordeling med bestemte frihetsgrader. Her legges den teoretiske kurven oppå de simulerte verdiene.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Kjør simuleringen og sammenlign med kurven.</li>
+<li>Endre utvalgsstørrelsen og se begge følge etter.</li>
+<li>Se spesielt på halene, ikke bare på midten.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Kurven og søylene faller sammen når antakelsene holder. Halene er det stedet avvik først blir synlige — og det er halene som bestemmer de kritiske verdiene.</p>
+</div>
+<!-- /FANEHJELP t -->
+
 <div class="card">
 <h2>Oppsettet</h2>
-<p class="muted">To grupper trekkes fra <b>samme</b> populasjon, så det finnes ingen forskjell å finne — vi har fjernet den. Hver gjentakelse gir likevel én t-verdi, og den er ren tilfeldighet. Teorien sier at disse skal følge en t-fordeling med 2n − 2 frihetsgrader — den fordelingen JASP slår opp i for å gjøre din t om til en p-verdi. Holder påstanden også når rådataene er skjeve, slik de er i det ekte datasettet?</p>
-<div class="nullboks"><span class="lbl">Hva vi tester, og hvorfor det er en rettferdig test</span>Simuleringen trekker fra en <b>nullpopulasjon på 10 000</b>. Den er bygget fra det ekte datasettet, men med den systematiske effekten fjernet — så vi vet fasiten på forhånd.<div class="par"><span class="mrk">Fjernet:</span><span><b>Forskjellen mellom gruppene.</b> Begge gruppene trekkes fra samme populasjon, så den sanne forskjellen mellom dem er null. Alle t-verdiene du ser under, kommer fra ren tilfeldighet.</span><span class="mrk">Beholdt:</span><span>Variasjonen mellom personer, akkurat som i datasettet — inkludert at fordelingen kan være skjev.</span></div>Poenget: kurven teorien lover skal beskrive nettopp denne tilfeldige variasjonen. Gjør den det, kan vi stole på den når vi seinere møter en forskjell som kanskje <i>er</i> ekte.</div>
+<p class="muted">To grupper trekkes fra <b>samme</b> populasjon, så det finnes ingen forskjell å finne — vi har fjernet den. Hver gjentakelse gir likevel én <i>t</i>-verdi, og den er ren tilfeldighet. Teorien sier at disse skal følge en <i>t</i>-fordeling med 2n − 2 frihetsgrader — den fordelingen JASP slår opp i for å gjøre din <i>t</i> om til en <i>p</i>-verdi. Holder påstanden også når rådataene er skjeve, slik de er i det ekte datasettet?</p>
+<div class="nullboks"><span class="lbl">Hva vi tester, og hvorfor det er en rettferdig test</span>Simuleringen trekker fra en <b>nullpopulasjon på 10 000</b>. Den er bygget fra det ekte datasettet, men med den systematiske effekten fjernet — så vi vet fasiten på forhånd.<div class="par"><span class="mrk">Fjernet:</span><span><b>Forskjellen mellom gruppene.</b> Begge gruppene trekkes fra samme populasjon, så den sanne forskjellen mellom dem er null. Alle <i>t</i>-verdiene du ser under, kommer fra ren tilfeldighet.</span><span class="mrk">Beholdt:</span><span>Variasjonen mellom personer, akkurat som i datasettet — inkludert at fordelingen kan være skjev.</span></div>Poenget: kurven teorien lover skal beskrive nettopp denne tilfeldige variasjonen. Gjør den det, kan vi stole på den når vi seinere møter en forskjell som kanskje <i>er</i> ekte.</div>
 <div class="rad">
   <label>Variabel <select id="tVsel"></select></label>
   <span class="muted" id="tPopInfo"></span>
@@ -237,15 +489,15 @@ Punktene legger seg på diagonalen, og andelen falske funn lander på α — ikk
   <label><input type="checkbox" id="tNormal"> vis også normalfordelingen (den t-en nærmer seg)</label>
 </div>
 <div class="rad">
-  <label>n per gruppe fra <input type="number" id="tMin" value="4" min="3" max="1000"></label>
+  <label><i>n</i> per gruppe fra <input type="number" id="tMin" value="4" min="3" max="1000"></label>
   <label>til <input type="number" id="tMaks" value="40" min="3" max="1000"></label>
   <label>i steg på <input type="number" id="tSteg" value="6" min="1" max="500"></label>
   <label><input type="checkbox" id="tLog"> doble i stedet</label>
 </div>
 <div class="rad">
-  <label>Gjentakelser per n <select id="tRep">
+  <label>Gjentakelser per <i>n</i> <select id="tRep">
     <option value="1000" selected>1 000</option><option value="5000">5 000</option><option value="10000">10 000</option></select></label>
-  <label>α <select id="tAlfa"><option value="0.01">0,01</option><option value="0.05" selected>0,05</option><option value="0.1">0,10</option></select></label>
+  <label>α <select id="tAlfa"><option value="0.01">0.01</option><option value="0.05" selected>0.05</option><option value="0.1">0.10</option></select></label>
   <button class="btn" id="tKjor">Kjør simuleringen</button>
   <button class="btn2" id="tTom">Nullstill</button>
   <span class="muted" id="tStatus"></span>
@@ -254,35 +506,52 @@ Punktene legger seg på diagonalen, og andelen falske funn lander på α — ikk
 </div>
 
 <div class="card">
-<h2>Den teoretiske t-fordelingen mot den målte</h2>
-<div class="rad"><label>n per gruppe = <select id="tNvelg"></select></label>
+<h2>Den teoretiske <i>t</i>-fordelingen mot den målte</h2>
+<div class="rad"><label><i>n</i> per gruppe = <select id="tNvelg"></select></label>
   <button class="btn2" id="tFrys" style="font-size:15px;padding:6px 12px">Frys denne fordelingen</button><button class="btn2" id="tUfrys" style="font-size:15px;padding:6px 12px">Fjern frossen</button><span class="muted" id="tFrosset" style="font-size:14.5px"></span></div>
 <div class="teori" id="tTeori"></div>
 <canvas id="tCvFord" height="330"></canvas>
-<div class="legend"><b style="color:#8fb0dd">■ søyler</b> = de simulerte verdiene fra nullhypotesen &nbsp;·&nbsp; <b style="color:#C0392B">▬ kurve</b> = fordelingen teorien lover &nbsp;·&nbsp; <b style="color:#1F3864">┆ strek</b> = den kritiske verdien &nbsp;·&nbsp; <b style="color:#B26A00">▭ omriss</b> = den frosne fordelingen fra en annen n, med sin egen teorikurve stiplet</div>
+<div class="legend"><b style="color:#8fb0dd">■ søyler</b> = de simulerte verdiene fra nullhypotesen &nbsp;·&nbsp; <b style="color:#C0392B">▬ kurve</b> = fordelingen teorien lover &nbsp;·&nbsp; <b style="color:#1F3864">┆ strek</b> = den kritiske verdien &nbsp;·&nbsp; <b style="color:#B26A00">▭ omriss</b> = den frosne fordelingen fra en annen <i>n</i>, med sin egen teorikurve stiplet</div>
 <div id="tStats" class="muted" style="margin-top:6px">Kjør simuleringen først.</div>
 <div class="note" id="tNote" style="display:none"></div>
 </div>
 
 <div class="card">
-<h2>Holder feilraten ved hver n?</h2>
+<h2>Holder feilraten ved hver <i>n</i>?</h2>
 <canvas id="tCvRate" height="290"></canvas>
 <div class="legend"><b style="color:#B26A00">● målt andel</b> nullstudier som ble forkastet &nbsp;·&nbsp; <b style="color:#1F3864">▬ α</b> = det testen lover &nbsp;·&nbsp; det grå feltet er ±2 standardfeil rundt α.</div>
 </div>
 
 <div class="card">
 <h2>Tallene</h2>
-<table id="tTabell"><thead><tr><th>n</th><th>df</th><th>Kritisk verdi (teori)</th><th>Målt kritisk verdi</th><th>Målt forkastningsrate</th><th>Snitt</th><th>SD</th></tr></thead><tbody></tbody></table>
+<table id="tTabell"><thead><tr><th><i>n</i></th><th><i>df</i></th><th>Kritisk verdi (teori)</th><th>Målt kritisk verdi</th><th>Målt forkastningsrate</th><th>Snitt</th><th><i>SD</i></th></tr></thead><tbody></tbody></table>
 <p class="muted" style="margin-top:8px">Den kritiske verdien er den t-en som skjærer av α i de to halene til sammen. «Målt kritisk verdi» er persentilen simuleringen faktisk gir. Faller de sammen, er oppslagstabellen riktig for denne n-en.</p>
 </div>
 
-<div class="keybox"><span class="lbl">Hovedpoenget</span><b>t-fordelingen er ikke normalfordelingen, og forskjellen bor i halene.</b> Slå på normalkurven ved n = 4 per gruppe: midtpartiet er nesten identisk, men t-fordelingen har tydelig tyngre haler — og det er halene p-verdier lever i. Derfor er den kritiske t-en 2,45 og ikke 1,96. Dra n oppover, og de to kurvene smelter sammen. Legg også merke til at den simulerte fordelingen følger t-kurven selv når populasjonen er skjev: det er sentralgrenseteoremet som redder testen, ikke en antakelse om at rådataene er pene.</div>
+<div class="keybox"><span class="lbl">Hovedpoenget</span><b><i>t</i>-fordelingen er ikke normalfordelingen, og forskjellen bor i halene.</b> Slå på normalkurven ved <i>n</i> = 4 per gruppe: midtpartiet er nesten identisk, men <i>t</i>-fordelingen har tydelig tyngre haler — og det er halene <i>p</i>-verdier lever i. Derfor er den kritiske t-en 2.45 og ikke 1.96. Dra <i>n</i> oppover, og de to kurvene smelter sammen. Legg også merke til at den simulerte fordelingen følger t-kurven selv når populasjonen er skjev: det er sentralgrenseteoremet som redder testen, ikke en antakelse om at rådataene er pene.</div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C7">C7 t-tester &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-t -->
 
 <div id="fane-r" class="hide">
+<!-- FANEHJELP r -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Teorien sier hvor mye <i>r</i> spriker rundt sannheten. Her måles den påstanden mot mange simulerte utvalg.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Kjør simuleringen ved én utvalgsstørrelse.</li>
+<li>Sammenlign den simulerte bredden med den teoretiske.</li>
+<li>Gjenta ved en sann korrelasjon nær 1.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Nær kanten klemmes fordelingen sammen mot 1 og blir skjev. Det er derfor konfidensintervallet for <i>r</i> må gå veien om Fishers <i>z</i> i stedet for å være symmetrisk.</p>
+</div>
+<!-- /FANEHJELP r -->
+
 <div class="card">
 <h2>Oppsettet</h2>
-<p class="muted">To variabler trekkes <b>uavhengig av hverandre</b>: verdien på x sier ingenting om y, så den sanne korrelasjonen er ρ = 0 — vi har koblet dem fra hverandre med vilje. Hver variabel beholder sin egen fordeling fra datasettet. Likevel blir r nesten aldri nøyaktig null, og fordelingen av disse tilfeldige r-ene er nettopp det en signifikanstest for korrelasjon måler mot.</p>
+<p class="muted">To variabler trekkes <b>uavhengig av hverandre</b>: verdien på x sier ingenting om y, så den sanne korrelasjonen er ρ = 0 — vi har koblet dem fra hverandre med vilje. Hver variabel beholder sin egen fordeling fra datasettet. Likevel blir <i>r</i> nesten aldri nøyaktig null, og fordelingen av disse tilfeldige r-ene er nettopp det en signifikanstest for korrelasjon måler mot.</p>
 <div class="nullboks"><span class="lbl">Hva vi tester, og hvorfor det er en rettferdig test</span>Simuleringen trekker fra en <b>nullpopulasjon på 10 000</b>. Den er bygget fra det ekte datasettet, men med den systematiske effekten fjernet — så vi vet fasiten på forhånd.<div class="par"><span class="mrk">Fjernet:</span><span><b>Sammenhengen mellom variablene.</b> x og y trekkes uavhengig av hverandre, altså blir person nr. 1 sin x-verdi og y-verdi hentet fra hver sin kant. Den sanne korrelasjonen er nøyaktig ρ = 0.</span><span class="mrk">Beholdt:</span><span>Hver variabel beholder sin egen fordeling fra datasettet: samme spredning, samme skjevhet, samme skala.</span></div>Alt du ser av skrå linjer i dataene er dermed ren støy — og fordelingen av den støyen er nøyaktig det en signifikanstest måler mot.</div>
 <div class="rad">
   <label>Variabel <select id="rVsel"></select></label>
@@ -293,15 +562,15 @@ Punktene legger seg på diagonalen, og andelen falske funn lander på α — ikk
   <span class="muted">x og y trekkes hver for seg, så sammenhengen er null uansett hvilke to du velger.</span>
 </div>
 <div class="rad">
-  <label>n (antall par) fra <input type="number" id="rMin" value="5" min="3" max="1000"></label>
+  <label><i>n</i> (antall par) fra <input type="number" id="rMin" value="5" min="3" max="1000"></label>
   <label>til <input type="number" id="rMaks" value="100" min="3" max="1000"></label>
   <label>i steg på <input type="number" id="rSteg" value="15" min="1" max="500"></label>
   <label><input type="checkbox" id="rLog"> doble i stedet</label>
 </div>
 <div class="rad">
-  <label>Gjentakelser per n <select id="rRep">
+  <label>Gjentakelser per <i>n</i> <select id="rRep">
     <option value="1000" selected>1 000</option><option value="5000">5 000</option><option value="10000">10 000</option></select></label>
-  <label>α <select id="rAlfa"><option value="0.01">0,01</option><option value="0.05" selected>0,05</option><option value="0.1">0,10</option></select></label>
+  <label>α <select id="rAlfa"><option value="0.01">0.01</option><option value="0.05" selected>0.05</option><option value="0.1">0.10</option></select></label>
   <button class="btn" id="rKjor">Kjør simuleringen</button>
   <button class="btn2" id="rTom">Nullstill</button>
   <span class="muted" id="rStatus"></span>
@@ -310,35 +579,52 @@ Punktene legger seg på diagonalen, og andelen falske funn lander på α — ikk
 </div>
 
 <div class="card">
-<h2>Nullfordelingen til r: teori mot simulering</h2>
-<div class="rad"><label>n (antall par) = <select id="rNvelg"></select></label>
+<h2>Nullfordelingen til <i>r</i>: teori mot simulering</h2>
+<div class="rad"><label><i>n</i> (antall par) = <select id="rNvelg"></select></label>
   <button class="btn2" id="rFrys" style="font-size:15px;padding:6px 12px">Frys denne fordelingen</button><button class="btn2" id="rUfrys" style="font-size:15px;padding:6px 12px">Fjern frossen</button><span class="muted" id="rFrosset" style="font-size:14.5px"></span></div>
 <div class="teori" id="rTeori"></div>
 <canvas id="rCvFord" height="330"></canvas>
-<div class="legend"><b style="color:#8fb0dd">■ søyler</b> = de simulerte verdiene fra nullhypotesen &nbsp;·&nbsp; <b style="color:#C0392B">▬ kurve</b> = fordelingen teorien lover &nbsp;·&nbsp; <b style="color:#1F3864">┆ strek</b> = den kritiske verdien &nbsp;·&nbsp; <b style="color:#B26A00">▭ omriss</b> = den frosne fordelingen fra en annen n, med sin egen teorikurve stiplet</div>
+<div class="legend"><b style="color:#8fb0dd">■ søyler</b> = de simulerte verdiene fra nullhypotesen &nbsp;·&nbsp; <b style="color:#C0392B">▬ kurve</b> = fordelingen teorien lover &nbsp;·&nbsp; <b style="color:#1F3864">┆ strek</b> = den kritiske verdien &nbsp;·&nbsp; <b style="color:#B26A00">▭ omriss</b> = den frosne fordelingen fra en annen <i>n</i>, med sin egen teorikurve stiplet</div>
 <div id="rStats" class="muted" style="margin-top:6px">Kjør simuleringen først.</div>
 <div class="note" id="rNote" style="display:none"></div>
 </div>
 
 <div class="card">
-<h2>Holder feilraten ved hver n?</h2>
+<h2>Holder feilraten ved hver <i>n</i>?</h2>
 <canvas id="rCvRate" height="290"></canvas>
 <div class="legend"><b style="color:#B26A00">● målt andel</b> nullstudier som ble forkastet &nbsp;·&nbsp; <b style="color:#1F3864">▬ α</b> = det testen lover &nbsp;·&nbsp; det grå feltet er ±2 standardfeil rundt α.</div>
 </div>
 
 <div class="card">
 <h2>Tallene</h2>
-<table id="rTabell"><thead><tr><th>n</th><th>df</th><th>Kritisk verdi (teori)</th><th>Målt kritisk verdi</th><th>Målt forkastningsrate</th><th>Snitt</th><th>SD</th></tr></thead><tbody></tbody></table>
-<p class="muted" style="margin-top:8px">Den kritiske verdien er den r-en som må til for å bli signifikant ved denne n-en. Se hvor stor den er ved n = 5: en korrelasjon på 0,8 betyr ingenting når du bare har fem par.</p>
+<table id="rTabell"><thead><tr><th><i>n</i></th><th><i>df</i></th><th>Kritisk verdi (teori)</th><th>Målt kritisk verdi</th><th>Målt forkastningsrate</th><th>Snitt</th><th><i>SD</i></th></tr></thead><tbody></tbody></table>
+<p class="muted" style="margin-top:8px">Den kritiske verdien er den r-en som må til for å bli signifikant ved denne n-en. Se hvor stor den er ved <i>n</i> = 5: en korrelasjon på 0.8 betyr ingenting når du bare har fem par.</p>
 </div>
 
-<div class="keybox"><span class="lbl">Hovedpoenget</span><b>«Ingen sammenheng» betyr ikke r = 0.</b> Vi <i>vet</i> at det ikke finnes noen sammenheng her, for vi trakk x og y hver for seg. Med n = 10 gir rene tilfeldigheter r-er på ±0,63 i fem prosent av tilfellene, og det er derfor den kritiske verdien er så høy ved liten n. Kurven viser også hvorfor r er en dårlig størrelse å sammenligne på tvers av studier med ulik n: den samme r-en betyr helt ulike ting ved n = 10 og n = 1 000. Det er den samme lærdommen som i Sim 11, men her ser du fordelingen testen faktisk måler mot.</div>
+<div class="keybox"><span class="lbl">Hovedpoenget</span><b>«Ingen sammenheng» betyr ikke <i>r</i> = 0.</b> Vi <i>vet</i> at det ikke finnes noen sammenheng her, for vi trakk x og y hver for seg. Med <i>n</i> = 10 gir rene tilfeldigheter r-er på ±0.63 i fem prosent av tilfellene, og det er derfor den kritiske verdien er så høy ved liten <i>n</i>. Kurven viser også hvorfor <i>r</i> er en dårlig størrelse å sammenligne på tvers av studier med ulik <i>n</i>: den samme r-en betyr helt ulike ting ved <i>n</i> = 10 og <i>n</i> = 1 000. Det er den samme lærdommen som i Sim 11, men her ser du fordelingen testen faktisk måler mot.</div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C4">C4 Korrelasjon og forklart varians &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-r -->
 
 <div id="fane-f" class="hide">
+<!-- FANEHJELP f -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Teorien sier at <i>F</i> under nullhypotesen følger en <i>F</i>-fordeling med to sett frihetsgrader. Her settes den opp mot simulerte verdier.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Kjør simuleringen og sammenlign med kurven.</li>
+<li>Endre antall grupper og se begge frihetsgradene endre seg.</li>
+<li>Les av hvor den kritiske verdien havner.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Fordelingen har bare én hale, fordi <i>F</i> ikke kan bli negativ. Og den endrer form med begge frihetsgradene — samme <i>F</i> gir derfor ulik <i>p</i> i to ulike design.</p>
+</div>
+<!-- /FANEHJELP f -->
+
 <div class="card">
 <h2>Oppsettet</h2>
-<p class="muted">Flere grupper trekkes fra <b>samme</b> populasjon: alle gruppegjennomsnittene har samme forventning, fordi det ikke finnes noen gruppeeffekt å ha. Likevel spriker de, og F måler hvor mye de spriker i forhold til spredningen inne i gruppene — en spredning hentet fra de ekte dataene. Teorien sier at F da følger en F-fordeling med k − 1 og k(n − 1) frihetsgrader.</p>
+<p class="muted">Flere grupper trekkes fra <b>samme</b> populasjon: alle gruppegjennomsnittene har samme forventning, fordi det ikke finnes noen gruppeeffekt å ha. Likevel spriker de, og <i>F</i> måler hvor mye de spriker i forhold til spredningen inne i gruppene — en spredning hentet fra de ekte dataene. Teorien sier at <i>F</i> da følger en <i>F</i>-fordeling med k − 1 og k(<i>n</i> − 1) frihetsgrader.</p>
 <div class="nullboks"><span class="lbl">Hva vi tester, og hvorfor det er en rettferdig test</span>Simuleringen trekker fra en <b>nullpopulasjon på 10 000</b>. Den er bygget fra det ekte datasettet, men med den systematiske effekten fjernet — så vi vet fasiten på forhånd.<div class="par"><span class="mrk">Fjernet:</span><span><b>Forskjellene mellom gruppene.</b> Alle gruppene trekkes fra samme populasjon, så gruppegjennomsnittene har samme forventning. Det finnes ingen effekt av «behandling».</span><span class="mrk">Beholdt:</span><span>Variasjonen mellom personer innen hver gruppe, som i det ekte datasettet.</span></div>Krysser du av for ulik spredning, bryter du én av forutsetningene <i>med vilje</i> — mens nullhypotesen fortsatt er sann. Da ser du hva et brudd på antakelsen koster i falske funn, uten at noe annet er endret.</div>
 <div class="rad">
   <label>Variabel <select id="fVsel"></select></label>
@@ -351,15 +637,15 @@ Punktene legger seg på diagonalen, og andelen falske funn lander på α — ikk
   <label><input type="checkbox" id="fUlik"> gi én gruppe dobbelt så stor spredning (bryt antakelsen)</label>
 </div>
 <div class="rad">
-  <label>n per gruppe fra <input type="number" id="fMin" value="4" min="3" max="1000"></label>
+  <label><i>n</i> per gruppe fra <input type="number" id="fMin" value="4" min="3" max="1000"></label>
   <label>til <input type="number" id="fMaks" value="40" min="3" max="1000"></label>
   <label>i steg på <input type="number" id="fSteg" value="6" min="1" max="500"></label>
   <label><input type="checkbox" id="fLog"> doble i stedet</label>
 </div>
 <div class="rad">
-  <label>Gjentakelser per n <select id="fRep">
+  <label>Gjentakelser per <i>n</i> <select id="fRep">
     <option value="1000" selected>1 000</option><option value="5000">5 000</option><option value="10000">10 000</option></select></label>
-  <label>α <select id="fAlfa"><option value="0.01">0,01</option><option value="0.05" selected>0,05</option><option value="0.1">0,10</option></select></label>
+  <label>α <select id="fAlfa"><option value="0.01">0.01</option><option value="0.05" selected>0.05</option><option value="0.1">0.10</option></select></label>
   <button class="btn" id="fKjor">Kjør simuleringen</button>
   <button class="btn2" id="fTom">Nullstill</button>
   <span class="muted" id="fStatus"></span>
@@ -368,37 +654,54 @@ Punktene legger seg på diagonalen, og andelen falske funn lander på α — ikk
 </div>
 
 <div class="card">
-<h2>Den teoretiske F-fordelingen mot den målte</h2>
-<div class="rad"><label>n per gruppe = <select id="fNvelg"></select></label>
+<h2>Den teoretiske <i>F</i>-fordelingen mot den målte</h2>
+<div class="rad"><label><i>n</i> per gruppe = <select id="fNvelg"></select></label>
   <button class="btn2" id="fFrys" style="font-size:15px;padding:6px 12px">Frys denne fordelingen</button><button class="btn2" id="fUfrys" style="font-size:15px;padding:6px 12px">Fjern frossen</button><span class="muted" id="fFrosset" style="font-size:14.5px"></span></div>
 <div class="teori" id="fTeori"></div>
 <canvas id="fCvFord" height="330"></canvas>
-<div class="legend"><b style="color:#8fb0dd">■ søyler</b> = de simulerte verdiene fra nullhypotesen &nbsp;·&nbsp; <b style="color:#C0392B">▬ kurve</b> = fordelingen teorien lover &nbsp;·&nbsp; <b style="color:#1F3864">┆ strek</b> = den kritiske verdien &nbsp;·&nbsp; <b style="color:#B26A00">▭ omriss</b> = den frosne fordelingen fra en annen n, med sin egen teorikurve stiplet</div>
+<div class="legend"><b style="color:#8fb0dd">■ søyler</b> = de simulerte verdiene fra nullhypotesen &nbsp;·&nbsp; <b style="color:#C0392B">▬ kurve</b> = fordelingen teorien lover &nbsp;·&nbsp; <b style="color:#1F3864">┆ strek</b> = den kritiske verdien &nbsp;·&nbsp; <b style="color:#B26A00">▭ omriss</b> = den frosne fordelingen fra en annen <i>n</i>, med sin egen teorikurve stiplet</div>
 <div id="fStats" class="muted" style="margin-top:6px">Kjør simuleringen først.</div>
 <div class="note" id="fNote" style="display:none"></div>
 </div>
 
 <div class="card">
-<h2>Holder feilraten ved hver n?</h2>
+<h2>Holder feilraten ved hver <i>n</i>?</h2>
 <canvas id="fCvRate" height="290"></canvas>
 <div class="legend"><b style="color:#B26A00">● målt andel</b> nullstudier som ble forkastet &nbsp;·&nbsp; <b style="color:#1F3864">▬ α</b> = det testen lover &nbsp;·&nbsp; det grå feltet er ±2 standardfeil rundt α.</div>
 </div>
 
 <div class="card">
 <h2>Tallene</h2>
-<table id="fTabell"><thead><tr><th>n</th><th>df</th><th>Kritisk verdi (teori)</th><th>Målt kritisk verdi</th><th>Målt forkastningsrate</th><th>Snitt</th><th>SD</th></tr></thead><tbody></tbody></table>
-<p class="muted" style="margin-top:8px">Snittet av F skal være omtrent df₂/(df₂ − 2), altså litt over 1 — ikke 1, som mange tror. Kryss av for ulik spredning og se hva som skjer med forkastningsraten: det er varianshomogenitet i praksis, ikke som regel i en lærebok.</p>
+<table id="fTabell"><thead><tr><th><i>n</i></th><th><i>df</i></th><th>Kritisk verdi (teori)</th><th>Målt kritisk verdi</th><th>Målt forkastningsrate</th><th>Snitt</th><th><i>SD</i></th></tr></thead><tbody></tbody></table>
+<p class="muted" style="margin-top:8px">Snittet av <i>F</i> skal være omtrent df₂/(df₂ − 2), altså litt over 1 — ikke 1, som mange tror. Kryss av for ulik spredning og se hva som skjer med forkastningsraten: det er varianshomogenitet i praksis, ikke som regel i en lærebok.</p>
 </div>
 
-<div class="keybox"><span class="lbl">Hovedpoenget</span><b>F samler all forskjell mellom gruppene i ett tall, og nullfordelingen forteller hvor stort det tallet kan bli av ren tilfeldighet.</b> Her er «ren tilfeldighet» ikke en antakelse, men noe vi har bygget inn: alle gruppene kommer fra samme populasjon. Med tre grupper og n = 4 skal det en F på over 4 til før noe er signifikant. Kryss så av for ulik spredning: fordelingen forskyves, og testen forkaster oftere enn de lovede 5 % — den finner «forskjeller» som ikke finnes. Det er derfor Levenes test står i JASP-outputen, og hvorfor Welch-varianten finnes.</div>
+<div class="keybox"><span class="lbl">Hovedpoenget</span><b><i>F</i> samler all forskjell mellom gruppene i ett tall, og nullfordelingen forteller hvor stort det tallet kan bli av ren tilfeldighet.</b> Her er «ren tilfeldighet» ikke en antakelse, men noe vi har bygget inn: alle gruppene kommer fra samme populasjon. Med tre grupper og <i>n</i> = 4 skal det en <i>F</i> på over 4 til før noe er signifikant. Kryss så av for ulik spredning: fordelingen forskyves, og testen forkaster oftere enn de lovede 5 % — den finner «forskjeller» som ikke finnes. Det er derfor Levenes test står i JASP-outputen, og hvorfor Welch-varianten finnes.</div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C8">C8 ANOVA og F-brøken &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-f -->
 
 <!-- ==================== KJI-KVADRAT ==================== -->
 <div id="fane-kji" class="hide">
+<!-- FANEHJELP kji -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Teorien sier at χ² under nullhypotesen følger en kjikvadratfordeling. Her ser du hvor godt den tilnærmingen holder — og når den svikter.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Kjør simuleringen med rimelig store celler.</li>
+<li>Gjør de forventede frekvensene små og kjør igjen.</li>
+<li>Sammenlign den simulerte feilraten med 5 %.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Tilnærmingen er god så lenge de forventede frekvensene ikke er for små. Blir de det, bommer teorien — og det er nettopp derfor tommelfingerregelen om forventede frekvenser finnes.</p>
+</div>
+<!-- /FANEHJELP kji -->
+
 <div class="card">
 <h2>Oppsettet</h2>
-<p class="muted" id="kForklaring">Vi lager krysstabeller der rad og kolonne er <b>uavhengige av hverandre</b> — nullhypotesen er sann. For hver tabell regner vi ut Pearsons X². Teorien sier at disse verdiene skal følge en χ²-fordeling med (r − 1)(k − 1) frihetsgrader. Om det stemmer, avhenger av hvor mange observasjoner som havner i hver celle, og det er hele poenget med regelen om forventede frekvenser.</p>
-<div class="note" id="kModusNote" style="margin-bottom:8px">De to testene bruker samme formel, <b>X² = Σ (O − E)² / E</b>, men henter E fra to ulike steder, og det er derfor de har ulike frihetsgrader. <b>Uavhengighetstesten</b> regner E ut fra tabellens egne rad- og kolonnesummer, som koster (r − 1) + (k − 1) frihetsgrader, så det står igjen (r − 1)(k − 1). <b>Tilpasningstesten</b> får E fra en fordeling du oppgir på forhånd, og bruker bare totalen fra dataene: da står det igjen c − 1.</div>
+<p class="muted" id="kForklaring">Vi lager krysstabeller der rad og kolonne er <b>uavhengige av hverandre</b> — nullhypotesen er sann. For hver tabell regner vi ut Pearsons X². Teorien sier at disse verdiene skal følge en χ²-fordeling med (<i>r</i> − 1)(k − 1) frihetsgrader. Om det stemmer, avhenger av hvor mange observasjoner som havner i hver celle, og det er hele poenget med regelen om forventede frekvenser.</p>
+<div class="note" id="kModusNote" style="margin-bottom:8px">De to testene bruker samme formel, <b>X² = Σ (O − E)² / E</b>, men henter E fra to ulike steder, og det er derfor de har ulike frihetsgrader. <b>Uavhengighetstesten</b> regner E ut fra tabellens egne rad- og kolonnesummer, som koster (<i>r</i> − 1) + (k − 1) frihetsgrader, så det står igjen (<i>r</i> − 1)(k − 1). <b>Tilpasningstesten</b> får E fra en fordeling du oppgir på forhånd, og bruker bare totalen fra dataene: da står det igjen c − 1.</div>
 <div class="nullboks"><span class="lbl">Hva vi tester, og hvorfor det er en rettferdig test</span>Simuleringen trekker fra en <b>nullpopulasjon på 10 000</b>. Den er bygget fra det ekte datasettet, men med den systematiske effekten fjernet — så vi vet fasiten på forhånd.<div class="par"><span class="mrk">Fjernet:</span><span><b>Sammenhengen mellom rad og kolonne.</b> Hver person plasseres i rad og kolonne uavhengig av hverandre, så de to kjennetegnene har ingenting med hverandre å gjøre.</span><span class="mrk">Beholdt:</span><span>Marginalfordelingene — altså hvor vanlige de ulike kategoriene er. Du velger selv om de skal være jevne eller skjeve, og det er nettopp skjevheten som avgjør om cellene blir store nok.</span></div>Slik kan vi skille to ting fra hverandre: om testen er riktig i prinsippet, og om tilnærmingen holder ved akkurat denne tabellstørrelsen og dette antallet personer.</div>
 <div class="rad">
   <label>Test <select id="kModus">
@@ -410,22 +713,22 @@ Punktene legger seg på diagonalen, og andelen falske funn lander på α — ikk
   <label id="kKolWrap">Kolonner <select id="kKol">
     <option value="2" selected>2</option><option value="3">3</option>
     <option value="4">4</option><option value="5">5</option></select></label>
-  <span class="stat" id="kDf">df = 1</span>
+  <span class="stat" id="kDf"><i>df</i> = 1</span>
   <label>Fordeling <select id="kMarg">
     <option value="jevn" selected>jevne (like sannsynlige kategorier)</option>
     <option value="skjev">skjeve (en kategori dominerer)</option>
     <option value="svart">svært skjeve (sjeldne celler)</option></select></label>
 </div>
 <div class="rad">
-  <label>Total n fra <input type="number" id="kMin" value="20" min="5" max="5000"></label>
+  <label>Total <i>n</i> fra <input type="number" id="kMin" value="20" min="5" max="5000"></label>
   <label>til <input type="number" id="kMaks" value="320" min="5" max="5000"></label>
   <label><input type="checkbox" id="kLog" checked> doble (20, 40, 80 …)</label>
   <label>i steg på <input type="number" id="kSteg" value="50" min="1" max="1000"></label>
 </div>
 <div class="rad">
-  <label>Gjentakelser per n <select id="kRep">
+  <label>Gjentakelser per <i>n</i> <select id="kRep">
     <option value="1000" selected>1 000</option><option value="5000">5 000</option><option value="10000">10 000</option></select></label>
-  <label>α <select id="kAlfa"><option value="0.01">0,01</option><option value="0.05" selected>0,05</option><option value="0.1">0,10</option></select></label>
+  <label>α <select id="kAlfa"><option value="0.01">0.01</option><option value="0.05" selected>0.05</option><option value="0.1">0.10</option></select></label>
   <button class="btn" id="kKjor">Kjør simuleringen</button>
   <button class="btn2" id="kTom2">Nullstill</button>
   <span class="muted" id="kStatus"></span>
@@ -435,7 +738,7 @@ Punktene legger seg på diagonalen, og andelen falske funn lander på α — ikk
 
 <div class="card">
 <h2>Den teoretiske χ²-fordelingen mot den målte</h2>
-<div class="rad"><label>Total n = <select id="kNvelg"></select></label><button class="btn2" id="kFrys" style="font-size:15px;padding:6px 12px">Frys denne fordelingen</button><button class="btn2" id="kUfrys" style="font-size:15px;padding:6px 12px">Fjern frossen</button><span class="muted" id="kFrosset" style="font-size:14.5px"></span></div>
+<div class="rad"><label>Total <i>n</i> = <select id="kNvelg"></select></label><button class="btn2" id="kFrys" style="font-size:15px;padding:6px 12px">Frys denne fordelingen</button><button class="btn2" id="kUfrys" style="font-size:15px;padding:6px 12px">Fjern frossen</button><span class="muted" id="kFrosset" style="font-size:14.5px"></span></div>
 <div class="teori" id="kTeori"></div>
 <canvas id="kCvFord" height="330"></canvas>
 <div class="legend"><b style="color:#8fb0dd">■ søyler</b> = de simulerte X²-verdiene &nbsp;·&nbsp; <b style="color:#C0392B">▬ kurve</b> = χ²-fordelingen teorien lover &nbsp;·&nbsp; <b style="color:#1F3864">┆ strek</b> = den kritiske verdien &nbsp;·&nbsp; <b style="color:#B26A00">▭ omriss</b> = den frosne fordelingen</div>
@@ -452,33 +755,35 @@ Punktene legger seg på diagonalen, og andelen falske funn lander på α — ikk
 <div class="card">
 <h2>Tallene</h2>
 <table id="kTabell"><thead><tr>
-  <th>Total n</th><th>df</th><th>Minste forventede celle</th><th>Kritisk verdi (teori)</th>
-  <th>Målt 95-persentil</th><th>Målt forkastningsrate</th><th>Snitt X² (teori = df)</th></tr></thead><tbody></tbody></table>
+  <th>Total <i>n</i></th><th><i>df</i></th><th>Minste forventede celle</th><th>Kritisk verdi (teori)</th>
+  <th>Målt 95-persentil</th><th>Målt forkastningsrate</th><th>Snitt X² (teori = <i>df</i>)</th></tr></thead><tbody></tbody></table>
 <p class="muted" style="margin-top:8px">χ²-fordelingen er en <b>tilnærming</b>: X² er bygget av celletellinger, som er diskrete, og tilnærmingen blir god først når hver celle har nok forventede observasjoner. Tommelfingerregelen er at alle forventede frekvenser bør være minst 5. Kolonnen lengst til venstre lar deg se når regelen begynner å bite.</p>
 </div>
 
 <div class="keybox">
 <span class="lbl">Hovedpoenget</span>
 <b>χ²-fordelingen er en tilnærming, ikke en beskrivelse.</b> Alle tabellene her er laget uten noen sammenheng mellom rad og kolonne, så enhver forkastning er en feil vi kan telle.
-Med romslige celler legger søylene seg pent under kurven, og forkastningsraten treffer α. Velg «svært skjeve» marginaler og lav n, og se hva som skjer: de forventede frekvensene faller under 5, den målte fordelingen blir hakkete og forskjøvet, og testen forkaster oftere eller sjeldnere enn den lover. Det er ikke en dårlig test — det er en test brukt utenfor sitt gyldighetsområde. Da er Fishers eksakte test svaret, ikke et større χ².
+Med romslige celler legger søylene seg pent under kurven, og forkastningsraten treffer α. Velg «svært skjeve» marginaler og lav <i>n</i>, og se hva som skjer: de forventede frekvensene faller under 5, den målte fordelingen blir hakkete og forskjøvet, og testen forkaster oftere eller sjeldnere enn den lover. Det er ikke en dårlig test — det er en test brukt utenfor sitt gyldighetsområde. Da er Fishers eksakte test svaret, ikke et større χ².
 </div>
+
+<div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C11">C11 Kjikvadrat og kategoriske effektmål &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div><!-- /fane-kji -->
 
 <div class="card docs" id="ordforklaringer">
 <h2>Ordforklaringer</h2>
 <p class="gloss">
-<b>Populasjon</b> — alle vi kunne målt. Her en simulert pasientpopulasjon på N = 10 000, bygget fra Terapi-RCT- og arbeidskravdataene.<br>
+<b>Populasjon</b> — alle vi kunne målt. Her en simulert pasientpopulasjon på <i>N</i> = 10 000, bygget fra Terapi-RCT- og arbeidskravdataene.<br>
 <b>μ (my)</b> — gjennomsnittet i populasjonen: sannheten, som forskeren aldri får se.<br>
 <b>σ (sigma)</b> — standardavviket i populasjonen. Også dette er ukjent i virkelige studier.<br>
 <b>x̄ (x-strek)</b> — gjennomsnittet i ett utvalg, altså estimatet av μ.<br>
-<b>s</b> — standardavviket i utvalget, regnet med n − 1 i nevneren. Estimatet av σ.<br>
-<b>SE (standardfeil)</b> — hvor mye x̄ spriker fra utvalg til utvalg. Ikke det samme som s: s beskriver spredningen mellom <i>personer</i>, SE spredningen mellom <i>studier</i>.<br>
+<b>s</b> — standardavviket i utvalget, regnet med <i>n</i> − 1 i nevneren. Estimatet av σ.<br>
+<b><i>SE</i> (standardfeil)</b> — hvor mye x̄ spriker fra utvalg til utvalg. Ikke det samme som s: s beskriver spredningen mellom <i>personer</i>, <i>SE</i> spredningen mellom <i>studier</i>.<br>
 <b>σ/√n</b> — den sanne standardfeilen. Krever at du kjenner σ, altså hele populasjonen.<br>
 <b>s/√n</b> — den estimerte standardfeilen. Dette er den forskeren faktisk regner ut, og den JASP viser.<br>
 <b>Utvalgsfordeling</b> — fordelingen av en statistikk over mange tenkte gjentakelser av studien. Standardfeilen <i>er</i> standardavviket til denne fordelingen.<br>
-<b>Gjentakelse</b> — ett komplett tenkt studieforsøk: trekk n personer, regn ut x̄ og s. Her gjentar vi 1 000 ganger per n.<br>
+<b>Gjentakelse</b> — ett komplett tenkt studieforsøk: trekk <i>n</i> personer, regn ut x̄ og s. Her gjentar vi 1 000 ganger per <i>n</i>.<br>
 <b>Trekking med tilbakelegging</b> — hver person kan trekkes flere ganger, slik at populasjonen aldri tømmes. Da gjelder σ/√n eksakt, uten korreksjon for endelig populasjon.<br>
-<b>Relativ spredning</b> — SD til estimatene delt på det de forsøker å treffe. 0,35 betyr at et typisk enkeltestimat bommer med rundt 35 %.
+<b>Relativ spredning</b> — <i>SD</i> til estimatene delt på det de forsøker å treffe. 0.35 betyr at et typisk enkeltestimat bommer med rundt 35 %.
 </p>
 </div>
 
@@ -488,7 +793,7 @@ Med romslige celler legger søylene seg pent under kurven, og forkastningsraten 
 "use strict";
 const VARS={"dep": {"lab": "Depresjon (pre)", "kilde": "Terapi-RCT-populasjonen, N = 10 000", "freq": {"30": 910, "34": 591, "29": 930, "35": 1778, "26": 617, "28": 812, "27": 704, "33": 736, "32": 811, "31": 852, "22": 151, "25": 403, "24": 330, "23": 206, "21": 80, "18": 9, "20": 49, "19": 23, "17": 6, "14": 1, "15": 1}, "lo": 14, "hi": 35, "step": 1, "mu": 30.05, "sigma": 3.79}, "undf": {"lab": "Undertrykkende forsvar (pre)", "kilde": "Terapi-RCT-populasjonen, N = 10 000", "freq": {"90": 281, "85": 380, "70": 204, "66": 100, "75": 304, "82": 411, "89": 307, "81": 348, "84": 379, "72": 228, "93": 225, "80": 384, "77": 383, "79": 417, "100": 69, "65": 105, "64": 71, "71": 212, "86": 335, "52": 6, "96": 145, "97": 127, "92": 228, "76": 339, "83": 393, "73": 275, "61": 43, "101": 75, "87": 368, "91": 282, "60": 36, "74": 293, "99": 105, "94": 213, "88": 359, "78": 337, "67": 124, "102": 60, "63": 79, "69": 146, "98": 96, "62": 56, "95": 181, "103": 206, "59": 28, "68": 162, "58": 20, "56": 13, "49": 3, "50": 9, "53": 8, "55": 17, "48": 3, "54": 7, "57": 14, "51": 1}, "lo": 48, "hi": 103, "step": 1, "mu": 81.96, "sigma": 9.92}, "agg": {"lab": "Aggresjonsundertrykking (pre)", "kilde": "Terapi-RCT-populasjonen, N = 10 000", "freq": {"25": 502, "35": 363, "37": 152, "26": 656, "33": 718, "27": 803, "31": 1012, "29": 1106, "28": 977, "23": 231, "30": 1013, "34": 521, "32": 841, "20": 43, "39": 47, "36": 252, "38": 85, "24": 382, "22": 140, "21": 83, "40": 16, "19": 26, "18": 8, "15": 1, "41": 8, "17": 4, "16": 3, "42": 4, "43": 3}, "lo": 15, "hi": 43, "step": 1, "mu": 29.55, "sigma": 3.76}, "selvt": {"lab": "Statistikk-selvtillit (pre)", "kilde": "Simulert populasjon, N = 10 000 (bygget fra arbeidskravdataene, N = 391)", "freq": {"4.4": 403, "1.8": 279, "3.0": 951, "4.0": 862, "3.4": 825, "3.6": 781, "3.8": 778, "4.8": 99, "2.6": 668, "2.8": 785, "2.4": 646, "2.2": 424, "1.6": 150, "4.2": 625, "3.2": 1035, "2.0": 341, "1.2": 48, "4.6": 144, "1.4": 91, "1.0": 11, "5.0": 54}, "lo": 1.0, "hi": 5.0, "step": 0.2, "mu": 3.2, "sigma": 0.78}, "selvk": {"lab": "Selvkritisk perfeksjonisme (trekk)", "kilde": "Simulert populasjon, N = 10 000 (bygget fra arbeidskravdataene, N = 391)", "freq": {"2.0": 485, "3.2": 867, "3.6": 934, "1.8": 430, "1.6": 238, "3.4": 797, "3.8": 831, "2.4": 577, "2.2": 476, "2.8": 795, "3.0": 858, "4.0": 563, "1.0": 78, "4.4": 268, "1.2": 93, "2.6": 770, "5.0": 47, "4.8": 155, "4.2": 402, "4.6": 214, "1.4": 122}, "lo": 1.0, "hi": 5.0, "step": 0.2, "mu": 3.08, "sigma": 0.84}, "angst": {"lab": "Angstsensitivitet (trekk)", "kilde": "Simulert populasjon, N = 10 000 (bygget fra arbeidskravdataene, N = 391)", "freq": {"0.2": 294, "0.6": 492, "1.0": 804, "0.8": 627, "1.8": 875, "1.2": 889, "1.6": 884, "2.2": 686, "2.4": 526, "2.8": 451, "3.0": 263, "3.2": 293, "4.0": 16, "0.4": 423, "2.6": 485, "3.4": 233, "1.4": 876, "2.0": 688, "0.0": 71, "3.8": 31, "3.6": 93}, "lo": 0.0, "hi": 4.0, "step": 0.2, "mu": 1.68, "sigma": 0.85}};
 const $=id=>document.getElementById(id);
-const nb=(x,d)=>Number(x).toLocaleString('nb-NO',{minimumFractionDigits:d==null?2:d,maximumFractionDigits:d==null?2:d});
+const nb=(x,d)=>Number(x).toLocaleString('en-GB',{minimumFractionDigits:d==null?2:d,maximumFractionDigits:d==null?2:d,useGrouping:false});
 
 /* ---------- populasjoner ---------------------------------------------------
    VARS lagrer populasjonen som en frekvenstabell (verdi -> antall) for å holde
@@ -510,7 +815,7 @@ function settVar(k){
   let s3=0; for(let i=0;i<POP.length;i++) s3+=Math.pow((POP[i]-MU)/SIGMA,3);
   const skjev=s3/POP.length;
   $('popInfo').textContent='('+v.kilde+')';
-  $('popStats').innerHTML='<span class="stat">N = '+POP.length.toLocaleString('nb-NO')+'</span>'+
+  $('popStats').innerHTML='<span class="stat"><i>N</i> = '+POP.length.toLocaleString('nb-NO')+'</span>'+
     '<span class="stat">μ = '+nb(MU)+'</span>'+
     '<span class="stat">σ = '+nb(SIGMA)+'</span>'+
     '<span class="stat'+(Math.abs(skjev)>0.8?' orange':'')+'">skjevhet = '+nb(skjev)+'</span>';
@@ -615,11 +920,11 @@ function seTeori(){
     'Og igjen, og igjen. <b>Standardfeilen</b> er ett tall for hvor mye disse gjennomsnittene spriker — '+
     'altså hvor mye ditt ene gjennomsnitt kan bomme på sannheten.</div>'+
     '<div class="form">Standardfeilen = standardavviket i populasjonen ÷ kvadratroten av antall deltakere'+
-    '<span class="les">Skrives SE = σ/√n. Her: '+nb(SIGMA,2)+' delt på kvadratroten av n.</span></div>'+
+    '<span class="les">Skrives <i>SE</i> = σ/√n. Her: '+nb(SIGMA,2)+' delt på kvadratroten av <i>n</i>.</span></div>'+
     '<ul>'+
     '<li><b>standardavviket i populasjonen</b> (skrives σ, «sigma») — hvor ulike menneskene er fra hverandre. '+
     'Her <b>'+nb(SIGMA,2)+'</b> for '+VNAVN+'.</li>'+
-    '<li><b>antall deltakere</b> (n) — hvor mange du måler i hver studie.</li>'+
+    '<li><b>antall deltakere</b> (<i>n</i>) — hvor mange du måler i hver studie.</li>'+
     '</ul>'+
     '<div class="styrt"><b>Og ikke noe annet.</b> Standardfeilen bryr seg ikke om hvor høyt gjennomsnittet '+
     'ligger, hvilken måleenhet du bruker, eller om fordelingen er skjev. Bare hvor spredte folk er, '+
@@ -740,14 +1045,14 @@ function tegnEn(){
   c.fillText('estimert standardfeil s/√n i hver enkelt studie', x0+pw/2, y0+34);
 
   const rel=d.sdEst/d.sant, bom=(d.snittEst-d.sant)/d.sant*100;
-  $('enStats').innerHTML='<span class="stat">n = '+d.n+'</span>'+
+  $('enStats').innerHTML='<span class="stat"><i>n</i> = '+d.n+'</span>'+
     '<span class="stat">σ/√n = '+nb(d.sant,3)+'</span>'+
     '<span class="stat orange">målt SD(x̄) = '+nb(d.malt,3)+'</span>'+
     '<span class="stat">snitt s/√n = '+nb(d.snittEst,3)+'</span>'+
     '<span class="stat'+(Math.abs(bom)>2?' red':' green')+'">snittet bommer '+(bom>=0?'+':'')+nb(bom,1)+' %</span>'+
     '<span class="stat'+(rel>0.2?' red':' green')+'">et enkeltestimat spriker typisk ±'+nb(rel*100,0)+' %</span>'+
     '<span class="stat">95 % av estimatene: '+nb(d.lo,3)+'–'+nb(d.hi,3)+'</span>'+
-    (seFrossen ? '<span class="stat orange">frossen: n = '+seFrossen.n+
+    (seFrossen ? '<span class="stat orange">frossen: <i>n</i> = '+seFrossen.n+
       ' · σ/√n = '+nb(seFrossen.sant,3)+' · spriker ±'+nb(seFrossen.sdEst/seFrossen.sant*100,0)+' %</span>' : '');
   Array.from(document.querySelectorAll('#tab tbody tr')).forEach(tr=>
     tr.classList.toggle('valgt', tr.dataset.n===String(d.n)));
@@ -779,11 +1084,11 @@ function oppsummer(){
     '<b>Fasiten og formelen er enige om nivået.</b> Over alle n-ene ligger den målte SD-en til gjennomsnittene '+
     'i snitt '+nb(Math.abs(RES.reduce((a,d)=>a+(d.malt-d.sant)/d.sant,0)/RES.length*100),1)+
     ' % fra σ/√n — det er ren simuleringsstøy, og den krymper hvis du øker antall gjentakelser. '+
-    '<b>Men enkeltestimatet er en annen sak.</b> Ved n = '+f.n+' spriker s/√n typisk ±'+nb(relF*100,0)+
+    '<b>Men enkeltestimatet er en annen sak.</b> Ved <i>n</i> = '+f.n+' spriker s/√n typisk ±'+nb(relF*100,0)+
     ' % rundt sannheten, og de midterste 95 % strekker seg fra '+nb(f.lo,3)+' til '+nb(f.hi,3)+
     ' — mot en sannhet på '+nb(f.sant,3)+'. Ved n = '+s.n+' er spriket nede i ±'+nb(relS*100,0)+' %. '+
     (bomF<-1.5 ? 'Legg også merke til at snittet av s/√n ligger '+nb(Math.abs(bomF),1)+
-      ' % <i>under</i> sannheten ved n = '+f.n+': s undervurderer σ systematisk når n er liten, '+
+      ' % <i>under</i> sannheten ved <i>n</i> = '+f.n+': s undervurderer σ systematisk når n er liten, '+
       'og det er en av grunnene til at vi bruker t-fordelingen og ikke normalfordelingen.' : '');
 }
 
@@ -806,7 +1111,7 @@ function oppsummer(){
     const d=RES.find(x=>String(x.n)===String($('nVelg').value));
     if(!d){ $('seFrosset').textContent='(kjør simuleringen først)'; return; }
     seFrossen=d;
-    $('seFrosset').innerHTML='Frossen: <b>n = '+d.n+'</b>. Velg en annen n over.';
+    $('seFrosset').innerHTML='Frossen: <b><i>n</i> = '+d.n+'</b>. Velg en annen <i>n</i> over.';
     tegnEn();
   };
   $('seUfrys').onclick=()=>{ seFrossen=null; $('seFrosset').textContent=''; tegnEn(); };
@@ -970,22 +1275,22 @@ function pTeori(){
   const L=pNliste(), n=L[0], df=2*n-2, alfa=+$('pAlfa').value;
   boks.innerHTML='<span class="lbl">Teorien sier</span>'+
     '<div class="pastand">Dette er den skarpeste påstanden i hele appen. Når det <b>ikke finnes noen '+
-    'forskjell</b>, skal p-verdien være et helt tilfeldig tall mellom 0 og 1 — 0,03 like sannsynlig som '+
-    '0,58 som 0,91. Ikke «som regel høy». Fullstendig tilfeldig.</div>'+
-    '<div class="form">p-verdiene fordeler seg jevnt mellom 0 og 1'+
-    '<span class="les">Skrives p ~ Uniform(0, 1). «Jevnt» betyr at like brede intervaller er like sannsynlige: '+
-    'like mange p-er havner mellom 0,00 og 0,05 som mellom 0,90 og 0,95.</span></div>'+
+    'forskjell</b>, skal <i>p</i>-verdien være et helt tilfeldig tall mellom 0 og 1 — 0.03 like sannsynlig som '+
+    '0.58 som 0.91. Ikke «som regel høy». Fullstendig tilfeldig.</div>'+
+    '<div class="form"><i>p</i>-verdiene fordeler seg jevnt mellom 0 og 1'+
+    '<span class="les">Skrives <i>p</i> ~ Uniform(0, 1). «Jevnt» betyr at like brede intervaller er like sannsynlige: '+
+    'like mange p-er havner mellom 0.00 og 0.05 som mellom 0.90 og 0.95.</span></div>'+
     '<ul>'+
-    '<li><b>p-verdien</b> — sannsynligheten for å få en forskjell minst så stor som din, <i>hvis</i> det '+
+    '<li><b><i>p</i>-verdien</b> — sannsynligheten for å få en forskjell minst så stor som din, <i>hvis</i> det '+
     'ikke finnes noen forskjell i virkeligheten.</li>'+
-    '<li><b>hva påstanden hviler på</b> — at t-verdien følger t-fordelingen med <b>'+df+'</b> frihetsgrader '+
+    '<li><b>hva påstanden hviler på</b> — at <i>t</i>-verdien følger <i>t</i>-fordelingen med <b>'+df+'</b> frihetsgrader '+
     'når du har '+n+' personer i hver gruppe.</li>'+
     '</ul>'+
     '<div class="styrt">Legg merke til hva som <b>ikke</b> kreves: rådataene trenger ikke være '+
     'normalfordelte. Det holder at gjennomsnittene blir det, og det ordner sentralgrenseteoremet.</div>'+
     '<div class="tall"><b>Tre ting følger direkte av påstanden,</b> og alle tre kan måles: '+
     'andelen p-verdier under '+nb(alfa,2)+' skal bli nøyaktig <b>'+nb(alfa*100,0)+' %</b>; '+
-    'gjennomsnittet av alle p-verdiene skal bli <b>0,50</b>; og p-en formelen gir skal være den samme '+
+    'gjennomsnittet av alle <i>p</i>-verdiene skal bli <b>0.50</b>; og p-en formelen gir skal være den samme '+
     'som den vi måler ved å telle opp nullstudiene — altså skal alle punktene falle på diagonalen. '+
     'Bommer teorien, bommer den her.</div>';
 }
@@ -1081,7 +1386,7 @@ function pOppsummer(){
     (Math.abs(avvik)<2
       ? 'Det er innenfor det ren tilfeldighet kan forklare — formelen holder det den lover.'
       : 'Det er '+nb(Math.abs(avvik),1)+' standardfeil fra 5 %, altså mer enn tilfeldighet forklarer: her sliter tilnærmingen.')+
-    ' Snittet av p-verdiene er '+nb(f.snitt,3)+' (skal være 0,50 når nullhypotesen er sann), og '+
+    ' Snittet av p-verdiene er '+nb(f.snitt,3)+' (skal være 0.50 når nullhypotesen er sann), og '+
     'den største avstanden fra diagonalen er '+nb(f.maksAvvik,4)+'.';
 }
 
@@ -1129,7 +1434,7 @@ function rKritisk(alfa,n){
 
 
 /* ================== GENERISK NULLFORDELINGSFANE ===========================
-   t, r og F stiller nøyaktig samme spørsmål: følger testobservatoren den
+   t, r og F stiller nøyaktig samme spørsmål: følger teststatistikken den
    fordelingen teorien lover, når nullhypotesen er sann? Panelene er derfor
    bygget én gang og får simuleringen inn som en funksjon. Det holder de tre
    fanene i takt, og en rettelse ett sted gjelder alle.                      */
@@ -1287,13 +1592,13 @@ function lagNullFane(pre, spec){
 
     if(!d.R) return;
     const avvik=(d.rate-d.alfa)/Math.sqrt(d.alfa*(1-d.alfa)/d.R);
-    $$('Stats').innerHTML='<span class="stat">n = '+d.n+'</span>'+
-      '<span class="stat">df = '+(d.df2!=null? d.df+', '+d.df2 : d.df)+'</span>'+
-      '<span class="stat">snitt = '+nb(d.snitt,3)+'</span><span class="stat">SD = '+nb(d.sd,3)+'</span>'+
+    $$('Stats').innerHTML='<span class="stat"><i>n</i> = '+d.n+'</span>'+
+      '<span class="stat"><i>df</i> = '+(d.df2!=null? d.df+', '+d.df2 : d.df)+'</span>'+
+      '<span class="stat">snitt = '+nb(d.snitt,3)+'</span><span class="stat"><i>SD</i> = '+nb(d.sd,3)+'</span>'+
       '<span class="stat">målt kritisk verdi = '+nb(d.maltKrit,3)+' (teori: '+nb(d.krit,3)+')</span>'+
       '<span class="stat'+(Math.abs(avvik)>3?' red':' green')+'">forkaster '+nb(d.rate*100,1)+' % (lovet '+nb(d.alfa*100,0)+' %)</span>';
     if(frossen && frossen.R) $$('Stats').innerHTML +=
-      '<span class="stat orange">frossen: n = '+frossen.n+
+      '<span class="stat orange">frossen: <i>n</i> = '+frossen.n+
       ' · df = '+(frossen.df2!=null? frossen.df+', '+frossen.df2 : frossen.df)+
       ' · SD = '+nb(frossen.sd,3)+'</span>';
     if(spec.note){ $$('Note').style.display=''; $$('Note').innerHTML=spec.note(d); }
@@ -1362,7 +1667,7 @@ function lagNullFane(pre, spec){
     const d=RES.find(x=>String(x.n)===String($$('Nvelg').value));
     if(!d){ $$('Frosset').textContent='(kjør simuleringen først)'; return; }
     frossen=d;
-    $$('Frosset').innerHTML='Frossen: <b>n = '+d.n+'</b>. Velg en annen n — den gamle blir stående som omriss.';
+    $$('Frosset').innerHTML='Frossen: <b><i>n</i> = '+d.n+'</b>. Velg en annen <i>n</i> — den gamle blir stående som omriss.';
     tegnFord();
   };
   $$('Ufrys').onclick=()=>{ frossen=null; $$('Frosset').textContent=''; tegnFord(); };
@@ -1398,23 +1703,23 @@ const FANE_T = lagNullFane('t', {
   },
   dfAv:n=>({df:2*n-2}),
   teori:d=>'<div class="pastand">Når to grupper egentlig er like, blir forskjellen mellom dem sjelden '+
-    'nøyaktig null. <b>t</b> er et mål på hvor stor den tilfeldige forskjellen ble, målt i antall '+
-    'standardfeil. Teorien påstår at slike t-verdier følger en helt bestemt klokkeformet kurve.</div>'+
-    '<div class="form">t = (gjennomsnitt i gruppe 1 − gjennomsnitt i gruppe 2) ÷ standardfeilen til forskjellen'+
+    'nøyaktig null. <b><i>t</i></b> er et mål på hvor stor den tilfeldige forskjellen ble, målt i antall '+
+    'standardfeil. Teorien påstår at slike <i>t</i>-verdier følger en helt bestemt klokkeformet kurve.</div>'+
+    '<div class="form"><i>t</i> = (gjennomsnitt i gruppe 1 − gjennomsnitt i gruppe 2) ÷ standardfeilen til forskjellen'+
     '<span class="les">Altså: hvor stor forskjellen er, delt på hvor stor en tilfeldig forskjell pleier å være.</span></div>'+
     '<ul>'+
     '<li><b>gjennomsnittet i en gruppe</b> (skrives x̄, «x-strek») — snittet av de '+d.n+' personene i gruppen.</li>'+
     '<li><b>standardfeilen til forskjellen</b> — regnes ut fra <b>standardavviket i utvalgene</b> (skrives s), '+
     'altså hvor ulike personene i gruppene er.</li>'+
-    '<li><b>frihetsgrader</b> (skrives df) — her <b>'+d.df+'</b>, som kommer av 2n − 2 = 2 · '+d.n+' − 2. '+
+    '<li><b>frihetsgrader</b> (skrives <i>df</i>) — her <b>'+d.df+'</b>, som kommer av 2n − 2 = 2 · '+d.n+' − 2. '+
     'Det er antall observasjoner minus de to gjennomsnittene vi allerede har brukt dataene til å regne ut.</li>'+
     '</ul>'+
     '<div class="styrt"><b>Kurvens form avhenger bare av frihetsgradene.</b> Ikke av hvor høye skårene er, '+
     'ikke av hvor mye personene varierer, ikke av om du måler i poeng eller sekunder. Har to studier samme df, '+
     'har de samme kurve.</div>'+
-    '<div class="tall"><b>Her og nå, med '+d.n+' personer per gruppe:</b> t-verdiene skal ha et gjennomsnitt på '+
+    '<div class="tall"><b>Her og nå, med '+d.n+' personer per gruppe:</b> <i>t</i>-verdiene skal ha et gjennomsnitt på '+
     '<b>0</b> og en spredning på <b>'+(d.df>2?nb(Math.sqrt(d.df/(d.df-2)),2):'udefinert')+'</b> — litt mer enn '+
-    'de 1,00 en normalfordeling ville hatt. En t må være større enn <b>±'+nb(d.krit,2)+'</b> for å bli '+
+    'de 1.00 en normalfordeling ville hatt. En <i>t</i> må være større enn <b>±'+nb(d.krit,2)+'</b> for å bli '+
     'kalt signifikant på '+nb(d.alfa*100,0)+ ' %-nivået. Det er påstanden. Kjør simuleringen og se om '+
     'tusen ekte nullstudier er enige.</div>',
   kritisk:(a,df)=>tKritisk(a,df),
@@ -1423,7 +1728,7 @@ const FANE_T = lagNullFane('t', {
   ekstraKurve:(d,kurve)=>{ if($('tNormal').checked) kurve(nTetthet,'#2E7D32',[7,5]); },
   ekstraKontroller:['tNormal'],
   note:d=>'Med '+d.n+' per gruppe er df = '+d.df+', og den kritiske t-en er ±'+nb(d.krit,2)+
-    ' — ikke ±1,96. Standardavviket til de simulerte t-ene er '+nb(d.sd,2)+
+    ' — ikke ±1.96. Standardavviket til de simulerte t-ene er '+nb(d.sd,2)+
     (d.df>2 ? ' (teorien sier √(df/(df−2)) = '+nb(Math.sqrt(d.df/(d.df-2)),2)+')' : '')+
     '. Det er dette overskuddet av spredning som er t-fordelingens tunge haler.'
 });
@@ -1449,14 +1754,14 @@ const FANE_R = lagNullFane('r', {
     'en korrelasjon på nøyaktig null. Tegner du '+d.n+' tilfeldige punkter, kommer det alltid ut <i>en eller '+
     'annen</i> skrå linje. Teorien påstår at slike tilfeldige korrelasjoner har en bestemt fordeling — og det '+
     'er den enhver signifikanstest for korrelasjon måler mot.</div>'+
-    '<div class="form">Sannsynligheten for en gitt r &nbsp;∝&nbsp; (1 − r²)<sup>(n − 4)/2</sup>'+
-    '<span class="les">Formelen sier bare dette: jo nærmere r kommer −1 eller +1, jo mer usannsynlig blir den — '+
+    '<div class="form">Sannsynligheten for en gitt <i>r</i> &nbsp;∝&nbsp; (1 − <i>r</i>²)<sup>(n − 4)/2</sup>'+
+    '<span class="les">Formelen sier bare dette: jo nærmere <i>r</i> kommer −1 eller +1, jo mer usannsynlig blir den — '+
     'og hvor fort den blir usannsynlig, styres av hvor mange par du har.</span></div>'+
     '<ul>'+
-    '<li><b>korrelasjonen</b> (skrives r) — et tall mellom −1 og +1 for hvor godt punktene følger en rett linje. '+
+    '<li><b>korrelasjonen</b> (skrives <i>r</i>) — et tall mellom −1 og +1 for hvor godt punktene følger en rett linje. '+
     '0 betyr ingen lineær sammenheng.</li>'+
-    '<li><b>antall par</b> (n) — her <b>'+d.n+'</b> personer som er målt på begge variablene.</li>'+
-    '<li><b>frihetsgrader</b> (df) — her <b>'+d.df+'</b>, altså n − 2: to går med til å plassere linjen '+
+    '<li><b>antall par</b> (<i>n</i>) — her <b>'+d.n+'</b> personer som er målt på begge variablene.</li>'+
+    '<li><b>frihetsgrader</b> (<i>df</i>) — her <b>'+d.df+'</b>, altså <i>n</i> − 2: to går med til å plassere linjen '+
     '(stigningstall og konstantledd).</li>'+
     '</ul>'+
     '<div class="styrt"><b>Fordelingen avhenger bare av antall par.</b> Ikke av hva du måler, ikke av '+
@@ -1507,10 +1812,10 @@ const FANE_F = lagNullFane('f', {
   teori:d=>{ const k=+$('fK').value||3;
     return '<div class="pastand">Har du '+k+' grupper som egentlig er like, vil gruppegjennomsnittene '+
     'likevel ligge litt fra hverandre. Spørsmålet er: <i>er de lenger fra hverandre enn personene inne i '+
-    'gruppene allerede er?</i> Det er nøyaktig det <b>F</b> måler, ved å sammenligne to slags spredning.</div>'+
-    '<div class="form">F = spredning MELLOM gruppegjennomsnittene ÷ spredning INNE I gruppene'+
+    'gruppene allerede er?</i> Det er nøyaktig det <b><i>F</i></b> måler, ved å sammenligne to slags spredning.</div>'+
+    '<div class="form"><i>F</i> = spredning MELLOM gruppegjennomsnittene ÷ spredning INNE I gruppene'+
     '<span class="les">Er gruppene like, måler teller og nevner det samme, og brøken lander rundt 1. '+
-    'Er de ulike, vokser telleren, og F blir stor.</span></div>'+
+    'Er de ulike, vokser telleren, og <i>F</i> blir stor.</span></div>'+
     '<ul>'+
     '<li><b>spredning mellom gruppene</b> — hvor langt de '+k+' gruppegjennomsnittene ligger fra det '+
     'samlede gjennomsnittet.</li>'+
@@ -1521,9 +1826,9 @@ const FANE_F = lagNullFane('f', {
     '</ul>'+
     '<div class="styrt"><b>Kurvens form avhenger bare av de to frihetsgradene</b> — altså av hvor mange '+
     'grupper og hvor mange personer, ikke av hva du måler.</div>'+
-    '<div class="tall"><b>Her og nå, med '+k+' grupper à '+d.n+' personer:</b> F-verdiene vil i snitt bli '+
+    '<div class="tall"><b>Her og nå, med '+k+' grupper à '+d.n+' personer:</b> <i>F</i>-verdiene vil i snitt bli '+
     '<b>'+(d.df2>2?nb(d.df2/(d.df2-2),2):'—')+'</b> — litt over 1, ikke nøyaktig 1, og det overrasker de fleste. '+
-    'F må over <b>'+nb(d.krit,2)+'</b> for å bli kalt signifikant på '+nb(d.alfa*100,0)+' %-nivået.'+
+    '<i>F</i> må over <b>'+nb(d.krit,2)+'</b> for å bli kalt signifikant på '+nb(d.alfa*100,0)+' %-nivået.'+
     ($('fUlik').checked ? ' <b>Men merk:</b> du har gitt én gruppe dobbelt så stor spredning som de andre. '+
       'Da måler ikke lenger nevneren «den felles støyen», og kurven under beskriver en verden som ikke '+
       'gjelder her. Kjør simuleringen og se hvor galt det går.' : '')+'</div>'; },
@@ -1586,8 +1891,8 @@ function kOppdaterModus(){
   const lab=$('kRadLabel'); if(lab) lab.textContent = o.gof ? 'Kategorier' : 'Rader';
   $('kDf').textContent = 'df = '+o.df;
   $('kForklaring').innerHTML = o.gof
-    ? 'Vi trekker <b>n observasjoner fra en fordeling vi selv har bestemt</b>, og tester dem mot nøyaktig den samme fordelingen. Nullhypotesen er altså sann: dataene <i>kommer</i> fra den forventede fordelingen. For hver gjentakelse regner vi ut Pearsons X² = Σ (O − E)² / E, der E kommer fra de oppgitte andelene. Teorien sier at disse verdiene skal følge en χ²-fordeling med c − 1 frihetsgrader.'
-    : 'Vi lager krysstabeller der rad og kolonne er <b>uavhengige av hverandre</b> — nullhypotesen er sann. For hver tabell regner vi ut Pearsons X². Teorien sier at disse verdiene skal følge en χ²-fordeling med (r − 1)(k − 1) frihetsgrader. Om det stemmer, avhenger av hvor mange observasjoner som havner i hver celle, og det er hele poenget med regelen om forventede frekvenser.';
+    ? 'Vi trekker <b><i>n</i> observasjoner fra en fordeling vi selv har bestemt</b>, og tester dem mot nøyaktig den samme fordelingen. Nullhypotesen er altså sann: dataene <i>kommer</i> fra den forventede fordelingen. For hver gjentakelse regner vi ut Pearsons X² = Σ (O − E)² / E, der E kommer fra de oppgitte andelene. Teorien sier at disse verdiene skal følge en χ²-fordeling med c − 1 frihetsgrader.'
+    : 'Vi lager krysstabeller der rad og kolonne er <b>uavhengige av hverandre</b> — nullhypotesen er sann. For hver tabell regner vi ut Pearsons X². Teorien sier at disse verdiene skal følge en χ²-fordeling med (<i>r</i> − 1)(k − 1) frihetsgrader. Om det stemmer, avhenger av hvor mange observasjoner som havner i hver celle, og det er hele poenget med regelen om forventede frekvenser.';
 }
 function kNliste(){
   const a=Math.max(5,Math.round(+$('kMin').value||20)), b=Math.max(a,Math.round(+$('kMaks').value||a)),
@@ -1689,14 +1994,14 @@ function kTeori(){
     '<li><b>forventet</b> (E) — hvor mange som skulle havnet der hvis nullhypotesen var sann. '+
       (o.gof ? 'Her kommer E fra <b>fordelingen du oppgir</b>: kun totalen hentes fra dataene.'
              : 'Her regnes E ut fra <b>tabellens egne rad- og kolonnesummer</b>.')+'</li>'+
-    '<li><b>frihetsgrader</b> (df) — her <b>'+o.df+'</b>. '+
+    '<li><b>frihetsgrader</b> (<i>df</i>) — her <b>'+o.df+'</b>. '+
       (o.gof ? o.r+' kategorier minus 1, fordi totalen er låst.'
              : '('+o.r+' − 1) × ('+o.k+' − 1): begge marginalfordelingene er hentet fra dataene selv, og det koster.')+
       '</li>'+
     '</ul>'+
     '<div class="styrt"><b>Kurvens form avhenger bare av frihetsgradene</b> — ikke av hvor mange personer '+
     'du har, ikke av hva kategoriene heter.</div>'+
-    '<div class="tall"><b>Her og nå:</b> X²-verdiene skal i snitt bli <b>'+o.df+'</b> (nettopp df), sprike med '+
+    '<div class="tall"><b>Her og nå:</b> X²-verdiene skal i snitt bli <b>'+o.df+'</b> (nettopp <i>df</i>), sprike med '+
     'omtrent <b>'+nb(Math.sqrt(2*o.df),1)+'</b>, og en X² over <b>'+nb(krit,2)+'</b> skal kalles signifikant '+
     'på '+nb(alfa*100,0)+' %-nivået.<br><b>Men her er en hake de andre fanene ikke har:</b> χ²-kurven er '+
     'en <b>tilnærming</b>. X² er bygget av hele personer som telles opp, mens kurven er glatt og kontinuerlig. '+
@@ -1739,9 +2044,9 @@ function kTegnFord(){
       c.fillStyle='rgba(178,106,0,.13)'; c.fill();
       c.strokeStyle='#B26A00'; c.lineWidth=2.5; c.stroke();
     }
-    $('kStats').innerHTML='<span class="stat">Kurven over er teoriens påstand for df = '+o.df+
+    $('kStats').innerHTML='<span class="stat">Kurven over er teoriens påstand for <i>df</i> = '+o.df+
       '. Trykk «Kjør simuleringen» for å teste den.</span>'+
-      (kFrossen ? '<span class="stat orange">frossen: n = '+kFrossen.n+' · df = '+kFrossen.df+'</span>' : '');
+      (kFrossen ? '<span class="stat orange">frossen: <i>n</i> = '+kFrossen.n+' · df = '+kFrossen.df+'</span>' : '');
     return;
   }
   let hi=Math.max(d.krit*1.9, d.sortert[Math.floor(0.995*(d.R-1))]);
@@ -1793,12 +2098,12 @@ function kTegnFord(){
   c.font='bold 13px sans-serif'; c.fillText('X²', x0+pw/2, y0+33);
 
   const avvik=(d.rate-d.alfa)/Math.sqrt(d.alfa*(1-d.alfa)/d.R);
-  $('kStats').innerHTML='<span class="stat">n = '+d.n+'</span><span class="stat">df = '+d.df+'</span>'+
+  $('kStats').innerHTML='<span class="stat"><i>n</i> = '+d.n+'</span><span class="stat"><i>df</i> = '+d.df+'</span>'+
     '<span class="stat'+(d.minForv<5?' red':' green')+'">minste forventede celle = '+nb(d.minForv,1)+'</span>'+
     '<span class="stat">snitt X² = '+nb(d.snitt,2)+' (teori: '+d.df+')</span>'+
     '<span class="stat">målt 95-persentil = '+nb(d.p95,2)+' (teori: '+nb(d.krit,2)+')</span>'+
     '<span class="stat'+(Math.abs(avvik)>3?' red':' green')+'">forkaster '+nb(d.rate*100,1)+' % (lovet '+nb(d.alfa*100,0)+' %)</span>'+
-    (kFrossen ? '<span class="stat orange">frossen: n = '+kFrossen.n+' · df = '+kFrossen.df+
+    (kFrossen ? '<span class="stat orange">frossen: <i>n</i> = '+kFrossen.n+' · df = '+kFrossen.df+
                 ' · minste forventede celle '+nb(kFrossen.minForv,1)+
                 ' · forkaster '+nb(kFrossen.rate*100,1)+' %</span>' : '');
   $('kNote').style.display='';
@@ -1886,14 +2191,14 @@ function kFyllTab(){
     const d=kRES.find(x=>String(x.n)===String($('kNvelg').value));
     if(!d){ $('kFrosset').textContent='(kjør simuleringen først)'; return; }
     kFrossen=d;
-    $('kFrosset').innerHTML='Frossen: <b>n = '+d.n+'</b>, df = '+d.df+'. Endre tabell eller n og kjør igjen.';
+    $('kFrosset').innerHTML='Frossen: <b><i>n</i> = '+d.n+'</b>, <i>df</i> = '+d.df+'. Endre tabell eller n og kjør igjen.';
     kTegnFord();
   };
   $('kUfrys').onclick=()=>{ kFrossen=null; $('kFrosset').textContent=''; kTegnFord(); };
   $('kAlfa').onchange=()=>{ kTegnRate(); kTegnFord(); };
   kVisListe(); kTegnFord(); kTegnRate();
 
-  const faner=['se','p','t','r','f','kji'];
+  const faner=['hvorfor','se','p','t','r','f','kji'];
   function vis(f){
     faner.forEach(x=>{ $('fane-'+x).classList.toggle('hide', x!==f); });
     Array.from(document.querySelectorAll('.fane')).forEach(b=>b.classList.toggle('on', b.dataset.fane===f));
@@ -1902,7 +2207,7 @@ function kFyllTab(){
   Array.from(document.querySelectorAll('.fane')).forEach(b=>b.onclick=()=>vis(b.dataset.fane));
   // dyplenke: ?fane=p gir egen QR-kode per tema
   const q=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'')).get('fane');
-  if(faner.indexOf(q)>=0) vis(q);
+  vis(faner.indexOf(q)>=0 ? q : 'hvorfor');
   window.addEventListener('resize',()=>{ pTegnQQ(); pTegnRate(); kTegnFord(); kTegnRate(); });
 })();
 
@@ -1966,6 +2271,20 @@ const PSY300_USAGE_URL = "https://script.google.com/macros/s/AKfycby4YnQ2gN4UmA0
     if((e.key==="p"||e.key==="P")&&!/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) veksle();
   });
   document.body.appendChild(b);
+})();
+</script>
+
+<script id="ovbegrep-js">
+(function(){
+  // Lokalt: appene ligger i PSY300_Sim_Apps/, MCQ-appen i PSY300_online/.
+  // Publisert: alt ligger flatt. Velg prefiks ut fra adressen.
+  var p = location.pathname.indexOf('/PSY300_Sim_Apps/') >= 0
+        ? '../PSY300_online/' : './';
+  var a = document.querySelectorAll('a.ovlenke[data-begrep]');
+  for (var i=0;i<a.length;i++){
+    a[i].href = p + 'PSY300_MCQ_Online.html?begrep=' + a[i].getAttribute('data-begrep');
+    a[i].target = '_blank'; a[i].rel = 'noopener';
+  }
 })();
 </script>
 </body></html>

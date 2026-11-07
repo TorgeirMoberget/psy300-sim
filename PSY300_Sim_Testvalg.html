@@ -151,6 +151,18 @@ table.steg tr:last-child td{border-bottom:1px solid #333}
 .ovlbl{font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5A6B7B}
 .ovhint{font-size:13.5px;color:#8b949e}
 .ovlenke{color:#2E5496;font-weight:600;cursor:pointer;text-decoration:underline}
+/* ---------- FANEHJELP ---------- */
+.fhboks{background:var(--card,#fff);border:1px solid var(--line,#d9dee8);
+  border-left:5px solid var(--blue,#2E5496);border-radius:12px;padding:16px;
+  margin:0 0 14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.fhlbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--navy,#1F3864);font-weight:700;margin:0 0 4px}
+.fhlbl.sek{margin-top:12px}
+.fhkort{font-size:16px;margin:0}
+.fhsteg{font-size:16px;margin:0;padding-left:22px}
+.fhsteg li{margin:0 0 3px}
+.fhsee{font-size:16px;margin:0}
+/* ---------- FANEHJELP slutt ---------- */
 </style><style>
 .fane{background:#eef1f7;color:var(--navy);font-size:16.5px}.fane.on{background:var(--navy);color:#fff}.hide{display:none}
 .tabrull{overflow-x:auto}
@@ -281,6 +293,22 @@ har oppe mens du skriver.</b></div>
 </div>
 
 <div id="fane-tre" class="hide">
+<!-- FANEHJELP tre -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Nesten alle testvalg i emnet avgjøres av fire spørsmål: hva vil du vite, hva slags variabel er utfallet, hvor mange grupper eller målinger, og er det de samme personene?</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Ta en konkret problemstilling fra din egen oppgave.</li>
+<li>Klikk deg nedover, ett spørsmål om gangen.</li>
+<li>Klikk på et tidligere steg hvis du vil prøve en annen vei.</li>
+<li>Trykk «Start på nytt» og gjør det samme med en problemstilling til.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Du kom fram til testen uten å se på dataene én gang. Det er poenget: testen velges av designet, ikke av dataene — og forutsetningene avgjør bare om du trenger reserven.</p>
+</div>
+<!-- /FANEHJELP tre -->
+
 <div class="card">
 <h2 data-t="a63">Svar på spørsmålene, ett om gangen</h2>
 <p data-t="a64" class="muted">Nesten alle testvalg i emnet avgjøres av fire spørsmål: <b>Hva vil du vite?</b> <b>Hva slags variabel er utfallet?</b> <b>Hvor mange grupper eller målinger?</b> <b>Er det de samme personene?</b> Klikk deg nedover. Du kan når som helst klikke på et tidligere steg for å gå tilbake.</p>
@@ -295,6 +323,22 @@ har oppe mens du skriver.</b></div>
 </div>
 
 <div id="fane-ov" class="hide">
+<!-- FANEHJELP ov -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Øving på ekte spørsmål fra emnets to datasett: terapistudien og arbeidskravet. Samme fire spørsmål som i fane 1, men nå uten treet foran deg.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les spørsmålet og tenk gjennom de fire spørsmålene før du svarer.</li>
+<li>Velg en test.</li>
+<li>Trykk «Vis veien i beslutningstreet» når du har svart — også når du svarte riktig.</li>
+<li>Trykk «Neste spørsmål».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Se på hvilket av de fire spørsmålene du bommet på, ikke bare på om testen ble riktig. «Samme personer» er det vanligste feilvalget — før og etter hos de samme studentene er paret, selv om kolonnene heter noe forskjellig i datafila.</p>
+</div>
+<!-- /FANEHJELP ov -->
+
 <div class="card">
 <h2 data-t="a68">Hvilken analyse svarer på spørsmålet?</h2>
 <p data-t="a69" class="muted">Alle spørsmålene er hentet fra emnets to datasett: terapistudien (ISTDP mot venteliste, depresjon målt tre ganger) og arbeidskravet (statistikk-selvtillit før og etter en lett eller vanskelig prøve). Tenk gjennom de fire spørsmålene fra fane 1 før du velger.</p>
@@ -309,6 +353,22 @@ har oppe mens du skriver.</b></div>
 </div>
 
 <div id="fane-ark" class="hide">
+<!-- FANEHJELP ark -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Hele verktøykassa på ett ark. Radene er hva du vil vite, kolonnene er designet, og reserven i parentes er det du bruker når forutsetningene ikke holder.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Finn raden som passer utfallet ditt: kontinuerlig eller kategorisk, samme personer eller ulike.</li>
+<li>Gå bortover til kolonnen som passer antall grupper eller målinger.</li>
+<li>Les testen først, reserven i parentes etterpå.</li>
+<li>Ha arket oppe mens du skriver metodedelen.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Legg merke til at radene for «ulike personer» og «samme personer» har helt ulike tester i hver kolonne. Det ene spørsmålet avgjør mer enn noe annet — og det er det studentene oftest svarer feil på.</p>
+</div>
+<!-- /FANEHJELP ark -->
+
 <div class="card">
 <h2 data-t="a74">Hele verktøykassa på ett ark</h2>
 <p data-t="a75" class="muted">Radene er hva du vil vite, kolonnene er designet. Reserven i parentes er det du bruker når forutsetningene ikke holder.</p>

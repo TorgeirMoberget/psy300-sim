@@ -67,6 +67,18 @@ a{color:var(--blue)}
 .ovkort{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .ovlbl{font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5A6B7B}
 .ovhint{font-size:13.5px;color:#8b949e}
+/* ---------- FANEHJELP ---------- */
+.fhboks{background:var(--card,#fff);border:1px solid var(--line,#d9dee8);
+  border-left:5px solid var(--blue,#2E5496);border-radius:12px;padding:16px;
+  margin:0 0 14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.fhlbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--navy,#1F3864);font-weight:700;margin:0 0 4px}
+.fhlbl.sek{margin-top:12px}
+.fhkort{font-size:16px;margin:0}
+.fhsteg{font-size:16px;margin:0;padding-left:22px}
+.fhsteg li{margin:0 0 3px}
+.fhsee{font-size:16px;margin:0}
+/* ---------- FANEHJELP slutt ---------- */
 </style>
 <style id="ovbegrep-css">
 .ovkort{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f6f8fa;
@@ -570,6 +582,22 @@ Fane 5 kobler det hele til <i>p</i>-verdien.</b></div>
 </div>
 
 <div id="fane-mynt" style="display:none">
+<!-- FANEHJELP mynt -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Du kaster en mynt om og om igjen og følger to tall samtidig: andelen kron, og hvor mange flere kron enn mynt du har fått. Det ene roer seg. Det andre gjør det ikke.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «Kast 1» noen ganger og se hvilken side mynten lander på.</li>
+<li>Trykk «Kast 1 000».</li>
+<li>Se på begge kurvene: den øverste er andelen kron, den nederste er kron minus mynt.</li>
+<li>Dra skyveknappen bort fra 0.50 og kast 1 000 igjen. Nå er mynten jukset.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Andelen legger seg rundt 0.50, men differansen i antall er fortsatt 20–40 og vokser videre. Det er den √<i>n</i> som senere står i nevneren til standardfeilen — du ser den her før formelen.</p>
+</div>
+<!-- /FANEHJELP mynt -->
+
 <div class="card">
 <h2>Andelen roer seg. Differansen gjør det ikke.</h2>
 
@@ -662,6 +690,22 @@ studier overser ekte effekter. Se <b>Sim 7</b>.</div>
 
 <!-- ============================ FANE 2 ============================ -->
 <div id="fane-terning" style="display:none">
+<!-- FANEHJELP terning -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">To terninger gir 36 like sannsynlige utfall, men de fordeler seg ujevnt på summene. Sum 7 kan lages på seks måter, sum 2 bare på én.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «Kast 1» og se de to terningene øverst havne i én søyle i histogrammet.</li>
+<li>Trykk «Kast 5 000».</li>
+<li>Klikk på en sum i rutenettet under og se hvilke ruter som gir den.</li>
+<li>Sett «Antall terninger» til 3, og så til 5.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Histogrammet følger den teoretiske kurven, og med flere terninger blir det klokkeformet uten at noe nytt er lagt til. Det er sentralgrenseteoremet, sett ved å telle.</p>
+</div>
+<!-- /FANEHJELP terning -->
+
 <div class="card">
 <h2>Hvorfor er sum 7 vanligst?</h2>
 
@@ -791,6 +835,22 @@ n&oslash;yaktig det samme. Se <b>Sim 29</b>.</div>
 
 <!-- ============================ FANE 3 ============================ -->
 <div id="fane-uavh" style="display:none">
+<!-- FANEHJELP uavh -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Fem kron på rad — hva er mest sannsynlig på kast nummer seks? De fleste vet det riktige svaret og føler likevel det motsatte. Fanen viser hvorfor følelsen tar feil.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Gjett først: trykk på «Mynt», «Kron» eller «Like sannsynlig».</li>
+<li>Trykk «Simuler 5 000 serier» og les hva som faktisk skjedde etter fem kron.</li>
+<li>Trykk «Kast 200 ganger» og se den lengste serien bli ringet inn.</li>
+<li>Trykk «Kjør 2 000 runder à 200 kast».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Etter fem kron er kron og mynt fortsatt like sannsynlige — mynten husker ingenting. Og lange serier er helt vanlige: den lengste er typisk 8, og nesten hver runde har en serie på minst fem.</p>
+</div>
+<!-- /FANEHJELP uavh -->
+
 <div class="card">
 <h2>Mynten husker ikke</h2>
 
@@ -936,6 +996,22 @@ falsk positiv 64 %. Se <b>Sim 7</b>, fanen om multiple tester.</div>
 
 <!-- ============================ FANE 4 ============================ -->
 <div id="fane-betinget" style="display:none">
+<!-- FANEHJELP betinget -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Tusen personer, én rute hver. En test som «treffer 95 %» sier hvor ofte den slår ut når du er syk. Pasienten vil vite noe annet: hvor ofte man er syk når den har slått ut.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>La de tre skyveknappene stå først, og les tallet nede til venstre.</li>
+<li>Dra «Forekomst i befolkningen» helt ned.</li>
+<li>Se på de røde rutene — friske med utslag — mot de mørkegrønne.</li>
+<li>Dra «Falskt utslag hos friske» opp og ned og se hvor mye det ene tallet flytter seg.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Når tilstanden er sjelden, er det så mange friske at de falske utslagene blir flere enn de ekte — selv med en god test. Det er basisraten som gjør det, ikke kvaliteten på testen.</p>
+</div>
+<!-- /FANEHJELP betinget -->
+
 <div class="card">
 <h2>Testen treffer 95 %. Hvorfor er du likevel sannsynligvis frisk?</h2>
 
@@ -1016,6 +1092,21 @@ ikke hvor sannsynlig H₀ er &mdash; til det trenger du basisraten, og den har d
 
 <!-- ============================ FANE 5 ============================ -->
 <div id="fane-tetthet" class="hide">
+<!-- FANEHJELP tetthet -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Hittil har utfallene kunnet telles: kron eller mynt, sekser eller ikke. En depresjonsskala kan ikke telles slik. Da er sannsynligheten for én bestemt verdi eksakt null, og bare intervaller har sannsynlighet.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Se på kurven: depresjonsskaare ved oppstart i terapistudien, og det blå feltet er intervallet rundt 30.</li>
+<li>Dra skyveknappen og gjør intervallet smalere, ett trinn om gangen.</li>
+<li>Følg de to tallene ved siden av hverandre: P(intervallet) og høyde × bredde.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">De to tallene nærmer seg hverandre jo smalere intervallet blir, og begge går mot null. Det er grunnen til at en <i>p</i>-verdi alltid er et haleareal og aldri «sannsynligheten for akkurat dette resultatet».</p>
+</div>
+<!-- /FANEHJELP tetthet -->
+
 
 <div class="card">
 <h2>Et sp&oslash;rsm&aring;l uten et fornuftig svar</h2>
@@ -1135,6 +1226,22 @@ dette?».</b></div>
 </div><!-- /fane-tetthet -->
 
 <div id="fane-pverdi" style="display:none">
+<!-- FANEHJELP pverdi -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Du har en studie: <i>n</i> pasienter, og et antall som ble bedre. Simuleringen antar at behandlingen ikke virker — da er «ble bedre» et myntkast — og kjører studien 5 000 ganger i den verdenen.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Sett «Antall pasienter» og «Observert antall bedre» til tallene i studien din.</li>
+<li>Trykk «Simuler 5 000 studier».</li>
+<li>Se hvor det observerte antallet havner i fordelingen.</li>
+<li>Dra «Observert antall bedre» nærmere midten og se <i>p</i>-verdien stige.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Fordelingen er nullfordelingen, og <i>p</i>-verdien er bare andelen av de 5 000 som er minst så ekstreme som det du fikk. Det er nøyaktig samme regnestykke som «er mynten rigget?» i fane 1.</p>
+</div>
+<!-- /FANEHJELP pverdi -->
+
 <div class="card">
 <h2>Nullhypotesen er en mynt</h2>
 

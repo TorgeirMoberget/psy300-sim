@@ -530,6 +530,18 @@ body.trykk #foversikt,body.trykk #modusBtn{display:none!important}
 body.fmodus #modusBtn{left:14px;right:auto;bottom:11px;
   background:rgba(255,255,255,.10);color:#cfdaeb;
   border:1px solid rgba(255,255,255,.20);box-shadow:none;font-weight:600}
+/* ---------- FANEHJELP ---------- */
+.fhboks{background:var(--card,#fff);border:1px solid var(--line,#d9dee8);
+  border-left:5px solid var(--blue,#2E5496);border-radius:12px;padding:16px;
+  margin:0 0 14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.fhlbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--navy,#1F3864);font-weight:700;margin:0 0 4px}
+.fhlbl.sek{margin-top:12px}
+.fhkort{font-size:16px;margin:0}
+.fhsteg{font-size:16px;margin:0;padding-left:22px}
+.fhsteg li{margin:0 0 3px}
+.fhsee{font-size:16px;margin:0}
+/* ---------- FANEHJELP slutt ---------- */
 </style><script>
 function PSY_T(s){ return (window.PSY300_T ? window.PSY300_T(s) : s); }
 </script>
@@ -980,6 +992,22 @@ Det er residualen, og det er den vi kvadrerer og summerer n&aring;r vi regner ut
 
 <!-- ==================================================== FANE 2 -->
 <div id="fane-estimat" class="hide">
+<!-- FANEHJELP estimat -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Her er fasiten kjent. Du bestemmer sannheten i populasjonen selv, og ser så hvor godt én studie treffer den — om og om igjen.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Sett de to sanne snittene og «Antall per gruppe».</li>
+<li>Trykk «Trekk ett nytt utvalg» fire–fem ganger.</li>
+<li>Trykk «Trekk 200 utvalg etter hverandre».</li>
+<li>Dobl <i>n</i>, trykk «Frys denne kurven» og sammenlign.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Sannheten står helt stille mens svaret hopper. En ekte forsker får ett av disse svarene og vet ikke hvilket — og det er hele grunnen til at vi trenger standardfeil og konfidensintervall i de to neste fanene.</p>
+</div>
+<!-- /FANEHJELP estimat -->
+
 <div class="card">
 <h2 data-t="b3">Det vi vil vite, og gjetningen vår</h2>
 <p style="font-size:16.5px;line-height:1.55" data-t="b4">I virkeligheten har du ett datasett, og du
@@ -1045,6 +1073,21 @@ den er triviell &mdash; men i å si noe ærlig om <b>hvor mye den kunne ha bomme
 
 <!-- ==================================================== FANE 3 -->
 <div id="fane-se" class="hide">
+<!-- FANEHJELP se -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Standardfeilen er hvor mye svaret ditt ville sprikt om du gjorde studien om igjen med nye personer. Ikke noe mer enn det.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «Kjør studien 2 000 ganger».</li>
+<li>Dra «Antall per gruppe» fra 20 til 80 og kjør på nytt.</li>
+<li>Trykk «Frys denne kurven» og sammenlign bredden.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Fjellet blir smalere, men det flytter seg ikke. Dobler du <i>n</i>, krymper standardfeilen med omtrent 30 %; firedobler du <i>n</i>, halveres den. Presisjon er dyrt.</p>
+</div>
+<!-- /FANEHJELP se -->
+
 <div class="card">
 <h2 data-t="b8">Hvor usikker er gjetningen? — standardfeilen</h2>
 <p style="font-size:16.5px;line-height:1.55" data-t="b9">Forskeren gjør studien <b>&eacute;<i>n</i> gang</b>. Men tenk
@@ -1117,6 +1160,21 @@ grunnen til at statistisk teori er nyttig.
 
 <!-- ==================================================== FANE 4 -->
 <div id="fane-ki" class="hide">
+<!-- FANEHJELP ki -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Konfidensintervallet er estimatet pluss/minus omtrent to standardfeil. Det er den ærlige versjonen av svaret: et spenn i stedet for ett tall.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Klikk «1 · fordelingen», så «2 · ± 2 SE», så «3 · persentilene».</li>
+<li>Trykk «Kjør 100 studier og tegn 100 intervaller».</li>
+<li>Tell hvor mange av de hundre som bommer på sannheten.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Omtrent fem av hundre bommer. Det er det «95 %» betyr — en egenskap ved metoden over mange studier, ikke en sannsynlighet for akkurat ditt ene intervall.</p>
+</div>
+<!-- /FANEHJELP ki -->
+
 <div class="card" data-t="b14">
 <h2>Konfidensintervallet</h2>
 <p style="font-size:16.5px;line-height:1.55">Et enkelt tall er en dårlig måte å svare på. «Terapien
@@ -1207,6 +1265,22 @@ til å se noe som helst. <b>Et bredt intervall rundt null betyr «vi vet ikke»,
 
 <!-- ==================================================== FANE 5 -->
 <div id="fane-tverdi" class="hide">
+<!-- FANEHJELP tverdi -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort"><i>t</i> er forskjellen målt i antall standardfeil. Den samme hviskingen er krystallklar i et stille rom og borte på en fest — signalet må leses mot støyen.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Dra de to blå strekene fra hverandre: det er signalet.</li>
+<li>Dra «Spredning innen gruppene» opp og ned: det er støyen.</li>
+<li>Trykk «Tydelig forskjell», så «Ingen forskjell».</li>
+<li>Trykk «Se utregningene» og følg stegene.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee"><i>t</i> = 2 betyr at forskjellen er dobbelt så stor som usikkerheten i den. Du kan få <i>t</i> opp på tre måter: større forskjell, mindre spredning, eller flere personer.</p>
+</div>
+<!-- /FANEHJELP tverdi -->
+
 
 <div class="card" data-t="b20">
 <h2><i>t</i>-verdien — signal over støy</h2>
@@ -1342,6 +1416,21 @@ forskjellen borte.</b>
 
 <!-- ==================================================== FANE 6 -->
 <div id="fane-nhst" class="hide">
+<!-- FANEHJELP nhst -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Vi later som ingenting virker, kjører den verdenen mange ganger, og ser hvor din forskjell havner. <i>p</i> er andelen av nullverdenen som er minst like ekstrem som din.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Klikk deg gjennom de fem stegene, ett om gangen.</li>
+<li>Trykk «Trekk ett utvalg og test det» flere ganger.</li>
+<li>Sett den sanne forskjellen til null og trekk videre.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Med sann forskjell lik null blir omtrent hver tjuende studie signifikant likevel. Det er ikke en feil i metoden — det er prisen vi har avtalt når vi satte α = .05.</p>
+</div>
+<!-- /FANEHJELP nhst -->
+
 <div class="card">
 <h2 data-t="b29">Nullhypotesetesting — intuisjonen først</h2>
 <p style="font-size:16.5px;line-height:1.55" data-t="b30">Her er hele ideen, uten et eneste symbol:</p>
@@ -1508,6 +1597,20 @@ Og da har du enveis ANOVA. <i>F</i>-testen i ANOVA er den samme testen som regre
 
 <!-- ==================================================== FANE 7 -->
 <div id="fane-effekt" class="hide">
+<!-- FANEHJELP effekt -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Cohens <i>d</i> er forskjellen målt i standardavvik, ikke i standardfeil. Derfor vokser den ikke når du måler flere personer.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Dra «Cohens d» og se hvor mye de to fordelingene overlapper.</li>
+<li>Sett «Sann d i populasjonen» og trykk «Kjør 400 studier ved hver n».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Ved <i>d</i> = 0.80 — en «stor» effekt — overlapper fordelingene fortsatt kraftig. I den nederste figuren vokser <i>t</i> med <i>n</i> mens <i>d</i> står stille.</p>
+</div>
+<!-- /FANEHJELP effekt -->
+
 <div class="card">
 <h2 data-t="b39">Effektstørrelse — hvor stor er forskjellen egentlig?</h2>
 <p style="font-size:16.5px;line-height:1.55" data-t="b40"><i>p</i>-verdien svarer på «kunne dette vært flaks?». Den
@@ -1583,6 +1686,21 @@ ditt feilet.
 
 <!-- ==================================================== FANE 8 -->
 <div id="fane-styrke" class="hide">
+<!-- FANEHJELP styrke -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Styrke er sjansen for å finne effekten hvis den finnes. Den avgjøres før du samler data — av hvor mange du måler.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Sett «Sann effektstørrelse» til noe du tror er realistisk.</li>
+<li>Dra «Antall per gruppe» til styrken når 80 %.</li>
+<li>Dra «Krav til bevis» og se hva et strengere krav koster.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">80 % styrke betyr at du på forhånd har akseptert én sjanse av fem for å gå glipp av en effekt som faktisk er der. Og en liten effekt krever langt flere personer enn folk tror.</p>
+</div>
+<!-- /FANEHJELP styrke -->
+
 <div class="card" data-t="b49">
 <h2>Statistisk styrke — sjansen for å finne det som er der</h2>
 <p style="font-size:16.5px;line-height:1.55">Fane 6 svarte på «kunne dette vært flaks?».
@@ -1761,6 +1879,22 @@ ville vært praktisk interessant, eller &mdash; svakest &mdash; en tidligere enk
 
 <!-- ==================================================== FANE 9 -->
 <div id="fane-forut" class="hide">
+<!-- FANEHJELP forut -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Tre forutsetninger, sortert etter hvor mye skade det gjør å bryte dem: uavhengighet, like varianser, normalitet.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Sett ulik «SD i gruppe 1» og «SD i gruppe 2», og ulike <i>n</i>.</li>
+<li>Trykk «Kjør 3 000 studier uten sann effekt».</li>
+<li>Les av hvor ofte testen sier signifikant når sannheten er null.</li>
+<li>Trykk «Sett variansene like» og kjør igjen.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Feilraten spretter over 5 % når den minste gruppen har den største spredningen. Welch retter det gratis — mens uavhengighet er den ene ingen korreksjon redder.</p>
+</div>
+<!-- /FANEHJELP forut -->
+
 <div class="card">
 <h2>Forutsetningene — i rekkefølgen de faktisk betyr noe</h2>
 <p style="font-size:16.5px;line-height:1.55">Lærebøker lister ofte tre forutsetninger som om de var
@@ -1880,6 +2014,21 @@ For uavhengig <i>t</i>: n₁ + n₂ − 2.<br>
 
 <!-- ==================================================== FANE 10 -->
 <div id="fane-paret" class="hide">
+<!-- FANEHJELP paret -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Samme personer målt to ganger gir ikke to utvalg, men ett utvalg av differanser. All variasjonen mellom mennesker forsvinner ut av nevneren.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Dra «Korrelasjon før/etter» fra lav til høy.</li>
+<li>Trykk «Trekk et nytt utvalg» noen ganger ved hver innstilling.</li>
+<li>Sammenlign den parete <i>t</i>-en med den uavhengige.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Jo sterkere før og etter henger sammen, desto større blir gevinsten. Og legg merke til frihetsgradene: <i>n</i> − 1, ikke <i>n</i>₁ + <i>n</i>₂ − 2. Du har ikke dobbelt så mange personer.</p>
+</div>
+<!-- /FANEHJELP paret -->
+
 <div class="card" data-t="b62">
 <h2>Paret <i>t</i>-test — når det er de samme personene</h2>
 <p style="font-size:16.5px;line-height:1.55">Alt de åtte første fanene handlet om, var
@@ -2043,6 +2192,20 @@ Ser du på datafila og ikke vet hvilken test du skal bruke, er det dette du ser 
 
 <!-- ==================================================== FANE 11 -->
 <div id="fane-ettutvalg" class="hide">
+<!-- FANEHJELP ettutvalg -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Her finnes ingen andre gruppe. Du sammenligner ett gjennomsnitt med en verdi du tok med deg inn i analysen.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Sett «Sammenlikningsverdi» til noe faglig begrunnet.</li>
+<li>Dra «Antall i utvalget» og trykk «Trekk et nytt utvalg».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">μ₀ har ingen usikkerhet og bidrar ingenting til nevneren. Hvor den kommer fra — en skalamidt, en klinisk grense, en normverdi — er et faglig spørsmål, ikke et statistisk.</p>
+</div>
+<!-- /FANEHJELP ettutvalg -->
+
 <div class="card" data-t="b70">
 <h2>Én-utvalgs <i>t</i>-test — mot en verdi, ikke mot en gruppe</h2>
 <p style="font-size:16.5px;line-height:1.55">Den siste varianten har ingen andre gruppe i det
@@ -2172,6 +2335,21 @@ Rangbasert reserve: <b>Wilcoxon signed-rank</b>, samme som for den parete.
 
 <!-- ==================================================== FANE 12 -->
 <div id="fane-rapport" class="hide">
+<!-- FANEHJELP rapport -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Alt de elleve fanene har bygget, skal ut i én setning en leser kan etterprøve: funnet på norsk først, tallene i parentes etterpå.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Les setningen delt i biter, og hold musa over hver bit.</li>
+<li>Bytt mellom «Uavhengig», «Paret» og «Én-utvalgs».</li>
+<li>Skriv din egen setning med dine egne tall før du går videre.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Fortegnet på <i>t</i> sier hvilken vei du regnet, og det må stå. Ingen av tallene får mangle — det er hele avtalen APA-formatet er.</p>
+</div>
+<!-- /FANEHJELP rapport -->
+
 
 <div class="card" data-t="rp1">
 <h2>Hele analysen, i én setning</h2>
@@ -2422,6 +2600,21 @@ varianser. Se fane 9.</p>
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="D4">D4 Å lese en resultatdel (APA) &rarr;</a> <a class="ovlenke" data-begrep="D2">D2 Å lese JASP-output &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div>
 <div id="fane-fabrikk" class="hide">
+<!-- FANEHJELP fabrikk -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Fordypning. Dra gruppegjennomsnittene og se signal, støy og <i>t</i> bygge seg opp steg for steg — og <i>t</i>-fordelingen tegne seg selv.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «Tydelig forskjell» og les regnestykket nedover.</li>
+<li>Dra «Spredning innen gruppene» og følg hvert steg.</li>
+<li>Trykk «Kjør 2 000 studier under H₀».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Bare det siste steget er noe JASP viser deg. De fire foran er de du må kjenne for å se hva som faktisk gjør <i>t</i> stor.</p>
+</div>
+<!-- /FANEHJELP fabrikk -->
+
 <div class="card innlemmet"><div class="muted" style="font-size:14px">Fordypning · tidligere egen app (Sim 16 · t-fabrikken). Dra gruppegjennomsnittene og se signal, støy og <i>t</i> bygge seg opp — og <i>t</i>-fordelingen tegne seg selv under H₀.</div></div>
 
 
@@ -2486,6 +2679,21 @@ varianser. Se fane 9.</p>
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C7">C7 t-tester &rarr;</a> <a class="ovlenke" data-begrep="B2">B2 Utvalgsfordeling og standardfeil &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div>
 <div id="fane-tnormal" class="hide">
+<!-- FANEHJELP tnormal -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Fordypning. Når standardavviket er estimert og ikke kjent, bruker vi <i>t</i> og ikke <i>z</i>. Forskjellen ligger i halene, og den koster mest når utvalget er lite.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Dra «n per gruppe» nedover mot små utvalg.</li>
+<li>Huk av «Forstørr halene».</li>
+<li>Les den kritiske verdien i figuren under.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Den kritiske verdien faller mot 1.96 når utvalget vokser. Hadde du brukt 1.96 ved liten <i>n</i>, ville du ropt «signifikant» langt oftere enn fem ganger av hundre.</p>
+</div>
+<!-- /FANEHJELP tnormal -->
+
 <div class="card innlemmet"><div class="muted" style="font-size:14px">Fordypning · tidligere egen app (Sim 17 · t mot normalfordelingen). Hvorfor vi bruker <i>t</i> og ikke <i>z</i> når standardavviket er estimert — og hva de tunge halene koster.</div></div>
 
 
@@ -2542,6 +2750,22 @@ varianser. Se fane 9.</p>
 <div class="card ovkort"><span class="ovlbl">Øv på dette</span><a class="ovlenke" data-begrep="C7">C7 t-tester &rarr;</a> <a class="ovlenke" data-begrep="C12">C12 Frihetsgrader og n − 1 &rarr;</a><span class="ovhint">åpner oppgavebanken med bare disse oppgavene</span></div>
 </div>
 <div id="fane-perm" class="hide">
+<!-- FANEHJELP perm -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Fordypning. Permutasjon bygger nullfordelingen av dine egne data: kast gruppeetikettene i en hatt og del dem ut på nytt, mange ganger.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Velg «Datasett» og «n per gruppe».</li>
+<li>Trykk «Trekk et nytt utvalg».</li>
+<li>Trykk «Stokk om 2 000 ganger» og sammenlign med teorien.</li>
+<li>Trykk «Kjør alle fire».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">På pene data gir omstokking og teori nesten samme svar. Prøv de kraftig høyreskjeve dataene og se om de to begynner å sprike — det er der teoriens antakelser settes på prøve.</p>
+</div>
+<!-- /FANEHJELP perm -->
+
 <div class="card innlemmet"><div class="muted" style="font-size:14px">Fordypning · tidligere egen app (Sim 18 · Permutasjonslaben). La dataene bygge sin egen nullfordeling ved å stokke om gruppeetikettene, og sammenlign med <i>t</i>-fordelingen.</div></div>
 
 

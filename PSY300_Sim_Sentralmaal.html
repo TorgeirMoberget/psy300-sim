@@ -239,6 +239,18 @@ table.jasp td.feil{color:#C0392B;font-weight:700}
 .ovkort{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .ovlbl{font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5A6B7B}
 .ovhint{font-size:13.5px;color:#8b949e}
+/* ---------- FANEHJELP ---------- */
+.fhboks{background:var(--card,#fff);border:1px solid var(--line,#d9dee8);
+  border-left:5px solid var(--blue,#2E5496);border-radius:12px;padding:16px;
+  margin:0 0 14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.fhlbl{display:block;font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--navy,#1F3864);font-weight:700;margin:0 0 4px}
+.fhlbl.sek{margin-top:12px}
+.fhkort{font-size:16px;margin:0}
+.fhsteg{font-size:16px;margin:0;padding-left:22px}
+.fhsteg li{margin:0 0 3px}
+.fhsee{font-size:16px;margin:0}
+/* ---------- FANEHJELP slutt ---------- */
 </style>
 <style id="ovbegrep-css">
 .ovkort{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f6f8fa;
@@ -357,6 +369,22 @@ igjen for senere. Fane 10 er hvordan det hele skrives ned.</b></div>
 </div>
 
 <div id="fane-maalenivaa" class="hide">
+<!-- FANEHJELP maalenivaa -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Målenivået bestemmer hva du har lov til å regne ut. Et gjennomsnitt av postnumre er et tall — det er bare ikke et meningsfullt tall.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Velg en variabel i listen.</li>
+<li>Bestem deg for nivå før du trykker: «Nominal», «Ordinal», «Intervall» eller «Ratio (forholdstall)».</li>
+<li>Trykk «Vis svaret» og les begrunnelsen.</li>
+<li>Gjenta med en variabel fra ditt eget datasett.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Hvilke sentralmål og figurer som lyser opp, endrer seg med nivået. Det er poenget: modus gjelder alltid, median krever rangordning, og gjennomsnitt krever at avstandene betyr det samme overalt.</p>
+</div>
+<!-- /FANEHJELP maalenivaa -->
+
 <div class="card">
 <h2>Velg en variabel <span id="lvl" class="lvl skjult"></span></h2>
 <select id="vselMN">
@@ -407,6 +435,21 @@ igjen for senere. Fane 10 er hvordan det hele skrives ned.</b></div>
 </div><!-- /fane-maalenivaa -->
 
 <div id="fane-frekv" class="hide">
+<!-- FANEHJELP frekv -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">For kategoriske variabler er det første sammendraget en opptelling, ikke et gjennomsnitt. De fire tallkolonnene ligner på hverandre, men svarer på fire ulike spørsmål.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Velg en variabel med manglende verdier i listen.</li>
+<li>Klikk på en rad for å se hvordan hvert tall er regnet ut.</li>
+<li>Huk av «Kod de 13 manglende svarene på studieår som 99» og se hva som skjer.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Prosent og gyldig prosent er ikke det samme når noe mangler, og forskjellen vokser med antall manglende. Og koder du manglende som 99, havner de i gjennomsnittet som om de var ekte svar.</p>
+</div>
+<!-- /FANEHJELP frekv -->
+
 
 <div class="card">
 <h2 data-t="s32fr_1">1. Frekvenstabellen — å telle før man regner</h2>
@@ -471,6 +514,22 @@ igjen for senere. Fane 10 er hvordan det hele skrives ned.</b></div>
 
 
 <div id="fane-maal" class="hide">
+<!-- FANEHJELP maal -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Alle målene i emnet er definert på en samling tall. Her er samlingen liten nok til at du kan se hvert enkelt tall og regne etter selv.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Velg en variabel og trykk «Trekk nye tall».</li>
+<li>Huk av «gjennomsnitt», «median» og «modus» ett om gangen.</li>
+<li>Huk av «kvartiler og kvartilbredde» og «standardavvik».</li>
+<li>Trykk «Sentrer på gjennomsnittet».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">På de skjeve variablene ligger gjennomsnittet et godt stykke over medianen. Det er ikke en feil i noen av dem — de svarer på to ulike spørsmål om hvor tyngdepunktet er.</p>
+</div>
+<!-- /FANEHJELP maal -->
+
 
 <div class="card">
 <h2>1. Trekk noen f&aring; tall</h2>
@@ -537,6 +596,21 @@ og det er nettopp derfor den ikke rikker seg n&aring;r &eacute;<i>n</i> verdi er
 </div><!-- /fane-maal -->
 
 <div id="fane-gjett" class="hide">
+<!-- FANEHJELP gjett -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Du skal gjette IQ-en til tilfeldige personer uten å vite noe om dem. Svaret er å si 100 hver gang — og da har du satt opp en statistisk modell.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «Tipp ny deltaker» noen ganger og se bommen.</li>
+<li>Trykk «Tipp 1000 deltakere».</li>
+<li>Klikk «Kvadreringstrikset», så «Varians», så «Standardavvik».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Avvikene summerer til null, og det er derfor de må kvadreres før de legges sammen. Standardavviket er den gjennomsnittlige bommen til den enkleste modellen som finnes: gjett gjennomsnittet.</p>
+</div>
+<!-- /FANEHJELP gjett -->
+
 <div class="card">
 <h2>1. Alt vi vet p&aring; forh&aring;nd</h2>
 <p class="muted">IQ-skalaen er konstruert slik at befolkningen har gjennomsnitt <b>100</b> og standardavvik <b>15</b>. Det er hele kunnskapen vi har f&oslash;r vi m&oslash;ter noen som helst.</p>
@@ -593,6 +667,22 @@ Uten opplysninger om personen er 100 det beste gjettet du kan gj&oslash;re. Du b
 </div><!-- /fane-gjett -->
 
 <div id="fane-robust" class="hide">
+<!-- FANEHJELP robust -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Gjennomsnittet bruker verdien til hvert eneste tall. Medianen bruker bare rekkefølgen. Derfor reagerer de helt ulikt på én ekstremverdi.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Trykk «Bruk de ekte pasientene».</li>
+<li>Dra det røde punktet langt ut og se de tre målene reagere.</li>
+<li>Huk av «vis de robuste alternativene».</li>
+<li>Dra «n» oppover og gjør det samme igjen.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Gjennomsnittet følger etter det røde punktet mens medianen knapt rikker seg. Og jo større utvalget er, desto mindre makt har den ene verdien — én utligger i 20 tall er noe annet enn én i 200.</p>
+</div>
+<!-- /FANEHJELP robust -->
+
 <div class="card">
 <h2>Gjennomsnitt, median og modus møter en ekstremverdi</h2>
 <p class="muted"><b>20 ekte personer</b> (<span id="varLab">baseline-depresjon · Terapi-RCT-studien</span>) + én <b>rød «feiltastet» verdi du drar</b> langs tallinjen. Se hvordan de tre sentralmålene reagerer.</p>
@@ -625,6 +715,22 @@ n&aring;r antakelsene bak testene er innf&oslash;rt.</div></div></details></div>
 
 
 <div id="fane-normal" class="hide">
+<!-- FANEHJELP normal -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Normalfordelingen er en modell, ikke en lov. Hele kurven er bestemt av to tall: gjennomsnittet μ og standardavviket σ.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Dra «μ» og «σ» og se hva som endrer seg — og hva som ikke gjør det.</li>
+<li>Huk av «vis 68–95–99.7-båndene».</li>
+<li>Trykk «Hvor mange har IQ over 130?» og de tre andre spørsmålene.</li>
+<li>Dra «Antall bidrag per person» oppover og trykk «Simuler på nytt».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Arealet er alltid 1, så en bredere kurve må bli lavere. Og legg merke til siste del: legger du nok uavhengige bidrag sammen, blir summen normalfordelt uansett hva hvert enkelt bidrag ser ut som.</p>
+</div>
+<!-- /FANEHJELP normal -->
+
 
 <div class="card">
 <h2 data-t="s32nf_1">1. Normalfordelingen — én form, to tall</h2>
@@ -743,6 +849,22 @@ Det eneste som betyr noe i den, er <i>(x &minus; &mu;) / &sigma;</i> — avstand
 </div><!-- /fane-normal -->
 
 <div id="fane-zskaar" class="hide">
+<!-- FANEHJELP zskaar -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">En råskår sier ingenting før du vet hva som er vanlig. <i>z</i> svarer på hvor mange standardavvik personen ligger over eller under gjennomsnittet.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Velg en variabel og dra personen langs linjalen.</li>
+<li>Bytt mellom «Jeg har råskåren → finn z» og den motsatte veien.</li>
+<li>Se på de tre radene i del 2: hva står stille, og hva endrer seg?</li>
+<li>Trykk «Ny oppgave» og regn ut svaret selv før du trykker «Sjekk».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Standardisering flytter og skalerer fordelingen, men den endrer ikke formen. En skjev fordeling blir ikke normalfordelt av å gjøres om til <i>z</i>-skårer — det er en vanlig misforståelse.</p>
+</div>
+<!-- /FANEHJELP zskaar -->
+
 
 <div class="card">
 <h2 data-t="s32zs_1">1. Fra råskår til <i>z</i>-skår — to steg</h2>
@@ -851,6 +973,22 @@ Det eneste som betyr noe i den, er <i>(x &minus; &mu;) / &sigma;</i> — avstand
 </div><!-- /fane-zskaar -->
 
 <div id="fane-fordeling" class="hide">
+<!-- FANEHJELP fordeling -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Alle figurene JASP lager, er den samme lista med tall ordnet på ulike måter. Til venstre ligger rådataene; til høyre velger du hva de skal bli om til.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Hold musa over en prikk og se den samme personen lyse opp i begge figurene.</li>
+<li>Bytt mellom histogram, boksplott, raincloud og Q-Q-plott.</li>
+<li>Dra «Søylebredde» og se hvor mye formen endrer seg.</li>
+<li>Huk av «gi meg en uteligger å dra» og flytt den.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Søylebredden alene kan få den samme fordelingen til å se normal eller totoppet ut. Og boksplottet skjuler at fordelingen har to topper — det er derfor raincloud viser både boksen og alle prikkene.</p>
+</div>
+<!-- /FANEHJELP fordeling -->
+
 <div class="card">
 <h2>Fra rådata til figur</h2>
 <p class="muted">Alle figurene JASP lager, er den <b>samme lista med tall</b> ordnet på ulike måter. Til venstre ligger rådataene som de er — én prikk per person. Til høyre velger du hva de skal bli om til. <b>Hold musa over en prikk</b>, så lyser den samme personen opp i begge figurene, og du får se hva figuren gjorde med henne. Verdiaksen er <b>den samme i begge paneler</b>, så en prikk står alltid rett over eller under seg selv — bortsett fra i P-P-plottet, der begge akser er andeler.</p>
@@ -976,6 +1114,21 @@ klemmes sammen mot 0 og 1. Q-Q er standardvalget i praksis nettopp derfor.</div>
 </div><!-- /fane-fordeling -->
 
 <div id="fane-form" class="hide">
+<!-- FANEHJELP form -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Skjevhet og kurtose er ikke magi: begge er gjennomsnitt av <i>z</i>-skårer opphøyd i en potens. Her ser du hva hver enkelt person bidrar med.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Velg «Høyreskjev» og se søylene under figuren.</li>
+<li>Bytt til «Kurtose (z⁴)» og sammenlign bidragene.</li>
+<li>Huk av «gi meg en uteligger å dra» og flytt den langt ut.</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Potensen er hele saken. Én person langt ute kan bestemme nesten hele tallet — og det gjelder særlig kurtose, der avviket opphøyes i fjerde.</p>
+</div>
+<!-- /FANEHJELP form -->
+
 <div class="card">
 <h2>Skjevhet og kurtose — hvor tallene kommer fra</h2>
 <p class="muted">JASP gir deg to tall for formen på fordelingen, og de fleste leser dem som magi. Det er de ikke: begge er <b>gjennomsnitt av <i>z</i>-skårer opphøyd i en potens</b> (<i>z</i>-skårene fra fane 7), og de måler hvor mye formen avviker fra normalfordelingen i fane 6. Her ser du hva hver enkelt person bidrar med — og hvorfor én person langt ute kan bestemme nesten hele tallet.</p>
@@ -1052,6 +1205,21 @@ ser du hvor mye tallene spretter uten at noe har endret seg.</div>
 </div><!-- /fane-form -->
 
 <div id="fane-samlet" class="hide">
+<!-- FANEHJELP samlet -->
+<div class="fhboks">
+<div class="fhlbl">Kort fortalt</div>
+<p class="fhkort">Alt fra de andre fanene havner til slutt i én JASP-tabell. Her er den, regnet på ekte data, rad for rad.</p>
+<div class="fhlbl sek">Slik gjør du</div>
+<ol class="fhsteg">
+<li>Klikk på en rad for å se hva tallet betyr og hvor det kommer fra.</li>
+<li>Velg noe i «Split (del opp etter)» og se én kolonne per gruppe.</li>
+<li>Velg mål i rapporteringsmalen og trykk «Kopier teksten».</li>
+</ol>
+<div class="fhlbl sek">Se etter</div>
+<p class="fhsee">Hvilke mål du rapporterer, følger av formen på fordelingen — gjennomsnitt og standardavvik for de symmetriske, median og kvartilbredde for de skjeve. Og «La formen bestemme» viser hva valget faktisk blir.</p>
+</div>
+<!-- /FANEHJELP samlet -->
+
 
 <div class="card">
 <h2 data-t="s32sa_1">1. Descriptives-tabellen i JASP, rad for rad</h2>

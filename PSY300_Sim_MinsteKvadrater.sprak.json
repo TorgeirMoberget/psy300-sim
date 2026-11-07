@@ -1,0 +1,1560 @@
+{
+ "fil": "PSY300_Sim_MinsteKvadrater.html",
+ "kildelengde": 345800,
+ "slides": [
+  {
+   "nr": 1,
+   "t": "Tittel",
+   "html": "<h1>Regresjon</h1><div class=\"under\">Å gjette et tall fra et annet tall</div><div class=\"merke\">PSY300 · Kapittel 8: The linear model (regression)</div>",
+   "en": null,
+   "notat": "Ikke si «minste kvadrater» ennå. Første ti minutter handler om hva vi vil vite.",
+   "notat_en": null,
+   "del": "Del 1 · Hva en regresjon gjør"
+  },
+  {
+   "nr": 2,
+   "t": "Fra forrige gang",
+   "html": "<h1>Korrelasjonen svarte på ett spørsmål</h1><p class=\"lead\">«Henger disse to tingene sammen — og hvor tett?»</p><div class=\"todelt\"><div class=\"boks gronn avslor\"><h3>Det <i>r</i> kan</h3><ul><li>si om sammenhengen er sterk eller svak</li><li>si hvilken vei den går</li><li>sammenligne på tvers av variabler, fordi den er enhetsløs</li></ul></div><div class=\"boks rod avslor\"><h3>Det <i>r</i> ikke kan</h3><ul><li>si <b>hvor mye</b> y endrer seg</li><li>gi deg et anslag for én bestemt person</li><li>håndtere mer enn én forklaringsvariabel</li></ul></div></div><p class=\"avslor\" style=\"margin-top:18px;text-align:center;font-size:30px;font-weight:700;color:var(--navy)\">Regresjon kan alt dette</p>",
+   "en": null,
+   "notat": "Poenget: regresjon er ikke en ny idé, det er den samme sammenhengen målt i ekte enheter.",
+   "notat_en": null
+  },
+  {
+   "nr": 3,
+   "t": "Oppskriften",
+   "html": "<h1>Hele modellen på én linje</h1><p class=\"lead\">Alt regresjon gjør, er å legge én rett linje gjennom skyen. Linja er bestemt av to tall.</p><div class=\"figurrad\"><div><svg viewBox=\"0 0 560 400\" style=\"width:100%;max-width:560px;height:auto\"><defs><clipPath id=\"rute3\"><rect x=\"76\" y=\"14\" width=\"468\" height=\"324\"/></clipPath><marker id=\"pil3\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"3.2\" orient=\"auto\"><path d=\"M0,0 L7,3.2 L0,6.4 z\" fill=\"#1E8E4E\"/></marker></defs><line x1=\"76\" y1=\"14.0\" x2=\"544\" y2=\"14.0\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><line x1=\"76.0\" y1=\"14\" x2=\"76.0\" y2=\"338\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><line x1=\"76\" y1=\"95.0\" x2=\"544\" y2=\"95.0\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><line x1=\"193.0\" y1=\"14\" x2=\"193.0\" y2=\"338\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><line x1=\"76\" y1=\"176.0\" x2=\"544\" y2=\"176.0\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><line x1=\"310.0\" y1=\"14\" x2=\"310.0\" y2=\"338\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><line x1=\"76\" y1=\"257.0\" x2=\"544\" y2=\"257.0\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><line x1=\"427.0\" y1=\"14\" x2=\"427.0\" y2=\"338\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><line x1=\"76\" y1=\"338.0\" x2=\"544\" y2=\"338.0\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><line x1=\"544.0\" y1=\"14\" x2=\"544.0\" y2=\"338\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><rect x=\"76\" y=\"14\" width=\"468\" height=\"324\" fill=\"none\" stroke=\"#8F9BB0\" stroke-width=\"1\"/><text x=\"76.0\" y=\"362\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"middle\">0</text><text x=\"69\" y=\"22.7\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"end\">150</text><text x=\"193.0\" y=\"362\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"middle\">20</text><text x=\"69\" y=\"103.7\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"end\">125</text><text x=\"310.0\" y=\"362\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"middle\">40</text><text x=\"69\" y=\"184.7\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"end\">100</text><text x=\"427.0\" y=\"362\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"middle\">60</text><text x=\"69\" y=\"265.7\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"end\">75</text><text x=\"544.0\" y=\"362\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"middle\">80</text><text x=\"69\" y=\"346.7\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"end\">50</text><text x=\"310\" y=\"390\" font-size=\"23\" font-weight=\"700\" fill=\"#16203A\" text-anchor=\"middle\">Grunnskolepoeng</text><text x=\"0\" y=\"0\" font-size=\"23\" font-weight=\"700\" fill=\"#16203A\" text-anchor=\"middle\" transform=\"translate(23 176) rotate(-90)\">IQ ved 19 år</text><g clip-path=\"url(#rute3)\" fill=\"#2E5496\" opacity=\"0.38\"><circle cx=\"384.9\" cy=\"150.1\" r=\"3.4\"/><circle cx=\"271.4\" cy=\"198.7\" r=\"3.4\"/><circle cx=\"405.9\" cy=\"127.4\" r=\"3.4\"/><circle cx=\"285.4\" cy=\"224.6\" r=\"3.4\"/><circle cx=\"302.4\" cy=\"208.4\" r=\"3.4\"/><circle cx=\"256.8\" cy=\"266.7\" r=\"3.4\"/><circle cx=\"365.0\" cy=\"146.8\" r=\"3.4\"/><circle cx=\"344.5\" cy=\"166.3\" r=\"3.4\"/><circle cx=\"402.4\" cy=\"133.9\" r=\"3.4\"/><circle cx=\"362.7\" cy=\"130.6\" r=\"3.4\"/><circle cx=\"275.5\" cy=\"198.7\" r=\"3.4\"/><circle cx=\"393.7\" cy=\"140.4\" r=\"3.4\"/><circle cx=\"382.0\" cy=\"205.2\" r=\"3.4\"/><circle cx=\"423.5\" cy=\"85.3\" r=\"3.4\"/><circle cx=\"306.5\" cy=\"163.0\" r=\"3.4\"/><circle cx=\"331.6\" cy=\"205.2\" r=\"3.4\"/><circle cx=\"318.8\" cy=\"240.8\" r=\"3.4\"/><circle cx=\"280.2\" cy=\"176.0\" r=\"3.4\"/><circle cx=\"381.4\" cy=\"95.0\" r=\"3.4\"/><circle cx=\"355.6\" cy=\"140.4\" r=\"3.4\"/><circle cx=\"307.1\" cy=\"201.9\" r=\"3.4\"/><circle cx=\"293.6\" cy=\"214.9\" r=\"3.4\"/><circle cx=\"331.6\" cy=\"108.0\" r=\"3.4\"/><circle cx=\"243.3\" cy=\"234.3\" r=\"3.4\"/><circle cx=\"377.9\" cy=\"143.6\" r=\"3.4\"/><circle cx=\"272.6\" cy=\"185.7\" r=\"3.4\"/><circle cx=\"390.7\" cy=\"124.2\" r=\"3.4\"/><circle cx=\"350.4\" cy=\"211.6\" r=\"3.4\"/><circle cx=\"298.9\" cy=\"260.2\" r=\"3.4\"/><circle cx=\"301.2\" cy=\"208.4\" r=\"3.4\"/><circle cx=\"427.0\" cy=\"78.8\" r=\"3.4\"/><circle cx=\"307.1\" cy=\"176.0\" r=\"3.4\"/><circle cx=\"292.5\" cy=\"208.4\" r=\"3.4\"/><circle cx=\"288.4\" cy=\"201.9\" r=\"3.4\"/><circle cx=\"391.9\" cy=\"140.4\" r=\"3.4\"/><circle cx=\"297.7\" cy=\"176.0\" r=\"3.4\"/><circle cx=\"360.9\" cy=\"133.9\" r=\"3.4\"/><circle cx=\"267.9\" cy=\"231.1\" r=\"3.4\"/><circle cx=\"333.4\" cy=\"195.4\" r=\"3.4\"/><circle cx=\"271.4\" cy=\"169.5\" r=\"3.4\"/><circle cx=\"296.5\" cy=\"133.9\" r=\"3.4\"/><circle cx=\"384.9\" cy=\"146.8\" r=\"3.4\"/><circle cx=\"295.4\" cy=\"150.1\" r=\"3.4\"/><circle cx=\"348.0\" cy=\"156.6\" r=\"3.4\"/><circle cx=\"314.7\" cy=\"143.6\" r=\"3.4\"/><circle cx=\"311.2\" cy=\"85.3\" r=\"3.4\"/><circle cx=\"243.9\" cy=\"201.9\" r=\"3.4\"/><circle cx=\"313.5\" cy=\"211.6\" r=\"3.4\"/><circle cx=\"369.1\" cy=\"150.1\" r=\"3.4\"/><circle cx=\"345.1\" cy=\"179.2\" r=\"3.4\"/><circle cx=\"321.1\" cy=\"169.5\" r=\"3.4\"/><circle cx=\"410.0\" cy=\"137.1\" r=\"3.4\"/><circle cx=\"260.3\" cy=\"205.2\" r=\"3.4\"/><circle cx=\"326.4\" cy=\"166.3\" r=\"3.4\"/><circle cx=\"325.8\" cy=\"163.0\" r=\"3.4\"/><circle cx=\"329.9\" cy=\"179.2\" r=\"3.4\"/><circle cx=\"379.0\" cy=\"62.6\" r=\"3.4\"/><circle cx=\"321.1\" cy=\"211.6\" r=\"3.4\"/><circle cx=\"343.3\" cy=\"189.0\" r=\"3.4\"/><circle cx=\"322.3\" cy=\"169.5\" r=\"3.4\"/><circle cx=\"360.9\" cy=\"140.4\" r=\"3.4\"/><circle cx=\"345.7\" cy=\"124.2\" r=\"3.4\"/><circle cx=\"262.6\" cy=\"244.0\" r=\"3.4\"/><circle cx=\"396.0\" cy=\"127.4\" r=\"3.4\"/><circle cx=\"374.9\" cy=\"117.7\" r=\"3.4\"/><circle cx=\"359.1\" cy=\"182.5\" r=\"3.4\"/><circle cx=\"295.4\" cy=\"286.2\" r=\"3.4\"/><circle cx=\"328.1\" cy=\"120.9\" r=\"3.4\"/><circle cx=\"345.7\" cy=\"114.4\" r=\"3.4\"/><circle cx=\"256.8\" cy=\"227.8\" r=\"3.4\"/><circle cx=\"218.7\" cy=\"253.8\" r=\"3.4\"/><circle cx=\"396.0\" cy=\"120.9\" r=\"3.4\"/><circle cx=\"346.9\" cy=\"201.9\" r=\"3.4\"/><circle cx=\"375.5\" cy=\"69.1\" r=\"3.4\"/><circle cx=\"322.9\" cy=\"237.6\" r=\"3.4\"/><circle cx=\"427.0\" cy=\"108.0\" r=\"3.4\"/><circle cx=\"288.4\" cy=\"260.2\" r=\"3.4\"/><circle cx=\"276.1\" cy=\"140.4\" r=\"3.4\"/><circle cx=\"263.2\" cy=\"169.5\" r=\"3.4\"/><circle cx=\"208.8\" cy=\"260.2\" r=\"3.4\"/><circle cx=\"317.6\" cy=\"150.1\" r=\"3.4\"/><circle cx=\"342.8\" cy=\"150.1\" r=\"3.4\"/><circle cx=\"360.3\" cy=\"62.6\" r=\"3.4\"/><circle cx=\"427.0\" cy=\"130.6\" r=\"3.4\"/><circle cx=\"303.0\" cy=\"201.9\" r=\"3.4\"/><circle cx=\"301.2\" cy=\"198.7\" r=\"3.4\"/><circle cx=\"352.7\" cy=\"156.6\" r=\"3.4\"/><circle cx=\"260.9\" cy=\"282.9\" r=\"3.4\"/><circle cx=\"307.7\" cy=\"176.0\" r=\"3.4\"/><circle cx=\"366.7\" cy=\"179.2\" r=\"3.4\"/><circle cx=\"248.6\" cy=\"247.3\" r=\"3.4\"/><circle cx=\"310.6\" cy=\"211.6\" r=\"3.4\"/><circle cx=\"286.6\" cy=\"208.4\" r=\"3.4\"/><circle cx=\"396.0\" cy=\"137.1\" r=\"3.4\"/><circle cx=\"315.3\" cy=\"169.5\" r=\"3.4\"/><circle cx=\"311.8\" cy=\"120.9\" r=\"3.4\"/><circle cx=\"322.9\" cy=\"140.4\" r=\"3.4\"/><circle cx=\"228.1\" cy=\"302.4\" r=\"3.4\"/><circle cx=\"284.8\" cy=\"156.6\" r=\"3.4\"/><circle cx=\"327.0\" cy=\"117.7\" r=\"3.4\"/><circle cx=\"405.9\" cy=\"101.5\" r=\"3.4\"/><circle cx=\"337.5\" cy=\"234.3\" r=\"3.4\"/><circle cx=\"303.0\" cy=\"140.4\" r=\"3.4\"/><circle cx=\"353.9\" cy=\"166.3\" r=\"3.4\"/><circle cx=\"321.1\" cy=\"169.5\" r=\"3.4\"/><circle cx=\"336.3\" cy=\"176.0\" r=\"3.4\"/><circle cx=\"303.0\" cy=\"198.7\" r=\"3.4\"/><circle cx=\"336.9\" cy=\"159.8\" r=\"3.4\"/><circle cx=\"280.8\" cy=\"146.8\" r=\"3.4\"/><circle cx=\"290.7\" cy=\"143.6\" r=\"3.4\"/><circle cx=\"335.7\" cy=\"140.4\" r=\"3.4\"/><circle cx=\"372.0\" cy=\"201.9\" r=\"3.4\"/><circle cx=\"336.3\" cy=\"124.2\" r=\"3.4\"/><circle cx=\"238.6\" cy=\"201.9\" r=\"3.4\"/><circle cx=\"274.3\" cy=\"266.7\" r=\"3.4\"/><circle cx=\"284.8\" cy=\"189.0\" r=\"3.4\"/><circle cx=\"303.0\" cy=\"185.7\" r=\"3.4\"/><circle cx=\"319.9\" cy=\"137.1\" r=\"3.4\"/><circle cx=\"303.0\" cy=\"211.6\" r=\"3.4\"/><circle cx=\"247.4\" cy=\"208.4\" r=\"3.4\"/></g><line x1=\"76\" y1=\"312.0\" x2=\"544\" y2=\"52.3\" stroke=\"#C0392B\" stroke-width=\"3.4\"/><g class=\"avslor\" data-trinn=\"1\"><line x1=\"76\" y1=\"312.0\" x2=\"544\" y2=\"312.0\" stroke=\"#1F3864\" stroke-width=\"2.4\" stroke-dasharray=\"6,4\" opacity=\"0.85\"/><circle cx=\"76\" cy=\"312.0\" r=\"9\" fill=\"#1F3864\"/><rect x=\"344\" y=\"266.0\" width=\"194\" height=\"36\" rx=\"7\" fill=\"#1F3864\"/><text x=\"358\" y=\"291.0\" font-size=\"19\" font-weight=\"700\" fill=\"#fff\">b₀ = 58 IQ-poeng</text></g><g class=\"avslor\" data-trinn=\"2\"><rect x=\"306.5\" y=\"177.0\" width=\"12.9\" height=\"7.1\" fill=\"none\" stroke=\"#1E8E4E\" stroke-width=\"2\"/><line x1=\"306.5\" y1=\"177.0\" x2=\"218\" y2=\"154\" stroke=\"#1E8E4E\" stroke-width=\"1.5\" stroke-dasharray=\"4,3\"/><rect x=\"90\" y=\"26\" width=\"128\" height=\"128\" rx=\"8\" fill=\"#fff\" stroke=\"#1E8E4E\" stroke-width=\"2.5\"/><line x1=\"90.0\" y1=\"153.5\" x2=\"218.0\" y2=\"25.2\" stroke=\"#C0392B\" stroke-width=\"3\"/><line x1=\"124.9\" y1=\"118.5\" x2=\"183.1\" y2=\"118.5\" stroke=\"#1E8E4E\" stroke-width=\"3\"/><line x1=\"183.1\" y1=\"118.5\" x2=\"183.1\" y2=\"65.2\" stroke=\"#1E8E4E\" stroke-width=\"3\" marker-end=\"url(#pil3)\"/><text x=\"154.0\" y=\"141.5\" font-size=\"17\" font-weight=\"700\" fill=\"#1E8E4E\" text-anchor=\"middle\">+1 poeng</text><text x=\"174.1\" y=\"95.4\" font-size=\"17\" font-weight=\"700\" fill=\"#1E8E4E\" text-anchor=\"end\">+1 IQ</text><text x=\"98\" y=\"44\" font-size=\"14\" font-weight=\"700\" fill=\"#1E8E4E\">ZOOM</text></g></svg></div><div><div class=\"koefboks b0 avslor\" data-trinn=\"1\"><h3><i>b</i><sub>0</sub> — konstantleddet</h3>Der linja treffer y-aksen: hva modellen gjetter når x = 0. I JASP heter den <b>(Intercept)</b>.</div><div class=\"koefboks b1 avslor\" data-trinn=\"2\"><h3><i>b</i><sub>1</sub> — stigningstallet</h3><b>Ett grunnskolepoeng mer gir 1 IQ-poeng mer i gjetningen.</b> Dette er tallet du tolker.</div></div></div><div class=\"formel\" style=\"font-size:38px;margin:10px 0 0\">ŷ = <span class=\"kb0\"><i>b</i><sub>0</sub></span> + <span class=\"kb1\"><i>b</i><sub>1</sub></span> · x</div><div class=\"formel avslor\" data-trinn=\"3\" style=\"font-size:27px;margin:6px 0 0;color:#3F4E63;font-weight:600\">IQ&#770; = <span class=\"kb0\">58.03</span> + <span class=\"kb1\">1.002</span> · grunnskolepoeng</div>",
+   "en": null,
+   "notat": "Start med bare skyen og linja: dette er alt modellen er. Klikk fram konstantleddet — der linja treffer y-aksen — og si at JASP kaller det (Intercept). Klikk så fram stigningstallet og pek på zoomruta: ett skritt til høyre, ett IQ-poeng opp. Klikk fram den siste linja: det er den samme ligningen med tallene fra disse dataene, og det er den formen de skal kunne lese ut av en JASP-tabell. Fargene går igjen resten av timen: navy er konstantleddet, grønt er stigningstallet, rødt er bommen.",
+   "notat_en": null,
+   "harJasp": true
+  },
+  {
+   "nr": 4,
+   "t": "SIM · punktskyen og linja",
+   "html": "<h1>IQ ved 19 år, predikert fra grunnskolepoeng</h1><p class=\"lead\"><i>N</i> = 500. Rød linje = modellens gjetning. <b>Simulerte data</b>, men kalibrert mot sammenhenger fra publiserte registerstudier.</p><div class=\"figurrad\"><div class=\"simhit\"></div><div class=\"sidespalte\"><div class=\"boks gronn avslor\"><h3>Riktig lest</h3>«To elever som skiller seg med ett grunnskolepoeng, skiller seg i snitt med <i>b</i><sub>1</sub> IQ-poeng.»</div><div class=\"boks rod avslor\"><h3>Feil lest</h3>«Gir vi eleven ett grunnskolepoeng mer, stiger IQ-en med <i>b</i><sub>1</sub>.»</div><p class=\"liten avslor\">Forskjellen er <b>design</b>, ikke statistikk. Samme regnestykke, to helt ulike påstander. Har du tverrsnittsdata, er bare den første lov.</p></div></div><div class=\"kilder\">Deary, Strand, Smith &amp; Fernandes (2007), <i>Intelligence</i>, 35, 13–21 · Roth mfl. (2015), <i>Intelligence</i>, 53, 118–137 · Marks (2022), <i>Journal of Intelligence</i>, 10, 34</div>",
+   "en": null,
+   "notat": "La figuren stå alene først. Spør: hvor mange IQ-poeng høyere gjetter modellen for en som har 10 grunnskolepoeng mer? Svar: 10 · b1 ≈ 10 IQ-poeng. Klikk så fram den grønne lesningen, deretter den røde. Feillesningen er den vanligste feilen i arbeidskravsbesvarelsene — bruk et halvt minutt der.",
+   "notat_en": null
+  },
+  {
+   "nr": 5,
+   "t": "SIM · regn ut ŷ for én person",
+   "html": "<h1>Modellen er en regnemaskin</h1><p class=\"lead\">Skriv inn et hvilket som helst antall grunnskolepoeng og trykk <b>Regn ut</b>.</p><div class=\"figurrad\"><div class=\"simhit\"></div><div class=\"sidespalte\"><div class=\"simhit2\"></div><div class=\"boks bla\"><h3>Én x inn, én ŷ ut</h3>Ligningen er hele modellen. Sett inn et tall for x, og du får ut <b>gjennomsnittet for alle med den x-en</b> — ikke et løfte om denne ene eleven.</div><p class=\"liten\">De to bryterne øverst slår på usikkerheten. La dem stå av nå — forskjellen mellom dem er hele neste slide.</p></div></div>",
+   "en": null,
+   "notat": "Be dem gjette først, så regner du. Prøv 30, 45 og 55 — og legg merke til at ŷ flytter seg omtrent ett IQ-poeng per grunnskolepoeng. Det er hele b1, sett i praksis. Bryterne står av med vilje: her handler det bare om gjetningen.",
+   "notat_en": null
+  },
+  {
+   "nr": 6,
+   "t": "Hvor sikker er den gjetningen?",
+   "html": "<h1>To intervaller som blir blandet hver eneste gang</h1><p class=\"lead\">Samme figur, samme x. Slå på ett bånd om gangen med bryterne til høyre.</p><div class=\"figurrad\"><div class=\"simhit\"></div><div class=\"sidespalte\"><div class=\"simhit2\"></div><div class=\"boks bla avslor\" data-trinn=\"1\"><h3>Konfidensintervall — <i>linja</i></h3>«Hvor presist kjenner vi <b>gjennomsnittet</b> for alle med 45 poeng?»<br><b>[102, 104.2]</b> — to IQ-poeng bredt. Med <i>N</i> = 500 er linja godt bestemt.</div><div class=\"boks rod avslor\" data-trinn=\"2\"><h3>Prediksjonsintervall — <i>personen</i></h3>«Hvor havner <b>neste elev</b> med 45 poeng?»<br><b>[79.6, 126.7]</b> — 47 IQ-poeng bredt. Tjue ganger så bredt.</div></div></div>",
+   "en": null,
+   "notat": "Slå på konfidensintervallet først og klikk fram den blå boksen: et smalt bånd. Slå så på prediksjonsintervallet og klikk fram den røde: båndet eksploderer. La begge stå på når du går videre — neste slide bruker akkurat dette bildet.",
+   "notat_en": null
+  },
+  {
+   "nr": 7,
+   "t": "Hvor forskjellen kommer fra",
+   "html": "<h1>Forskjellen mellom dem er ett tegn</h1><p class=\"lead\">Det brede båndet er ikke bredt fordi vi kjenner linja dårlig. Det er bredt fordi mennesker er forskjellige.</p><div class=\"seunder underfigur avslor\" data-trinn=\"1\"><div><i>SE</i><sub>linje</sub> = s · √(1/<i>n</i> + (x − x̄)²/SS<sub>X</sub>)<span class=\"merk\">for gjennomsnittet</span></div><div><i>SE</i><sub>person</sub> = s · √(<b style=\"color:var(--kfeil)\">1</b> + 1/<i>n</i> + (x − x̄)²/SS<sub>X</sub>)<span class=\"merk\">for ett menneske</span></div></div><div class=\"figurrad\"><div class=\"simhit\"></div><div class=\"sidespalte\"><div class=\"simhit2\"></div><div class=\"boks rod avslor\" data-trinn=\"2\"><h3>Ettallet er personen selv</h3>Alle de andre leddene har <i>n</i> i nevneren og <b>krymper når utvalget vokser</b>. Ettallet gjør ikke det — uansett hvor mange du måler, blir du aldri sikrere på hvor <i>én</i> elev havner.<br>Her er s = 11.97, så <i>SE</i><sub>person</sub> ≈ <b>12</b> nesten uansett x, mens <i>SE</i><sub>linje</sub> er <b>0.57</b>.</div></div></div>",
+   "en": null,
+   "notat": "Figuren er den samme som nettopp, med begge bånd på. Klikk fram formlene først og la dem lese dem side om side i noen sekunder før du sier noe — de fleste finner ettallet selv. Pek så på det: alt annet under rottegnet har n i nevneren. Et godt spørsmål å stille høyt: «hva skjer med de to båndene hvis vi måler 5 000 elever i stedet for 500?» Det blå krymper mot ingenting, det røde står nesten stille.",
+   "notat_en": null
+  },
+  {
+   "nr": 8,
+   "t": "SIM · ekstrapolering",
+   "html": "<h1>Utenfor dataene vet modellen ingenting</h1><p class=\"lead\">Linja er forlenget langt forbi dataene. Skriv inn en x og se fargen: <b style=\"color:var(--kb1)\">grønn</b> er innenfor, <b style=\"color:var(--kfeil)\">rød</b> er ren fantasi.</p><div class=\"figurrad\"><div class=\"simhit\"></div><div class=\"sidespalte\"><div class=\"simhit2\"></div><ul><li>Laveste grunnskolepoeng i utvalget er <b>10</b>. Om en elev med 3 poeng sier modellen ingenting troverdig — men den svarer likevel.</li><li>Sammenhengen kan flate ut, snu, eller møte gulvet i skalaen der ute.</li><li><i>b</i><sub>0</sub> er nettopp derfor ofte meningsløs: x = 0 finnes ikke.</li></ul><div class=\"boks rod avslor\" data-trinn=\"1\"><h3>Regelen</h3>Tolk aldri en prediksjon utenfor spennet i x.</div></div></div>",
+   "en": null,
+   "notat": "Start på 45 — grønn. Skriv så 3, og 90. Punktet blir rødt og merket «utenfor dataene», men modellen svarer like blidt. Det er hele poenget: den vet ikke at den ikke vet. Knytt til arbeidskravet: selvtillit måles 1–5, så ŷ ved x = 0 er ren fantasi.",
+   "notat_en": null
+  },
+  {
+   "nr": 9,
+   "t": "Hva gjør en linje best?",
+   "html": "<h1>Tusen linjer kan tegnes. Én velges.</h1><p class=\"lead\">Hent data, og dra så i endene av linja. Stolpen nederst til høyre er <b>summen av de kvadrerte avvikene</b>.</p><div class=\"figurrad\"><div class=\"simhit\"></div><div class=\"sidespalte\"><div class=\"boks rod\"><h3>1 · Bommen</h3>For hver elev: hvor langt fra linja ligger hun? Det er <b>residualen</b>, y − ŷ — <b>de røde strekene i figuren</b>.</div><div class=\"boks grasid\"><h3>2 · Kvadrer <i>hver</i> bom</h3>Da teller ikke fortegnet, og <b>store bom straffes hardt</b>: dobbelt så langt unna er fire ganger så ille.</div><div class=\"boks gronn\"><h3>3 · Legg sammen</h3>Σ(y − ŷ)². Linja som gjør <b>denne summen minst mulig</b> er regresjonslinja. Derfor «minste kvadrater» — ikke «minste sum, kvadrert».</div><div class=\"simhit2\"></div></div></div>",
+   "en": null,
+   "notat": "Sliden åpner med tomt plott. Figuren er den samme som på de forrige slidene, og punktskyen lander på nøyaktig samme sted. Trykk «Trekk 75 nye» mens de ser på: punktene kommer, og linja legger seg flatt på gjennomsnittet — modellen uten prediktor. Spør om den kan bli bedre, og la to-tre studenter foreslå hvor linja skal ligge. Dra håndtakene dit og se stolpen krympe. Trykk til slutt «Vis minste-kvadraters-linjen»: ingen slår den, og stolpen når den grønne streken.",
+   "notat_en": null,
+   "del": "Del 2 · Hvorfor akkurat den linja"
+  },
+  {
+   "nr": 10,
+   "t": "De to formlene",
+   "html": "<h1>Ingen prøving og feiling — to formler</h1><p class=\"lead\">Begge summene er noe du kan se i punktskyen. Brøken er bare «hvor mye x og y beveger seg sammen» delt på «hvor mye x beveger seg».</p><div style=\"display:grid;grid-template-columns:1fr 420px;gap:26px;align-items:center\"><div><svg viewBox=\"0 0 640 330\" style=\"width:100%;max-width:640px;height:auto\"><text x=\"26\" y=\"30\" font-size=\"19\" font-weight=\"700\" fill=\"#2E5496\">SP — ett ledd: (x − x̄)(y − ȳ)</text><text x=\"346\" y=\"30\" font-size=\"19\" font-weight=\"700\" fill=\"#3F4E63\">SS<tspan baseline-shift=\"sub\" font-size=\"13\">X</tspan> — ett ledd: (x − x̄)²</text><rect x=\"26\" y=\"46\" width=\"268\" height=\"236\" fill=\"#fbfcfe\" stroke=\"#BCC6D6\"/><g fill=\"#2E5496\" opacity=\"0.30\"><circle cx=\"202.9\" cy=\"145.1\" r=\"3\"/><circle cx=\"176.1\" cy=\"197.0\" r=\"3\"/><circle cx=\"137.9\" cy=\"180.5\" r=\"3\"/><circle cx=\"185.1\" cy=\"140.4\" r=\"3\"/><circle cx=\"155.3\" cy=\"206.5\" r=\"3\"/><circle cx=\"174.1\" cy=\"173.4\" r=\"3\"/><circle cx=\"212.9\" cy=\"133.3\" r=\"3\"/><circle cx=\"204.2\" cy=\"182.9\" r=\"3\"/><circle cx=\"208.6\" cy=\"102.6\" r=\"3\"/><circle cx=\"160.3\" cy=\"138.0\" r=\"3\"/><circle cx=\"162.0\" cy=\"173.4\" r=\"3\"/><circle cx=\"227.0\" cy=\"159.3\" r=\"3\"/><circle cx=\"183.8\" cy=\"149.8\" r=\"3\"/><circle cx=\"189.5\" cy=\"142.8\" r=\"3\"/><circle cx=\"132.5\" cy=\"182.9\" r=\"3\"/><circle cx=\"198.9\" cy=\"140.4\" r=\"3\"/><circle cx=\"173.7\" cy=\"173.4\" r=\"3\"/><circle cx=\"161.3\" cy=\"190.0\" r=\"3\"/><circle cx=\"126.5\" cy=\"199.4\" r=\"3\"/><circle cx=\"159.7\" cy=\"166.4\" r=\"3\"/><circle cx=\"153.6\" cy=\"225.4\" r=\"3\"/><circle cx=\"155.0\" cy=\"187.6\" r=\"3\"/><circle cx=\"137.6\" cy=\"190.0\" r=\"3\"/><circle cx=\"227.0\" cy=\"93.2\" r=\"3\"/><circle cx=\"161.7\" cy=\"166.4\" r=\"3\"/><circle cx=\"153.0\" cy=\"164.0\" r=\"3\"/><circle cx=\"191.8\" cy=\"79.0\" r=\"3\"/><circle cx=\"189.1\" cy=\"133.3\" r=\"3\"/><circle cx=\"152.6\" cy=\"168.7\" r=\"3\"/><circle cx=\"146.6\" cy=\"197.0\" r=\"3\"/><circle cx=\"152.3\" cy=\"133.3\" r=\"3\"/><circle cx=\"202.5\" cy=\"90.8\" r=\"3\"/><circle cx=\"186.1\" cy=\"126.2\" r=\"3\"/><circle cx=\"209.2\" cy=\"142.8\" r=\"3\"/><circle cx=\"110.4\" cy=\"208.8\" r=\"3\"/><circle cx=\"89.0\" cy=\"140.4\" r=\"3\"/><circle cx=\"130.5\" cy=\"182.9\" r=\"3\"/><circle cx=\"181.1\" cy=\"190.0\" r=\"3\"/><circle cx=\"141.2\" cy=\"185.2\" r=\"3\"/><circle cx=\"145.3\" cy=\"197.0\" r=\"3\"/><circle cx=\"187.8\" cy=\"133.3\" r=\"3\"/><circle cx=\"138.6\" cy=\"161.6\" r=\"3\"/><circle cx=\"187.5\" cy=\"164.0\" r=\"3\"/><circle cx=\"169.4\" cy=\"156.9\" r=\"3\"/><circle cx=\"143.6\" cy=\"178.2\" r=\"3\"/><circle cx=\"172.7\" cy=\"161.6\" r=\"3\"/><circle cx=\"180.4\" cy=\"126.2\" r=\"3\"/><circle cx=\"132.9\" cy=\"213.6\" r=\"3\"/><circle cx=\"205.2\" cy=\"178.2\" r=\"3\"/><circle cx=\"171.7\" cy=\"159.3\" r=\"3\"/><circle cx=\"227.0\" cy=\"102.6\" r=\"3\"/><circle cx=\"207.2\" cy=\"114.4\" r=\"3\"/><circle cx=\"167.4\" cy=\"208.8\" r=\"3\"/><circle cx=\"168.7\" cy=\"138.0\" r=\"3\"/><circle cx=\"163.0\" cy=\"133.3\" r=\"3\"/><circle cx=\"146.9\" cy=\"185.2\" r=\"3\"/><circle cx=\"139.2\" cy=\"164.0\" r=\"3\"/><circle cx=\"178.4\" cy=\"138.0\" r=\"3\"/><circle cx=\"156.0\" cy=\"182.9\" r=\"3\"/><circle cx=\"125.8\" cy=\"182.9\" r=\"3\"/><circle cx=\"125.8\" cy=\"187.6\" r=\"3\"/><circle cx=\"180.8\" cy=\"138.0\" r=\"3\"/><circle cx=\"146.6\" cy=\"187.6\" r=\"3\"/><circle cx=\"189.5\" cy=\"152.2\" r=\"3\"/><circle cx=\"209.2\" cy=\"135.7\" r=\"3\"/><circle cx=\"172.4\" cy=\"164.0\" r=\"3\"/><circle cx=\"133.5\" cy=\"204.1\" r=\"3\"/><circle cx=\"161.0\" cy=\"123.9\" r=\"3\"/><circle cx=\"184.8\" cy=\"102.6\" r=\"3\"/><circle cx=\"173.1\" cy=\"161.6\" r=\"3\"/><circle cx=\"168.7\" cy=\"178.2\" r=\"3\"/><circle cx=\"131.5\" cy=\"192.3\" r=\"3\"/><circle cx=\"173.4\" cy=\"147.5\" r=\"3\"/><circle cx=\"185.1\" cy=\"109.7\" r=\"3\"/><circle cx=\"204.6\" cy=\"159.3\" r=\"3\"/><circle cx=\"159.0\" cy=\"185.2\" r=\"3\"/><circle cx=\"188.5\" cy=\"206.5\" r=\"3\"/><circle cx=\"207.6\" cy=\"142.8\" r=\"3\"/><circle cx=\"167.0\" cy=\"109.7\" r=\"3\"/><circle cx=\"139.6\" cy=\"194.7\" r=\"3\"/><circle cx=\"154.6\" cy=\"173.4\" r=\"3\"/><circle cx=\"147.3\" cy=\"128.6\" r=\"3\"/><circle cx=\"172.1\" cy=\"182.9\" r=\"3\"/><circle cx=\"175.1\" cy=\"126.2\" r=\"3\"/><circle cx=\"138.2\" cy=\"175.8\" r=\"3\"/><circle cx=\"97.4\" cy=\"270.2\" r=\"3\"/><circle cx=\"139.6\" cy=\"230.1\" r=\"3\"/><circle cx=\"165.7\" cy=\"135.7\" r=\"3\"/><circle cx=\"156.0\" cy=\"190.0\" r=\"3\"/><circle cx=\"213.3\" cy=\"126.2\" r=\"3\"/></g><line x1=\"166.5\" y1=\"46\" x2=\"166.5\" y2=\"282\" stroke=\"#5F6D84\" stroke-width=\"1.6\" stroke-dasharray=\"5,4\"/><line x1=\"26\" y1=\"163.9\" x2=\"294\" y2=\"163.9\" stroke=\"#5F6D84\" stroke-width=\"1.6\" stroke-dasharray=\"5,4\"/><text x=\"171.5\" y=\"60\" font-size=\"15\" font-weight=\"700\" fill=\"#3F4E63\">x̄</text><text x=\"31\" y=\"157.9\" font-size=\"15\" font-weight=\"700\" fill=\"#3F4E63\">ȳ</text><rect x=\"166.5\" y=\"79.0\" width=\"25.4\" height=\"84.8\" fill=\"#2E5496\" opacity=\"0.38\" stroke=\"#2E5496\" stroke-width=\"2\"/><circle cx=\"191.8\" cy=\"79.0\" r=\"6\" fill=\"#1F3864\"/><text x=\"179.1\" y=\"182.9\" font-size=\"15\" font-weight=\"700\" fill=\"#2E5496\" text-anchor=\"middle\">x − x̄</text><text x=\"198.8\" y=\"126.5\" font-size=\"15\" font-weight=\"700\" fill=\"#2E5496\">y − ȳ</text><rect x=\"346\" y=\"46\" width=\"268\" height=\"236\" fill=\"#fbfcfe\" stroke=\"#BCC6D6\"/><g fill=\"#2E5496\" opacity=\"0.30\"><circle cx=\"522.9\" cy=\"145.1\" r=\"3\"/><circle cx=\"496.1\" cy=\"197.0\" r=\"3\"/><circle cx=\"457.9\" cy=\"180.5\" r=\"3\"/><circle cx=\"505.1\" cy=\"140.4\" r=\"3\"/><circle cx=\"475.3\" cy=\"206.5\" r=\"3\"/><circle cx=\"494.1\" cy=\"173.4\" r=\"3\"/><circle cx=\"532.9\" cy=\"133.3\" r=\"3\"/><circle cx=\"524.2\" cy=\"182.9\" r=\"3\"/><circle cx=\"528.6\" cy=\"102.6\" r=\"3\"/><circle cx=\"480.3\" cy=\"138.0\" r=\"3\"/><circle cx=\"482.0\" cy=\"173.4\" r=\"3\"/><circle cx=\"547.0\" cy=\"159.3\" r=\"3\"/><circle cx=\"503.8\" cy=\"149.8\" r=\"3\"/><circle cx=\"509.5\" cy=\"142.8\" r=\"3\"/><circle cx=\"452.5\" cy=\"182.9\" r=\"3\"/><circle cx=\"518.9\" cy=\"140.4\" r=\"3\"/><circle cx=\"493.7\" cy=\"173.4\" r=\"3\"/><circle cx=\"481.3\" cy=\"190.0\" r=\"3\"/><circle cx=\"446.5\" cy=\"199.4\" r=\"3\"/><circle cx=\"479.7\" cy=\"166.4\" r=\"3\"/><circle cx=\"473.6\" cy=\"225.4\" r=\"3\"/><circle cx=\"475.0\" cy=\"187.6\" r=\"3\"/><circle cx=\"457.6\" cy=\"190.0\" r=\"3\"/><circle cx=\"547.0\" cy=\"93.2\" r=\"3\"/><circle cx=\"481.7\" cy=\"166.4\" r=\"3\"/><circle cx=\"473.0\" cy=\"164.0\" r=\"3\"/><circle cx=\"511.8\" cy=\"79.0\" r=\"3\"/><circle cx=\"509.1\" cy=\"133.3\" r=\"3\"/><circle cx=\"472.6\" cy=\"168.7\" r=\"3\"/><circle cx=\"466.6\" cy=\"197.0\" r=\"3\"/><circle cx=\"472.3\" cy=\"133.3\" r=\"3\"/><circle cx=\"522.5\" cy=\"90.8\" r=\"3\"/><circle cx=\"506.1\" cy=\"126.2\" r=\"3\"/><circle cx=\"529.2\" cy=\"142.8\" r=\"3\"/><circle cx=\"430.4\" cy=\"208.8\" r=\"3\"/><circle cx=\"409.0\" cy=\"140.4\" r=\"3\"/><circle cx=\"450.5\" cy=\"182.9\" r=\"3\"/><circle cx=\"501.1\" cy=\"190.0\" r=\"3\"/><circle cx=\"461.2\" cy=\"185.2\" r=\"3\"/><circle cx=\"465.3\" cy=\"197.0\" r=\"3\"/><circle cx=\"507.8\" cy=\"133.3\" r=\"3\"/><circle cx=\"458.6\" cy=\"161.6\" r=\"3\"/><circle cx=\"507.5\" cy=\"164.0\" r=\"3\"/><circle cx=\"489.4\" cy=\"156.9\" r=\"3\"/><circle cx=\"463.6\" cy=\"178.2\" r=\"3\"/><circle cx=\"492.7\" cy=\"161.6\" r=\"3\"/><circle cx=\"500.4\" cy=\"126.2\" r=\"3\"/><circle cx=\"452.9\" cy=\"213.6\" r=\"3\"/><circle cx=\"525.2\" cy=\"178.2\" r=\"3\"/><circle cx=\"491.7\" cy=\"159.3\" r=\"3\"/><circle cx=\"547.0\" cy=\"102.6\" r=\"3\"/><circle cx=\"527.2\" cy=\"114.4\" r=\"3\"/><circle cx=\"487.4\" cy=\"208.8\" r=\"3\"/><circle cx=\"488.7\" cy=\"138.0\" r=\"3\"/><circle cx=\"483.0\" cy=\"133.3\" r=\"3\"/><circle cx=\"466.9\" cy=\"185.2\" r=\"3\"/><circle cx=\"459.2\" cy=\"164.0\" r=\"3\"/><circle cx=\"498.4\" cy=\"138.0\" r=\"3\"/><circle cx=\"476.0\" cy=\"182.9\" r=\"3\"/><circle cx=\"445.8\" cy=\"182.9\" r=\"3\"/><circle cx=\"445.8\" cy=\"187.6\" r=\"3\"/><circle cx=\"500.8\" cy=\"138.0\" r=\"3\"/><circle cx=\"466.6\" cy=\"187.6\" r=\"3\"/><circle cx=\"509.5\" cy=\"152.2\" r=\"3\"/><circle cx=\"529.2\" cy=\"135.7\" r=\"3\"/><circle cx=\"492.4\" cy=\"164.0\" r=\"3\"/><circle cx=\"453.5\" cy=\"204.1\" r=\"3\"/><circle cx=\"481.0\" cy=\"123.9\" r=\"3\"/><circle cx=\"504.8\" cy=\"102.6\" r=\"3\"/><circle cx=\"493.1\" cy=\"161.6\" r=\"3\"/><circle cx=\"488.7\" cy=\"178.2\" r=\"3\"/><circle cx=\"451.5\" cy=\"192.3\" r=\"3\"/><circle cx=\"493.4\" cy=\"147.5\" r=\"3\"/><circle cx=\"505.1\" cy=\"109.7\" r=\"3\"/><circle cx=\"524.6\" cy=\"159.3\" r=\"3\"/><circle cx=\"479.0\" cy=\"185.2\" r=\"3\"/><circle cx=\"508.5\" cy=\"206.5\" r=\"3\"/><circle cx=\"527.6\" cy=\"142.8\" r=\"3\"/><circle cx=\"487.0\" cy=\"109.7\" r=\"3\"/><circle cx=\"459.6\" cy=\"194.7\" r=\"3\"/><circle cx=\"474.6\" cy=\"173.4\" r=\"3\"/><circle cx=\"467.3\" cy=\"128.6\" r=\"3\"/><circle cx=\"492.1\" cy=\"182.9\" r=\"3\"/><circle cx=\"495.1\" cy=\"126.2\" r=\"3\"/><circle cx=\"458.2\" cy=\"175.8\" r=\"3\"/><circle cx=\"417.4\" cy=\"270.2\" r=\"3\"/><circle cx=\"459.6\" cy=\"230.1\" r=\"3\"/><circle cx=\"485.7\" cy=\"135.7\" r=\"3\"/><circle cx=\"476.0\" cy=\"190.0\" r=\"3\"/><circle cx=\"533.3\" cy=\"126.2\" r=\"3\"/></g><line x1=\"486.5\" y1=\"46\" x2=\"486.5\" y2=\"282\" stroke=\"#5F6D84\" stroke-width=\"1.6\" stroke-dasharray=\"5,4\"/><line x1=\"346\" y1=\"163.9\" x2=\"614\" y2=\"163.9\" stroke=\"#5F6D84\" stroke-width=\"1.6\" stroke-dasharray=\"5,4\"/><text x=\"491.5\" y=\"60\" font-size=\"15\" font-weight=\"700\" fill=\"#3F4E63\">x̄</text><text x=\"351\" y=\"157.9\" font-size=\"15\" font-weight=\"700\" fill=\"#3F4E63\">ȳ</text><rect x=\"486.5\" y=\"138.5\" width=\"25.4\" height=\"25.4\" fill=\"#3F4E63\" opacity=\"0.38\" stroke=\"#3F4E63\" stroke-width=\"2\"/><circle cx=\"511.8\" cy=\"79.0\" r=\"6\" fill=\"#1F3864\"/><text x=\"499.1\" y=\"182.9\" font-size=\"15\" font-weight=\"700\" fill=\"#3F4E63\" text-anchor=\"middle\">x − x̄</text><text x=\"518.8\" y=\"156.2\" font-size=\"15\" font-weight=\"700\" fill=\"#3F4E63\">x − x̄</text><text x=\"26\" y=\"308\" font-size=\"16\" fill=\"#16203A\">Rektangel. Positivt i to hjørner, negativt i to.</text><text x=\"346\" y=\"308\" font-size=\"16\" fill=\"#16203A\">Kvadrat. Alltid positivt.</text></svg></div><div><div class=\"koefboks b1\"><h3><i>b</i><sub>1</sub> = SP / SS<sub>X</sub></h3>Legg sammen alle de blå rektanglene, og del på alle de grå kvadratene. Telleren er den <b>samme</b> summen som står i telleren til <i>r</i>.</div><div class=\"koefboks b0\"><h3><i>b</i><sub>0</sub> = ȳ − <i>b</i><sub>1</sub>·x̄</h3>Følger av at linja alltid går gjennom krysset (x̄, ȳ). Har du <i>b</i><sub>1</sub>, er <i>b</i><sub>0</sub> gitt.</div><p class=\"liten\">På IQ-dataene: <i>b</i><sub>1</sub> = 40058.4 / 39976.1 = 1.002, og <i>b</i><sub>0</sub> = 100.05 − 1.002 · 41.93 = 58.03.</p></div></div>",
+   "en": null,
+   "notat": "Pek på det uthevede punktet. Det ligger over begge gjennomsnittene, så rektangelet er positivt — det trekker linja oppover. Et punkt nede til høyre ville gitt et negativt rektangel. Kvadratet til høyre er alltid positivt, og det er derfor nevneren aldri kan nulle ut telleren. Den som ikke henger med på formlene skal likevel ha med seg: b1 og r er samme sammenheng, målt i ulike enheter.",
+   "notat_en": null
+  },
+  {
+   "nr": 11,
+   "t": "r eller b?",
+   "html": "<h1>Samme sammenheng, to enheter</h1><p class=\"lead\">Forskjellen er hva du deler på.</p><div class=\"figurrad\"><div><svg viewBox=\"0 0 560 400\" style=\"width:100%;max-width:560px;height:auto\"><defs><marker id=\"tv\" markerWidth=\"9\" markerHeight=\"9\" refX=\"4\" refY=\"3.4\" orient=\"auto\"><path d=\"M8,0 L0,3.4 L8,6.8 z\" fill=\"#1F3864\"/></marker><marker id=\"th\" markerWidth=\"9\" markerHeight=\"9\" refX=\"5\" refY=\"3.4\" orient=\"auto\"><path d=\"M0,0 L8,3.4 L0,6.8 z\" fill=\"#1F3864\"/></marker></defs><line x1=\"76\" y1=\"14.0\" x2=\"544\" y2=\"14.0\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><line x1=\"76.0\" y1=\"14\" x2=\"76.0\" y2=\"338\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><line x1=\"76\" y1=\"95.0\" x2=\"544\" y2=\"95.0\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><line x1=\"193.0\" y1=\"14\" x2=\"193.0\" y2=\"338\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><line x1=\"76\" y1=\"176.0\" x2=\"544\" y2=\"176.0\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><line x1=\"310.0\" y1=\"14\" x2=\"310.0\" y2=\"338\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><line x1=\"76\" y1=\"257.0\" x2=\"544\" y2=\"257.0\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><line x1=\"427.0\" y1=\"14\" x2=\"427.0\" y2=\"338\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><line x1=\"76\" y1=\"338.0\" x2=\"544\" y2=\"338.0\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><line x1=\"544.0\" y1=\"14\" x2=\"544.0\" y2=\"338\" stroke=\"#D3DBE9\" stroke-width=\"1\"/><rect x=\"76\" y=\"14\" width=\"468\" height=\"324\" fill=\"none\" stroke=\"#8F9BB0\" stroke-width=\"1\"/><text x=\"76.0\" y=\"362\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"middle\">0</text><text x=\"69\" y=\"22.7\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"end\">150</text><text x=\"193.0\" y=\"362\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"middle\">20</text><text x=\"69\" y=\"103.7\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"end\">125</text><text x=\"310.0\" y=\"362\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"middle\">40</text><text x=\"69\" y=\"184.7\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"end\">100</text><text x=\"427.0\" y=\"362\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"middle\">60</text><text x=\"69\" y=\"265.7\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"end\">75</text><text x=\"544.0\" y=\"362\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"middle\">80</text><text x=\"69\" y=\"346.7\" font-size=\"20\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"end\">50</text><text x=\"310\" y=\"390\" font-size=\"23\" font-weight=\"700\" fill=\"#16203A\" text-anchor=\"middle\">Grunnskolepoeng</text><text x=\"0\" y=\"0\" font-size=\"23\" font-weight=\"700\" fill=\"#16203A\" text-anchor=\"middle\" transform=\"translate(23 176) rotate(-90)\">IQ ved 19 år</text><g fill=\"#2E5496\" opacity=\"0.38\"><circle cx=\"384.9\" cy=\"150.1\" r=\"3.4\"/><circle cx=\"338.1\" cy=\"221.4\" r=\"3.4\"/><circle cx=\"271.4\" cy=\"198.7\" r=\"3.4\"/><circle cx=\"353.9\" cy=\"143.6\" r=\"3.4\"/><circle cx=\"301.8\" cy=\"234.3\" r=\"3.4\"/><circle cx=\"334.6\" cy=\"189.0\" r=\"3.4\"/><circle cx=\"402.4\" cy=\"133.9\" r=\"3.4\"/><circle cx=\"387.2\" cy=\"201.9\" r=\"3.4\"/><circle cx=\"394.8\" cy=\"91.8\" r=\"3.4\"/><circle cx=\"310.6\" cy=\"140.4\" r=\"3.4\"/><circle cx=\"313.5\" cy=\"189.0\" r=\"3.4\"/><circle cx=\"427.0\" cy=\"169.5\" r=\"3.4\"/><circle cx=\"351.5\" cy=\"156.6\" r=\"3.4\"/><circle cx=\"361.5\" cy=\"146.8\" r=\"3.4\"/><circle cx=\"262.0\" cy=\"201.9\" r=\"3.4\"/><circle cx=\"377.9\" cy=\"143.6\" r=\"3.4\"/><circle cx=\"334.0\" cy=\"189.0\" r=\"3.4\"/><circle cx=\"312.3\" cy=\"211.6\" r=\"3.4\"/><circle cx=\"251.5\" cy=\"224.6\" r=\"3.4\"/><circle cx=\"309.4\" cy=\"179.2\" r=\"3.4\"/><circle cx=\"298.9\" cy=\"260.2\" r=\"3.4\"/><circle cx=\"301.2\" cy=\"208.4\" r=\"3.4\"/><circle cx=\"270.8\" cy=\"211.6\" r=\"3.4\"/><circle cx=\"427.0\" cy=\"78.8\" r=\"3.4\"/><circle cx=\"312.9\" cy=\"179.2\" r=\"3.4\"/><circle cx=\"297.7\" cy=\"176.0\" r=\"3.4\"/><circle cx=\"365.6\" cy=\"59.4\" r=\"3.4\"/><circle cx=\"360.9\" cy=\"133.9\" r=\"3.4\"/><circle cx=\"297.1\" cy=\"182.5\" r=\"3.4\"/><circle cx=\"286.6\" cy=\"221.4\" r=\"3.4\"/><circle cx=\"296.5\" cy=\"133.9\" r=\"3.4\"/><circle cx=\"384.3\" cy=\"75.6\" r=\"3.4\"/><circle cx=\"355.6\" cy=\"124.2\" r=\"3.4\"/><circle cx=\"396.0\" cy=\"146.8\" r=\"3.4\"/><circle cx=\"223.4\" cy=\"237.6\" r=\"3.4\"/><circle cx=\"186.0\" cy=\"143.6\" r=\"3.4\"/><circle cx=\"258.5\" cy=\"201.9\" r=\"3.4\"/><circle cx=\"346.9\" cy=\"211.6\" r=\"3.4\"/><circle cx=\"277.2\" cy=\"205.2\" r=\"3.4\"/><circle cx=\"284.3\" cy=\"221.4\" r=\"3.4\"/><circle cx=\"358.6\" cy=\"133.9\" r=\"3.4\"/><circle cx=\"272.6\" cy=\"172.8\" r=\"3.4\"/><circle cx=\"358.0\" cy=\"176.0\" r=\"3.4\"/><circle cx=\"326.4\" cy=\"166.3\" r=\"3.4\"/><circle cx=\"281.3\" cy=\"195.4\" r=\"3.4\"/><circle cx=\"332.2\" cy=\"172.8\" r=\"3.4\"/><circle cx=\"345.7\" cy=\"124.2\" r=\"3.4\"/><circle cx=\"262.6\" cy=\"244.0\" r=\"3.4\"/><circle cx=\"389.0\" cy=\"195.4\" r=\"3.4\"/><circle cx=\"330.5\" cy=\"169.5\" r=\"3.4\"/><circle cx=\"427.0\" cy=\"91.8\" r=\"3.4\"/><circle cx=\"392.5\" cy=\"108.0\" r=\"3.4\"/><circle cx=\"322.9\" cy=\"237.6\" r=\"3.4\"/><circle cx=\"325.2\" cy=\"140.4\" r=\"3.4\"/><circle cx=\"315.3\" cy=\"133.9\" r=\"3.4\"/><circle cx=\"287.2\" cy=\"205.2\" r=\"3.4\"/><circle cx=\"273.7\" cy=\"176.0\" r=\"3.4\"/><circle cx=\"342.2\" cy=\"140.4\" r=\"3.4\"/><circle cx=\"303.0\" cy=\"201.9\" r=\"3.4\"/><circle cx=\"250.3\" cy=\"201.9\" r=\"3.4\"/><circle cx=\"250.3\" cy=\"208.4\" r=\"3.4\"/><circle cx=\"346.3\" cy=\"140.4\" r=\"3.4\"/><circle cx=\"286.6\" cy=\"208.4\" r=\"3.4\"/><circle cx=\"361.5\" cy=\"159.8\" r=\"3.4\"/><circle cx=\"396.0\" cy=\"137.1\" r=\"3.4\"/><circle cx=\"331.6\" cy=\"176.0\" r=\"3.4\"/><circle cx=\"263.8\" cy=\"231.1\" r=\"3.4\"/><circle cx=\"311.8\" cy=\"120.9\" r=\"3.4\"/><circle cx=\"353.3\" cy=\"91.8\" r=\"3.4\"/><circle cx=\"332.8\" cy=\"172.8\" r=\"3.4\"/><circle cx=\"325.2\" cy=\"195.4\" r=\"3.4\"/><circle cx=\"260.3\" cy=\"214.9\" r=\"3.4\"/><circle cx=\"333.4\" cy=\"153.3\" r=\"3.4\"/><circle cx=\"353.9\" cy=\"101.5\" r=\"3.4\"/><circle cx=\"387.8\" cy=\"169.5\" r=\"3.4\"/><circle cx=\"308.2\" cy=\"205.2\" r=\"3.4\"/><circle cx=\"359.7\" cy=\"234.3\" r=\"3.4\"/><circle cx=\"393.1\" cy=\"146.8\" r=\"3.4\"/><circle cx=\"322.3\" cy=\"101.5\" r=\"3.4\"/><circle cx=\"274.3\" cy=\"218.1\" r=\"3.4\"/><circle cx=\"300.6\" cy=\"189.0\" r=\"3.4\"/><circle cx=\"287.8\" cy=\"127.4\" r=\"3.4\"/><circle cx=\"331.1\" cy=\"201.9\" r=\"3.4\"/><circle cx=\"336.3\" cy=\"124.2\" r=\"3.4\"/><circle cx=\"272.0\" cy=\"192.2\" r=\"3.4\"/><circle cx=\"200.6\" cy=\"321.8\" r=\"3.4\"/><circle cx=\"274.3\" cy=\"266.7\" r=\"3.4\"/><circle cx=\"319.9\" cy=\"137.1\" r=\"3.4\"/><circle cx=\"303.0\" cy=\"211.6\" r=\"3.4\"/><circle cx=\"403.0\" cy=\"124.2\" r=\"3.4\"/></g><line x1=\"76\" y1=\"312.0\" x2=\"544\" y2=\"52.3\" stroke=\"#C0392B\" stroke-width=\"3.2\"/><line x1=\"268.9\" y1=\"312\" x2=\"373.7\" y2=\"312\" stroke=\"#1F3864\" stroke-width=\"3\" marker-start=\"url(#tv)\" marker-end=\"url(#th)\"/><rect x=\"217.3\" y=\"288\" width=\"208\" height=\"21\" rx=\"5\" fill=\"#fff\" opacity=\"0.88\"/><text x=\"321.3\" y=\"304\" font-size=\"17\" font-weight=\"700\" fill=\"#1F3864\" text-anchor=\"middle\">spredning i x  (SD = 9)</text><line x1=\"106\" y1=\"224.3\" x2=\"106\" y2=\"127.4\" stroke=\"#1F3864\" stroke-width=\"3\" marker-start=\"url(#tv)\" marker-end=\"url(#th)\"/><rect x=\"110\" y=\"89.8\" width=\"21\" height=\"172\" rx=\"5\" fill=\"#fff\" opacity=\"0.88\"/><text x=\"0\" y=\"0\" font-size=\"17\" font-weight=\"700\" fill=\"#1F3864\" text-anchor=\"middle\" transform=\"translate(125 176) rotate(-90)\">spredning i y  (SD = 14.9)</text></svg></div><div><table style=\"font-size:20px\"><tr><th></th><th><i>r</i></th><th><i>b</i><sub>1</sub></th></tr><tr><td>Deler på</td><td>spredningen i <b>begge</b></td><td>spredningen i <b>bare x</b></td></tr><tr><td>Enhet</td><td>ingen (−1 til 1)</td><td>y-enheter per x-enhet</td></tr><tr><td>Svarer på</td><td>hvor tett?</td><td>hvor mye?</td></tr><tr class=\"uthev\"><td>Signifikanstest</td><td colspan=\"2\">nøyaktig samme <i>t</i> og samme <i>p</i></td></tr></table><div class=\"avslor\" data-trinn=\"1\" style=\"margin-top:14px\"><p class=\"tabellnavn\">Coefficients — JASP</p><table class=\"rgtab\"><tr><th>prediktor</th><th><i>b</i></th><th><i>SE</i></th><th><i>t</i>(498)</th><th><i>p</i></th><th>β</th></tr><tr><td>(konstant)</td><td>58.03</td><td>2.55</td><td>22.79</td><td>&lt; .001</td><td>–</td></tr><tr><td>Grunnskolepoeng</td><td>1.002</td><td>0.060</td><td>16.74</td><td>&lt; .001</td><td><b class=\"kb1\">0.600</b></td></tr></table><p class=\"tabellnavn\" style=\"margin-top:10px\">Pearson Correlations — JASP</p><table class=\"rgtab\"><tr><th></th><th>Pearson's <i>r</i></th><th><i>p</i></th></tr><tr><td>Grunnskolepoeng – IQ</td><td><b class=\"kb1\">0.600</b></td><td>&lt; .001</td></tr></table><p class=\"liten\" style=\"margin-top:8px\">Samme tall. Med <b>én</b> prediktor er β = <i>r</i>.</p></div><p class=\"liten\" style=\"margin-top:10px\"><i>r</i> deler på begge pilene i figuren · <i>b</i> deler bare på den vannrette.</p></div></div>",
+   "en": null,
+   "notat": "Ta tabellen først, og still spørsmålet før du klikker fram JASP-outputen: hva tror dere β blir her? Klikk så fram de to tabellene og la dem se at 0.600 står begge steder. Eksamensfelle: «r var signifikant, men var b det?» — ja, alltid, med én prediktor. Det er samme test.",
+   "notat_en": null,
+   "harJasp": true
+  },
+  {
+   "nr": 12,
+   "t": "Tre kvadratsummer",
+   "html": "<h1>Ett regnskap over variasjonen i IQ</h1><p class=\"lead\">Tre ruter, samme oppskrift i hver: <b>prikker målt mot en referanse</b>. Det som endrer seg, er hvilke prikker og hvilken referanse.</p><div class=\"tredelt underfigur\"><div class=\"boks grasid avslor\" data-trinn=\"1\" data-gjor=\"sett:r2Vis:sst\"><h3>SST — <i>total sum of squares</i></h3>Hvor mye IQ varierer i det hele tatt: avvik fra ȳ, kvadrert og lagt sammen. <b>Det du startet med.</b></div><div class=\"boks rod avslor\" data-trinn=\"2\" data-gjor=\"sett:r2Vis:sse\"><h3>SSE — <i>sum of squared errors</i></h3>Det som er igjen etter at linja har gjort sitt: avvik fra ŷ. <b>Det du ikke klarte.</b></div><div class=\"boks gronn avslor\" data-trinn=\"3\" data-gjor=\"sett:r2Vis:alle\"><h3>SSR — <i>regression sum of squares</i></h3>Nå er de grønne prikkene <b>linjas gjetninger</b> (ŷ), ikke elevene. Hvor langt de ligger fra ȳ, er <b>det modellen tilfører</b>. Flat linje ⇒ alle gjetningene blir ȳ ⇒ SSR = 0.</div></div><div class=\"formelrad avslor\" data-trinn=\"4\" style=\"text-align:left\"><span style=\"color:#E8930C\">■</span> <b>Den gule eleven er den samme i alle tre rutene.</b> Den gule streken i rute 1 er nøyaktig like lang som de to andre til sammen: <b>(y − ȳ) = (ŷ − ȳ) + (y − ŷ)</b>. Det er hele dekomponeringen, for én person.</div><div class=\"formelrad avslor\" data-trinn=\"5\"><b><i>R</i>² = SSR / SST</b> — andelen av bommen som forsvant da du sluttet å gjette ȳ.</div>",
+   "en": null,
+   "notat": "De tre rutene står der fra starten, men bare den første er fylt ut. Klikk fram én boks om gangen, så fylles ruta over den. Si oppskriften høyt én gang: i hver rute måles prikker mot en referanse. Rute 1: elevene mot ȳ. Rute 2: de samme elevene mot linja — kortere streker. Rute 3 er den som må sies eksplisitt: nå er prikkene flyttet NED PÅ LINJA. De er ŷ, modellens gjetning for hver elev, og de måles mot ȳ. Bruk den GULE eleven — hun står på samme sted i alle tre rutene. Klikk fram den gule linja under figuren og la dem måle med øyet: den gule streken i rute 1 er like lang som de to andre til sammen. Det er hele dekomponeringen, sett, og det er den ene tingen de bør huske herfra. (Merk for deg selv: det er AVVIKENE som legger seg sammen per elev, ikke kvadratene — kvadratsummene går opp fordi kryssleddet forsvinner, og det tar vi i tabellen på neste slide.) Dra sammenhengen mot 0: SSE nærmer seg SST og SSR forsvinner. Mot 0.95: motsatt. Uten modell er beste gjett alltid gjennomsnittet; R² måler hvor mye bedre enn det du ble.",
+   "notat_en": null,
+   "del": "Del 3 · Hvor mye forklarer modellen"
+  },
+  {
+   "nr": 13,
+   "t": "SIM · regnskapet går opp",
+   "html": "<h1>SST = SSR + SSE</h1><p class=\"lead\">Alltid. Det er ikke en tilnærming — de to nederste fyller nøyaktig den øverste.</p><div class=\"underfigur\"><div><svg viewBox=\"0 0 1120 248\" style=\"width:100%;height:auto\"><text x=\"176\" y=\"22\" font-size=\"21\" font-weight=\"700\" fill=\"#3F4E63\">All variasjon i IQ</text><rect x=\"176.0\" y=\"32\" width=\"860.0\" height=\"54\" rx=\"6\" fill=\"#5C6A80\"/><text x=\"606.0\" y=\"67.0\" font-size=\"26\" font-weight=\"700\" fill=\"#fff\" text-anchor=\"middle\">SST</text><text x=\"176\" y=\"110\" font-size=\"21\" font-weight=\"700\" fill=\"#3F4E63\">Delt i to, uten rest</text><rect x=\"176.0\" y=\"120\" width=\"309.6\" height=\"54\" rx=\"6\" fill=\"#1E8E4E\"/><text x=\"330.8\" y=\"155.0\" font-size=\"26\" font-weight=\"700\" fill=\"#fff\" text-anchor=\"middle\">SSR</text><rect x=\"485.6\" y=\"120\" width=\"550.4\" height=\"54\" rx=\"6\" fill=\"#C0392B\"/><text x=\"760.8\" y=\"155.0\" font-size=\"26\" font-weight=\"700\" fill=\"#fff\" text-anchor=\"middle\">SSE</text><line x1=\"176\" y1=\"188\" x2=\"1036\" y2=\"188\" stroke=\"#16203A\" stroke-width=\"2.5\"/><line x1=\"176\" y1=\"181\" x2=\"176\" y2=\"195\" stroke=\"#16203A\" stroke-width=\"2.5\"/><line x1=\"1036\" y1=\"181\" x2=\"1036\" y2=\"195\" stroke=\"#16203A\" stroke-width=\"2.5\"/><text x=\"606.0\" y=\"212\" font-size=\"23\" font-weight=\"700\" fill=\"#16203A\" text-anchor=\"middle\">nøyaktig like lang som SST</text><text x=\"176\" y=\"240\" font-size=\"21\" font-weight=\"700\" fill=\"#1E8E4E\">R² = SSR/SST = 0.36</text><text x=\"430\" y=\"240\" font-size=\"20\" fill=\"#3F4E63\">= r² — med én prediktor er R² korrelasjonen kvadrert (r = 0.60)</text></svg></div></div>",
+   "en": null,
+   "notat": "Pek på klammen: de to nederste søylene er til sammen like lange som den øverste, uansett hvor du drar sammenhengen. R² er bare hvor stor andel den grønne biten utgjør. Vis at R² her er nøyaktig r². Med én prediktor er de samme tall.",
+   "notat_en": null
+  },
+  {
+   "nr": 14,
+   "t": "Hva R² egentlig sier",
+   "html": "<h1>Hvor mye bedre blir gjetningen din?</h1><p class=\"lead\">Uten modellen må du gjette gjennomsnittet på alle. Med modellen gjetter du på linja. <i>R</i>² er hvor mye bommen krympet.</p><div class=\"figurrad2\"><div><svg viewBox=\"0 0 560 310\" style=\"width:100%;height:auto\"><line x1=\"80\" y1=\"28\" x2=\"80\" y2=\"258\" stroke=\"#9aa4b8\" stroke-width=\"1.6\"/><line x1=\"80\" y1=\"258\" x2=\"360\" y2=\"258\" stroke=\"#9aa4b8\" stroke-width=\"1.6\"/><text x=\"72\" y=\"32\" font-size=\"15\" fill=\"#3F4E63\" text-anchor=\"end\">IQ</text><line x1=\"75\" y1=\"221.3\" x2=\"80\" y2=\"221.3\" stroke=\"#9aa4b8\" stroke-width=\"1.4\"/><text x=\"69\" y=\"226.3\" font-size=\"14\" fill=\"#3F4E63\" text-anchor=\"end\">80</text><line x1=\"75\" y1=\"148.0\" x2=\"80\" y2=\"148.0\" stroke=\"#9aa4b8\" stroke-width=\"1.4\"/><text x=\"69\" y=\"153.0\" font-size=\"14\" fill=\"#3F4E63\" text-anchor=\"end\">100</text><line x1=\"75\" y1=\"74.7\" x2=\"80\" y2=\"74.7\" stroke=\"#9aa4b8\" stroke-width=\"1.4\"/><text x=\"69\" y=\"79.7\" font-size=\"14\" fill=\"#3F4E63\" text-anchor=\"end\">120</text><line x1=\"157.8\" y1=\"258\" x2=\"157.8\" y2=\"263\" stroke=\"#9aa4b8\" stroke-width=\"1.4\"/><text x=\"157.8\" y=\"280\" font-size=\"14\" fill=\"#3F4E63\" font-weight=\"400\" text-anchor=\"middle\">40</text><line x1=\"235.6\" y1=\"258\" x2=\"235.6\" y2=\"263\" stroke=\"#9aa4b8\" stroke-width=\"1.4\"/><text x=\"235.6\" y=\"280\" font-size=\"14\" fill=\"#3F4E63\" font-weight=\"400\" text-anchor=\"middle\">50</text><line x1=\"313.3\" y1=\"258\" x2=\"313.3\" y2=\"263\" stroke=\"#9aa4b8\" stroke-width=\"1.4\"/><text x=\"313.3\" y=\"280\" font-size=\"14\" fill=\"#16203A\" font-weight=\"700\" text-anchor=\"middle\">60</text><text x=\"220\" y=\"301\" font-size=\"15\" fill=\"#3F4E63\" text-anchor=\"middle\">grunnskolepoeng</text><line x1=\"313.3\" y1=\"67.3\" x2=\"313.3\" y2=\"258\" stroke=\"#B8C0CE\" stroke-width=\"1.4\" stroke-dasharray=\"4,4\"/><line x1=\"80\" y1=\"148.0\" x2=\"360\" y2=\"148.0\" stroke=\"#5F6A7E\" stroke-width=\"2\" stroke-dasharray=\"6,4\"/><line x1=\"80\" y1=\"191.7\" x2=\"360\" y2=\"59.4\" stroke=\"#2E5496\" stroke-width=\"3\"/><text x=\"368\" y=\"55.4\" font-size=\"14\" font-weight=\"700\" fill=\"#2E5496\">linja</text><text x=\"368\" y=\"72.4\" font-size=\"14\" fill=\"#2E5496\">gjett MED modell</text><text x=\"368\" y=\"144.0\" font-size=\"14\" font-weight=\"700\" fill=\"#5F6A7E\">ȳ = 100</text><text x=\"368\" y=\"161.0\" font-size=\"14\" fill=\"#5F6A7E\">gjett UTEN modell</text><line x1=\"295\" y1=\"148.0\" x2=\"295\" y2=\"67.3\" stroke=\"#C0392B\" stroke-width=\"4\"/><line x1=\"287\" y1=\"148.0\" x2=\"303\" y2=\"148.0\" stroke=\"#C0392B\" stroke-width=\"2.5\"/><line x1=\"287\" y1=\"67.3\" x2=\"303\" y2=\"67.3\" stroke=\"#C0392B\" stroke-width=\"2.5\"/><text x=\"287\" y=\"138\" font-size=\"15\" font-weight=\"700\" fill=\"#C0392B\" text-anchor=\"end\">bom 22</text><line x1=\"331\" y1=\"81.4\" x2=\"331\" y2=\"67.3\" stroke=\"#1E8E4E\" stroke-width=\"4\"/><line x1=\"323\" y1=\"81.4\" x2=\"339\" y2=\"81.4\" stroke=\"#1E8E4E\" stroke-width=\"2.5\"/><text x=\"339\" y=\"103\" font-size=\"15\" font-weight=\"700\" fill=\"#1E8E4E\">bom 4</text><circle cx=\"313.3\" cy=\"67.3\" r=\"7\" fill=\"#16203A\"/><text x=\"313.3\" y=\"46\" font-size=\"15\" font-weight=\"700\" fill=\"#16203A\" text-anchor=\"middle\">én elev: 122</text></svg></div><div class=\"sidespalte\"><div class=\"boks gronn avslor\" data-trinn=\"1\"><h3>Én elev, to gjetninger</h3>Uten modellen: <b>100</b> — du bommer med 22 poeng. Med modellen: <b>118</b> — du bommer med 4. <i>R</i>² er hvor mye bommen krympet <b>i snitt, over alle 500</b>.</div><div class=\"boks bla avslor\" data-trinn=\"2\"><h3>Her: 36 %</h3>Av alt som skiller elever fra hverandre i IQ, henger <b>36 %</b> sammen med karakterene. De resterende <b>64 %</b> handler om noe annet — noe modellen ikke ser.</div><div class=\"boks rod avslor\" data-trinn=\"3\"><h3>Og det er IKKE</h3>36 % av elevene · 36 % av IQ-poengene · «riktig 36 % av tiden».<br>Det er 36 % av <b>variasjonen</b> — av spredningen mellom folk.</div></div></div>",
+   "en": null,
+   "notat": "Denne sliden kommer mellom regnskapet og «hvor stor er en stor R²», fordi tallet må bety noe før det kan vurderes. Start med figuren: pek på den ene eleven og spør hva du ville gjettet på henne hvis du ikke visste noe. Svaret er gjennomsnittet — det er alltid svaret uten en modell. Da bommer du 22 poeng. Klikk fram første boks, og vis at linja gjetter 118: bommen er 4. R² er hvor mye den krympingen er verdt i snitt. Bruk så litt tid på den siste boksen. «36 % av variasjonen» blir nesten alltid lest som «36 % av noe annet», og den feilen kommer igjen på eksamen. Si det høyt: prosent av SPREDNINGEN mellom folk, ikke prosent av folk og ikke prosent av poengene.",
+   "notat_en": null
+  },
+  {
+   "nr": 15,
+   "t": "Hvor stor er en stor R²?",
+   "html": "<h1><i>R</i>² leses mot feltet, ikke mot 1</h1><p class=\"lead\">Fire punktskyer, fire <i>R</i>². Se på bildene før du dømmer tallene.</p><div style=\"margin:2px 0 8px\"><div><svg viewBox=\"0 0 1134 384\" style=\"width:100%;height:auto\"><rect x=\"16\" y=\"50\" width=\"256\" height=\"256\" fill=\"#fbfcfe\" stroke=\"#8F9BB0\" stroke-width=\"1.5\"/><g fill=\"#2E5496\" opacity=\"0.48\"><circle cx=\"131.4\" cy=\"154.2\" r=\"3.6\"/><circle cx=\"132.9\" cy=\"194.5\" r=\"3.6\"/><circle cx=\"98.2\" cy=\"193.0\" r=\"3.6\"/><circle cx=\"198.7\" cy=\"151.7\" r=\"3.6\"/><circle cx=\"195.0\" cy=\"160.7\" r=\"3.6\"/><circle cx=\"163.4\" cy=\"167.0\" r=\"3.6\"/><circle cx=\"62.0\" cy=\"144.3\" r=\"3.6\"/><circle cx=\"168.9\" cy=\"151.1\" r=\"3.6\"/><circle cx=\"60.7\" cy=\"271.7\" r=\"3.6\"/><circle cx=\"100.2\" cy=\"205.3\" r=\"3.6\"/><circle cx=\"159.0\" cy=\"178.7\" r=\"3.6\"/><circle cx=\"169.6\" cy=\"206.9\" r=\"3.6\"/><circle cx=\"159.2\" cy=\"157.2\" r=\"3.6\"/><circle cx=\"111.5\" cy=\"97.1\" r=\"3.6\"/><circle cx=\"171.4\" cy=\"116.6\" r=\"3.6\"/><circle cx=\"113.5\" cy=\"217.3\" r=\"3.6\"/><circle cx=\"127.1\" cy=\"184.9\" r=\"3.6\"/><circle cx=\"175.1\" cy=\"162.7\" r=\"3.6\"/><circle cx=\"122.0\" cy=\"227.1\" r=\"3.6\"/><circle cx=\"118.4\" cy=\"120.8\" r=\"3.6\"/><circle cx=\"104.2\" cy=\"170.0\" r=\"3.6\"/><circle cx=\"165.0\" cy=\"248.9\" r=\"3.6\"/><circle cx=\"146.4\" cy=\"113.8\" r=\"3.6\"/><circle cx=\"44.8\" cy=\"203.7\" r=\"3.6\"/><circle cx=\"138.8\" cy=\"218.6\" r=\"3.6\"/><circle cx=\"168.5\" cy=\"178.6\" r=\"3.6\"/><circle cx=\"71.9\" cy=\"144.7\" r=\"3.6\"/><circle cx=\"177.0\" cy=\"128.4\" r=\"3.6\"/><circle cx=\"214.9\" cy=\"153.2\" r=\"3.6\"/><circle cx=\"149.9\" cy=\"241.1\" r=\"3.6\"/><circle cx=\"174.3\" cy=\"204.9\" r=\"3.6\"/><circle cx=\"121.7\" cy=\"242.2\" r=\"3.6\"/><circle cx=\"96.4\" cy=\"208.8\" r=\"3.6\"/><circle cx=\"207.5\" cy=\"271.2\" r=\"3.6\"/><circle cx=\"72.2\" cy=\"173.5\" r=\"3.6\"/><circle cx=\"215.1\" cy=\"142.6\" r=\"3.6\"/><circle cx=\"161.6\" cy=\"212.3\" r=\"3.6\"/><circle cx=\"88.9\" cy=\"135.6\" r=\"3.6\"/><circle cx=\"198.2\" cy=\"164.9\" r=\"3.6\"/><circle cx=\"156.1\" cy=\"155.5\" r=\"3.6\"/><circle cx=\"222.5\" cy=\"139.8\" r=\"3.6\"/><circle cx=\"169.5\" cy=\"148.6\" r=\"3.6\"/><circle cx=\"66.8\" cy=\"122.9\" r=\"3.6\"/><circle cx=\"191.0\" cy=\"147.4\" r=\"3.6\"/><circle cx=\"46.8\" cy=\"218.8\" r=\"3.6\"/><circle cx=\"185.5\" cy=\"262.6\" r=\"3.6\"/><circle cx=\"134.9\" cy=\"129.0\" r=\"3.6\"/><circle cx=\"79.4\" cy=\"105.6\" r=\"3.6\"/><circle cx=\"171.2\" cy=\"182.6\" r=\"3.6\"/><circle cx=\"160.0\" cy=\"144.6\" r=\"3.6\"/><circle cx=\"149.9\" cy=\"121.3\" r=\"3.6\"/><circle cx=\"111.4\" cy=\"201.6\" r=\"3.6\"/><circle cx=\"195.3\" cy=\"171.6\" r=\"3.6\"/><circle cx=\"100.7\" cy=\"136.0\" r=\"3.6\"/><circle cx=\"216.1\" cy=\"192.6\" r=\"3.6\"/><circle cx=\"76.1\" cy=\"191.4\" r=\"3.6\"/><circle cx=\"136.7\" cy=\"193.3\" r=\"3.6\"/><circle cx=\"213.2\" cy=\"221.4\" r=\"3.6\"/><circle cx=\"206.1\" cy=\"233.9\" r=\"3.6\"/><circle cx=\"105.3\" cy=\"150.9\" r=\"3.6\"/><circle cx=\"199.6\" cy=\"130.4\" r=\"3.6\"/><circle cx=\"161.0\" cy=\"169.3\" r=\"3.6\"/><circle cx=\"151.5\" cy=\"149.1\" r=\"3.6\"/><circle cx=\"135.3\" cy=\"165.3\" r=\"3.6\"/><circle cx=\"172.2\" cy=\"175.1\" r=\"3.6\"/><circle cx=\"181.6\" cy=\"146.5\" r=\"3.6\"/><circle cx=\"243.0\" cy=\"152.2\" r=\"3.6\"/><circle cx=\"122.9\" cy=\"198.4\" r=\"3.6\"/><circle cx=\"143.4\" cy=\"132.8\" r=\"3.6\"/><circle cx=\"127.4\" cy=\"160.8\" r=\"3.6\"/><circle cx=\"234.5\" cy=\"294.6\" r=\"3.6\"/><circle cx=\"88.7\" cy=\"171.6\" r=\"3.6\"/><circle cx=\"163.6\" cy=\"164.4\" r=\"3.6\"/><circle cx=\"122.8\" cy=\"148.0\" r=\"3.6\"/><circle cx=\"157.9\" cy=\"202.2\" r=\"3.6\"/><circle cx=\"263.6\" cy=\"148.6\" r=\"3.6\"/><circle cx=\"116.7\" cy=\"185.6\" r=\"3.6\"/><circle cx=\"132.9\" cy=\"182.2\" r=\"3.6\"/><circle cx=\"193.7\" cy=\"230.3\" r=\"3.6\"/><circle cx=\"140.7\" cy=\"131.6\" r=\"3.6\"/><circle cx=\"186.2\" cy=\"100.7\" r=\"3.6\"/><circle cx=\"60.2\" cy=\"203.7\" r=\"3.6\"/><circle cx=\"127.2\" cy=\"149.1\" r=\"3.6\"/><circle cx=\"197.7\" cy=\"304.0\" r=\"3.6\"/><circle cx=\"197.6\" cy=\"243.5\" r=\"3.6\"/><circle cx=\"177.6\" cy=\"247.7\" r=\"3.6\"/><circle cx=\"152.7\" cy=\"118.6\" r=\"3.6\"/><circle cx=\"136.6\" cy=\"169.4\" r=\"3.6\"/><circle cx=\"183.2\" cy=\"167.2\" r=\"3.6\"/><circle cx=\"139.6\" cy=\"103.3\" r=\"3.6\"/><circle cx=\"195.6\" cy=\"187.2\" r=\"3.6\"/><circle cx=\"189.0\" cy=\"186.5\" r=\"3.6\"/><circle cx=\"150.5\" cy=\"142.8\" r=\"3.6\"/><circle cx=\"154.9\" cy=\"145.6\" r=\"3.6\"/><circle cx=\"68.8\" cy=\"259.5\" r=\"3.6\"/><circle cx=\"174.3\" cy=\"222.2\" r=\"3.6\"/><circle cx=\"93.5\" cy=\"255.1\" r=\"3.6\"/><circle cx=\"206.3\" cy=\"135.2\" r=\"3.6\"/><circle cx=\"216.5\" cy=\"216.7\" r=\"3.6\"/><circle cx=\"144.0\" cy=\"233.9\" r=\"3.6\"/><circle cx=\"181.7\" cy=\"96.4\" r=\"3.6\"/><circle cx=\"100.2\" cy=\"106.0\" r=\"3.6\"/><circle cx=\"192.6\" cy=\"181.8\" r=\"3.6\"/><circle cx=\"46.9\" cy=\"118.8\" r=\"3.6\"/><circle cx=\"139.3\" cy=\"208.0\" r=\"3.6\"/><circle cx=\"163.7\" cy=\"156.0\" r=\"3.6\"/><circle cx=\"217.8\" cy=\"220.6\" r=\"3.6\"/><circle cx=\"199.9\" cy=\"99.5\" r=\"3.6\"/><circle cx=\"215.5\" cy=\"179.7\" r=\"3.6\"/><circle cx=\"107.4\" cy=\"131.8\" r=\"3.6\"/><circle cx=\"149.7\" cy=\"171.3\" r=\"3.6\"/><circle cx=\"214.1\" cy=\"183.9\" r=\"3.6\"/><circle cx=\"30.9\" cy=\"208.3\" r=\"3.6\"/><circle cx=\"52.7\" cy=\"147.0\" r=\"3.6\"/><circle cx=\"159.6\" cy=\"206.4\" r=\"3.6\"/><circle cx=\"143.5\" cy=\"137.3\" r=\"3.6\"/><circle cx=\"147.9\" cy=\"112.6\" r=\"3.6\"/><circle cx=\"141.0\" cy=\"127.3\" r=\"3.6\"/><circle cx=\"217.4\" cy=\"91.8\" r=\"3.6\"/><circle cx=\"110.9\" cy=\"138.2\" r=\"3.6\"/><circle cx=\"51.6\" cy=\"240.3\" r=\"3.6\"/><circle cx=\"47.4\" cy=\"135.3\" r=\"3.6\"/><circle cx=\"83.4\" cy=\"184.7\" r=\"3.6\"/><circle cx=\"134.5\" cy=\"180.3\" r=\"3.6\"/><circle cx=\"114.9\" cy=\"169.5\" r=\"3.6\"/><circle cx=\"232.2\" cy=\"167.0\" r=\"3.6\"/><circle cx=\"170.1\" cy=\"126.4\" r=\"3.6\"/></g><line x1=\"16\" y1=\"190.8\" x2=\"272\" y2=\"165.2\" stroke=\"#C0392B\" stroke-width=\"3.4\"/><text x=\"144\" y=\"34\" font-size=\"27\" font-weight=\"700\" fill=\"#1F3864\" text-anchor=\"middle\">R² = 0.01</text><text x=\"144\" y=\"336\" font-size=\"21\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"middle\">r = 0.10</text><text x=\"144\" y=\"362\" font-size=\"19\" fill=\"#3F4E63\" text-anchor=\"middle\">vanlig i psykologi</text><rect x=\"298\" y=\"50\" width=\"256\" height=\"256\" fill=\"#fbfcfe\" stroke=\"#8F9BB0\" stroke-width=\"1.5\"/><g fill=\"#2E5496\" opacity=\"0.48\"><circle cx=\"444.4\" cy=\"53.9\" r=\"3.6\"/><circle cx=\"479.9\" cy=\"108.9\" r=\"3.6\"/><circle cx=\"457.9\" cy=\"149.9\" r=\"3.6\"/><circle cx=\"459.7\" cy=\"167.5\" r=\"3.6\"/><circle cx=\"391.7\" cy=\"229.1\" r=\"3.6\"/><circle cx=\"370.9\" cy=\"179.6\" r=\"3.6\"/><circle cx=\"458.9\" cy=\"85.3\" r=\"3.6\"/><circle cx=\"456.4\" cy=\"150.2\" r=\"3.6\"/><circle cx=\"464.5\" cy=\"161.2\" r=\"3.6\"/><circle cx=\"337.2\" cy=\"150.9\" r=\"3.6\"/><circle cx=\"408.5\" cy=\"167.7\" r=\"3.6\"/><circle cx=\"489.2\" cy=\"132.9\" r=\"3.6\"/><circle cx=\"374.1\" cy=\"146.5\" r=\"3.6\"/><circle cx=\"386.2\" cy=\"129.8\" r=\"3.6\"/><circle cx=\"354.7\" cy=\"199.5\" r=\"3.6\"/><circle cx=\"478.9\" cy=\"197.1\" r=\"3.6\"/><circle cx=\"437.3\" cy=\"161.2\" r=\"3.6\"/><circle cx=\"479.8\" cy=\"179.0\" r=\"3.6\"/><circle cx=\"467.1\" cy=\"59.1\" r=\"3.6\"/><circle cx=\"356.0\" cy=\"236.0\" r=\"3.6\"/><circle cx=\"455.6\" cy=\"194.7\" r=\"3.6\"/><circle cx=\"363.3\" cy=\"122.8\" r=\"3.6\"/><circle cx=\"481.4\" cy=\"100.9\" r=\"3.6\"/><circle cx=\"487.6\" cy=\"117.4\" r=\"3.6\"/><circle cx=\"390.3\" cy=\"298.5\" r=\"3.6\"/><circle cx=\"458.3\" cy=\"213.8\" r=\"3.6\"/><circle cx=\"435.1\" cy=\"149.9\" r=\"3.6\"/><circle cx=\"368.2\" cy=\"206.3\" r=\"3.6\"/><circle cx=\"521.9\" cy=\"103.9\" r=\"3.6\"/><circle cx=\"349.6\" cy=\"205.6\" r=\"3.6\"/><circle cx=\"432.9\" cy=\"141.5\" r=\"3.6\"/><circle cx=\"471.0\" cy=\"160.6\" r=\"3.6\"/><circle cx=\"420.5\" cy=\"131.0\" r=\"3.6\"/><circle cx=\"359.2\" cy=\"137.3\" r=\"3.6\"/><circle cx=\"449.7\" cy=\"188.8\" r=\"3.6\"/><circle cx=\"402.4\" cy=\"168.4\" r=\"3.6\"/><circle cx=\"451.0\" cy=\"94.0\" r=\"3.6\"/><circle cx=\"423.5\" cy=\"171.5\" r=\"3.6\"/><circle cx=\"430.0\" cy=\"219.3\" r=\"3.6\"/><circle cx=\"451.3\" cy=\"126.2\" r=\"3.6\"/><circle cx=\"431.8\" cy=\"128.5\" r=\"3.6\"/><circle cx=\"377.7\" cy=\"177.1\" r=\"3.6\"/><circle cx=\"391.5\" cy=\"209.3\" r=\"3.6\"/><circle cx=\"443.2\" cy=\"161.5\" r=\"3.6\"/><circle cx=\"472.8\" cy=\"128.0\" r=\"3.6\"/><circle cx=\"368.9\" cy=\"130.8\" r=\"3.6\"/><circle cx=\"348.8\" cy=\"204.7\" r=\"3.6\"/><circle cx=\"443.6\" cy=\"174.5\" r=\"3.6\"/><circle cx=\"452.9\" cy=\"166.8\" r=\"3.6\"/><circle cx=\"377.4\" cy=\"153.4\" r=\"3.6\"/><circle cx=\"424.2\" cy=\"222.0\" r=\"3.6\"/><circle cx=\"429.7\" cy=\"177.6\" r=\"3.6\"/><circle cx=\"443.3\" cy=\"200.1\" r=\"3.6\"/><circle cx=\"435.0\" cy=\"183.7\" r=\"3.6\"/><circle cx=\"507.1\" cy=\"169.5\" r=\"3.6\"/><circle cx=\"490.7\" cy=\"161.2\" r=\"3.6\"/><circle cx=\"406.8\" cy=\"177.1\" r=\"3.6\"/><circle cx=\"380.5\" cy=\"226.1\" r=\"3.6\"/><circle cx=\"397.9\" cy=\"182.4\" r=\"3.6\"/><circle cx=\"472.8\" cy=\"120.5\" r=\"3.6\"/><circle cx=\"401.5\" cy=\"178.6\" r=\"3.6\"/><circle cx=\"352.5\" cy=\"173.4\" r=\"3.6\"/><circle cx=\"414.0\" cy=\"233.3\" r=\"3.6\"/><circle cx=\"389.4\" cy=\"162.2\" r=\"3.6\"/><circle cx=\"431.0\" cy=\"145.8\" r=\"3.6\"/><circle cx=\"403.8\" cy=\"177.6\" r=\"3.6\"/><circle cx=\"414.0\" cy=\"254.2\" r=\"3.6\"/><circle cx=\"418.0\" cy=\"187.0\" r=\"3.6\"/><circle cx=\"391.6\" cy=\"151.4\" r=\"3.6\"/><circle cx=\"533.5\" cy=\"76.3\" r=\"3.6\"/><circle cx=\"428.1\" cy=\"232.5\" r=\"3.6\"/><circle cx=\"416.8\" cy=\"210.9\" r=\"3.6\"/><circle cx=\"433.7\" cy=\"119.0\" r=\"3.6\"/><circle cx=\"423.3\" cy=\"246.2\" r=\"3.6\"/><circle cx=\"493.8\" cy=\"153.9\" r=\"3.6\"/><circle cx=\"494.2\" cy=\"198.2\" r=\"3.6\"/><circle cx=\"551.1\" cy=\"196.5\" r=\"3.6\"/><circle cx=\"432.8\" cy=\"137.2\" r=\"3.6\"/><circle cx=\"346.1\" cy=\"121.8\" r=\"3.6\"/><circle cx=\"461.0\" cy=\"212.4\" r=\"3.6\"/><circle cx=\"338.7\" cy=\"288.5\" r=\"3.6\"/><circle cx=\"434.6\" cy=\"213.6\" r=\"3.6\"/><circle cx=\"444.4\" cy=\"197.6\" r=\"3.6\"/><circle cx=\"341.0\" cy=\"119.0\" r=\"3.6\"/><circle cx=\"450.4\" cy=\"203.4\" r=\"3.6\"/><circle cx=\"408.9\" cy=\"121.1\" r=\"3.6\"/><circle cx=\"467.1\" cy=\"224.2\" r=\"3.6\"/><circle cx=\"499.1\" cy=\"184.4\" r=\"3.6\"/><circle cx=\"454.9\" cy=\"226.3\" r=\"3.6\"/><circle cx=\"392.3\" cy=\"151.1\" r=\"3.6\"/><circle cx=\"365.7\" cy=\"193.4\" r=\"3.6\"/><circle cx=\"446.5\" cy=\"202.9\" r=\"3.6\"/><circle cx=\"498.7\" cy=\"123.3\" r=\"3.6\"/><circle cx=\"419.3\" cy=\"131.8\" r=\"3.6\"/><circle cx=\"494.7\" cy=\"97.4\" r=\"3.6\"/><circle cx=\"419.9\" cy=\"141.6\" r=\"3.6\"/><circle cx=\"445.5\" cy=\"224.0\" r=\"3.6\"/><circle cx=\"408.4\" cy=\"87.2\" r=\"3.6\"/><circle cx=\"386.4\" cy=\"167.3\" r=\"3.6\"/><circle cx=\"511.0\" cy=\"168.9\" r=\"3.6\"/><circle cx=\"425.4\" cy=\"213.6\" r=\"3.6\"/><circle cx=\"451.7\" cy=\"227.9\" r=\"3.6\"/><circle cx=\"448.6\" cy=\"210.1\" r=\"3.6\"/><circle cx=\"442.8\" cy=\"254.1\" r=\"3.6\"/><circle cx=\"371.3\" cy=\"151.2\" r=\"3.6\"/><circle cx=\"501.9\" cy=\"193.3\" r=\"3.6\"/><circle cx=\"470.1\" cy=\"115.5\" r=\"3.6\"/><circle cx=\"417.7\" cy=\"198.9\" r=\"3.6\"/><circle cx=\"329.5\" cy=\"186.7\" r=\"3.6\"/><circle cx=\"518.9\" cy=\"208.2\" r=\"3.6\"/><circle cx=\"482.2\" cy=\"125.1\" r=\"3.6\"/><circle cx=\"473.4\" cy=\"214.0\" r=\"3.6\"/><circle cx=\"420.1\" cy=\"168.0\" r=\"3.6\"/><circle cx=\"511.3\" cy=\"195.7\" r=\"3.6\"/><circle cx=\"399.2\" cy=\"223.1\" r=\"3.6\"/><circle cx=\"468.8\" cy=\"240.0\" r=\"3.6\"/><circle cx=\"415.5\" cy=\"243.7\" r=\"3.6\"/><circle cx=\"408.6\" cy=\"148.0\" r=\"3.6\"/><circle cx=\"398.6\" cy=\"154.2\" r=\"3.6\"/><circle cx=\"402.0\" cy=\"188.5\" r=\"3.6\"/><circle cx=\"417.9\" cy=\"223.1\" r=\"3.6\"/><circle cx=\"446.3\" cy=\"141.4\" r=\"3.6\"/><circle cx=\"385.9\" cy=\"158.9\" r=\"3.6\"/><circle cx=\"430.5\" cy=\"197.5\" r=\"3.6\"/><circle cx=\"433.0\" cy=\"137.4\" r=\"3.6\"/></g><line x1=\"298\" y1=\"218.5\" x2=\"554\" y2=\"137.5\" stroke=\"#C0392B\" stroke-width=\"3.4\"/><text x=\"426\" y=\"34\" font-size=\"27\" font-weight=\"700\" fill=\"#1F3864\" text-anchor=\"middle\">R² = 0.10</text><text x=\"426\" y=\"336\" font-size=\"21\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"middle\">r = 0.32</text><text x=\"426\" y=\"362\" font-size=\"19\" fill=\"#3F4E63\" text-anchor=\"middle\">en solid effekt</text><rect x=\"580\" y=\"50\" width=\"256\" height=\"256\" fill=\"#fbfcfe\" stroke=\"#8F9BB0\" stroke-width=\"1.5\"/><g fill=\"#2E5496\" opacity=\"0.48\"><circle cx=\"661.7\" cy=\"191.7\" r=\"3.6\"/><circle cx=\"771.7\" cy=\"80.7\" r=\"3.6\"/><circle cx=\"766.2\" cy=\"146.9\" r=\"3.6\"/><circle cx=\"724.2\" cy=\"180.3\" r=\"3.6\"/><circle cx=\"643.8\" cy=\"229.9\" r=\"3.6\"/><circle cx=\"754.5\" cy=\"144.2\" r=\"3.6\"/><circle cx=\"692.4\" cy=\"230.6\" r=\"3.6\"/><circle cx=\"703.5\" cy=\"204.9\" r=\"3.6\"/><circle cx=\"709.8\" cy=\"156.5\" r=\"3.6\"/><circle cx=\"596.4\" cy=\"237.6\" r=\"3.6\"/><circle cx=\"636.4\" cy=\"253.4\" r=\"3.6\"/><circle cx=\"647.3\" cy=\"161.2\" r=\"3.6\"/><circle cx=\"740.8\" cy=\"140.5\" r=\"3.6\"/><circle cx=\"671.7\" cy=\"257.1\" r=\"3.6\"/><circle cx=\"689.4\" cy=\"178.7\" r=\"3.6\"/><circle cx=\"704.5\" cy=\"150.7\" r=\"3.6\"/><circle cx=\"690.5\" cy=\"110.6\" r=\"3.6\"/><circle cx=\"740.0\" cy=\"77.5\" r=\"3.6\"/><circle cx=\"720.0\" cy=\"181.8\" r=\"3.6\"/><circle cx=\"666.5\" cy=\"164.5\" r=\"3.6\"/><circle cx=\"759.2\" cy=\"145.8\" r=\"3.6\"/><circle cx=\"728.0\" cy=\"179.5\" r=\"3.6\"/><circle cx=\"687.5\" cy=\"200.7\" r=\"3.6\"/><circle cx=\"615.9\" cy=\"267.0\" r=\"3.6\"/><circle cx=\"709.8\" cy=\"171.8\" r=\"3.6\"/><circle cx=\"761.1\" cy=\"124.9\" r=\"3.6\"/><circle cx=\"728.6\" cy=\"165.7\" r=\"3.6\"/><circle cx=\"597.1\" cy=\"231.5\" r=\"3.6\"/><circle cx=\"664.5\" cy=\"179.1\" r=\"3.6\"/><circle cx=\"694.0\" cy=\"199.5\" r=\"3.6\"/><circle cx=\"681.4\" cy=\"203.9\" r=\"3.6\"/><circle cx=\"611.8\" cy=\"294.0\" r=\"3.6\"/><circle cx=\"767.1\" cy=\"130.4\" r=\"3.6\"/><circle cx=\"686.0\" cy=\"204.0\" r=\"3.6\"/><circle cx=\"733.0\" cy=\"165.8\" r=\"3.6\"/><circle cx=\"674.6\" cy=\"295.3\" r=\"3.6\"/><circle cx=\"713.6\" cy=\"116.8\" r=\"3.6\"/><circle cx=\"753.3\" cy=\"144.5\" r=\"3.6\"/><circle cx=\"677.8\" cy=\"243.7\" r=\"3.6\"/><circle cx=\"711.2\" cy=\"194.3\" r=\"3.6\"/><circle cx=\"651.6\" cy=\"136.4\" r=\"3.6\"/><circle cx=\"661.4\" cy=\"224.8\" r=\"3.6\"/><circle cx=\"590.4\" cy=\"164.9\" r=\"3.6\"/><circle cx=\"699.5\" cy=\"185.9\" r=\"3.6\"/><circle cx=\"721.4\" cy=\"207.5\" r=\"3.6\"/><circle cx=\"676.8\" cy=\"181.6\" r=\"3.6\"/><circle cx=\"667.0\" cy=\"185.5\" r=\"3.6\"/><circle cx=\"766.9\" cy=\"116.8\" r=\"3.6\"/><circle cx=\"776.7\" cy=\"98.6\" r=\"3.6\"/><circle cx=\"792.7\" cy=\"123.9\" r=\"3.6\"/><circle cx=\"728.4\" cy=\"214.6\" r=\"3.6\"/><circle cx=\"698.6\" cy=\"213.9\" r=\"3.6\"/><circle cx=\"704.0\" cy=\"224.7\" r=\"3.6\"/><circle cx=\"723.2\" cy=\"61.2\" r=\"3.6\"/><circle cx=\"669.4\" cy=\"173.3\" r=\"3.6\"/><circle cx=\"738.1\" cy=\"194.5\" r=\"3.6\"/><circle cx=\"693.1\" cy=\"208.2\" r=\"3.6\"/><circle cx=\"729.1\" cy=\"195.0\" r=\"3.6\"/><circle cx=\"835.2\" cy=\"78.2\" r=\"3.6\"/><circle cx=\"763.6\" cy=\"58.9\" r=\"3.6\"/><circle cx=\"775.0\" cy=\"149.6\" r=\"3.6\"/><circle cx=\"725.4\" cy=\"168.2\" r=\"3.6\"/><circle cx=\"720.6\" cy=\"130.8\" r=\"3.6\"/><circle cx=\"610.0\" cy=\"298.7\" r=\"3.6\"/><circle cx=\"691.4\" cy=\"167.7\" r=\"3.6\"/><circle cx=\"683.2\" cy=\"199.2\" r=\"3.6\"/><circle cx=\"761.7\" cy=\"123.0\" r=\"3.6\"/><circle cx=\"702.0\" cy=\"195.8\" r=\"3.6\"/><circle cx=\"634.8\" cy=\"194.6\" r=\"3.6\"/><circle cx=\"712.3\" cy=\"217.6\" r=\"3.6\"/><circle cx=\"730.7\" cy=\"183.5\" r=\"3.6\"/><circle cx=\"689.8\" cy=\"258.7\" r=\"3.6\"/><circle cx=\"750.0\" cy=\"191.0\" r=\"3.6\"/><circle cx=\"720.6\" cy=\"163.9\" r=\"3.6\"/><circle cx=\"678.1\" cy=\"197.7\" r=\"3.6\"/><circle cx=\"693.8\" cy=\"198.1\" r=\"3.6\"/><circle cx=\"714.6\" cy=\"204.4\" r=\"3.6\"/><circle cx=\"738.5\" cy=\"160.6\" r=\"3.6\"/><circle cx=\"647.3\" cy=\"193.7\" r=\"3.6\"/><circle cx=\"684.8\" cy=\"172.6\" r=\"3.6\"/><circle cx=\"589.6\" cy=\"225.6\" r=\"3.6\"/><circle cx=\"593.7\" cy=\"257.6\" r=\"3.6\"/><circle cx=\"755.3\" cy=\"188.7\" r=\"3.6\"/><circle cx=\"647.6\" cy=\"216.0\" r=\"3.6\"/><circle cx=\"723.3\" cy=\"178.8\" r=\"3.6\"/><circle cx=\"669.6\" cy=\"238.8\" r=\"3.6\"/><circle cx=\"683.4\" cy=\"125.2\" r=\"3.6\"/><circle cx=\"703.8\" cy=\"199.7\" r=\"3.6\"/><circle cx=\"691.1\" cy=\"231.0\" r=\"3.6\"/><circle cx=\"638.1\" cy=\"209.2\" r=\"3.6\"/><circle cx=\"771.2\" cy=\"127.5\" r=\"3.6\"/><circle cx=\"637.3\" cy=\"150.7\" r=\"3.6\"/><circle cx=\"718.9\" cy=\"93.8\" r=\"3.6\"/><circle cx=\"699.2\" cy=\"241.6\" r=\"3.6\"/><circle cx=\"717.5\" cy=\"181.4\" r=\"3.6\"/><circle cx=\"652.3\" cy=\"239.5\" r=\"3.6\"/><circle cx=\"686.0\" cy=\"228.2\" r=\"3.6\"/><circle cx=\"736.9\" cy=\"151.9\" r=\"3.6\"/><circle cx=\"683.8\" cy=\"207.1\" r=\"3.6\"/><circle cx=\"750.3\" cy=\"141.0\" r=\"3.6\"/><circle cx=\"648.1\" cy=\"198.1\" r=\"3.6\"/><circle cx=\"792.0\" cy=\"124.0\" r=\"3.6\"/><circle cx=\"664.8\" cy=\"135.2\" r=\"3.6\"/><circle cx=\"830.0\" cy=\"111.3\" r=\"3.6\"/><circle cx=\"594.4\" cy=\"297.5\" r=\"3.6\"/><circle cx=\"800.8\" cy=\"138.5\" r=\"3.6\"/><circle cx=\"743.8\" cy=\"135.7\" r=\"3.6\"/><circle cx=\"718.0\" cy=\"99.3\" r=\"3.6\"/><circle cx=\"720.4\" cy=\"143.6\" r=\"3.6\"/><circle cx=\"727.1\" cy=\"154.6\" r=\"3.6\"/><circle cx=\"832.6\" cy=\"159.9\" r=\"3.6\"/><circle cx=\"651.7\" cy=\"155.8\" r=\"3.6\"/><circle cx=\"649.4\" cy=\"196.8\" r=\"3.6\"/><circle cx=\"660.3\" cy=\"157.6\" r=\"3.6\"/><circle cx=\"711.3\" cy=\"143.7\" r=\"3.6\"/><circle cx=\"675.6\" cy=\"197.4\" r=\"3.6\"/><circle cx=\"598.3\" cy=\"194.7\" r=\"3.6\"/><circle cx=\"730.8\" cy=\"163.8\" r=\"3.6\"/><circle cx=\"713.2\" cy=\"189.4\" r=\"3.6\"/><circle cx=\"707.3\" cy=\"95.1\" r=\"3.6\"/><circle cx=\"680.6\" cy=\"210.2\" r=\"3.6\"/><circle cx=\"744.8\" cy=\"147.3\" r=\"3.6\"/><circle cx=\"680.6\" cy=\"118.9\" r=\"3.6\"/><circle cx=\"793.5\" cy=\"146.7\" r=\"3.6\"/><circle cx=\"800.8\" cy=\"188.6\" r=\"3.6\"/><circle cx=\"787.0\" cy=\"205.6\" r=\"3.6\"/><circle cx=\"729.5\" cy=\"171.1\" r=\"3.6\"/><circle cx=\"692.7\" cy=\"156.4\" r=\"3.6\"/></g><line x1=\"580\" y1=\"242.0\" x2=\"836\" y2=\"114.0\" stroke=\"#C0392B\" stroke-width=\"3.4\"/><text x=\"708\" y=\"34\" font-size=\"27\" font-weight=\"700\" fill=\"#1F3864\" text-anchor=\"middle\">R² = 0.25</text><text x=\"708\" y=\"336\" font-size=\"21\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"middle\">r = 0.50</text><text x=\"708\" y=\"362\" font-size=\"19\" fill=\"#3F4E63\" text-anchor=\"middle\">sjelden</text><rect x=\"862\" y=\"50\" width=\"256\" height=\"256\" fill=\"#fbfcfe\" stroke=\"#8F9BB0\" stroke-width=\"1.5\"/><g fill=\"#2E5496\" opacity=\"0.48\"><circle cx=\"943.0\" cy=\"227.2\" r=\"3.6\"/><circle cx=\"960.5\" cy=\"210.0\" r=\"3.6\"/><circle cx=\"1025.5\" cy=\"212.7\" r=\"3.6\"/><circle cx=\"973.4\" cy=\"206.6\" r=\"3.6\"/><circle cx=\"946.5\" cy=\"212.8\" r=\"3.6\"/><circle cx=\"990.0\" cy=\"92.0\" r=\"3.6\"/><circle cx=\"1004.9\" cy=\"167.7\" r=\"3.6\"/><circle cx=\"1032.7\" cy=\"184.2\" r=\"3.6\"/><circle cx=\"960.4\" cy=\"179.7\" r=\"3.6\"/><circle cx=\"965.3\" cy=\"229.7\" r=\"3.6\"/><circle cx=\"961.6\" cy=\"245.3\" r=\"3.6\"/><circle cx=\"1046.4\" cy=\"94.0\" r=\"3.6\"/><circle cx=\"978.8\" cy=\"192.8\" r=\"3.6\"/><circle cx=\"1016.4\" cy=\"158.9\" r=\"3.6\"/><circle cx=\"1029.0\" cy=\"161.2\" r=\"3.6\"/><circle cx=\"919.8\" cy=\"172.1\" r=\"3.6\"/><circle cx=\"965.6\" cy=\"154.9\" r=\"3.6\"/><circle cx=\"973.4\" cy=\"184.8\" r=\"3.6\"/><circle cx=\"908.2\" cy=\"269.9\" r=\"3.6\"/><circle cx=\"1009.5\" cy=\"143.6\" r=\"3.6\"/><circle cx=\"978.5\" cy=\"181.2\" r=\"3.6\"/><circle cx=\"899.1\" cy=\"240.9\" r=\"3.6\"/><circle cx=\"956.7\" cy=\"237.5\" r=\"3.6\"/><circle cx=\"1007.2\" cy=\"181.5\" r=\"3.6\"/><circle cx=\"946.5\" cy=\"222.6\" r=\"3.6\"/><circle cx=\"970.6\" cy=\"201.8\" r=\"3.6\"/><circle cx=\"993.5\" cy=\"191.0\" r=\"3.6\"/><circle cx=\"1034.8\" cy=\"91.6\" r=\"3.6\"/><circle cx=\"1039.7\" cy=\"154.9\" r=\"3.6\"/><circle cx=\"958.3\" cy=\"187.0\" r=\"3.6\"/><circle cx=\"979.5\" cy=\"137.8\" r=\"3.6\"/><circle cx=\"1000.8\" cy=\"154.6\" r=\"3.6\"/><circle cx=\"961.6\" cy=\"192.4\" r=\"3.6\"/><circle cx=\"935.7\" cy=\"268.3\" r=\"3.6\"/><circle cx=\"999.7\" cy=\"210.4\" r=\"3.6\"/><circle cx=\"959.7\" cy=\"169.0\" r=\"3.6\"/><circle cx=\"1067.7\" cy=\"121.3\" r=\"3.6\"/><circle cx=\"968.8\" cy=\"166.4\" r=\"3.6\"/><circle cx=\"1037.0\" cy=\"126.5\" r=\"3.6\"/><circle cx=\"947.5\" cy=\"225.3\" r=\"3.6\"/><circle cx=\"1040.3\" cy=\"180.5\" r=\"3.6\"/><circle cx=\"993.2\" cy=\"133.3\" r=\"3.6\"/><circle cx=\"1040.5\" cy=\"164.8\" r=\"3.6\"/><circle cx=\"975.8\" cy=\"195.5\" r=\"3.6\"/><circle cx=\"935.4\" cy=\"214.1\" r=\"3.6\"/><circle cx=\"948.2\" cy=\"186.4\" r=\"3.6\"/><circle cx=\"937.3\" cy=\"237.3\" r=\"3.6\"/><circle cx=\"960.4\" cy=\"197.6\" r=\"3.6\"/><circle cx=\"869.1\" cy=\"230.5\" r=\"3.6\"/><circle cx=\"978.6\" cy=\"181.3\" r=\"3.6\"/><circle cx=\"1050.9\" cy=\"134.1\" r=\"3.6\"/><circle cx=\"1010.6\" cy=\"158.6\" r=\"3.6\"/><circle cx=\"1032.0\" cy=\"124.1\" r=\"3.6\"/><circle cx=\"1046.7\" cy=\"139.8\" r=\"3.6\"/><circle cx=\"939.0\" cy=\"204.5\" r=\"3.6\"/><circle cx=\"936.4\" cy=\"216.2\" r=\"3.6\"/><circle cx=\"974.3\" cy=\"262.6\" r=\"3.6\"/><circle cx=\"973.4\" cy=\"224.3\" r=\"3.6\"/><circle cx=\"926.3\" cy=\"284.6\" r=\"3.6\"/><circle cx=\"1010.6\" cy=\"142.3\" r=\"3.6\"/><circle cx=\"935.0\" cy=\"253.0\" r=\"3.6\"/><circle cx=\"949.0\" cy=\"243.2\" r=\"3.6\"/><circle cx=\"1016.9\" cy=\"193.9\" r=\"3.6\"/><circle cx=\"1034.6\" cy=\"229.8\" r=\"3.6\"/><circle cx=\"900.5\" cy=\"214.1\" r=\"3.6\"/><circle cx=\"969.6\" cy=\"264.0\" r=\"3.6\"/><circle cx=\"1094.3\" cy=\"82.2\" r=\"3.6\"/><circle cx=\"1003.3\" cy=\"257.2\" r=\"3.6\"/><circle cx=\"1030.1\" cy=\"153.0\" r=\"3.6\"/><circle cx=\"976.9\" cy=\"204.1\" r=\"3.6\"/><circle cx=\"898.6\" cy=\"286.6\" r=\"3.6\"/><circle cx=\"1006.3\" cy=\"136.3\" r=\"3.6\"/><circle cx=\"1018.4\" cy=\"146.9\" r=\"3.6\"/><circle cx=\"995.8\" cy=\"158.8\" r=\"3.6\"/><circle cx=\"1092.9\" cy=\"105.4\" r=\"3.6\"/><circle cx=\"910.9\" cy=\"221.0\" r=\"3.6\"/><circle cx=\"969.8\" cy=\"232.1\" r=\"3.6\"/><circle cx=\"925.5\" cy=\"199.8\" r=\"3.6\"/><circle cx=\"953.6\" cy=\"213.1\" r=\"3.6\"/><circle cx=\"944.5\" cy=\"173.4\" r=\"3.6\"/><circle cx=\"966.4\" cy=\"211.8\" r=\"3.6\"/><circle cx=\"912.6\" cy=\"277.9\" r=\"3.6\"/><circle cx=\"1039.4\" cy=\"179.6\" r=\"3.6\"/><circle cx=\"1036.7\" cy=\"129.4\" r=\"3.6\"/><circle cx=\"1004.1\" cy=\"161.8\" r=\"3.6\"/><circle cx=\"988.4\" cy=\"140.7\" r=\"3.6\"/><circle cx=\"994.1\" cy=\"224.0\" r=\"3.6\"/><circle cx=\"974.6\" cy=\"136.3\" r=\"3.6\"/><circle cx=\"931.5\" cy=\"221.1\" r=\"3.6\"/><circle cx=\"985.5\" cy=\"143.8\" r=\"3.6\"/><circle cx=\"946.9\" cy=\"161.4\" r=\"3.6\"/><circle cx=\"936.8\" cy=\"211.5\" r=\"3.6\"/><circle cx=\"934.3\" cy=\"211.7\" r=\"3.6\"/><circle cx=\"960.9\" cy=\"250.1\" r=\"3.6\"/><circle cx=\"1005.8\" cy=\"200.5\" r=\"3.6\"/><circle cx=\"1024.4\" cy=\"240.4\" r=\"3.6\"/><circle cx=\"1068.5\" cy=\"125.1\" r=\"3.6\"/><circle cx=\"1077.5\" cy=\"89.2\" r=\"3.6\"/><circle cx=\"994.6\" cy=\"180.1\" r=\"3.6\"/><circle cx=\"969.6\" cy=\"165.3\" r=\"3.6\"/><circle cx=\"985.9\" cy=\"228.6\" r=\"3.6\"/><circle cx=\"983.6\" cy=\"160.6\" r=\"3.6\"/><circle cx=\"1000.8\" cy=\"156.8\" r=\"3.6\"/><circle cx=\"1019.1\" cy=\"236.4\" r=\"3.6\"/><circle cx=\"1005.3\" cy=\"110.7\" r=\"3.6\"/><circle cx=\"1020.6\" cy=\"163.2\" r=\"3.6\"/><circle cx=\"942.4\" cy=\"228.0\" r=\"3.6\"/><circle cx=\"1088.1\" cy=\"119.7\" r=\"3.6\"/><circle cx=\"1022.8\" cy=\"152.4\" r=\"3.6\"/><circle cx=\"1027.2\" cy=\"188.9\" r=\"3.6\"/><circle cx=\"901.2\" cy=\"249.8\" r=\"3.6\"/><circle cx=\"1000.8\" cy=\"256.6\" r=\"3.6\"/><circle cx=\"982.9\" cy=\"173.4\" r=\"3.6\"/><circle cx=\"984.4\" cy=\"192.4\" r=\"3.6\"/><circle cx=\"900.5\" cy=\"268.8\" r=\"3.6\"/><circle cx=\"936.7\" cy=\"187.2\" r=\"3.6\"/><circle cx=\"1003.7\" cy=\"150.4\" r=\"3.6\"/><circle cx=\"912.6\" cy=\"275.7\" r=\"3.6\"/><circle cx=\"1002.4\" cy=\"169.3\" r=\"3.6\"/><circle cx=\"1041.8\" cy=\"161.2\" r=\"3.6\"/><circle cx=\"961.0\" cy=\"170.1\" r=\"3.6\"/><circle cx=\"949.8\" cy=\"221.5\" r=\"3.6\"/><circle cx=\"1050.2\" cy=\"80.2\" r=\"3.6\"/><circle cx=\"971.8\" cy=\"236.9\" r=\"3.6\"/><circle cx=\"965.3\" cy=\"295.7\" r=\"3.6\"/><circle cx=\"1031.6\" cy=\"90.7\" r=\"3.6\"/><circle cx=\"1009.8\" cy=\"192.7\" r=\"3.6\"/><circle cx=\"939.2\" cy=\"227.9\" r=\"3.6\"/><circle cx=\"1008.0\" cy=\"130.5\" r=\"3.6\"/></g><line x1=\"862\" y1=\"268.5\" x2=\"1118\" y2=\"87.5\" stroke=\"#C0392B\" stroke-width=\"3.4\"/><text x=\"990\" y=\"34\" font-size=\"27\" font-weight=\"700\" fill=\"#1F3864\" text-anchor=\"middle\">R² = 0.50</text><text x=\"990\" y=\"336\" font-size=\"21\" font-weight=\"600\" fill=\"#2B3648\" text-anchor=\"middle\">r = 0.71</text><text x=\"990\" y=\"362\" font-size=\"19\" fill=\"#3F4E63\" text-anchor=\"middle\">nesten bare i fysikk</text></svg></div></div><div class=\"tredelt\" style=\"margin-top:2px\"><div class=\"boks grasid\" style=\"padding:11px 15px;font-size:18px\"><i>R</i>² <b>vokser alltid</b> når du legger til prediktorer — også helt tilfeldige. Derfor rapporterer JASP justert <i>R</i>².</div><div class=\"boks grasid\" style=\"padding:11px 15px;font-size:18px\">Høy <i>R</i>² betyr <b>ikke</b> at modellen har riktig form. En krum sammenheng kan gi høy <i>R</i>² med en rett linje.</div><div class=\"boks grasid\" style=\"padding:11px 15px;font-size:18px\"><i>R</i>² sier ingenting om <b>årsak</b>, og ingenting om hvor viktig effekten er praktisk.</div></div>",
+   "en": null,
+   "notat": "La dem se på bildene i noen sekunder før du sier tallene. R² = 0.10 ser ut som en sky uten mønster, og er likevel en reell effekt. Koble til arbeidskravet: de vil få lave R². Det er ikke et tegn på at de har gjort noe galt.",
+   "notat_en": null,
+   "harJasp": true
+  },
+  {
+   "nr": 16,
+   "t": "To spørsmål, to tester",
+   "html": "<h1>JASP gir deg to <i>p</i>-verdier. De svarer på ulike ting.</h1><div style=\"display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:4px\"><div><div class=\"boks gronn\" style=\"padding:14px 18px\"><h3><i>F</i>-testen — hele modellen</h3>«Forklarer modellen <b>samlet</b> mer enn ingenting?»<br><span style=\"font-size:17px\">H<sub>0</sub>: modellen forklarer ingenting — <i>R</i>² i populasjonen er 0.</span></div><p class=\"liten\" style=\"margin:8px 0 6px\"><i>F</i> er et <b>forhold</b>: forklart variasjon per frihetsgrad, delt på uforklart variasjon per frihetsgrad. Er linja verdiløs, blir de to omtrent like store og <i>F</i> ≈ 1. Jo mer linja forklarer, desto større <i>F</i>.</p><p class=\"tabellnavn\">ANOVA — JASP</p><table class=\"rgtab\" style=\"font-size:17px\"><tr><th>modell</th><th>SS</th><th><i>df</i></th><th>MS</th><th><i>F</i></th><th><i>p</i></th></tr><tr><td>Regresjon</td><td>40 141</td><td>1</td><td>40 141</td><td><b>280.2</b></td><td>&lt; .001</td></tr><tr><td>Residual</td><td>71 352</td><td>498</td><td>143.3</td><td></td><td></td></tr></table></div><div class=\"avslor\" data-trinn=\"1\"><div class=\"boks bla\" style=\"padding:14px 18px\"><h3><i>t</i>-testen — én koeffisient</h3>«Er <b>denne</b> prediktoren verdt noe, gitt de andre?»<br><span style=\"font-size:17px\">H<sub>0</sub>: <i>b</i><sub>1</sub> = 0 i populasjonen — linja er flat.</span></div><p class=\"liten\" style=\"margin:8px 0 6px\"><i>t</i> er stigningstallet delt på <b>sin egen usikkerhet</b>: <i>t</i> = <i>b</i><sub>1</sub> / <i>SE</i>. Hvor mange standardfeil unna null ligger den?</p><p class=\"tabellnavn\">Coefficients — JASP</p><table class=\"rgtab\" style=\"font-size:17px\"><tr><th>prediktor</th><th><i>b</i></th><th><i>SE</i></th><th><i>t</i></th><th><i>p</i></th></tr><tr><td>(konstant)</td><td>58.03</td><td>2.55</td><td>22.79</td><td>&lt; .001</td></tr><tr><td>Grunnskolepoeng</td><td>1.002</td><td>0.060</td><td><b>16.74</b></td><td>&lt; .001</td></tr></table></div></div><p class=\"liten avslor\" data-trinn=\"2\" style=\"margin-top:12px;text-align:center\">Vi tar dem i den rekkefølgen JASP setter dem opp: <b>først hele modellen</b>, så den enkelte koeffisienten. Til slutt ser vi hvordan de to henger sammen.</p>",
+   "en": null,
+   "notat": "Ta F først, og hold den på ett nivå: det er én test for hele modellen, og den spør om linja er verdt noe i det hele tatt. Nullhypotesen er at den ikke er det. F ≈ 1 betyr «like bra som ingenting». Klikk så fram t-testen: samme spørsmål, men for én koeffisient om gangen, og med en helt annen nullhypotese — b1 = 0. Klikk til slutt fram siste linje: den sier bare hvilken vei vi går. F først — hele modellen — så t. Sammenhengen mellom dem sparer vi til de har sett begge.",
+   "notat_en": null,
+   "del": "Del 4 · Er det noe der? To tester",
+   "harJasp": true
+  },
+  {
+   "nr": 17,
+   "t": "F-testen, intuitivt",
+   "html": "<h1>Forklart mot uforklart — per frihetsgrad</h1><div class=\"formel\" style=\"font-size:30px\"><i>F</i> = (SSR / k) ÷ (SSE / (<i>n</i> − k − 1))</div><p>Teller: hvor mye modellen forklarte, delt på hvor mange prediktorer den brukte på det.<br>Nevner: hvor mye som er igjen, delt på hvor mye data som er igjen.</p><div class=\"boks gronn\" style=\"margin-top:10px\"><b>Lest som et forhold:</b> «Fikk vi mer igjen per prediktor enn vi ville fått av rene tilfeldigheter?» Er <i>F</i> rundt 1, forklarte modellen omtrent det støy alene ville forklart.</div><p class=\"liten\" style=\"margin-top:12px\">Samme tall skrevet med <i>R</i>²: <i>F</i> = (<i>R</i>²/k) ÷ ((1 − <i>R</i>²)/(<i>n</i> − k − 1)).</p>",
+   "en": null,
+   "notat": "Ikke bruk mer enn to minutter. Poenget er forholdet, ikke formelen.",
+   "notat_en": null
+  },
+  {
+   "nr": 18,
+   "t": "ANOVA-tabellen i JASP",
+   "html": "<h1>De tre kvadratsummene, slik JASP viser dem</h1><p class=\"lead\">Dette er den samme oppdelingen du nettopp så — satt opp som tabell. <i>F</i> står helt til høyre, som resultatet av det hele.</p><div class=\"figurrad2\"><div><p class=\"tabellnavn\">ANOVA — IQ fra grunnskolepoeng</p><table class=\"rgtab anovatab\"><tr><th></th><th>Sum of Squares</th><th><i>df</i></th><th>Mean Square</th><th><i>F</i></th><th><i>p</i></th></tr><tr><td>Regresjon</td><td class=\"kb1\">40 141</td><td>1</td><td class=\"kb1\">40 141</td><td rowspan=\"2\" class=\"fcelle\"><b>280.2</b></td><td rowspan=\"2\">&lt; .001</td></tr><tr><td>Residual</td><td class=\"kfeil\">71 352</td><td>498</td><td class=\"kfeil\">143.3</td></tr><tr class=\"sumrad\"><td>Total</td><td>111 493</td><td>499</td><td></td><td></td><td></td></tr></table></div><div class=\"sidespalte\"><div class=\"boks grasid avslor\" data-trinn=\"1\"><h3>1 · Kolonnen «Sum of Squares»</h3>Det er <span class=\"kb1\">SSR</span>, <span class=\"kfeil\">SSE</span> og SST — de tre rutene fra forrige del, i samme rekkefølge.</div><div class=\"boks grasid avslor\" data-trinn=\"2\"><h3>2 · <i>df</i></h3><b>1</b> fordi modellen brukte én prediktor. <b>498</b> = <i>n</i> − <i>k</i> − 1 = 500 − 1 − 1: det som er igjen av data etter at to tall er estimert.</div><div class=\"boks grasid avslor\" data-trinn=\"3\"><h3>3 · Mean Square</h3>SS delt på <i>df</i> — <b>variasjon per frihetsgrad</b>. Det er dette som gjør de to tallene sammenlignbare.</div><div class=\"boks gronn avslor\" data-trinn=\"4\"><h3>4 · <i>F</i></h3>40 141 / 143.3 = <b>280.2</b>. Modellen forklarer 280 ganger mer per frihetsgrad enn støyen gjør. Hadde linja vært verdiløs, ville brøken ligget rundt 1.</div></div></div>",
+   "en": null,
+   "notat": "Dette er sliden som binder del 3 til del 4. Pek på SS-kolonnen og si: dette er de tre rutene dere nettopp så. Klikk deg gjennom de fire boksene i takt med kolonnene fra venstre mot høyre — tabellen leses faktisk slik. Totalraden er verdt et sekund: 40 141 + 71 352 = 111 493, regnskapet går opp her også. Og legg merke til at p-verdien her er nøyaktig den samme som i koeffisienttabellen, som kommer om to slides.",
+   "notat_en": null,
+   "harJasp": true
+  },
+  {
+   "nr": 19,
+   "t": "SIM · modelltilpasningen",
+   "html": "<h1><i>R</i>², justert <i>R</i>² og <i>F</i> for modellen</h1><p class=\"lead\">Den enkle modellen først — legg merke til at <i>F</i> her er <i>t</i>².</p>",
+   "en": null,
+   "notat": "F-tallet her er det samme 280.2 som i ANOVA-tabellen. Merk deg det — om tre slides kommer t = 16.74 for den samme modellen, og da skal de kjenne igjen kvadratet.",
+   "notat_en": null
+  },
+  {
+   "nr": 20,
+   "t": "Testen av b₁, intuitivt",
+   "html": "<h1>Samme oppskrift som alltid</h1><div class=\"formel\"><i>t</i> = <i>b</i><sub>1</sub> / SE(<i>b</i><sub>1</sub>)</div><p class=\"lead\">Estimatet delt på sin egen usikkerhet: <b>hvor mange standardfeil er stigningstallet unna null?</b></p><ul><li>Nullhypotesen er at det sanne stigningstallet er <b>0</b> — altså at linja er flat.</li><li>Er <i>t</i> langt fra 0, lager tilfeldigheter sjelden noe slikt. Det er <i>p</i>-verdien.</li><li>Frihetsgrader: <b><i>n</i> − k − 1</b>, der k er antall prediktorer.</li></ul><p class=\"liten\">SE(<i>b</i><sub>1</sub>) = s / √SS<sub>X</sub>: den krymper med √n, mens <i>b</i><sub>1</sub> står stille. Derfor vokser <i>t</i> med <i>n</i> — uten at sammenhengen har endret seg.</p>",
+   "en": null,
+   "notat": "Gjenta koblingen til t-testen fra F4: teller = effekt, nevner = standardfeil. Alltid.",
+   "notat_en": null
+  },
+  {
+   "nr": 21,
+   "t": "SIM · steg for steg",
+   "html": "<h1>Hele testen, ett steg om gangen</h1><p class=\"lead\">Samme modell som i fane 1 — de samme dataene du nettopp så. Pil høyre tar deg til neste steg, pil venstre tilbake.</p><span class=\"avslor\" data-gjor=\"steg:2\"></span><span class=\"avslor\" data-gjor=\"steg:3\"></span><span class=\"avslor\" data-gjor=\"steg:4\"></span><span class=\"avslor\" data-gjor=\"steg:5\"></span><span class=\"avslor\" data-gjor=\"steg:6\"></span><span class=\"avslor\" data-gjor=\"steg:7\"></span>",
+   "en": null,
+   "notat": "Sju steg, ett om gangen — de seks første pilene blar i stegene, ikke til neste slide. Bruk figuren aktivt: nullfordelingen ligger der hele tiden, og fra steg 4 ser de hvor din t havner i den. Pek på df = 75 − 1 − 1 = 73 i steg 5. Har du dårlig tid, hopp til steg 4 og 7 — teststatistikken og konklusjonen.",
+   "notat_en": null
+  },
+  {
+   "nr": 22,
+   "t": "SIM · koeffisienttabellen",
+   "html": "<h1>Slik ser det ut i JASP</h1><p class=\"lead\">Én rad per prediktor: estimat, standardfeil, standardisert estimat, <i>t</i> og <i>p</i>.</p>",
+   "en": null,
+   "notat": "Pek på hver kolonne og si hva den er. Studentene skal kjenne igjen dette på eksamen.",
+   "notat_en": null,
+   "harJasp": true
+  },
+  {
+   "nr": 23,
+   "t": "Med én prediktor: F = t²",
+   "html": "<h1 style=\"text-align:center\"><i>F</i> = <i>t</i>²</h1><p class=\"lead\" style=\"text-align:center;max-width:820px\">Med bare én prediktor tester de to nøyaktig det samme, og <i>p</i>-verdiene er identiske til siste desimal.</p><div class=\"boks grasid\" style=\"max-width:820px;margin-top:14px\">Er t = 3.2, så er F = 10.24. Det er ikke to funn — det er ett funn skrevet to ganger.</div>",
+   "en": null,
+   "notat": "Nå har de sett begge: F = 280.2 på slide 16 og 17, t = 16.74 på sliden rett foran. La dem regne 16.74² i hodet — det er 280. Klassisk eksamensspørsmål, og nå er det ikke en påstand: de har sett begge tallene med egne øyne.",
+   "notat_en": null
+  },
+  {
+   "nr": 24,
+   "t": "Når skiller de to lag?",
+   "html": "<h1>Med flere prediktorer sier <i>F</i> og <i>t</i> ulike ting</h1><div class=\"todelt\"><div class=\"boks bla\"><h3><i>F</i> signifikant, ingen <i>t</i> er det</h3>Typisk ved <b>kollinearitet</b>: prediktorene overlapper så mye at ingen av dem får æren alene, selv om de sammen forklarer mye.</div><div class=\"boks bla\"><h3><i>F</i> ikke signifikant, én <i>t</i> er det</h3>Kan skje når du har fylt modellen med prediktorer som ikke bidrar. De spiser frihetsgrader og drukner den ene som virker.</div></div><p class=\"liten\" style=\"margin-top:16px\">Rekkefølgen i rapporteringen er derfor: <b>først <i>F</i> for modellen, så <i>R</i>², så koeffisientene én for én.</b></p>",
+   "en": null,
+   "notat": "Dette er nivå 3-stoff. De svakeste trenger bare å vite at F gjelder modellen og t gjelder én prediktor.",
+   "notat_en": null
+  },
+  {
+   "nr": 25,
+   "t": "Det er residualene som teller",
+   "html": "<h1>Forutsetningene gjelder ikke rådataene</h1><p class=\"lead\">Verken x eller y trenger å være normalfordelt. Det er <b>residualene</b> som må oppføre seg.</p><ul><li><b>Uavhengighet</b> — den alvorlige. Brytes den, finnes ingen korreksjon.</li><li><b>Linearitet</b> — modellen tegner en rett linje. Er sammenhengen krum, er den feil modell.</li><li><b>Konstant spredning</b> (homoskedastisitet) — like mye støy over hele x-aksen.</li><li><b>Tilnærmet normale residualer</b> — betyr mest ved liten <i>n</i>, lite ved stor.</li></ul><p class=\"liten\">Alle fire leses av i <b>residualplottet</b>, ikke i histogrammet av y.</p>",
+   "en": null,
+   "notat": "Sorter etter alvorlighet, som i t-testforelesningen. Uavhengighet øverst.",
+   "notat_en": null,
+   "del": "Del 5 · Forutsetningene"
+  },
+  {
+   "nr": 26,
+   "t": "SIM · trakten og prisen",
+   "html": "<h1>Trakten du skal se etter — og hva den koster</h1><p class=\"lead\">Til venstre dataene og residualene. Klikk deg gjennom tre trinn: jevn spredning, så trakten — <b>heteroskedastisitet</b> — og så prisen.</p><div class=\"figurrad\"><div class=\"simhit\"></div><div class=\"sidespalte\"><div class=\"boks bla\"><h3>1 · Jevnt bånd = <i>homoskedastisitet</i></h3><i>Homo-</i> = lik, <i>-skedastisitet</i> = spredning: <b>like bredt hele veien</b>. Det er dette regresjonen antar.</div><div class=\"boks rod avslor\" data-trinn=\"1\" data-gjor=\"sett:het:3;klikk:oneX\"><h3>2 · Trakten = <i>heteroskedastisitet</i></h3><i>Hetero-</i> = ulik. <b>Samme punkter</b>, men støyen vokser med x. Modellen bruker <b>ett</b> støyanslag for alle — det passer ingen steder.</div><div class=\"boks rod avslor\" data-trinn=\"2\" data-gjor=\"klikk:many\"><h3>3 · Prisen</h3>Punktene klumper seg til venstre: de <b>få høye x-ene</b> har både mest innflytelse og mest støy. Samme bilde — nå regnes bare prisen. Søylen skal treffe 5 %.</div><div class=\"simhit2\"></div><p class=\"liten avslor\" data-trinn=\"3\"><b>Merk:</b> <i>b</i> er fortsatt forventningsrett. Det er <i>SE</i>, <i>p</i> og konfidensintervallet som lyver — ikke estimatet.</p></div></div>",
+   "en": null,
+   "notat": "Tre klikk på samme bilde. Start normalt: peker du på residualplottet, er båndet jevnt. Punktskyen er den samme gjennom hele sliden — x er skjev fra første bilde, så den farlige kombinasjonen er der hele veien og hvert klikk endrer bare én ting. Klikk fram boks 2: spredningen går til 3 og trakten åpner seg på DE SAMME punktene. Si ordet der og da — dette er heteroskedastisitet, ulik spredning, og det jevne båndet foran het homoskedastisitet. Boks 3 rører ikke bildet i det hele tatt: den peker på x-aksen (punktene klumper seg til venstre) og kjører 5 000 studier under H0 med nøyaktig de innstillingene de ser. Søylen skal treffe 5 % og lander på 20-25 %. Siste klikk er poenget de skal ta med seg: estimatet er ikke skjevt, det er usikkerheten som er feil regnet.",
+   "notat_en": null
+  },
+  {
+   "nr": 27,
+   "t": "Multippel regresjon",
+   "html": "<h1>Multippel regresjon — alt du har lært gjelder fortsatt</h1><div class=\"formel\" style=\"font-size:34px\">ŷ = <i>b</i><sub>0</sub> + <i>b</i><sub>1</sub>·x<sub>1</sub> + <i>b</i><sub>2</sub>·x<sub>2</sub></div><p class=\"lead\">Ett ledd til. Én ting er ny — og den er viktig:</p><div class=\"boks gronn\"><b>b<sub>1</sub> leses nå som «kontrollert for x<sub>2</sub>»:</b> effekten av x<sub>1</sub> blant personer som ligger likt an på x<sub>2</sub>. Det er et annet tall enn det du fikk uten x<sub>2</sub> — med mindre de to ikke overlapper i det hele tatt.</div><p class=\"liten\" style=\"margin-top:14px\">Frihetsgradene faller til <i>n</i> − k − 1, og <i>F</i>-testen får k i telleren.</p>",
+   "en": null,
+   "notat": "Bruk arbeidskravsdataene på neste slide: selvtillit fra perfeksjonisme, kontrollert for angstsensitivitet.",
+   "notat_en": null,
+   "del": "Del 6 · Én prediktor til"
+  },
+  {
+   "nr": 28,
+   "t": "Prediker IQ fra to ting",
+   "html": "<h1>Hva skjer med inntekt når karakterene er med?</h1><p class=\"lead\">Først alene, så sammen med karakterene. Det er rekkefølgen som er poenget.</p><div class=\"figurrad2\"><div><p class=\"tabellnavn\">1 · IQ fra foreldreinntekt <b>alene</b></p><table class=\"rgtab anovatab\"><tr><th>prediktor</th><th><i>b</i></th><th><i>SE</i></th><th><i>t</i>(498)</th><th><i>p</i></th></tr><tr><td>Foreldreinntekt</td><td class=\"kb1\">0.920</td><td>0.202</td><td>4.55</td><td>&lt; .001</td></tr></table><p class=\"liten\" style=\"margin:4px 0 0\"><i>r</i> = .20 · 0.92 IQ-poeng per 100 000 kr.</p><p class=\"tabellnavn avslor\" data-trinn=\"1\" style=\"margin-top:14px\">2 · IQ fra grunnskolepoeng <b>og</b> foreldreinntekt</p><table class=\"rgtab anovatab avslor\" data-trinn=\"1\"><tr><th>prediktor</th><th><i>b</i></th><th><i>SE</i></th><th><i>t</i>(497)</th><th><i>p</i></th><th>β</th></tr><tr><td>(konstant)</td><td>57.74</td><td>2.62</td><td>22.07</td><td>&lt; .001</td><td>–</td></tr><tr><td>Grunnskolepoeng</td><td class=\"kb1\">0.991</td><td>0.063</td><td>15.78</td><td>&lt; .001</td><td>0.593</td></tr><tr class=\"blek\"><td>Foreldreinntekt</td><td class=\"kfeil\">0.101</td><td>0.173</td><td>0.58</td><td>.560</td><td>0.022</td></tr></table></div><div class=\"sidespalte\"><div class=\"boks rod avslor\" data-trinn=\"2\"><h3>Effekten av inntekten forsvinner</h3>Alene: <i>b</i> = 0.92, <i>p</i> &lt; .001. Sammen med karakterene: <i>b</i> = 0.10, <i>p</i> = .56. <b>Kontrollert for karakterer er det ingenting igjen.</b></div><div class=\"boks gronn avslor\" data-trinn=\"3\"><h3>Karakterene står støtt</h3><i>b</i> går fra <b>1.002</b> til <b>0.991</b>. Sammenhengen mellom karakterer og IQ er ikke noe inntekt forklarer bort.</div></div></div><div class=\"jasprad avslor\" data-trinn=\"4\"><div><p class=\"tabellnavn\"><i>Model Summary – IQ</i></p><table class=\"minitab\"><tr><th>Model</th><th><i>R</i></th><th><i>R</i>²</th><th>Adjusted <i>R</i>²</th><th>RMSE</th><th><i>R</i>² Change</th><th>df1</th><th>df2</th><th><i>p</i></th></tr><tr class=\"nullmodell\"><td>M₀</td><td>0.000</td><td>0.000</td><td>0.000</td><td>14.95</td><td>0.000</td><td>0</td><td>499</td><td></td></tr><tr><td>M₁</td><td>0.600</td><td>0.360</td><td>0.359</td><td>11.97</td><td>0.360</td><td>1</td><td>498</td><td>&lt; .001</td></tr><tr class=\"valgt\"><td>M₂</td><td>0.600</td><td>0.360</td><td class=\"kfeil\">0.358</td><td>11.98</td><td class=\"kfeil\">0.000</td><td>1</td><td>497</td><td class=\"kfeil\">0.560</td></tr></table><p class=\"jaspnote\"><i>Note.</i> M₁ includes Grunnskolepoeng<br><i>Note.</i> M₂ includes Grunnskolepoeng, Foreldreinntekt</p></div><div class=\"boks grasid\" style=\"margin-top:20px\"><h3>Sagt uten tall</h3><b>Rike foreldre henger sammen med høy IQ, men bare fordi barna deres også gjør det bedre på skolen.</b><br>M₀ er den flate linja fra slide 9. Karakterene løfter <i>R</i>² til .360; inntekten legger til <b>.000</b>, og justert <i>R</i>² <b>faller</b>.</div></div>",
+   "en": null,
+   "notat": "Den viktigste slide-en om «kontrollert for», og rekkefølgen er hele saken. Vis tabell 1 alene først og la den stå: inntekt predikerer IQ, p under en promille, dette ville de rapportert uten å blunke. Klikk så fram tabell 2 og spør hva som skjedde med koeffisienten. Si det i klartekst: inntekt henger sammen med IQ, men det er fordi barn av foreldre med høy inntekt også gjør det bedre på skolen. Når karakterene allerede står i modellen, har inntekten ingenting igjen å tilføre. Merk at dette er et resultat om PREDIKSJON, ikke om årsak — inntekt kan godt virke gjennom skolegangen. Klikk til slutt fram Model Summary: legg merke til at ΔR² er null og at justert R² faller. Samme tabell kommer igjen på neste slide med et helt annet svar.",
+   "notat_en": null,
+   "harJasp": true
+  },
+  {
+   "nr": 29,
+   "t": "Når to prediktorer overlapper",
+   "html": "<h1>Nasjonale prøver og grunnskolepoeng måler mye av det samme</h1><p class=\"lead\">De to korrelerer <b>.70</b> med hverandre. Se hva som skjer med karakterenes koeffisient når den andre kommer inn.</p><div class=\"figurrad2\"><div><p class=\"tabellnavn\">1 · Grunnskolepoeng alene</p><table class=\"rgtab anovatab\"><tr><th>prediktor</th><th><i>b</i></th><th><i>SE</i></th><th><i>t</i>(498)</th><th><i>p</i></th></tr><tr><td>Grunnskolepoeng</td><td class=\"kb1\">1.002</td><td>0.060</td><td>16.74</td><td>&lt; .001</td></tr></table><p class=\"tabellnavn\" style=\"margin-top:14px\">2 · Begge to</p><table class=\"rgtab anovatab\"><tr><th>prediktor</th><th><i>b</i></th><th><i>SE</i></th><th><i>t</i>(497)</th><th><i>p</i></th></tr><tr><td>Grunnskolepoeng</td><td class=\"kb1\">0.704</td><td>0.082</td><td>8.62</td><td>&lt; .001</td></tr><tr><td>Nasjonale prøver</td><td>0.380</td><td>0.073</td><td>5.21</td><td>&lt; .001</td></tr></table><p class=\"liten\" style=\"margin:4px 0 0\"><b>Begge er signifikante</b> — ikke selvsagt når to prediktorer korrelerer .70.</p></div><div class=\"sidespalte\"><div class=\"boks rod avslor\" data-trinn=\"1\"><h3>Koeffisienten krymper</h3>1.002 → <b>0.704</b>. Ikke fordi karakterene betyr mindre, men fordi «ett poeng mer <b>med samme skår på nasjonale prøver</b>» er et annet spørsmål enn «ett poeng mer».</div><div class=\"boks rod avslor\" data-trinn=\"2\"><h3>Usikkerheten vokser</h3><i>SE</i> går fra 0.060 til <b>0.082</b>. Når to prediktorer deler informasjon, blir det vanskeligere å si hvem som fortjener æren.</div></div></div><div class=\"jasprad avslor\" data-trinn=\"3\"><div><p class=\"tabellnavn\"><i>Model Summary – IQ</i></p><table class=\"minitab\"><tr><th>Model</th><th><i>R</i></th><th><i>R</i>²</th><th>Adjusted <i>R</i>²</th><th>RMSE</th><th><i>R</i>² Change</th><th>df1</th><th>df2</th><th><i>p</i></th></tr><tr class=\"nullmodell\"><td>M₀</td><td>0.000</td><td>0.000</td><td>0.000</td><td>14.95</td><td>0.000</td><td>0</td><td>499</td><td></td></tr><tr><td>M₁</td><td>0.600</td><td>0.360</td><td>0.359</td><td>11.97</td><td>0.360</td><td>1</td><td>498</td><td>&lt; .001</td></tr><tr class=\"valgt\"><td>M₂</td><td>0.627</td><td>0.393</td><td class=\"kb1\">0.391</td><td>11.67</td><td class=\"kb1\">0.033</td><td>1</td><td>497</td><td class=\"kb1\">&lt; .001</td></tr></table><p class=\"jaspnote\"><i>Note.</i> M₁ includes Grunnskolepoeng<br><i>Note.</i> M₂ includes Grunnskolepoeng, Nasjonale_prover</p></div><div class=\"boks gronn\" style=\"margin-top:20px\"><h3>Sagt uten tall</h3><b>De to målene overlapper, men ikke helt.</b> Nasjonale prøver vet noe om eleven som karakterene ikke fanger opp.<br>Samme tabell som på forrige slide: se på <i>R</i>² Change, <b>.033</b> mot <b>.000</b>. Det er kolonnen som skiller en prediktor som tilfører noe fra en som ikke gjør det.</div></div>",
+   "en": null,
+   "notat": "De to slidene er et par, og Model Summary er limet mellom dem: samme tabell, motsatt svar. Legg dem gjerne ved siden av hverandre på tavla. Poenget ellers: b endrer BETYDNING når en prediktor til kommer inn — den leses nå «kontrollert for». Spør hvorfor SE vokser, og la dem tenke: fordi de to deler informasjon, så det er mindre unik variasjon igjen å estimere hver koeffisient fra. Dette er kollinearitet i mild form; neste slide sier hva som skjer når overlappet blir ekstremt.",
+   "notat_en": null,
+   "harJasp": true
+  },
+  {
+   "nr": 30,
+   "t": "SIM · modellen er en flate",
+   "html": "<h1>Én linje ble til et plan</h1><p class=\"lead\">Samme modell som i tabellen over: IQ fra grunnskolepoeng <b>og</b> nasjonale prøver. Nå trengs det tre akser for å tegne den.</p><div class=\"figurrad\"><div class=\"simhit\"></div><div class=\"sidespalte\"><div class=\"boks bla avslor\" data-trinn=\"1\" data-gjor=\"klikk:planT1\"><h3>1 · De to X-ene spenner ut et gulv</h3>Hver elev har to tall, og de plasserer henne ett sted på gulvet. Loddrett opp derfra ligger IQ-en hennes.</div><div class=\"boks gronn avslor\" data-trinn=\"2\" data-gjor=\"klikk:planT2\"><h3>2 · Modellen er flaten</h3>Der den enkle regresjonen hadde én linje, har denne <b>ett plan</b>. <span style=\"color:#2E5496\">Den blå kanten</span> er hellingen langs grunnskolepoeng — det er <i>b</i>₁. <span style=\"color:#B25A00\">Den oransje</span> er hellingen langs nasjonale prøver — <i>b</i>₂.</div><div class=\"boks rod avslor\" data-trinn=\"3\" data-gjor=\"klikk:planT3\"><h3>3 · Og residualene?</h3>Nøyaktig som før: den loddrette avstanden fra eleven ned til flaten. Minste kvadraters metode legger flaten der summen av dem i annen er minst — samme regel, én dimensjon til.</div></div></div>",
+   "en": null,
+   "notat": "Dette bildet er til å SE på, ikke til å lese av. Ikke be dem hente ut en ŷ-verdi herfra — i et skrått plot skjuler punktskyen seg selv og øyet bommer i dybden. Den jobben tar neste slide. Poenget her er én setning: med to prediktorer er modellen ikke en linje, den er en flate, og de to koeffisientene er hellingen langs hver sin kant. Klikk fram de tre trinnene og la det siste stå litt: residualene er fortsatt loddrette avstander, og minste kvadraters metode er fortsatt den samme regelen. Med tre prediktorer går det ikke an å tegne lenger — si det høyt, og si at regnestykket likevel er det samme.",
+   "notat_en": null
+  },
+  {
+   "nr": 31,
+   "t": "SIM · regn ut ŷ fra to ting",
+   "html": "<h1>Samme modell, sett fra to sider</h1><p class=\"lead\">Begge panelene har <b>samme y-akse</b>. Markøren står i samme høyde i begge — for det er én ŷ, ikke to.</p><div class=\"figurrad\"><div class=\"simhit\"></div></div><div class=\"underfigur\"><div class=\"simhit2\"></div></div><div class=\"tredelt underfigur\"><div class=\"boks bla avslor\" data-trinn=\"1\"><h3>1 · Sett den ene fast</h3>Venstre panel viser IQ mot <b>grunnskolepoeng</b> for elever med nasjonale prøver holdt fast på den verdien glideren står på.</div><div class=\"boks gronn avslor\" data-trinn=\"2\"><h3>2 · Dra den andre</h3>Flytt <b>nasjonale prøver</b>. Hele linja til venstre går opp eller ned — men <b>helningen står helt stille</b>.</div><div class=\"boks rod avslor\" data-trinn=\"3\"><h3>3 · Det er «kontrollert for»</h3><i>b</i>₁ er den samme uansett hvor den andre prediktoren står. Derfor leses den som «ett poeng mer, <b>blant elever med samme skår</b> på nasjonale prøver».</div></div>",
+   "en": null,
+   "notat": "Her regner de. Start med begge glidere i utgangsstilling og les regnestykket under figuren høyt: 51.50 + 0.704 · 45 + 0.380 · 60. Pek på at markøren står i samme høyde i begge paneler — det er ETT tall, sett fra to kanter. Så det som er hele poenget: dra nasjonale prøver fra lav til høy mens de ser på venstre panel. Linja forflytter seg parallelt. Spør hva som IKKE endret seg, og vent til noen sier helningen. Da har du «kontrollert for» uten å ha brukt ordet. Ta gjerne en ekstra runde: sett nasjonale prøver lavt og spør hva modellen tror om en elev med 55 i grunnskolepoeng — og så det samme med nasjonale prøver høyt.",
+   "notat_en": null
+  },
+  {
+   "nr": 32,
+   "t": "SIM · legg til X₂",
+   "html": "<h1>Hva la den andre prediktoren til?</h1><p class=\"lead\">Arbeidskravsdataene: <b>statistikk-selvtillit</b> forklart av <b>selvkritisk perfeksjonisme</b> — og så av angstsensitivitet i tillegg.</p><div class=\"simhit\"></div><div class=\"ordbaand\"><div class=\"boks bla avslor\" data-trinn=\"1\"><h3>Hva står det?</h3><i>R</i>² går fra <b>.439</b> til <b>.458</b>. Vi forklarer nå 46 % av forskjellene mellom studenter i selvtillit, mot 44 % før.</div><div class=\"boks gronn avslor\" data-trinn=\"2\"><h3>Hva betyr det?</h3>Angstsensitivitet tilfører <b>knapt to prosentpoeng</b>. Litt, men ikke mye — og grunnen er at de to prediktorene korrelerer <b>.49</b> med hverandre. Mye av det angsten kunne fortalt oss, har perfeksjonismen allerede sagt.</div><div class=\"boks grasid avslor\" data-trinn=\"3\"><h3>Og <i>b</i>?</h3>Perfeksjonismens koeffisient går fra <b>−0.61</b> til <b>−0.54</b>. Den flyttet seg litt, men står. Sammenhengen er ikke noe angstsensitivitet forklarer bort.</div></div>",
+   "en": null,
+   "notat": "Klikk fram én boks om gangen og les dem høyt — dette er sliden der de svakeste faller av hvis tabellen får stå alene. Poenget i klartekst: to prediktorer som overlapper mye, gir mindre til sammen enn hver for seg skulle tilsi. Er endringen i b1 liten, overlapper de to lite. Her er den liten, men merkbar — akkurat som r = .49 skulle tilsi.",
+   "notat_en": null
+  },
+  {
+   "nr": 33,
+   "t": "SIM · den fulle tabellen",
+   "html": "<h1>To rader, to <i>t</i>-tester</h1><p class=\"lead\">Hver koeffisient testes for seg — men begge leses nå «kontrollert for» den andre.</p><div class=\"simhit\"></div><div class=\"ordbaand\"><div class=\"boks bla avslor\" data-trinn=\"1\"><h3>Rad for rad</h3>Øverste rad spør: betyr perfeksjonisme noe <b>blant studenter med samme angstsensitivitet</b>? Nederste spør det motsatte. Det er to forskjellige spørsmål, og de har hvert sitt svar.</div><div class=\"boks gronn avslor\" data-trinn=\"2\"><h3>Begge er signifikante</h3><i>t</i> = −13.65 og <i>t</i> = −3.69. Begge bidrar med noe eget, men <b>perfeksjonisme bidrar klart mest</b> — se på hvor mye større <i>t</i> er.</div><div class=\"boks rod avslor\" data-trinn=\"3\"><h3><i>F</i> er ikke <i>t</i>² lenger</h3>Med to prediktorer spør <i>F</i> om <b>modellen samlet</b> forklarer noe, mens hver <i>t</i> spør om <b>sin ene prediktor</b>. Nå er de virkelig ulike tester — det var de ikke da vi bare hadde én.</div></div>",
+   "en": null,
+   "notat": "Den siste boksen er den de bør skrive ned: F = t² gjelder BARE med én prediktor, og nå har vi to. Pek på F over tabellen og på begge t-verdiene og la dem regne i hodet at det ikke stemmer lenger. Bruk gjerne «kontrollert for»-formuleringen én gang til, høyt: b for perfeksjonisme er nå forskjellen mellom to studenter som ligger LIKT an på angstsensitivitet.",
+   "notat_en": null
+  },
+  {
+   "nr": 34,
+   "t": "Kollinearitet",
+   "html": "<h1>Når prediktorene måler nesten det samme</h1><ul><li>Modellen kan ikke skille dem, og <b>begge koeffisientene blir små og usikre</b>.</li><li>Samtidig kan <i>R</i>² og <i>F</i> være høye: <b>sammen</b> forklarer de mye.</li><li>Signaturen er store standardfeil og koeffisienter som hopper når du fjerner den ene.</li></ul><p class=\"liten\">Vil du se mekanismen med en glider for overlappet: Sim 15 · Kontrollmaskinen.</p>",
+   "en": null,
+   "notat": "Nevn VIF bare hvis noen spør. Det står ikke på pensum i år.",
+   "notat_en": null
+  },
+  {
+   "nr": 35,
+   "t": "SIM · slik skrives det",
+   "html": "<h1>Setningen du skal levere</h1><p class=\"lead\">Effekten først, testen etterpå, frihetsgradene i parentes, effektstørrelsen med. Her på arbeidskravsdataene, med <b>én</b> prediktor.</p><div class=\"ordbaand\"><div class=\"boks bla\"><h3>Alt dette må stå der</h3>Hva som predikerer hva · <i>b</i> i variabelens egen enhet · <i>SE</i> · <i>t</i>(df) · <i>p</i> · <i>R</i>². <b>Ingen av delene er valgfri</b> — en setning uten effektstørrelse sendes i retur.</div><div class=\"boks gronn\"><h3>Valget er tatt for dere</h3>Analysestrategien står ferdig i metodedelen av arbeidskravet. Dere skal <b>ikke</b> begrunne hvilken analyse som passer — dere skal lese output riktig, rapportere effektstørrelsen og tolke ærlig.</div><div class=\"boks grasid\"><h3>Og med to prediktorer?</h3>Da får hver <i>b</i> tillegget «<b>kontrollert for</b> den andre», og Δ<i>R</i>² sier hva nummer to tilførte. Multippel regresjon <b>kreves ikke i arbeidskravet</b> — men slik ser den ut når den skrives.</div></div>",
+   "en": null,
+   "notat": "Dette er den eneste sliden der de ser hele setningen ferdig skrevet, på sine egne data. Les resultatsetningen høyt og pek på delene etter tur: hvem predikerer hvem, b med enhet, SE, t med frihetsgrader, p, R². Si at rekkefølgen ikke er tilfeldig — effekten kommer først fordi den er det leseren skal huske. Vær tydelig på det som er nytt i år: analysestrategien er skrevet for dem, så de skal ikke bruke ord på å begrunne metodevalget, og multippel regresjon er ikke et krav. Den siste boksen er derfor til orientering, ikke en oppgave. Legg til slutt merke til at det ikke står noe om årsak noe sted. Det er ikke en forglemmelse.",
+   "notat_en": null
+  },
+  {
+   "nr": 36,
+   "t": "Avslutning",
+   "html": "<h1>Fem setninger</h1><ul class=\"stor\"><li>Regresjon svarer på <b>hvor mye</b>, i ekte enheter.</li><li>Linja er den som gjør <b>summen av kvadrerte residualer minst</b>.</li><li><b><i>R</i>²</b> er andelen av variasjonen i y som modellen gjør rede for.</li><li><b><i>t</i></b> tester én koeffisient, <b><i>F</i></b> tester hele modellen. Med én prediktor er <i>F</i> = <i>t</i>².</li><li>Forutsetningene gjelder <b>residualene</b> — les residualplottet.</li></ul>",
+   "en": null,
+   "notat": "Utgangs-MCQ: én om tolkning av b, én om F mot t.",
+   "notat_en": null
+  }
+ ],
+ "blokker": [
+  {
+   "no": "<h1>Sim 5 · Regresjonsmodellen</h1> <p>PSY300 · Forelesning 1 og 3 · Fire faner: en modell bygget på ekte data, hvorfor linja ligger der den ligger, hvor mye av variasjonen den forklarer — og hva residualene røper når modellen ikke passer.</p>",
+   "en": null,
+   "fra": 32404,
+   "tagslutt": 32411
+  },
+  {
+   "no": "Enkel regresjon på ekte data",
+   "en": null,
+   "fra": 37832,
+   "tagslutt": 37835
+  },
+  {
+   "no": "<label>Datasett {{rgSett}}</select></label> {{rgKilde}}</span> <span class=\"muted\" style=\"font-size:14px\">Tips: velg <b>NULL-versjonen</b> for å se hvordan de samme figurene ser ut når det ikke finnes noen sammenheng.</span>",
+   "en": null,
+   "fra": 38190,
+   "tagslutt": 38209
+  },
+  {
+   "no": "<label class=\"chk\" style=\"font-size:15.5px;font-weight:600;color:var(--navy)\"> {{rgVisKI}} vis 95 % konfidensintervall for <b>linja</b></label>",
+   "en": null,
+   "fra": 38857,
+   "tagslutt": 38954
+  },
+  {
+   "no": "Rød linje = modellens beste gjetning, og med &eacute;<i>n</i> prediktor er linja hele modellen. Båndet du kan sl&aring; p&aring;, viser hvor sikkert vi kjenner <b>selve linja</b> &mdash; alts&aring; gjennomsnittet for alle med en gitt x. Hva vi vet om <b>&eacute;<i>n</i> enkelt person</b>, er et helt annet og mye st&oslash;rre sp&oslash;rsm&aring;l; det tar vi i punkt 3.",
+   "en": null,
+   "fra": 39173,
+   "tagslutt": 39231
+  },
+  {
+   "no": "<h2>2. Koeffisienttabellen</h2> {{blokk-koef}} {{rgKoef}}</div> </div><!-- /blokk-koef --> <details class=\"mer\"><summary>Hva er forskjellen på <i>b</i> og &beta;?</summary> <p class=\"muted\"><b><i>b</i></b> er i variabelens egne enheter: «ett poeng mer på X gir <i>b</i> poeng mer på Y». <b>&beta;</b> er den samme effekten i standardavvik, og lar deg sammenligne prediktorer som måles i helt ulike enheter. Med bare én prediktor er &beta; nøyaktig det samme som korrelasjonen <i>r</i>.</p></details>",
+   "en": null,
+   "fra": 39699,
+   "tagslutt": 39716
+  },
+  {
+   "no": "3. Regn ut ŷ for en x-verdi du velger",
+   "en": null,
+   "fra": 40276,
+   "tagslutt": 40279
+  },
+  {
+   "no": "Modellen er en regnemaskin: putt inn en x, få ut en ŷ. Plottet er gjentatt her, så du ser regnestykket og bildet samtidig — de stiplede linjene går fra x-en din opp til linja og videre ut til ŷ på y-aksen. Her, og bare her, kan du ogs&aring; sl&aring; p&aring; <b>usikkerheten ved akkurat den x-verdien</b>: det smale intervallet for linja, og det brede for personen. Bryterne tar dem bort igjen ogs&aring; &mdash; b&aring;de b&aring;ndet og stolpen f&oslash;lger den samme avkryssingsboksen.",
+   "en": null,
+   "fra": 40323,
+   "tagslutt": 40339
+  },
+  {
+   "no": "{{rgVisKIp}} 95 % konfidensintervall for <b>linja</b>",
+   "en": null,
+   "fra": 41283,
+   "tagslutt": 41348
+  },
+  {
+   "no": "{{rgVisPIp}} 95 % prediksjonsintervall for <b>personen</b>",
+   "en": null,
+   "fra": 41437,
+   "tagslutt": 41501
+  },
+  {
+   "no": "Residualer mot predikert — se etter trakt og krumning",
+   "en": null,
+   "fra": 42555,
+   "tagslutt": 42614
+  },
+  {
+   "no": "<h2>5. Slik ville du skrevet det</h2> {{blokk-apa}} {{rgApa}}</div> </div><!-- /blokk-apa --> <div class=\"muted\" style=\"font-size:14.5px;margin-top:8px\">Setningen er bygd etter APA: effekten først, testen etterpå, frihetsgradene i parentes, og effektstørrelsen med. Legg merke til at det ikke står noe om <i>årsak</i> — det kan ikke en regresjon på tverrsnittsdata gi deg.</div>",
+   "en": null,
+   "fra": 42943,
+   "tagslutt": 42960
+  },
+  {
+   "no": "<div class=\"keybox\" style=\"background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:12px 14px;font-size:16.5px\"> <b>Hovedpoenget i denne fanen:</b> en enkel regresjon gir deg tre helt ulike ting, og de må ikke forveksles. <b><i>b</i></b> sier hvor bratt sammenhengen er, <b><i>R</i>²</b> sier hvor mye av variasjonen modellen fanger, og <b>prediksjonsintervallet</b> — som du kan slå på i figuren øverst, eller regne ut for én person i punkt 3 — sier hvor lite du likevel vet om det neste mennesket. </div>",
+   "en": null,
+   "fra": 43394,
+   "tagslutt": 43411
+  },
+  {
+   "no": "Prediker IQ ved 19 år fra grunnskolepoeng (75 elever trukket fra de 500)",
+   "en": null,
+   "fra": 44075,
+   "tagslutt": 44078
+  },
+  {
+   "no": "Trykk <b>Trekk 75 nye</b> for å hente data. Linja legger seg først flatt på gjennomsnittet — det er den beste gjetningen du har uten å bruke x i det hele tatt. <b>Dra så de to håndtakene</b> opp og ned: de tynne røde strekene er residualene, og stolpen under viser summen av de kvadrerte avvikene.",
+   "en": null,
+   "fra": 44157,
+   "tagslutt": 44173
+  },
+  {
+   "no": "<div class=\"keybox\"><span class=\"lbl\">Hovedpoenget</span><b>Regresjonslinjen er den som gjør summen av kvadrerte avvik minst mulig, ikke den som ser penest ut. Derfor teller ett stort avvik langt mer enn mange små: kvadreringen straffer bom hardt.</b></div>",
+   "en": null,
+   "fra": 44794,
+   "tagslutt": 44811
+  },
+  {
+   "no": "Samlet feil — gjør stolpen så kort du klarer",
+   "en": null,
+   "fra": 45096,
+   "tagslutt": 45108
+  },
+  {
+   "no": "Stolpen er summen av alle de kvadrerte avvikene. Den grønne streken helt til venstre er det minste som er mulig å få til; den stiplede grå streken er forsøket ditt rett før dette.",
+   "en": null,
+   "fra": 45159,
+   "tagslutt": 45175
+  },
+  {
+   "no": "<b>Poenget:</b> Regresjon gjør akkurat det du nettopp gjorde for hånd, men matematisk: den finner <i>b</i>₀ og <i>b</i>₁ som minimerer summen av kvadrerte residualer. På hele datasettet er fasit ŷ = 58.03 + 1.002·x. Klarer du å slå OLS-linjen? (Nei.)",
+   "en": null,
+   "fra": 45481,
+   "tagslutt": 45503
+  },
+  {
+   "no": "<h2>Og hvordan finner den de to tallene?</h2> <p class=\"muted\">Du trenger ikke kunne utledningen, men det er verdt å se at det ikke er noen prøving og feiling: begge tallene faller ut av to formler du allerede kjenner delene av. Tallene under er de ekte fra dette datasettet (<i>n</i> = 75).</p> <div class=\"rgto\" style=\"display:grid;grid-template-columns:1fr 1fr;gap:14px\"> <div class=\"note\" style=\"background:#f7f9ff;border:1px solid var(--line);border-radius:9px;padding:11px 13px\"> <b style=\"color:var(--navy);font-size:16.5px\">Stigningstallet b₁ — først</b> <div style=\"font-size:16px;margin-top:6px;line-height:1.5\"> b₁ = <b>SP / SS<sub>X</sub></b><br> = 1501 / 7160 = <b>0.2096</b> </div> <div class=\"muted\" style=\"font-size:14.5px;margin-top:7px\"> Telleren <b>SP</b> er nøyaktig den samme summen av produkter som står i telleren til <i>r</i> (Sim 11, fane 2). Nevneren er kvadratsummen til <i>bare X</i> — ikke til begge. Det er hele forskjellen på <i>r</i> og <i>b</i>: <i>r</i> deler på spredningen i begge variablene og blir enhetsløs, b₁ deler bare på X og beholder derfor enheten «Y-enheter per X-enhet». </div> <div class=\"muted\" style=\"font-size:14.5px;margin-top:7px\"> Samme tall, skrevet med standardavvik: b₁ = <i>r</i> · (s<sub>Y</sub> / s<sub>X</sub>) = 0.484 · (4.258 / 9.837) = <b>0.2096</b>. </div> </div> <div class=\"note\" style=\"background:#eef7f0;border:1px solid #9ac79a;border-radius:9px;padding:11px 13px\"> <b style=\"color:#0B6E4F;font-size:16.5px\">Konstanten b₀ — deretter</b> <div style=\"font-size:16px;margin-top:6px;line-height:1.5\"> b₀ = <b>ȳ − b₁ · x̄</b><br> = 30.373 − 0.2096 · 82 = <b>13.183</b> </div> <div class=\"muted\" style=\"font-size:14.5px;margin-top:7px\"> Konstanten er ikke et selvstendig funn. Den er bare det tallet som må til for at linja skal treffe <b>tyngdepunktet i skyen</b>, punktet (x̄, ȳ). Det er en egenskap ved minste kvadraters metode: linja går <i>alltid</i> gjennom gjennomsnittet av begge variablene. </div> <div class=\"muted\" style=\"font-size:14.5px;margin-top:7px\"> Kontroll: ŷ(82) = 13.183 + 0.2096 · 82 = <b>30.37</b> = ȳ. Den treffer. </div> </div> </div> <div class=\"note\" style=\"background:#fffaf0;border:1px solid #f0d9a8;border-radius:9px;padding:10px 12px;font-size:15.5px;margin-top:12px\"> <b>Derfor må b₀ tolkes med varsomhet.</b> Den er predikert Y når X = 0 — og her betyr det en pasient med skåren null på forsvarsmålet. Ingen i utvalget ligger i nærheten (laveste er 59). Konstanten er nødvendig for at linja skal ligge riktig, men den er sjelden et tall du melder som et resultat. </div> <details class=\"mer\"><summary>Mer om dette: hvorfor akkurat disse formlene?</summary> <p class=\"muted\">SSE er en parabel i b₁ — en <i>U</i> med ett bunnpunkt. Der bunnen er, er stigningen på U-en null. Å sette den deriverte lik null og løse gir nøyaktig SP / SS<sub>X</sub>; samme regnestykke for b₀ gir ȳ − b₁·x̄. Det er derfor det bare finnes <b>én</b> minste-kvadraters-linje, og derfor kurven i figuren over har nøyaktig ett bunnpunkt — ikke flere.</p> </details>",
+   "en": null,
+   "fra": 45762,
+   "tagslutt": 45779
+  },
+  {
+   "no": "Uten modellen er ditt beste gjett p&aring; y alltid <b>&#375;</b>. Med modellen gjetter du p&aring; linja. R&sup2; er hvor stor del av bommen som forsvant.",
+   "en": null,
+   "fra": 48960,
+   "tagslutt": 48976
+  },
+  {
+   "no": "Vis: {{r2Vis}} <option value=\"sst\" selected>bare SST — avvik fra &#375;</option> <option value=\"sse\">SST + SSE — legg til avvik fra linja</option> <option value=\"alle\">alle tre — og SSR er differansen</option></select>",
+   "en": null,
+   "fra": 49340,
+   "tagslutt": 49346
+  },
+  {
+   "no": "Hver strek er ett avvik. Kvadrer dem og legg sammen &mdash; det er en kvadratsum.",
+   "en": null,
+   "fra": 49827,
+   "tagslutt": 49846
+  },
+  {
+   "no": "Slik testes et stigningstall, steg for steg",
+   "en": null,
+   "fra": 51332,
+   "tagslutt": 51335
+  },
+  {
+   "no": "Kurven er <b>nullfordelingen</b> til <i>t</i>: alle verdiene tilfeldighetene ville laget om stigningstallet i populasjonen var null. Røde felt = forkastningsområdet ved &alpha; = .05. Oransje strek = din <i>t</i>.",
+   "en": null,
+   "fra": 52312,
+   "tagslutt": 52368
+  },
+  {
+   "no": "<div class=\"keybox\" style=\"background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:12px 14px;font-size:16.5px\"> <b>Hovedpoenget i denne fanen:</b> testen av et stigningstall er nøyaktig samme oppskrift som testen av en korrelasjon &mdash; estimat delt på sin egen standardfeil, sammenlignet med <i>t</i>-fordelingen. Med &eacute;<i>n</i> prediktor gir de to testene <b>identisk</b> <i>t</i> og identisk <i>p</i>, fordi de tester den samme sammenhengen. Det som skiller dem, er hva du kan si etterpå: <i>r</i> er enhetsløs, <i>b</i> er i variabelens egne enheter. </div>",
+   "en": null,
+   "fra": 52712,
+   "tagslutt": 52729
+  },
+  {
+   "no": "<details class=\"mer\"><summary>Hvorfor er konfidensintervallet og <i>p</i>-verdien to sider av samme sak?</summary> <p class=\"muted\">Begge bygger på det samme: <i>b</i> &plusmn; t* &middot; <i>SE</i>. Er <i>p</i> &lt; .05, ligger null <b>utenfor</b> det 95 % konfidensintervallet &mdash; alltid. Er <i>p</i> &gt; .05, ligger null innenfor. De sier altså det samme, men intervallet sier det mer nyttig: det gir deg <i>hvilke</i> verdier dataene er forenlige med, ikke bare et ja eller nei.</p></details> <details class=\"mer\"><summary><i>F</i>-testen av hele modellen</summary> <p class=\"muted\">Over koeffisienttabellen står det en <i>F</i>-test. Den spør om modellen som helhet forklarer mer enn ingenting: <i>F</i> = (R&sup2;/k) / ((1 &minus; R&sup2;)/(<i>n</i> &minus; k &minus; 1)). Med bare &eacute;<i>n</i> prediktor er <b><i>F</i> = t&sup2;</b> nøyaktig, og <i>p</i>-verdiene er identiske &mdash; det er den samme testen skrevet to ganger. Med flere prediktorer er <i>F</i> en samlet test, og de enkelte t-ene tester hver sin koeffisient.</p></details> <details class=\"mer\"><summary>Hva som skjer med testen når <i>n</i> vokser</summary> <p class=\"muted\">SE(b&#8321;) = s / &radic;SS<sub>X</sub>, og SS<sub>X</sub> vokser med <i>n</i>. Standardfeilen krymper altså med &radic;<i>n</i>, mens b&#8321; blir stående. Da vokser <i>t</i>, og <i>p</i> faller &mdash; uten at sammenhengen har endret seg det minste. Det er derfor du alltid må lese <i>b</i> og R&sup2; ved siden av <i>p</i>, og hvorfor «signifikant» og «viktig» er to ulike ord.</p></details>",
+   "en": null,
+   "fra": 53358,
+   "tagslutt": 53375
+  },
+  {
+   "no": "Bygg din regresjonsverden (sann effekt = 0; H0 er sann)",
+   "en": null,
+   "fra": 55026,
+   "tagslutt": 55029
+  },
+  {
+   "no": "<label>Feilleddets fordeling</label> {{err}}<option value=\"norm\" selected>Normal</option><option value=\"skew\">Sterkt skjev</option><option value=\"heavy\">Tunghalede (utligger-utsatt)</option></select> <label style=\"min-width:auto\">x-fordeling:</label> {{xdist}}<option value=\"unif\" selected>Jevn</option><option value=\"skew\">Skjev (få høye verdier)</option></select>",
+   "en": null,
+   "fra": 55234,
+   "tagslutt": 55249
+  },
+  {
+   "no": "<label>Heteroskedastisitet (spredning øker med x)</label>{{het}}{{hetOut}}0.0</output>",
+   "en": null,
+   "fra": 55643,
+   "tagslutt": 55658
+  },
+  {
+   "no": "<div class=\"keybox\"><span class=\"lbl\">Hovedpoenget</span><b>Forutsetningene gjelder <b>residualene</b>, ikke råskårene. Derfor er residualplottet, ikke histogrammet av utfallsvariabelen, som er stedet du oppdager at modellen ikke holder.</b></div>",
+   "en": null,
+   "fra": 56574,
+   "tagslutt": 56591
+  },
+  {
+   "no": "Konsekvensen: type I-rate for testen av stigningstallet (mål: 5 %)",
+   "en": null,
+   "fra": 56866,
+   "tagslutt": 56869
+  },
+  {
+   "no": "<b>Prøv i rekkefølge:</b> (1) alt normalt → residualplottet er et jevnt bånd, testen holder 5 %; (2) skru heteroskedastisitet til 3 → <b>trakten</b> vises i residualplottet; med jevn x-fordeling koster det litt (~6–7 %); (3) trykk «den farlige kombinasjonen» (trakt + skjev x: de få høye x-verdiene har både mest innflytelse OG mest støy) → ~20–25 % falske positiver; (4) bytt til skjeve/tunghalede feil uten heteroskedastisitet → histogrammet ser stygt ut, men testen holder likevel ≈ 5 % (sentralgrenseteoremet igjen!). Merk: gjennomsnittlig b̂ er ≈ 0 hele veien. Bruddene gir IKKE skjeve estimater; de får standardfeilene, <i>p</i>-verdiene og KI-ene til å lyve. Botemidler i praksis: se residualplottet, vurder transformasjon eller Spearman (korrelasjon), og vær på vakt når trakt møter skjev x. Tunge haler straffer dessuten styrken og enkeltutvalg (jf. Sim 8 om utliggere).",
+   "en": null,
+   "fra": 57024,
+   "tagslutt": 57054
+  },
+  {
+   "no": "<h2>Å legge til en prediktor til</h2> <p class=\"muted\">Nå som du har sett hva den enkle modellen gjør — og hva den ikke klarer — kan vi spørre: <b>hva tilfører en prediktor nummer to?</b> Alt fra fane 1 gjelder fortsatt. Det eneste nye er at koeffisienten for X₁ nå leses som «kontrollert for X₂».</p> <div class=\"rgvelg\"> <label>Prediktor X₂ {{rgX2}}</select></label> {{rgBytt}}Bytt X₁ og X₂</button> </div> <div class=\"muted\" style=\"font-size:14.5px;margin-top:6px\">Velg «(ingen)» for å gå tilbake til den enkle modellen. Alt i fane 1 følger med — koeffisienttabellen, figuren og APA-setningen viser den modellen du setter opp her.</div>",
+   "en": null,
+   "fra": 58045,
+   "tagslutt": 58062
+  },
+  {
+   "no": "Hva la den andre prediktoren til?",
+   "en": null,
+   "fra": 58764,
+   "tagslutt": 58767
+  },
+  {
+   "no": "Modellen er ikke en linje lenger",
+   "en": null,
+   "fra": 59090,
+   "tagslutt": 59093
+  },
+  {
+   "no": "Med to prediktorer spenner de to X-ene ut et gulv, og modellen er <b>flaten over gulvet</b>. Alt annet er som før: de loddrette strekene er residualene, og minste kvadraters metode legger flaten der summen av dem i annen er minst.",
+   "en": null,
+   "fra": 59132,
+   "tagslutt": 59148
+  },
+  {
+   "no": "Samme modell, sett fra to sider. Sett den ene prediktoren fast og se hva som skjer med linja i det andre panelet.",
+   "en": null,
+   "fra": 59737,
+   "tagslutt": 59753
+  },
+  {
+   "no": "Prediksjon med to prediktorer",
+   "en": null,
+   "fra": 60596,
+   "tagslutt": 60599
+  },
+  {
+   "no": "X₁-verdien hentes fra fane 1. Med to prediktorer er ŷ = b₀ + b₁·x₁ + b₂·x₂ — samme oppskrift, ett ledd til. Svaret vises i fane 1, under punkt 3.",
+   "en": null,
+   "fra": 60788,
+   "tagslutt": 60846
+  },
+  {
+   "no": "<div class=\"keybox\" style=\"background:#eef3fb;border:1px solid #c7d6ec;border-left:5px solid var(--navy);border-radius:10px;padding:12px 14px;font-size:16.5px\"> <b>Hovedpoenget i denne fanen:</b> en prediktor nummer to endrer bare koeffisienten til den første dersom de to <b>overlapper</b>. Er de ukorrelerte, står b₁ stille og <i>R</i>² øker med akkurat det X₂ forklarer på egen hånd. Er de sterkt korrelerte, kan begge koeffisientene bli små og usikre samtidig som modellen som helhet forklarer mye — det er kollinearitetens signatur. </div> <p class=\"muted\" style=\"margin-top:10px\">Vil du se mekanismen med en glider for overlappet, åpne <a href=\"PSY300_Sim_Kontrollmaskinen.html\">Sim 15 · Kontrollmaskinen</a>.</p>",
+   "en": null,
+   "fra": 61007,
+   "tagslutt": 61024
+  }
+ ],
+ "biter": [
+  {
+   "no": "0 · Hvorfor regresjon?",
+   "en": null
+  },
+  {
+   "no": "1 · Enkel regresjon på ekte data",
+   "en": null
+  },
+  {
+   "no": "2 · Minste kvadrater: hvorfor akkurat denne linja?",
+   "en": null
+  },
+  {
+   "no": "4 · Signifikanstesting, steg for steg",
+   "en": null
+  },
+  {
+   "no": "5 · Residualantakelsene",
+   "en": null
+  },
+  {
+   "no": "6 · Multippel regresjon: å legge til en prediktor",
+   "en": null
+  },
+  {
+   "no": "1. Punktskyen og linja",
+   "en": null
+  },
+  {
+   "no": "Regn ut",
+   "en": null
+  },
+  {
+   "no": "Prøv en x-verdi utenfor dataene",
+   "en": null
+  },
+  {
+   "no": "4. Holder forutsetningene?",
+   "en": null
+  },
+  {
+   "no": "Vis minste-kvadraters-linjen",
+   "en": null
+  },
+  {
+   "no": "1. Tre kvadratsummer, ett regnskap",
+   "en": null
+  },
+  {
+   "no": "Trekk nye data",
+   "en": null
+  },
+  {
+   "no": "‹ Forrige",
+   "en": null
+  },
+  {
+   "no": "Neste steg ›",
+   "en": null
+  },
+  {
+   "no": "Vis alle stegene",
+   "en": null
+  },
+  {
+   "no": "Start på nytt",
+   "en": null
+  },
+  {
+   "no": "Trekk ETT utvalg (diagnostikk)",
+   "en": null
+  },
+  {
+   "no": "Kjør 5 000 studier under H0",
+   "en": null
+  },
+  {
+   "no": "Samme elever, ny spredning",
+   "en": null
+  },
+  {
+   "no": "Sett opp den farlige kombinasjonen",
+   "en": null
+  },
+  {
+   "no": "Data + regresjonslinje",
+   "en": null
+  },
+  {
+   "no": "Residualenes fordeling",
+   "en": null
+  },
+  {
+   "no": "1 · gulvet",
+   "en": null
+  },
+  {
+   "no": "2 · flaten",
+   "en": null
+  },
+  {
+   "no": "3 · residualene",
+   "en": null
+  },
+  {
+   "no": "Regn ut ŷ fra to ting",
+   "en": null
+  },
+  {
+   "no": "Start forelesning",
+   "en": null
+  },
+  {
+   "no": "— ingen —",
+   "en": null
+  },
+  {
+   "no": "prediktor",
+   "en": null
+  },
+  {
+   "no": "95 % KI",
+   "en": null
+  },
+  {
+   "no": "Kvadratsum",
+   "en": null
+  },
+  {
+   "no": "Verdi",
+   "en": null
+  },
+  {
+   "no": "Hva den er",
+   "en": null
+  },
+  {
+   "no": "Ja",
+   "en": null
+  },
+  {
+   "no": "Nei",
+   "en": null
+  },
+  {
+   "no": "Regresjon",
+   "en": null
+  },
+  {
+   "no": "Korrelasjonen svarte på ett spørsmål",
+   "en": null
+  },
+  {
+   "no": "Hele modellen på én linje",
+   "en": null
+  },
+  {
+   "no": "IQ ved 19 år, predikert fra grunnskolepoeng",
+   "en": null
+  },
+  {
+   "no": "Riktig lest",
+   "en": null
+  },
+  {
+   "no": "Feil lest",
+   "en": null
+  },
+  {
+   "no": "Modellen er en regnemaskin",
+   "en": null
+  },
+  {
+   "no": "Én x inn, én ŷ ut",
+   "en": null
+  },
+  {
+   "no": "To intervaller som blir blandet hver eneste gang",
+   "en": null
+  },
+  {
+   "no": "Forskjellen mellom dem er ett tegn",
+   "en": null
+  },
+  {
+   "no": "Ettallet er personen selv",
+   "en": null
+  },
+  {
+   "no": "Utenfor dataene vet modellen ingenting",
+   "en": null
+  },
+  {
+   "no": "Regelen",
+   "en": null
+  },
+  {
+   "no": "Tusen linjer kan tegnes. Én velges.",
+   "en": null
+  },
+  {
+   "no": "1 · Bommen",
+   "en": null
+  },
+  {
+   "no": "3 · Legg sammen",
+   "en": null
+  },
+  {
+   "no": "Ingen prøving og feiling — to formler",
+   "en": null
+  },
+  {
+   "no": "Samme sammenheng, to enheter",
+   "en": null
+  },
+  {
+   "no": "Ett regnskap over variasjonen i IQ",
+   "en": null
+  },
+  {
+   "no": "SST = SSR + SSE",
+   "en": null
+  },
+  {
+   "no": "Hvor mye bedre blir gjetningen din?",
+   "en": null
+  },
+  {
+   "no": "Én elev, to gjetninger",
+   "en": null
+  },
+  {
+   "no": "Her: 36 %",
+   "en": null
+  },
+  {
+   "no": "Og det er IKKE",
+   "en": null
+  },
+  {
+   "no": "modell",
+   "en": null
+  },
+  {
+   "no": "SS",
+   "en": null
+  },
+  {
+   "no": "MS",
+   "en": null
+  },
+  {
+   "no": "Forklart mot uforklart — per frihetsgrad",
+   "en": null
+  },
+  {
+   "no": "Sum of Squares",
+   "en": null
+  },
+  {
+   "no": "Mean Square",
+   "en": null
+  },
+  {
+   "no": "1 · Kolonnen «Sum of Squares»",
+   "en": null
+  },
+  {
+   "no": "3 · Mean Square",
+   "en": null
+  },
+  {
+   "no": "Samme oppskrift som alltid",
+   "en": null
+  },
+  {
+   "no": "Hele testen, ett steg om gangen",
+   "en": null
+  },
+  {
+   "no": "Forutsetningene gjelder ikke rådataene",
+   "en": null
+  },
+  {
+   "no": "Trakten du skal se etter — og hva den koster",
+   "en": null
+  },
+  {
+   "no": "3 · Prisen",
+   "en": null
+  },
+  {
+   "no": "Multippel regresjon — alt du har lært gjelder fortsatt",
+   "en": null
+  },
+  {
+   "no": "Hva skjer med inntekt når karakterene er med?",
+   "en": null
+  },
+  {
+   "no": "Effekten av inntekten forsvinner",
+   "en": null
+  },
+  {
+   "no": "Karakterene står støtt",
+   "en": null
+  },
+  {
+   "no": "Model",
+   "en": null
+  },
+  {
+   "no": "RMSE",
+   "en": null
+  },
+  {
+   "no": "df1",
+   "en": null
+  },
+  {
+   "no": "df2",
+   "en": null
+  },
+  {
+   "no": "Sagt uten tall",
+   "en": null
+  },
+  {
+   "no": "Nasjonale prøver og grunnskolepoeng måler mye av det samme",
+   "en": null
+  },
+  {
+   "no": "Koeffisienten krymper",
+   "en": null
+  },
+  {
+   "no": "Usikkerheten vokser",
+   "en": null
+  },
+  {
+   "no": "Én linje ble til et plan",
+   "en": null
+  },
+  {
+   "no": "1 · De to X-ene spenner ut et gulv",
+   "en": null
+  },
+  {
+   "no": "2 · Modellen er flaten",
+   "en": null
+  },
+  {
+   "no": "3 · Og residualene?",
+   "en": null
+  },
+  {
+   "no": "Samme modell, sett fra to sider",
+   "en": null
+  },
+  {
+   "no": "1 · Sett den ene fast",
+   "en": null
+  },
+  {
+   "no": "2 · Dra den andre",
+   "en": null
+  },
+  {
+   "no": "3 · Det er «kontrollert for»",
+   "en": null
+  },
+  {
+   "no": "Hva la den andre prediktoren til?",
+   "en": null
+  },
+  {
+   "no": "Hva står det?",
+   "en": null
+  },
+  {
+   "no": "Hva betyr det?",
+   "en": null
+  },
+  {
+   "no": "Rad for rad",
+   "en": null
+  },
+  {
+   "no": "Begge er signifikante",
+   "en": null
+  },
+  {
+   "no": "Når prediktorene måler nesten det samme",
+   "en": null
+  },
+  {
+   "no": "Setningen du skal levere",
+   "en": null
+  },
+  {
+   "no": "Alt dette må stå der",
+   "en": null
+  },
+  {
+   "no": "Valget er tatt for dere",
+   "en": null
+  },
+  {
+   "no": "Og med to prediktorer?",
+   "en": null
+  },
+  {
+   "no": "Fem setninger",
+   "en": null
+  },
+  {
+   "no": "3 · <i>R</i>² — hvor mye forklarer modellen?",
+   "en": null
+  }
+ ],
+ "literaler": [
+  {
+   "no": "Skolekarakterer og IQ",
+   "en": null
+  },
+  {
+   "no": "Simulert, N = 500 · parametrene er kalibrert mot norske registerfunn",
+   "en": null
+  },
+  {
+   "no": "IQ ved 19 år",
+   "en": null
+  },
+  {
+   "no": "Nasjonale prøver",
+   "en": null
+  },
+  {
+   "no": "Kjønn (1 = jente)",
+   "en": null
+  },
+  {
+   "no": "Foreldrenes inntekt henger sammen med IQ. Men er det inntekten — eller er det noe inntekten følger med på? Legg karakterene inn som X₂ og se hva som skjer.",
+   "en": null
+  },
+  {
+   "no": "Ekte data, N = 75 fullførere · Heshmati mfl. (2023)",
+   "en": null
+  },
+  {
+   "no": "skår",
+   "en": null
+  },
+  {
+   "no": "Henger depresjon sammen med forsvarsmekanismer ved baseline — og kan vi predikere den ene fra den andre?",
+   "en": null
+  },
+  {
+   "no": "Henger statistikk-selvtillit sammen med perfeksjonisme og angstsensitivitet?",
+   "en": null
+  },
+  {
+   "no": "Skolekarakterer og IQ — NULL-versjon",
+   "en": null
+  },
+  {
+   "no": "Samme 500 elevene, men IQ-kolonnen er stokket om: alle fordelinger uendret, sammenhengen fjernet",
+   "en": null
+  },
+  {
+   "no": "Her finnes det INGEN sammenheng. Hvor stor r klarer tilfeldighetene likevel å lage — og hvordan ser en modell ut når den ikke har noe å modellere?",
+   "en": null
+  },
+  {
+   "no": "<b>Spørsmålet:</b> ",
+   "en": null
+  },
+  {
+   "no": "<p class=\"muted\">Velg en prediktor X₂ for å se hva den legger til.</p>",
+   "en": null
+  },
+  {
+   "no": "Med bare én prediktor er &beta; = r, og R² = r². Prøv å legge til X₂.",
+   "en": null
+  },
+  {
+   "no": "<tr><td><i>b</i> for ",
+   "en": null
+  },
+  {
+   "no": "<tr><td><i>p</i> for ",
+   "en": null
+  },
+  {
+   "no": " — altså ",
+   "en": null
+  },
+  {
+   "no": " % av variasjonen i ",
+   "en": null
+  },
+  {
+   "no": " som X₁ ikke allerede fanget. ",
+   "en": null
+  },
+  {
+   "no": "<b>Nesten ingenting.</b> Det betyr ikke at ",
+   "en": null
+  },
+  {
+   "no": " er uten betydning — ",
+   "en": null
+  },
+  {
+   "no": "det betyr at det den hadde å si, allerede lå i ",
+   "en": null
+  },
+  {
+   "no": "Den bidrar altså med noe eget. Legg likevel merke til at begge koeffisientene er mindre ",
+   "en": null
+  },
+  {
+   "no": "enn de var alene: prediktorene deler informasjon.",
+   "en": null
+  },
+  {
+   "no": "Bidraget er ikke signifikant med denne utvalgsstørrelsen.",
+   "en": null
+  },
+  {
+   "no": "<div style=\"margin-top:6px\" class=\"muted\">X₁ sitt unike bidrag, til sammenligning: ΔR² = ",
+   "en": null
+  },
+  {
+   "no": "<div class=\"muted\" style=\"font-size:14.5px;margin-top:6px\">Tommelfingerregler, ikke tester: ",
+   "en": null
+  },
+  {
+   "no": "|r| under .25 og skjevhet under 1 pleier å bety at plottene ser greie ut. ",
+   "en": null
+  },
+  {
+   "no": "<b>Metodevalget.</b> Vi bruker <b>lineær regresjon</b> fordi utfallet (",
+   "en": null
+  },
+  {
+   "no": ") er ",
+   "en": null
+  },
+  {
+   "no": "kontinuerlig og vi vil vite hvor mye det endrer seg per enhet på en kontinuerlig prediktor. ",
+   "en": null
+  },
+  {
+   "no": "Med to prediktorer får vi i tillegg vite hva hver av dem bidrar med når den andre holdes konstant. ",
+   "en": null
+  },
+  {
+   "no": "Med én prediktor er dette den samme sammenhengen som Pearsons r, bare uttrykt i variabelens egne enheter. ",
+   "en": null
+  },
+  {
+   "no": "også gjorde det",
+   "en": null
+  },
+  {
+   "no": "ikke gjorde det",
+   "en": null
+  },
+  {
+   "no": " % av variasjonen, R² = ",
+   "en": null
+  },
+  {
+   "no": "<b>Til diskusjonen.</b> ",
+   "en": null
+  },
+  {
+   "no": " % av variasjonen; ",
+   "en": null
+  },
+  {
+   "no": " % ligger et annet sted. ",
+   "en": null
+  },
+  {
+   "no": "Uten modellen bommet vi typisk med ",
+   "en": null
+  },
+  {
+   "no": " enheter, med den ",
+   "en": null
+  },
+  {
+   "no": " — en reduksjon på ",
+   "en": null
+  },
+  {
+   "no": " kom inn, er et resultat om ",
+   "en": null
+  },
+  {
+   "no": "<i>prediksjon</i>, ikke om <i>årsak</i>: den kan godt virke gjennom ",
+   "en": null
+  },
+  {
+   "no": "Dataene er målt samtidig, så retningen på sammenhengen er ikke etablert her.",
+   "en": null
+  },
+  {
+   "no": "Skriv inn en verdi for X.",
+   "en": null
+  },
+  {
+   "no": "Skriv inn en verdi for X₂ også.",
+   "en": null
+  },
+  {
+   "no": "<b>Denne x-verdien finnes ikke i dataene</b> — ingen i utvalget har akkurat ",
+   "en": null
+  },
+  {
+   "no": ". Modellen svarer likevel, og det er nettopp poenget: linja er definert ",
+   "en": null
+  },
+  {
+   "no": "for alle x, ikke bare for de vi tilfeldigvis målte.",
+   "en": null
+  },
+  {
+   "no": " Den ligger innenfor dataenes rekkevidde (",
+   "en": null
+  },
+  {
+   "no": " til ",
+   "en": null
+  },
+  {
+   "no": "så modellen har dekning for å svare.",
+   "en": null
+  },
+  {
+   "no": "<span class=\"stat\">95 % KI for linja: ",
+   "en": null
+  },
+  {
+   "no": "<span class=\"stat\" style=\"background:#fdecea;color:#C0392B\">95 % prediksjonsintervall for personen: ",
+   "en": null
+  },
+  {
+   "no": "<div style=\"margin-top:6px\">Konfidensintervallet gjelder <b>gjennomsnittet</b> for alle med denne verdien. ",
+   "en": null
+  },
+  {
+   "no": "Prediksjonsintervallet gjelder <b>ett menneske</b> — og det er ",
+   "en": null
+  },
+  {
+   "no": "). Utenfor der er linja ren fantasi.</div>",
+   "en": null
+  },
+  {
+   "no": "border-radius:9px;padding:10px 12px;font-size:15.5px\">Med to prediktorer regnes ",
+   "en": null
+  },
+  {
+   "no": "«(ingen)» i fane 5 for å se den enkle formelen skrevet ut.</div>",
+   "en": null
+  },
+  {
+   "no": "<b style=\"font-size:16.5px\">Hvor de to intervallene kommer fra</b><br>",
+   "en": null
+  },
+  {
+   "no": "Begge bygger på det samme: residualspredningen <b>s = ",
+   "en": null
+  },
+  {
+   "no": "), og hvor langt x-en din ligger fra gjennomsnittet ",
+   "en": null
+  },
+  {
+   "no": "<b>Linja</b> (gjennomsnittet for alle med x = ",
+   "en": null
+  },
+  {
+   "no": "<b>Én person</b> med x = ",
+   "en": null
+  },
+  {
+   "no": "<div style=\"margin-top:9px\">Legg merke til <b>ettallet</b> i den andre formelen. Det er ",
+   "en": null
+  },
+  {
+   "no": "personens egen, uforklarte variasjon &mdash; den som blir igjen selv om vi kjente linja ",
+   "en": null
+  },
+  {
+   "no": "helt eksakt. Den forsvinner ikke uansett hvor mange vi måler, og derfor er personens ",
+   "en": null
+  },
+  {
+   "no": "<div class=\"muted\" style=\"font-size:14.5px;margin-top:7px\">Begge faktorene vokser når x ",
+   "en": null
+  },
+  {
+   "no": "beveger seg bort fra x̄ &mdash; derfor buer båndene i figuren utover mot kantene. ",
+   "en": null
+  },
+  {
+   "no": "For linja betyr <i>n</i> mye; for personen betyr den nesten ingenting.</div>",
+   "en": null
+  },
+  {
+   "no": "nasjonale prøver",
+   "en": null
+  },
+  {
+   "no": "<br><span style=\"font-size:.86em;color:#3F4E63\">Dra nasjonale prøver: linja til venstre flytter seg opp og ned, men <b>helningen står stille</b>. Det er «kontrollert for», sett.</span>",
+   "en": null
+  },
+  {
+   "no": "<span class=\"stat\">Modellen lot seg ikke regne ut.</span>",
+   "en": null
+  },
+  {
+   "no": "<span class=\"muted\">Velg en prediktor X₂ over for å regne med to.</span>",
+   "en": null
+  },
+  {
+   "no": "<p class=\"muted\">Velg et datasett i fane 1 først.</p>",
+   "en": null
+  },
+  {
+   "no": "H<sub>0</sub>: &beta;<sub>1</sub> = 0 &nbsp;&mdash;&nbsp; i populasjonen er linja <b>flat</b>: ",
+   "en": null
+  },
+  {
+   "no": "<div class=\"stn\">Hypotesen gjelder <b>populasjonen</b>. I utvalget ditt er <i>b</i> nesten aldri ",
+   "en": null
+  },
+  {
+   "no": "nøyaktig null, uansett hvor lite som foregår.</div>",
+   "en": null
+  },
+  {
+   "no": "<div class=\"stn\">Regnet ut som SP / SS<sub>X</sub> (fane 2). Det er dette ene tallet hele ",
+   "en": null
+  },
+  {
+   "no": "<div class=\"stn\">To ting gjør estimatet presist: <b>lite støy</b> (liten s) og <b>stor ",
+   "en": null
+  },
+  {
+   "no": "spredning i x</b> (stor SS<sub>X</sub>). Måler du bare folk som ligner hverandre, blir ",
+   "en": null
+  },
+  {
+   "no": "stigningstallet usikkert selv med mange deltakere.</div>",
+   "en": null
+  },
+  {
+   "no": "<div class=\"stn\">Hvor mange standardfeil unna null estimatet ligger. Nøyaktig samme brøk som ",
+   "en": null
+  },
+  {
+   "no": "i testen av <i>r</i> &mdash; og med &eacute;<i>n</i> prediktor er det nøyaktig samme tall.</div>",
+   "en": null
+  },
+  {
+   "no": "<div class=\"stn\">k er antall prediktorer. Du har brukt opp én opplysning på konstantleddet og ",
+   "en": null
+  },
+  {
+   "no": "én på stigningstallet.</div>",
+   "en": null
+  },
+  {
+   "no": " i en t-fordeling med ",
+   "en": null
+  },
+  {
+   "no": "<div class=\"stn\">Sannsynligheten for en <i>t</i> minst så ekstrem som din, <b>gitt at ",
+   "en": null
+  },
+  {
+   "no": "H<sub>0</sub> er sann</b>.</div>",
+   "en": null
+  },
+  {
+   "no": "Kritisk verdi ved &alpha; = .05: t = &plusmn;",
+   "en": null
+  },
+  {
+   "no": "95 % KI for <i>b</i><sub>1</sub> = ",
+   "en": null
+  },
+  {
+   "no": "Din <i>t</i> ligger utenfor, og intervallet inneholder ikke null. Vi forkaster H<sub>0</sub>.",
+   "en": null
+  },
+  {
+   "no": "Din <i>t</i> ligger innenfor, og intervallet inneholder null. Vi forkaster ikke H<sub>0</sub>.",
+   "en": null
+  },
+  {
+   "no": "<div class=\"stn\"><b>Slik skrives det:</b> «<i>b</i> = ",
+   "en": null
+  },
+  {
+   "no": "Merk at p-verdien og intervallet sier det samme: null er ",
+   "en": null
+  },
+  {
+   "no": ". Intervallet sier det bare mer nyttig.</div>",
+   "en": null
+  },
+  {
+   "no": " av",
+   "en": null
+  },
+  {
+   "no": " av ",
+   "en": null
+  },
+  {
+   "no": "t-fordelingen med df = ",
+   "en": null
+  },
+  {
+   "no": "<span class=\"stat green\">du fant (nesten) minimum!</span>",
+   "en": null
+  },
+  {
+   "no": "<table><tr><th>Kvadratsum</th><th class=\"r\">Verdi</th><th>Hva den er</th></tr>",
+   "en": null
+  },
+  {
+   "no": "<td class=\"muted\">Σ(y − ȳ)² — all variasjon i y, før modellen</td></tr>",
+   "en": null
+  },
+  {
+   "no": "<tr><td><b>SSR</b> <span class=\"ssut\">Sum of Squares <b>Regression</b> · det modellen forklarer</span></td>",
+   "en": null
+  },
+  {
+   "no": "<td class=\"muted\">Σ(ŷ − ȳ)² — det linja gjør rede for</td></tr>",
+   "en": null
+  },
+  {
+   "no": "<td class=\"muted\">Σ(y − ŷ)² — det som blir liggende igjen</td></tr>",
+   "en": null
+  },
+  {
+   "no": "<td class=\"muted\">alltid nøyaktig lik SST</td></tr></table>",
+   "en": null
+  },
+  {
+   "no": "Korrelasjonen i disse dataene er r = ",
+   "en": null
+  },
+  {
+   "no": ", og r² = ",
+   "en": null
+  },
+  {
+   "no": "Med én prediktor <i>er</i> <i>R</i>² kvadratet av korrelasjonen. ",
+   "en": null
+  },
+  {
+   "no": "Modellen er ŷ = ",
+   "en": null
+  },
+  {
+   "no": " · x, og den fjerner ",
+   "en": null
+  },
+  {
+   "no": " % av kvadratsummen. ",
+   "en": null
+  },
+  {
+   "no": "De resterende ",
+   "en": null
+  },
+  {
+   "no": " % er det linja ikke ser.",
+   "en": null
+  },
+  {
+   "no": " (sann <i>b</i> = 0, estimatet er forventningsriktig)</span>",
+   "en": null
+  },
+  {
+   "no": " % falske positiver): de få observasjonene med høye x-verdier har både mest innflytelse på linjen OG mest støy — standardfeilen undervurderes kraftig. Legg merke til at b̂ likevel er forventningsriktig: skaden sitter i p-verdiene og KI-ene, ikke i estimatet. Dette er kombinasjonen residualplottet (trakten!) skal redde deg fra.",
+   "en": null
+  },
+  {
+   "no": "<b>Testen er blitt liberal</b> (",
+   "en": null
+  },
+  {
+   "no": " %): trakten i residualplottet betyr at én felles standardfeil er feil for alle — moderat kostnad med jevn x-fordeling, men prøv «den farlige kombinasjonen».",
+   "en": null
+  },
+  {
+   "no": "Merk: residualhistogrammet ser ikke normalt ut, men testen av stigningstallet overlever likevel — sentralgrenseteoremet beskytter b̂ ved rimelige n. Kostnaden ved tunge haler er heller tapt styrke og sårbare enkeltutvalg (jf. Sim 8).",
+   "en": null
+  },
+  {
+   "no": "Et jevnt bånd i residualplottet = antakelsene ser greie ut.",
+   "en": null
+  },
+  {
+   "no": "Av 5 000 studier der sannheten er b = 0: hvor mange ga p < .05?",
+   "en": null
+  },
+  {
+   "no": "5 % — det testen lover",
+   "en": null
+  },
+  {
+   "no": "(kjør en simulering)",
+   "en": null
+  },
+  {
+   "no": "Skjuler forklarende tekst og ordlisten, slik at figuren og kontrollene fyller lerretet (snarvei: P)",
+   "en": null
+  },
+  {
+   "no": "«Hvor mange poeng stiger karakteren for hver ekstra lesetime?»",
+   "en": null
+  },
+  {
+   "no": "Ja. Du spør om <b>hvor mye i enheter</b>, og det er nettopp det stigningstallet svarer på.",
+   "en": null
+  },
+  {
+   "no": "«Er det en sammenheng mellom lesetimer og karakter i det hele tatt?»",
+   "en": null
+  },
+  {
+   "no": "Strengt tatt nei — det er et korrelasjonsspørsmål (Sim 11). Regresjon kan svare, men da bruker du et verktøy som gir deg mer enn du spurte om. Spør du bare om <i>om</i>, hold deg til <i>r</i>.",
+   "en": null
+  },
+  {
+   "no": "«Hva vil jeg gjette at en ny student får, hvis hun leste 20 timer?»",
+   "en": null
+  },
+  {
+   "no": "Ja. Prediksjon for en ny observasjon er regresjonens andre hovedjobb.",
+   "en": null
+  },
+  {
+   "no": "«Fører mer lesing til bedre karakter?»",
+   "en": null
+  },
+  {
+   "no": "Nei. Ordet «fører til» er et <b>årsaksord</b>. Regresjon på observasjonsdata kan ikke svare på det, uansett hvor mange prediktorer du legger inn.",
+   "en": null
+  },
+  {
+   "no": "«Skårer kvinner høyere enn menn på perfeksjonisme?»",
+   "en": null
+  },
+  {
+   "no": "Nei — dette er en <b><i>t</i>-test</b> (Sim 16). Du kan riktignok kjøre det som en regresjon med en kjønnsdummy, og få nøyaktig samme <i>t</i>, men spørsmålet er formulert som en gruppesammenligning.",
+   "en": null
+  },
+  {
+   "no": "«Henger depresjon fortsatt sammen med forsvar når jeg tar hensyn til alder?»",
+   "en": null
+  },
+  {
+   "no": "Nei, ikke <i>enkel</i> regresjon. Dette er multippel regresjon — se Sim 15, som handler om nettopp hva «å kontrollere for» gjør.",
+   "en": null
+  },
+  {
+   "no": "<b>Du traff ",
+   "en": null
+  },
+  {
+   "no": ".</b> Men det er ikke tallet som ",
+   "en": null
+  },
+  {
+   "no": "teller — det er at du nå har sett fire måter et spørsmål kan ligne på et regresjonsspørsmål uten å være det: du spør bare om <i>om</i>, du bruker årsaksord, du sammenligner grupper, eller du trenger en tredje variabel inn i modellen.",
+   "en": null
+  }
+ ],
+ "jasp": [
+  "<div class=\"card\"> <h2>Spørsmålet regresjon svarer på</h2> <p class=\"hvbig\">«Hvor mye endrer den ene seg når den andre går opp ett hakk?»</p> <p style=\"font-size:16.5px;line-height:1.55\">Korrelasjon svarer på <i>om</i> to ting henger sammen. Regresjon svarer på <b>hvor mye</b> — i variabelens egne enheter, ikke i et abstrakt tall mellom &minus;1 og 1.</p> <p style=\"font-size:16.5px;line-height:1.55\">Tenk på det som en <b>oppskrift for å gjette</b>. Du skal anslå eksamenskarakteren til en student du aldri har møtt. Uten å vite noe gjetter du gjennomsnittet. Får du vite hvor mange timer hun leste, kan du gjøre bedre: <b>start på et grunnivå, og legg til så mange poeng per lesetime.</b> De to tallene &mdash; grunnivået og tillegget per time &mdash; <i>er</i> regresjonsmodellen.</p> <div class=\"keybox\"><span class=\"lbl\">Sagt på &eacute;<i>n</i> linje</span><b>En regresjon gir deg to tall: hvor du starter, og hvor mye du flytter deg per enhet. Til sammen er de en oppskrift for å gjette.</b></div> </div> <div class=\"card\"> <h2>Hva regresjon er — og hva den ikke er</h2> <div class=\"hvgrid\"> <div class=\"hvkort hver\"><h3>✓ Den forteller deg</h3><ul> <li><b>Hvor mye</b> utfallet endrer seg per enhets økning i prediktoren — i ekte enheter.<span class=\"eks\">«Ett poeng mer på forsvarsskalaen svarer til 0.21 poeng mer depresjon.»</span></li> <li><b>En prediksjon</b> for en ny person med kjente verdier.</li> <li><b>Hvor mye du bommer.</b> Residualene er avstanden mellom det du gjettet og det som skjedde.</li> <li><b>Hvor mye bedre</b> gjetningen ble. Det er <i>R</i>².</li> </ul></div> <div class=\"hvkort hvikke\"><h3>✗ Den forteller deg ikke</h3><ul> <li><b>At den ene forårsaker den andre.</b> Ordet «prediktor» betyr bare at den står på høyre side av likhetstegnet.<span class=\"eks\">Regresjon på observasjonsdata er korrelasjon med flere desimaler.</span></li> <li><b>Noe utenfor dataområdet ditt.</b> Har ingen lest over 30 timer, vet modellen ingenting om 60 timer.<span class=\"eks\">Linja fortsetter på skjermen. Kunnskapen gjør det ikke.</span></li> <li><b>Hvor godt du treffer én person.</b> <i>R</i>² = .40 høres mye ut, men enkeltprediksjoner kan bomme grovt.</li> <li><b>Noe som helst, hvis sammenhengen er krum.</b> Minste kvadraters metode legger en <b>rett</b> linje, uansett hva punktene sier.<span class=\"eks\">Derfor: plott dataene og se på residualene.</span></li> </ul></div> </div> </div> <div class=\"card\"> <h2>Når kan du bruke den?</h2> <ul style=\"font-size:16.5px;line-height:1.55\"> <li><b>Ett utfall</b>, og det må være en tallvariabel.</li> <li><b>Én eller flere prediktorer.</b> Med bare én kalles det enkel regresjon.</li> <li><b>Målt hos de samme personene</b> — én rad per person.</li> </ul> <p style=\"font-size:16.5px;line-height:1.55;margin-top:14px\"><b>Hvilket spørsmål stiller du egentlig?</b> Her er hele kartet over metodene i emnet. Raden i blått er den du står i nå.</p> <table class=\"hvnaar\"> <tr><th>Spørsmålet ditt</th><th>Metoden</th><th>Hvor</th></tr> <tr><td>Henger disse to tallvariablene sammen?</td><td>Korrelasjon</td><td>Sim 11</td></tr> <tr class=\"na\"><td>Hvor mye endrer den ene seg når den andre går opp ett hakk? Og hva gjetter jeg for en ny person?</td><td>Regresjon</td><td>denne appen</td></tr> <tr><td>Henger de fortsatt sammen når jeg holder en tredje ting konstant?</td><td>Multippel regresjon</td><td>Sim 15</td></tr> <tr><td>Er <b>to grupper</b> forskjellige i gjennomsnitt?</td><td><i>t</i>-test</td><td>Sim 16</td></tr> <tr><td>Er <b>tre eller flere grupper</b> forskjellige?</td><td>Enveis-ANOVA</td><td>Sim 22</td></tr> <tr><td>Avhenger effekten av den ene faktoren av den andre?</td><td>Faktoriell ANOVA</td><td>Sim 24</td></tr> <tr><td>Endret <b>de samme personene</b> seg fra før til etter?</td><td>Paret <i>t</i>-test</td><td>Sim 25</td></tr> <tr><td>Henger to <b>kategorier</b> sammen?</td><td>Kjikvadrat</td><td>Sim 29</td></tr> </table> </div> <div class=\"card\"> <h2>Prøv selv: er dette et regresjon-spørsmål?</h2> <p class=\"muted\">Seks påstander. Svar først, så får du begrunnelsen. Det er begrunnelsen som er poenget &mdash; ikke om du traff.</p> {{hvQuiz}}</div> {{hvSum}}</div> </div> <div class=\"keybox\"><span class=\"lbl\">Klar for simuleringen?</span><b>Regresjon måler hvor mye, i ekte enheter — og sier ingenting om hvorfor.</b></div>",
+  "Én prediktor, ett utfall — hele regresjonen i sin enkleste form. Appen regner nøyaktig det JASP regner, på de samme radene, og skriver setningen du ville satt i artikkelen. Vil du legge til en prediktor til, ligger det i <b>fane 5</b>, etter at du har sett hvordan den enkle modellen oppfører seg.",
+  "Q–Q-plott av residualene — punktene skal følge linja",
+  "<div class=\"keybox\"><span class=\"lbl\">Hovedpoenget i denne fanen</span> <b>R&sup2; er andelen av variasjonen i y som modellen gj&oslash;<i>r</i> rede for: SSR / SST. Med &eacute;<i>n</i> prediktor er den n&oslash;yaktig r&sup2; &mdash; korrelasjonen kvadrert.</b> <details class=\"mer\"><summary>Mer om dette: hva R&sup2; ikke forteller deg</summary><div> <b>R&sup2; sier ingenting om at modellen er riktig.</b> En krum sammenheng kan gi h&oslash;y R&sup2; med en rett linje, og en helt korrekt modell kan ha lav R&sup2; hvis st&oslash;yen er stor. Det er residualplottet, ikke R&sup2;, som avsl&oslash;rer feil form. <b>R&sup2; vokser alltid n&aring;<i>r</i> du legger til prediktorer</b> &mdash; ogs&aring; helt tilfeldige. Derfor rapporterer JASP ogs&aring; justert R&sup2;, som trekker fra for antall prediktorer. <b>Og R&sup2; er ikke et m&aring;l p&aring; viktighet.</b> I psykologi er R&sup2; = 0.10 helt vanlig for reelle effekter; i fysikk ville det samme tallet v&aelig;rt en katastrofe. Sammenlign alltid med feltet, ikke med 1. </div></details></div>",
+  "Du har bygd modellen i fane 1. Her ser du hva JASP gjør når den setter en <i>p</i>-verdi ved siden av koeffisienten — sju steg, i samme rekkefølge hver gang. <b>Testen kjøres på modellen du valgte i fane 1</b>, så bytt gjerne datasett og prediktor der og kom tilbake hit.",
+  "Residualplottet<span class=\"hnote\"> (det JASP viser deg)</span>",
+  "<summary>Ordforklaringer</summary> <div class=\"gloss\"> <p><b>Homoskedastisitet</b> — at spredningen i residualene er omtrent like stor over hele x-aksen. Brudd på dette kalles<br> <b>H₀</b> — nullhypotesen: «ingen effekt / ingen sammenheng».<br> <b>H₁</b> er alternativhypotesen.<br> <b>ISTDP</b> (intensiv dynamisk korttidsterapi) med venteliste, <i>N</i> = 86.<br> <b>JASP</b> — statistikkprogrammet vi bruker i emnet (gratis og åpen kildekode).<br> <b>Justert <i>R</i>²</b> — <i>R</i>² korrigert for antall prediktorer. Vanlig <i>R</i>² vokser uansett når du legger til variabler, også helt tilfeldige.<br> <b>KI</b> — konfidensintervall; her 95 %, beregnet som estimat ± 1.96 · <i>SE</i>.<br> <b>Kollinearitet</b> — at prediktorene deler informasjon (høy r₁₂).<br> <b>Konfunder</b> — en tredjevariabel som påvirker både prediktor og utfall og dermed skaper en falsk sammenheng.<br> <b><i>M</i></b> — gjennomsnittet i et utvalg (skrives også x̄).<br> <b>MS</b> = SS/df, altså en varians.<br> <b>Median</b> = midtverdien når verdiene sorteres.<br> <b>Mediator</b> — et mellomledd i årsakskjeden fra prediktor til utfall.<br> <b>Modus</b> = den hyppigste verdien.<br> <b>RCT</b> — randomisert kontrollert studie. Emnets<br> <b>Residual</b> — avviket mellom en observert verdi og modellens predikerte verdi (y − ŷ).<br> <b><i>R</i>²</b> — andelen av variansen i Y som modellen forklarer (0–1).<br> <b><i>SD</i></b> — standardavvik: typisk avstand fra gjennomsnittet, i variabelens egen enhet. Kvadratet er variansen.<br> <b><i>SE</i></b> — standardfeil: usikkerheten i et estimat, altså hvor mye estimatet ville sprikt mellom gjentatte utvalg.<br> <b>SS</b> — kvadratsum (sum of squares): summen av kvadrerte avvik.<br> <b>SSE</b> er kvadratsummen av feilene (residualene).<br> <b>SST, SSR og SSE</b> — total, forklart og uforklart kvadratsum. SST = SSR + SSE alltid, og <i>R</i>² = SSR/SST.<br> <b>Sentralgrenseteoremet</b> — utvalgsgjennomsnitt blir tilnærmet normalfordelte når <i>n</i> vokser, selv om populasjonen er skjev.<br> <b>Spearmans rho</b> gjør det samme på rangeringer, og passer for ordinaldata og krumme, men monotone sammenhenger.<br> <b>Statistisk styrke</b> — sannsynligheten for å oppdage en effekt som faktisk finnes (1 − type II-risikoen). Se Sim 7, fane 2.<br> <b>Terapi-RCT-studie</b> sammenligner<br> <b>Trimmet gjennomsnitt</b> = regn ut etter å ha kuttet de mest ekstreme prosentene;<br> <b>Type I-feil</b> — å finne en effekt som ikke finnes (falsk positiv).<br> <b>Type II-feil</b> — å overse en effekt som finnes (falsk negativ).<br> <b>Utligger</b> — en observasjon som ligger langt fra resten.<br> <b>VIF</b> — variance inflation factor: hvor mye overlappet mellom prediktorene blåser opp variansen til estimatet.<br> <b><i>b</i></b> — regresjonskoeffisient: hvor mye ŷ endrer seg per enhets økning i prediktoren.<br> <b>heteroskedastisitet</b> (trakten i residualplottet).<br> <b><i>p</i>-verdi</b> — sannsynligheten for et resultat minst så ekstremt som ditt, <i>gitt at H₀ er sann</i>. Ikke sannsynligheten for at H₀ er sann.<br> <b><i>r</i></b> — Pearsons korrelasjon: styrken på den <i>lineære</i> sammenhengen mellom to variabler (−1 til +1).<br> <b>r₁₂</b> — korrelasjonen mellom de to prediktorene.<br> <b><i>t</i></b> — teststatistikk for gjennomsnitt: forskjell delt på standardfeil.<br> <b><i>t</i>-fordelingen</b> er litt tyngre i halene enn normalfordelingen ved lav <i>df</i>.<br> <b>winsorisering</b> = erstatt dem med grenseverdien i stedet for å kutte.<br> <b>x̄ (x-strek)</b> — gjennomsnittet i utvalget, altså estimatet av μ.<br> <b>ŷ (y-hatt)</b> — verdien modellen predikerer for en person, i motsetning til den observerte y.<br> <b>β</b> er den standardiserte varianten (i standardavvik).<br> <b>β (beta)</b> — standardisert regresjonskoeffisient: endring i Y (i standardavvik) per ett standardavviks endring i prediktoren.<br> <b>μ (my)</b> — gjennomsnittet i <i>populasjonen</i>: sannheten vi prøver å treffe, og som forskeren i praksis aldri får se.</p> </div>",
+  "De tre kvadratsummene, slik JASP viser dem",
+  "Slik ser det ut i JASP",
+  "Se alltid på figurene selv — det er dem JASP viser deg, og det er dem du skal beskrive.</div>"
+ ]
+}
