@@ -107,10 +107,14 @@ select option{background:var(--panel2);color:var(--ink)}
       <button data-fmt="mock" data-i18n-html="fmtMock">Mock exam<small>40 questions, timed</small></button>
       <button data-fmt="output" data-i18n-html="fmtOutput">Output interpretation<small>read a JASP table or plot</small></button>
       <button data-fmt="svak" data-i18n-html="fmtSvak">Where you have practised least<small>20 questions, picked from your own history</small></button>
+      <button data-fmt="svakbegrep" data-i18n-html="fmtSvakBegrep">Practise your weakest concepts<small>20 questions, from your own results</small></button>
     </div>
     <div id="chapterWrap" class="hide"><label class="fld" data-i18n="chapLbl">Chapter</label><select id="chapterSel"></select></div>
-    <div id="begrepWrap" class="hide"><label class="fld" data-i18n="begrepLbl">Concept</label><select id="begrepSel"></select><p class="hint" style="text-align:left;margin-top:6px" data-i18n="begrepHelp"></p></div>
+    <div id="begrepWrap" class="hide"><label class="fld" data-i18n="begrepLbl">Concept</label><select id="begrepSel"></select><p class="hint" style="text-align:left;margin-top:6px" data-i18n="begrepHelp"></p><p class="hint" style="text-align:left;margin-top:6px" id="begrepNivaaInfo"></p></div>
     <div id="svakWrap" class="hide"><p class="hint" data-i18n="svakNote"></p></div>
+    <!-- SVAKBEGREP-MARKUP START -->
+    <div id="svakBegrepWrap" class="hide"><label class="fld" data-i18n="svakBegrepLbl">How many of your weakest concepts?</label><select id="svakBegrepSel"><option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select><p class="hint" style="text-align:left;margin-top:6px" data-i18n="svakBegrepHelp"></p><p class="hint" style="text-align:left;margin-top:6px" id="svakBegrepInfo"></p></div>
+    <!-- SVAKBEGREP-MARKUP SLUTT -->
     <div id="outputWrap" class="hide"><label class="fld" data-i18n="outLbl">How many output items?</label><select id="outSel"><option value="10">10</option><option value="20" selected>20</option><option value="30">30</option></select><p class="hint" style="text-align:left;margin-top:6px" data-i18n="outHelp"></p></div>
     <div id="mockWrap" class="hide"><label class="fld" data-i18n="mockLbl">Which mock exam?</label><select id="mockSel" style="display:none"><option value="p40">1</option></select><p class="hint" style="text-align:left;margin-top:6px" data-i18n="mockHelp"></p></div>
     <!-- VANSKEBAAND START -->
@@ -331,7 +335,23 @@ const I18N = {
     fmtBegrep:'Single concept<small>20 questions, across chapters</small>',
     begrepLbl:'Which concept?',
     begrepHelp:'A concept runs across chapters \u2014 sampling distribution and standard error turns up in several of them \u2014 so this draws from every item carrying it, wherever it sits in the syllabus. The number behind each name is how many items the bank has for it.',
-    svakNote:'Picks the items this browser has answered fewest times, spread across chapters. Nothing is sent anywhere \u2014 the history stays on this device.',outLbl:"How many output items?",
+    svakNote:'Picks the items this browser has answered fewest times, spread across chapters. Nothing is sent anywhere \u2014 the history stays on this device.',
+    fmtSvakBegrep:'Practise your weakest concepts<small>20 questions, from your own results</small>',
+    svakBegrepLbl:'How many of your weakest concepts?',
+    svakBegrepHelp:'Draws from every item carrying one of them. Which concepts those are is read off your own answers, not chosen by you \u2014 so enter your code and fetch your figures first.',
+    svakBegrepIngen:'Your own figures are not loaded, so I cannot tell which concepts are weakest.',
+    bnOrden:'Weakest first, from your own answers to {n} items (fetched {d}).',
+    bnIngen:'Sorted by concept code. Your own figures are not loaded yet.',
+    bnTynt:'Some of them rest on fewer than three answered items \u2014 thin ground.',
+    bnValgte:'Picks from: {s}.',
+    bnAntall:'{n} items in the pool.',
+    bnHent:'Fetch my figures',
+    bnOff:'No backend is set up, so your own figures cannot be fetched.',
+    bnNoCode:'Enter your code first \u2014 the figures are stored under it.',
+    bnLoading:'Fetching your figures \u2026',
+    bnTomt:'No answers are stored under that code yet.',
+    bnErr:'Could not fetch your figures. Try again.',
+outLbl:"How many output items?",
   outHelp:"Every item shows a real JASP table or plot from the course datasets. This is the format the exam uses most.",
   oiToggle:"Include output-interpretation items",
   oiToggleSub:"JASP tables and plots, mixed into the chapters. Loads once, about 1.3 MB. Items like these appear on the exam.",
@@ -362,7 +382,23 @@ const I18N = {
     fmtBegrep:'Ett begrep<small>20 sp\u00f8rsm\u00e5l, p\u00e5 tvers av kapitler</small>',
     begrepLbl:'Hvilket begrep?',
     begrepHelp:'Et begrep g\u00e5r p\u00e5 tvers av kapitler \u2014 utvalgsfordeling og standardfeil dukker opp i flere av dem \u2014 s\u00e5 her trekkes det fra alle oppgavene som b\u00e6rer begrepet, uansett hvor i pensum de st\u00e5r. Tallet bak navnet er hvor mange oppgaver banken har til det.',
-    svakNote:'Henter de oppgavene denne nettleseren har svart p\u00e5 f\u00e6rrest ganger, spredt over kapitler. Ingenting sendes noe sted \u2014 historikken blir liggende p\u00e5 denne enheten.',outLbl:"Hvor mange output-oppgaver?",
+    svakNote:'Henter de oppgavene denne nettleseren har svart p\u00e5 f\u00e6rrest ganger, spredt over kapitler. Ingenting sendes noe sted \u2014 historikken blir liggende p\u00e5 denne enheten.',
+    fmtSvakBegrep:'Øv på svakeste begreper<small>20 spørsmål, ut fra dine egne resultater</small>',
+    svakBegrepLbl:'Hvor mange av dine svakeste begreper?',
+    svakBegrepHelp:'Trekker fra alle oppgavene som bærer ett av dem. Hvilke begreper det er, leses av dine egne svar og velges ikke av deg \u2014 så skriv inn koden din og hent tallene dine først.',
+    svakBegrepIngen:'Dine egne tall er ikke hentet, så jeg kan ikke vite hvilke begreper som er svakest.',
+    bnOrden:'Svakest først, ut fra dine egne svar på {n} oppgaver (hentet {d}).',
+    bnIngen:'Sortert på begrepskode. Dine egne tall er ikke hentet ennå.',
+    bnTynt:'Noen av dem hviler på under tre besvarte oppgaver \u2014 tynt grunnlag.',
+    bnValgte:'Trekker fra: {s}.',
+    bnAntall:'{n} oppgaver i bassenget.',
+    bnHent:'Hent mine tall',
+    bnOff:'Ingen backend er satt opp, så dine egne tall kan ikke hentes.',
+    bnNoCode:'Skriv inn koden din først \u2014 tallene er lagret under den.',
+    bnLoading:'Henter dine tall \u2026',
+    bnTomt:'Det er ikke lagret noen svar under den koden ennå.',
+    bnErr:'Fikk ikke hentet tallene dine. Prøv igjen.',
+outLbl:"Hvor mange output-oppgaver?",
   outHelp:"Hver oppgave viser en ekte JASP-tabell eller et plott fra emnets datasett. Dette er formatet eksamen bruker mest.",
   oiToggle:"Ta med output-tolkningsoppgaver",
   oiToggleSub:"JASP-tabeller og figurer, blandet inn i kapitlene. Lastes én gang, om lag 1,3 MB. Slike oppgaver kommer også på eksamen.",
@@ -414,7 +450,7 @@ const CHAPTERS=(()=>{const m={};BANK.forEach(it=>{if(!m[it.ch])m[it.ch]={ch:it.c
    const rang=c=>{const i=PRIORITET.indexOf(c);return i<0?99:i;};
    return Object.values(m).sort((a,b)=>rang(a.ch)-rang(b.ch)||a.ch-b.ch);})();
 function buildChapterSelect(){const sel=$("#chapterSel");sel.innerHTML="";CHAPTERS.forEach(c=>{const o=document.createElement("option");o.value=c.ch;o.textContent=c.en;   /* kapittelnavn alltid på engelsk — læreboka er engelsk */sel.appendChild(o);});if(state.chapter==null)state.chapter=CHAPTERS[0].ch;sel.value=state.chapter;}
-function applyLang(){document.documentElement.lang=lang;$$("[data-i18n]").forEach(el=>{if(el.dataset.i18n!=="poolNote")el.textContent=t(el.dataset.i18n);});$$("[data-i18n-html]").forEach(el=>{el.innerHTML=t(el.dataset.i18nHtml);});buildChapterSelect();$("[data-i18n='poolNote']").textContent=(lang==="en"?BANK.length+" active items in the pool.":BANK.length+" aktive oppgaver i banken.");}
+function applyLang(){document.documentElement.lang=lang;$$("[data-i18n]").forEach(el=>{if(el.dataset.i18n!=="poolNote")el.textContent=t(el.dataset.i18n);});$$("[data-i18n-html]").forEach(el=>{el.innerHTML=t(el.dataset.i18nHtml);});buildChapterSelect();$("[data-i18n='poolNote']").textContent=(lang==="en"?BANK.length+" active items in the pool.":BANK.length+" aktive oppgaver i banken.");try{nivaaInfoOppdater();}catch(_){}}
 $("#langSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;lang=b.dataset.lang;$$("#langSeg button").forEach(x=>x.classList.toggle("on",x===b));applyLang();if(typeof histÅpen!=="undefined"){$("#histBtn").textContent=t_(histÅpen?"histHide":"histBtn");if(histÅpen&&histData)tegnHistorikk();}});
 $("#fmtSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;state.format=b.dataset.fmt;$$("#fmtSeg button").forEach(x=>x.classList.toggle("on",x===b));visFormatvalg();});
 /* IMM-PROVE START */
@@ -448,7 +484,9 @@ function visFormatvalg(){
   $("#outputWrap").classList.toggle("hide",state.format!=="output");
   $("#svakWrap").classList.toggle("hide",state.format!=="svak");
   $("#begrepWrap").classList.toggle("hide",state.format!=="begrep");
+  $("#svakBegrepWrap").classList.toggle("hide",state.format!=="svakbegrep");
   if(state.format==="begrep") buildBegrepSelect();
+  if(state.format==="begrep"||state.format==="svakbegrep") nivaaInfoOppdater();
   const erProve=state.format==="mock";
   /* prøveeksamen: fast sett, ingen vanskelighetsvalg, ingen umiddelbar fasit.
      Bytter hun tilbake, kommer hennes eget valg tilbake — se IMM_UTENFOR. */
@@ -487,21 +525,191 @@ function buildBegrepSelect(){
     n[state.begrep]=(KONSEPT&&Object.keys(KONSEPT).filter(
       id=>(KONSEPT[id]||[]).indexOf(state.begrep)>=0).length)||1;
   }
+  /* SVAKEST FOERST, naar studentens egne tall finnes. Standardvalget er
+     koder[0], saa sorteringen ER valget for de 55 % som ikke roerer velgeren
+     (maalt 13. november 2026). Begreper UTEN egne tall havner sist: de hoerer
+     ikke i noen ende av en svakhetsrangering, og prosjektets sorteringsregel
+     er at en manglende noekkelverdi legges sist. Uten tall faller lista
+     tilbake til begrepskoden, og hint-linja sier at den gjoer det. */
+  const R=begrepRangert();
+  const niv={}; if(R) R.liste.forEach(c=>{niv[c.k]=c;});
   const koder=Object.keys(n).filter(k=>n[k]>0).sort((a,b)=>{
-    const A=kodeDel(a), B=kodeDel(b);
-    return A[0].localeCompare(B[0]) || A[1]-B[1] ||
-           (konseptNavnFor(a)||"").localeCompare(konseptNavnFor(b),"nb",{numeric:true});
+    if(R){
+      const A=niv[a], B=niv[b];
+      if(A&&B) return A.pct-B.pct || bnKodeSort(a,b);
+      if(A) return -1;
+      if(B) return 1;
+    }
+    return bnKodeSort(a,b);
   });
+  /* Andelen staar i navnet, saa rekkefoelgen kan etterproeves med oeyet. */
   sel.innerHTML=koder.map(k=>'<option value="'+k+'">'+esc(konseptNavnFor(k))+
-                             " ("+n[k]+")"+'</option>').join("");
+                             " ("+n[k]+")"+
+                             (niv[k]?" \u2014 "+bnPst(niv[k].pct):"")+
+                             '</option>').join("");
   if(!state.begrep || koder.indexOf(state.begrep)<0) state.begrep=koder[0];
   sel.value=state.begrep;
 }
 $("#begrepSel").addEventListener("change",e=>{state.begrep=e.target.value;});
+$("#svakBegrepSel").addEventListener("change",()=>{nivaaInfoOppdater();});
 $("#mockSel").addEventListener("change",e=>{state.mock=e.target.value;});
 $("#outSel").addEventListener("change",e=>{state.outN=parseInt(e.target.value,10);});
   $("#bandSel").addEventListener("change",e=>{try{localStorage.setItem(VBAND_NOKKEL,e.target.value);}catch(_){}if(state.format==="begrep") buildBegrepSelect();});
 
+/* SVAKBEGREP START */
+/* Studentens eget nivaa per begrep, cachet fra historikkhentingen.
+   {kode, ts, nOppg, niv:{slug:{n,correct,nItems}}} */
+const BN_NOKKEL="psy300_begrepsnivaa";
+/* Samme terskel som historikkpanelet: under tre besvarte oppgaver er
+   grunnlaget for tynt til aa kalle et begrep en svakhet. */
+const BN_MIN_ITEMS=3;
+/* ÉN kilde til hvilke oppgavetall nivaaet regnes av. Backendens items naar de
+   finnes, ellers «id:1,id:0»-strengene i forsoekene - samme valg som
+   historikkpanelet gjorde, naa paa ett sted. */
+function begrepNivaaOppg(d){
+  return (d && d.items && Object.keys(d.items).length) ? d.items
+         : oppgaverFraForsok(d && d.attempts);
+}
+function begrepNivaaAv(d){
+  return konseptFraOppgaver(begrepNivaaOppg(d)).filter(c=>c.n>=1);
+}
+function begrepNivaaSkriv(kons,kode,nOppg){
+  try{
+    const niv={};
+    (kons||[]).forEach(c=>{niv[c.k]={n:c.n,correct:c.correct,nItems:c.nItems||0};});
+    localStorage.setItem(BN_NOKKEL,JSON.stringify(
+      {kode:kode||"",ts:Date.now(),nOppg:nOppg||0,niv:niv}));
+  }catch(_){}
+}
+function begrepNivaa(){
+  let o=null;
+  try{ o=JSON.parse(localStorage.getItem(BN_NOKKEL)||"null"); }catch(_){ return null; }
+  if(!o||!o.niv||!Object.keys(o.niv).length) return null;
+  /* Staar det en ANNEN kode i feltet enn den cachen gjelder, hoerer tallene til
+     en annen person og skal ikke sortere hennes liste. Tomt felt: cachen er
+     denne nettleserens egen siste henting, og da brukes den. */
+  const k=($("#code")?$("#code").value.trim():"");
+  if(k && o.kode && k!==o.kode) return null;
+  return o;
+}
+/* Begrepene rangert svakest foerst. Bare begreper som faktisk har oppgaver aa
+   trekke - begrepAntall() gaar gjennom de samme filtrene som trekket. */
+function begrepRangert(){
+  const o=begrepNivaa(); if(!o) return null;
+  const ant=begrepAntall();
+  const alle=Object.keys(o.niv).filter(k=>ant[k]>0).map(k=>{
+    const v=o.niv[k];
+    return {k:k,n:v.n||0,correct:v.correct||0,nItems:v.nItems||0,
+            pct:v.n?v.correct/v.n:0};
+  });
+  if(!alle.length) return null;
+  const nok=alle.filter(c=>c.nItems>=BN_MIN_ITEMS);
+  const bas=(nok.length>=BN_MIN_ITEMS?nok:alle).slice();
+  /* Stabil: ved samme andel avgjoer begrepskoden, saa to visninger av samme
+     tall gir samme rekkefoelge. */
+  bas.sort((a,b)=>a.pct-b.pct || bnKodeSort(a.k,b.k));
+  return {liste:bas,tynt:(nok.length<BN_MIN_ITEMS),ts:o.ts,kode:o.kode,
+          nOppg:o.nOppg||0};
+}
+/* Begrepskoden (A1, B2, C9, C10 …): bokstav foerst, deretter tallet NUMERISK,
+   saa C9 kommer foer C10. Trukket ut av buildBegrepSelect saa begge
+   sorteringene bruker samme regel. */
+function bnKodeSort(a,b){
+  const d=x=>{const m=/^([A-Z])(\d+)/.exec(konseptNavnFor(x)||"");
+              return m?[m[1],parseInt(m[2],10)]:["Z",999];};
+  const A=d(a), B=d(b);
+  return A[0].localeCompare(B[0]) || A[1]-B[1] ||
+         (konseptNavnFor(a)||"").localeCompare(konseptNavnFor(b),"nb",{numeric:true});
+}
+/* §2: norsk prosent med mellomrom, engelsk uten. Hardt mellomrom, saa tallet
+   ikke kan brytes fra tegnet inne i en <option>. */
+function bnPst(x){ return Math.round(x*100)+(lang==="no"?" %":"%"); }
+function bnDato(ts){
+  const d=new Date(ts||0);
+  return isNaN(d)?"—":d.toLocaleDateString(lang==="no"?"nb-NO":"en-GB",
+                                           {day:"numeric",month:"short"});
+}
+/* Hvor mange av de k svakeste som skal oeves. Ukjent verdi faller til 3 -
+   samme regel som ellers i appen: en tom <select>-verdi skal ikke endre
+   utvalget i det stille. */
+function svakBegrepAnt(){
+  const e=$("#svakBegrepSel");
+  const v=e?parseInt(e.value,10):NaN;
+  return (v>=1&&v<=5)?v:3;
+}
+function svakBegrepKoder(){
+  const R=begrepRangert(); if(!R) return [];
+  return R.liste.slice(0,svakBegrepAnt()).map(c=>c.k);
+}
+/* Hint-linjene under de to velgerne. Begge sier hvilket grunnlag ordenen
+   hviler paa - en liste som har byttet rekkefoelge uten aa si hvorfor, leses
+   som en feil. Kalles fra visFormatvalg(), fra applyLang() og etter en
+   henting, saa de ikke kan komme i utakt med spraaket eller cachen. */
+function bnLenke(){
+  return ' <a class="kaplenke" href="#" id="bnHent">'+t_("bnHent")+' →</a>';
+}
+function nivaaInfoOppdater(){
+  const R=begrepRangert();
+  const b=$("#begrepNivaaInfo"), s=$("#svakBegrepInfo");
+  if(b){
+    b.innerHTML = R
+      ? esc(histTekst("bnOrden",{n:R.nOppg,d:bnDato(R.ts)}))
+        + (R.tynt?" "+esc(t_("bnTynt")):"")
+      : esc(t_("bnIngen"))+bnLenke();
+  }
+  if(s){
+    if(!R){ s.innerHTML=esc(t_("svakBegrepIngen"))+bnLenke(); }
+    else{
+      const k=svakBegrepKoder();
+      const navn=k.map(x=>{
+        const c=R.liste.find(y=>y.k===x);
+        return konseptNavnFor(x)+" "+bnPst(c?c.pct:0);
+      }).join(" · ");
+      s.innerHTML = esc(histTekst("bnValgte",{s:navn}))+" "
+        + esc(histTekst("bnAntall",{n:svakBegrepPool().length}))
+        + (R.tynt?" "+esc(t_("bnTynt")):"");
+    }
+  }
+  bnKoblLenke();
+}
+function bnKoblLenke(){
+  const a=$("#bnHent"); if(!a) return;
+  a.addEventListener("click",e=>{e.preventDefault();hentBegrepsnivaa();});
+}
+function bnMeld(m){
+  ["#begrepNivaaInfo","#svakBegrepInfo"].forEach(i=>{
+    const e=$(i); if(e) e.textContent=m;
+  });
+}
+/* Stille henting av studentens egne tall. Samme endepunkt og samme utregning
+   som historikkpanelet - den ENE forskjellen er at ingenting tegnes. */
+function hentBegrepsnivaa(){
+  if(!backendOn()){ bnMeld(t_("bnOff")); return; }
+  const kode=($("#code")?$("#code").value.trim():"");
+  if(!kode){ bnMeld(t_("bnNoCode")); if($("#code")) $("#code").focus(); return; }
+  bnMeld(t_("bnLoading"));
+  fetch(BACKEND_URL+"?action=history&code="+encodeURIComponent(kode))
+    .then(r=>r.json())
+    .then(d=>{
+      if(!d||!d.ok||!d.attempts||!d.attempts.length){ bnMeld(t_("bnTomt")); return; }
+      begrepNivaaSkriv(begrepNivaaAv(d),kode,
+                       Object.keys(begrepNivaaOppg(d)||{}).length);
+      if(state.format==="begrep") buildBegrepSelect();
+      nivaaInfoOppdater();
+    })
+    .catch(()=>bnMeld(t_("bnErr")));
+}
+/* Bassenget til «oev paa svakeste begreper»: foreningen av oppgavene som
+   baerer ett av de k svakeste begrepene. Samme filtre som begrepsformatet, og
+   utenIkkeProvbar gjelder alltid her - det finnes ingen dyplenke som har bedt
+   om et bestemt begrep. */
+function svakBegrepPool(){
+  const ks=svakBegrepKoder(); if(!ks.length) return [];
+  const bas=utenIkkeProvbar(utenUreg(utenKast(
+    (medOI() && OI) ? BANK.concat(OI) : BANK.slice())));
+  return iBaand(bas.filter(it=>(KONSEPT[it.id]||[]).some(k=>ks.indexOf(k)>=0)));
+}
+/* SVAKBEGREP SLUTT */
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 /* --- Bankstyring, innført 28.09.2026 etter itemanalysen 27.09 ---------------
    KAST: oppgaver som beviselig ikke kan måle noe. Fjorten av dem har p = 1.00
@@ -819,6 +1027,14 @@ function selectQuestions(){
      student som er svak der er svak paa tvers av dem. Her trekkes det derfor
      fra alle oppgavene som baerer begrepet, uansett kapittel, og
      output-tolkningsoppgavene blandes inn naar studenten har dem paa. */
+  /* Oev paa de k svakeste begrepene. Samme logikk som ett begrep, bare med
+     foreningen av flere - og begrepene velges av studentens egne tall, ikke
+     av henne. Uten tall returneres tom liste, og startQuizNow sier hvorfor. */
+  if(state.format==="svakbegrep"){
+    const p=svakBegrepPool();
+    if(!p.length) return [];
+    return shuffle(vektetUtvalg(p, Math.min(20, p.length)));
+  }
   if(state.format==="begrep"){
     const k=state.begrep;
     let bas=utenUreg(utenKast((medOI() && OI) ? BANK.concat(OI) : BANK.slice()));
@@ -850,7 +1066,7 @@ function selectQuestions(){
 
 function startQuizNow(){
   showExpl=$("#explChk").checked; immediate=$("#immChk").checked;
-  quiz=selectQuestions(); if(!quiz.length){alert(lang==="en"?"No items match that selection.":"Ingen oppgaver passer valget.");return;}
+  quiz=selectQuestions(); if(!quiz.length){alert(state.format==="svakbegrep"?t_("svakBegrepIngen"):(lang==="en"?"No items match that selection.":"Ingen oppgaver passer valget."));return;}
   idx=0; answers=[]; picked=null; startTime=Date.now();
   startTimer(state.format==="mock"?120*60:0);
   sessionId=Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,7);
@@ -1166,8 +1382,12 @@ function tegnHistorikk(){
      finnes, ellers svarstrengene i forsøkene, så panelet ikke er avhengig av
      at Apps Script er redeployet. Begreper med færre enn tre besvarte
      oppgaver er for tynt grunnlag til å kalle en styrke eller svakhet. */
-  const oppg = (d.items && Object.keys(d.items).length) ? d.items : oppgaverFraForsok(a);
-  const kons = konseptFraOppgaver(oppg).filter(c=>c.n>=1);
+  /* Samme utregning som begrepsvelgeren leser - ett regnestykke, to kallere.
+     Tallene caches her, saa velgeren kan sortere svakest foerst ved neste
+     besoek uten aa hente paa nytt. */
+  const kons = begrepNivaaAv(d);
+  begrepNivaaSkriv(kons, $("#code").value.trim(),
+                   Object.keys(begrepNivaaOppg(d)||{}).length);
   const tbK=$("#histKonseptBody");
   if(kons.length){
     const nok = kons.filter(c=>c.nItems>=3);
